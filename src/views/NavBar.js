@@ -1,11 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';    // constructing className strings conditionally
-import { IconButton, InputAdornment, Link, TextField, withStyles } from '@material-ui/core'
-import { Facebook, Instagram, Search } from '@material-ui/icons';
+import { Link, withStyles } from '@material-ui/core'
 
 import AppBar from '../components/AppBar';
+import HeaderBar from './HeaderBar';
 import Toolbar, { styles as toolbarStyles } from '../components/Toolbar';
+
+import StudyAboard from '../components/navlinks/StudyAbroad';
+import Networking from '../components/navlinks/Networking';
+import SchoolInformation from '../components/navlinks/SchoolInformation';
+import StudyAbroadServices from '../components/navlinks/StudyAbroadServices';
+import ServiceCenter from '../components/navlinks/ServiceCenter';
+import StudyAbroadCounselling from '../components/navlinks/StudyAbroadCounselling';
 
 const styles = theme => ({
   title: {
@@ -21,10 +27,20 @@ const styles = theme => ({
   leftLinkActive: {
     color: theme.palette.common.white,
   },
-  right: {
+  center: {
     flex: 3,
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+  },
+  right: {
+    flex: 2.75,
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+  right1: {
+    flex: 1.61,
+    display: 'flex',
+    justifyContent: 'flex-end',
   },
   rightLink: {
     fontSize: 14,
@@ -43,136 +59,35 @@ function NavBar(props) {
     <div>
       <AppBar position="fixed">
         <Toolbar className={classes.toolbar}>
-          <div className={classes.left}>
-          <Link
-            variant="h6"
-            underline="none"
-            color="inherit"
-            className={classes.title}
-            // href="/premium-themes/onepirate/"
-          >
-            <img src={require("../assets/img/logo.png")} alt="Goose Edu Logo"/>
-          </Link>
 
-          </div>
-          <div className={classes.right}>
-            <Link
-              color="inherit"
-              variant="h6"
-              underline="none"
-              className={classes.rightLink}
-              // component={}
-            >
-              {'Study Abroad'}
-            </Link>
-            <Link
-              color="inherit"
-              variant="h6"
-              underline="none"
-              className={classes.rightLink}
-              // component={}
-            >
-              {'Networking'}
-            </Link>
-            <Link
-              color="inherit"
-              variant="h6"
-              underline="none"
-              className={classes.rightLink}
-              // component={}
-            >
-              {'School Information'}
-            </Link>
-            <Link
-              color="inherit"
-              variant="h6"
-              underline="none"
-              className={classes.rightLink}
-              // component={}
-            >
-              {'Study Abroad Services'}
-            </Link>
-            <Link
-              color="inherit"
-              variant="h6"
-              underline="none"
-              className={classes.rightLink}
-              // component={}
-            >
-              {'Service Center'}
-            </Link>
-            <Link
-              variant="h6"
-              underline="none"
-              className={clsx(classes.rightLink, classes.linkSecondary)}
-              // component={}
-            >
-              {'Study Abroad Counseling'}
-            </Link>
-          </div>
-        </Toolbar>
-      </AppBar>
-      <Toolbar/>
-      <AppBar position="static">
-        <Toolbar className={classes.toolbar}>
+          {/* GOOSE EDU BRAND LOGO */}
           <div className={classes.left}>
-            <IconButton aria-label="Instagram">
-              <Instagram/>
-            </IconButton>
-            <IconButton aria-label="Facebook">
-              <Facebook/>
-            </IconButton>
-            <IconButton aria-label="Kakao Talk">
-              <img src={require("../assets/img/sns_03.jpg")} alt="Kakao Talk"/>
-            </IconButton>
-            <IconButton aria-label="Naver">
-              <img src={require("../assets/img/sns_04.jpg")} alt="Naver"/>
-            </IconButton>
+            <Link
+              variant="h6"
+              underline="none"
+              color="inherit"
+              className={classes.title}
+              // component={}
+            >
+              <img src={require("../assets/img/logo.png")} alt="Goose Edu Logo"/>
+            </Link>
           </div>
-          <TextField
-            className={classes.textField}
-            id="input-with-icon-textfield"
-            placeholder="Search"
-            variant="outlined"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <div className={classes.right}>
-            <Link
-              color="inherit"
-              variant="h6"
-              underline="none"
-              className={classes.rightLink}
-              // component={}
-            >
-              {'Login'}
-            </Link>
-            <Link
-              color="inherit"
-              variant="h6"
-              underline="none"
-              className={classes.rightLink}
-              // component={}
-            >
-              {'Sign In'}
-            </Link>
-            <Link
-              color="inherit"
-              variant="h6"
-              underline="none"
-              className={classes.rightLink}
-              // component={}
-            >
-              {'My Page'}
-            </Link>
+
+          {/* COMPONENTS > NAVLINKS */}
+          <div className={classes.center}>
+            <StudyAboard classes={classes}/>
+            <Networking classes={classes}/>
+            <SchoolInformation classes={classes}/>
+            <StudyAbroadServices classes={classes}/>
+            <ServiceCenter classes={classes}/>
+            <StudyAbroadCounselling classes={classes}/>
           </div>
         </Toolbar>
       </AppBar>
+
+      <Toolbar/>
+      <HeaderBar classes={classes}/>
+      
       {/* <div className={classes.placeholder} /> */}
     </div>
   );
