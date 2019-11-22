@@ -7,7 +7,7 @@ import withRoot from './withRoot';
 // import ProductCTA from './src/views/ProductCTA';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
-import ProductCategories from './views/ProductCategories';
+import FeatureBoard from './views/FeatureBoard';
 import AppFooter from './views/AppFooter';
 
 function Index() {
@@ -15,7 +15,7 @@ function Index() {
     <React.Fragment>
       <NavBar />
       <PageBanner />
-      <ProductCategories />
+      <FeatureBoard />
       <AppFooter />
     </React.Fragment>
   );
