@@ -4,8 +4,8 @@ import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Container from '@material-ui/core/Container';
 
-import Typography from '../components/Typography';
-import TextField from '../components/TextField';
+import Typography from '../components/onePirate/Typography';
+import TextField from '../components/onePirate/TextField';
 
 function Copyright() {
   return (

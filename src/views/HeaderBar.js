@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { IconButton, InputAdornment, TextField } from '@material-ui/core'
 import { Facebook, Instagram, Search } from '@material-ui/icons';
 
-import AppBar from '../components/AppBar';
-import Toolbar from '../components/Toolbar';
+import AppBar from '../components/onePirate/AppBar';
+import Toolbar from '../components/onePirate/Toolbar';
 
 import Login from '../components/navlinks/Login';
 import SignIn from '../components/navlinks/SignIn';

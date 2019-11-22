@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withStyles } from '@material-ui/core'
 
-import AppBar from '../components/AppBar';
 import HeaderBar from './HeaderBar';
-import Toolbar, { styles as toolbarStyles } from '../components/Toolbar';
-
+import AppBar from '../components/onePirate/AppBar';
+import Toolbar, { styles as toolbarStyles } from '../components/onePirate/Toolbar';
 import StudyAboard from '../components/navlinks/StudyAbroad';
 import Networking from '../components/navlinks/Networking';
 import SchoolInformation from '../components/navlinks/SchoolInformation';
