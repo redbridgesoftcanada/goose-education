@@ -9,7 +9,7 @@ import PageBanner from './views/PageBanner';
 import FeatureBoard from './views/FeatureBoard';
 import ProductValues from './views/ProductValues';
 import ArticlePreview from './views/ArticlePreview';
-import AppFooter from './views/AppFooter';
+import Footer from './views/Footer';
 
 function Index() {
   return (
@@ -19,7 +19,7 @@ function Index() {
       <FeatureBoard />
       <ProductValues />
       <ArticlePreview />
-      <AppFooter />
+      <Footer />
     </React.Fragment>
   );
 }
