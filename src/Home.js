@@ -8,6 +8,7 @@ import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import FeatureBoard from './views/FeatureBoard';
 import ProductValues from './views/ProductValues';
+import ArticlePreview from './views/ArticlePreview';
 import AppFooter from './views/AppFooter';
 
 function Index() {
@@ -17,6 +18,7 @@ function Index() {
       <PageBanner />
       <FeatureBoard />
       <ProductValues />
+      <ArticlePreview />
       <AppFooter />
     </React.Fragment>
   );
