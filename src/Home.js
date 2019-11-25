@@ -2,12 +2,12 @@ import React from 'react';
 
 import withRoot from './withRoot';
 // import ProductSmokingHero from './src/views/ProductSmokingHero';
-// import ProductValues from './src/views/ProductValues';
 // import ProductHowItWorks from './src/views/ProductHowItWorks';
 // import ProductCTA from './src/views/ProductCTA';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import FeatureBoard from './views/FeatureBoard';
+import ProductValues from './views/ProductValues';
 import AppFooter from './views/AppFooter';
 
 function Index() {
@@ -16,6 +16,7 @@ function Index() {
       <NavBar />
       <PageBanner />
       <FeatureBoard />
+      <ProductValues />
       <AppFooter />
     </React.Fragment>
   );
