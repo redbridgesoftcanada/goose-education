@@ -38,20 +38,15 @@ function PageBanner(props) {
 
   return (
     <div>
-      <PageBannerLayout backgroundClassName={classes.background}>
+      <PageBannerLayout backgroundClassName={classes.background} layoutType={'pageBanner'}>
         {/* Increase the network loading priority of the background image. */}
-        <img style={{ display: 'none' }} src={backgroundImage} />
+        <img style={{ display: 'none' }} src={backgroundImage} alt='background banner image'/>
         <Typography color="inherit" align="left" variant="h2" marked="center">
           Find your own path, make your dreams come true
         </Typography>
         <Typography  color="inherit" align="left" variant="body1" className={classes.more}>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </Typography>
-
-        {/* <Typography color="inherit" align="center" variant="h5" className={classes.h5}>
-          Enjoy secret offers up to -70% off the best luxury hotels every Sunday.
-        </Typography> */}
-        
         <Button
           color="secondary"
           variant="contained"

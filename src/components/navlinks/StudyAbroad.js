@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Link, Menu, MenuItem } from '@material-ui/core'
+import { Button, Link, Menu, MenuItem } from '@material-ui/core';
+import { BrowserRouter as Router, Link as RouterLink } from "react-router-dom";
 
 function StudyAbroad(props) {
     const { classes } = props;
@@ -29,8 +30,9 @@ function StudyAbroad(props) {
                   variant="h6"
                   underline="none"
                   className={classes.rightLink}
-                  // component={}
-                >
+                  component={RouterLink} 
+                  to='/goose'
+                  >
                   {'Study Abroad'}
                 </Link>
               </MenuItem>

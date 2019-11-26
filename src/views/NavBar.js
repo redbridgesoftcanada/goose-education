@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link, withStyles } from '@material-ui/core'
+import { Link, withStyles } from '@material-ui/core';
 
 import HeaderBar from './HeaderBar';
 import AppBar from '../components/onePirate/AppBar';
@@ -66,7 +66,6 @@ function NavBar(props) {
               underline="none"
               color="inherit"
               className={classes.title}
-              // component={}
             >
               <img src={require("../assets/img/logo.png")} alt="Goose Edu Logo"/>
             </Link>
@@ -83,11 +82,8 @@ function NavBar(props) {
           </div>
         </Toolbar>
       </AppBar>
-
       <Toolbar/>
       <HeaderBar classes={classes}/>
-      
-      {/* <div className={classes.placeholder} /> */}
     </div>
   );
 }

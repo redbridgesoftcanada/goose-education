@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { Container, withStyles } from '@material-ui/core';
 
 const styles = theme => ({
-  root: {
+  pageBannerRoot: {
     color: theme.palette.common.white,
     position: 'relative',
     display: 'flex',
@@ -15,12 +15,31 @@ const styles = theme => ({
       maxHeight: 1300,
     },
   },
-  container: {
+  headerBannerroot: {
+    color: theme.palette.common.white,
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    [theme.breakpoints.up('sm')]: {
+      height: '80vh',
+      minHeight: 500,
+      maxHeight: 1300,
+    },
+  },
+  pageBannerContainer: {
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(14),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+  },
+  headerBannerContainer: {
+    // marginTop: theme.spacing(3),
+    // marginBottom: theme.spacing(14),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    overflow: 'inherit',
   },
   backdrop: {
     position: 'absolute',
@@ -42,34 +61,43 @@ const styles = theme => ({
     backgroundRepeat: 'no-repeat',
     zIndex: -2,
   },
-  arrowDown: {
-    position: 'absolute',
-    bottom: theme.spacing(4),
-  },
 });
 
+function setSectionClass(classes, layoutType) {
+  let chosenLayout;
+  switch(layoutType){
+    case 'headerBanner':
+      chosenLayout = classes.headerBannerRoot;
+      break;
+    case 'pageBanner':
+      chosenLayout = classes.pageBannerRoot;
+      break;
+  }
+  return chosenLayout;
+}
+
+function setContainerClass(classes, layoutType) {
+  let chosenLayout;
+  switch(layoutType){
+    case 'headerBanner':
+      chosenLayout = classes.headerBannerContainer;
+      break;
+    case 'pageBanner':
+      chosenLayout = classes.pageBannerContainer;
+      break;
+  }
+  return chosenLayout;
+}
+
 function ProductHeroLayout(props) {
-  const { backgroundClassName, children, classes } = props;
+  const { backgroundClassName, children, classes, layoutType } = props;
 
   return (
-    <section className={classes.root}>
-      <Container className={classes.container}>
-        {/* <img
-          src="/static/themes/onepirate/productHeroWonder.png"
-          alt="wonder"
-          width="147"
-          height="80"
-        /> */}
+    <section className={setSectionClass(classes, layoutType)}>
+      <Container className={setContainerClass(classes, layoutType)}>
         {children}
         <div className={classes.backdrop} />
         <div className={clsx(classes.background, backgroundClassName)} />
-        {/* <img
-          className={classes.arrowDown}
-          src="/static/themes/onepirate/productHeroArrowDown.png"
-          height="16"
-          width="12"
-          alt="arrow down"
-        /> */}
       </Container>
     </section>
   );
