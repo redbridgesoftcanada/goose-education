@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Grid, IconButton, Link, makeStyles, Icon } from '@material-ui/core';
+import { Container, Grid, IconButton, Link, makeStyles } from '@material-ui/core';
 import { Facebook, Instagram } from '@material-ui/icons';
 
 import Typography from '../components/onePirate/Typography';
@@ -68,7 +68,7 @@ export default function AppFooter() {
           <Grid item xs={6} md={6}>
             <Grid container justify='flex-start' spacing={3}>
               <Grid item>
-                <img src={require('../assets/img/flogo.png')}/>
+                <img src={require('../assets/img/flogo.png')} alt='Goose Education logo'/>
               </Grid>
               <Grid item>
               <ul className={classes.list}>

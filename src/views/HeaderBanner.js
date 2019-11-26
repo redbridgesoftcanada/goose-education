@@ -28,7 +28,7 @@ function HeaderBanner(props) {
     <div>
       <PageBannerLayout backgroundClassName={classes.background} layoutType={'headerBanner'}>
         {/* Increase the network loading priority of the background image. */}
-        <img src={backgroundImage} />
+        <img src={backgroundImage} alt='background banner'/>
         <Typography className={classes.title} color="inherit" align="center" variant="h4">
           Goose Study Abroad
         </Typography>

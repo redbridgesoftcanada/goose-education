@@ -72,6 +72,9 @@ function setSectionClass(classes, layoutType) {
     case 'pageBanner':
       chosenLayout = classes.pageBannerRoot;
       break;
+    default:
+      chosenLayout = null;
+      break;
   }
   return chosenLayout;
 }
@@ -84,6 +87,9 @@ function setContainerClass(classes, layoutType) {
       break;
     case 'pageBanner':
       chosenLayout = classes.pageBannerContainer;
+      break;
+    default:
+      chosenLayout = null;
       break;
   }
   return chosenLayout;

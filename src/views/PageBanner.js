@@ -40,7 +40,7 @@ function PageBanner(props) {
     <div>
       <PageBannerLayout backgroundClassName={classes.background} layoutType={'pageBanner'}>
         {/* Increase the network loading priority of the background image. */}
-        <img style={{ display: 'none' }} src={backgroundImage} alt='background banner image'/>
+        <img style={{ display: 'none' }} src={backgroundImage} alt='background banner'/>
         <Typography color="inherit" align="left" variant="h2" marked="center">
           Find your own path, make your dreams come true
         </Typography>
