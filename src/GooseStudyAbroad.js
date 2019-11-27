@@ -8,6 +8,7 @@ import HeaderBanner from './views/HeaderBanner';
 import GooseOverview from './views/GooseOverview';
 import GooseCoreFeatures from './views/GooseCoreFeatures';
 import GoosePlatform from './views/GoosePlatform';
+import GooseTips from './views/GooseTips';
 import Footer from './views/Footer';
 
 const useStyles = makeStyles(theme => ({
@@ -69,7 +70,7 @@ function GooseEdu() {
                     <GoosePlatform/>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    Goose Tips
+                    <GooseTips/>
                 </TabPanel>
             </Paper>
             <Footer/>
