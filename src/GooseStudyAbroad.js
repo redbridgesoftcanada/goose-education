@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Box, Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core';
 
@@ -41,7 +41,7 @@ function TabPanel(props) {
     value: PropTypes.any.isRequired,
   };
 
-function GooseEdu() {
+function GooseEdu(props) {
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
 
@@ -49,6 +49,25 @@ function GooseEdu() {
         setValue(newValue);
     };
     
+    // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
+    const handleSelected = (selected) => {
+      switch(selected){
+        case 'goose_study_abroad':
+          setValue(0);
+          break;
+        case 'goose_tips':
+          setValue(1);
+          break;
+        default:
+          setValue(0);
+          break;
+      }
+    }
+
+    useEffect(() => {
+      handleSelected(props.location.state.selected)
+    });
+
     return (
         <React.Fragment>
             <NavBar/>

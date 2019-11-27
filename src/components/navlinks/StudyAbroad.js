@@ -31,9 +31,15 @@ function StudyAbroad(props) {
                   underline="none"
                   className={classes.rightLink}
                   component={RouterLink} 
-                  to='/goose'
+                  to=
+                  {{
+                    pathname: '/goose', 
+                    state: {
+                      selected: 'goose_study_abroad'
+                    }
+                  }}
                   >
-                  {'Study Abroad'}
+                  {'Goose Study Abroad'}
                 </Link>
               </MenuItem>
               <MenuItem onClick={handleClose}>
@@ -42,9 +48,16 @@ function StudyAbroad(props) {
                   variant="h6"
                   underline="none"
                   className={classes.rightLink}
-                  // component={}
-                >
-                  {'Goose Good Tips'}
+                  component={RouterLink} 
+                  to=
+                  {{
+                    pathname: '/goose', 
+                    state: {
+                      selected: 'goose_tips'
+                    }
+                  }}
+                  >
+                  {'Goose Tips'}
                 </Link>
               </MenuItem>
             </Menu>

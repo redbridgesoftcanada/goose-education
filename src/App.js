@@ -12,7 +12,7 @@ function App() {
     <div className="App">
       <ScrollToTop>
         <Switch>
-          <Route path="/goose" render={() => <GooseStudyAbroad />}/>
+          <Route path="/goose" render={(props) => <GooseStudyAbroad {...props} />}/>
           <Route exact path="/" render={() => <Home/>}/>
         </Switch>
       </ScrollToTop>
