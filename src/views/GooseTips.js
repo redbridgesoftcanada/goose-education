@@ -61,7 +61,7 @@ const styles = theme => ({
     },
 });
 
-function ProductValues(props) {
+function GooseTips(props) {
     const { classes } = props;
 
     // COMPONENTS > Filter Dialog Modal 
@@ -172,8 +172,8 @@ function ProductValues(props) {
     );
 }
 
-ProductValues.propTypes = {
+GooseTips.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ProductValues);
+export default withStyles(styles)(GooseTips);

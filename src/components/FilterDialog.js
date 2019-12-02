@@ -55,7 +55,7 @@ function FilterDialog(props) {
             margin="normal"
             >
             {filterOptions.map(option => (
-                <MenuItem value={option}>
+                <MenuItem key={option} value={option}>
                 {option}
                 </MenuItem>
             ))}
@@ -69,7 +69,7 @@ function FilterDialog(props) {
                 margin="normal"
             >
                 {additiveOptions.map(option => (
-                    <MenuItem value={option}>
+                    <MenuItem key={option} value={option}>
                     {option}
                     </MenuItem>
                 ))}
