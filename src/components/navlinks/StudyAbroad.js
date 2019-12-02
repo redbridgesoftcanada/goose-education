@@ -35,7 +35,7 @@ function StudyAbroad(props) {
                   {{
                     pathname: '/goose', 
                     state: {
-                      selected: 'goose_study_abroad'
+                      selected: 0
                     }
                   }}
                   >
@@ -53,7 +53,7 @@ function StudyAbroad(props) {
                   {{
                     pathname: '/goose', 
                     state: {
-                      selected: 'goose_tips'
+                      selected: 1
                     }
                   }}
                   >
