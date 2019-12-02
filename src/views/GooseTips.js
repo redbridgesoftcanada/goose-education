@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Container, Grid, InputAdornment, InputBase, TablePagination, withStyles } from '@material-ui/core';
-import { SearchOutlined, UnfoldMoreOutlined } from '@material-ui/icons';
+import { Container, Grid, withStyles } from '@material-ui/core';
 
 import Typography from '../components/onePirate/Typography';
 
+import FilterSortSearch from '../components/FilterSortSearch';
 import FilterDialog from '../components/FilterDialog';
 import SortPopover from '../components/SortPopover';
+import Pagination from '../components/Pagination';
 
 const styles = theme => ({
     root: {
@@ -80,32 +81,8 @@ function GooseTips(props) {
                 <Typography variant="h3" marked="center" className={classes.title}>
                     Goose Tips
                 </Typography>
-                <InputBase
-                    className={classes.search}
-                    placeholder="Enter a search term"
-                    endAdornment={
-                        <InputAdornment>
-                            <Button className={classes.searchButton}>
-                                Search
-                            </Button>
-                        </InputAdornment>
-                    }
-                />
-                <Button 
-                    className={classes.filterButton} 
-                    onClick={handleClickOpen}
-                    startIcon={<SearchOutlined/>}
-                >
-                    Filter
-                </Button>
+                <FilterSortSearch handleClick={handleClick} handleClickOpen={handleClickOpen} />
                 <FilterDialog open={open} onClose={handleClose} />
-                <Button 
-                    className={classes.filterButton} 
-                    onClick={handleClick}
-                    startIcon={<UnfoldMoreOutlined/>}
-                >
-                    Sort
-                </Button>
                 <SortPopover anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handlePopoverClose}/>
                 <Grid container>
                     <Grid item xs={12} md={4} className={classes.background}>
@@ -160,13 +137,7 @@ function GooseTips(props) {
                         </div>
                     </Grid>
                 </Grid>
-            <TablePagination
-                component="nav"
-                page={0}
-                rowsPerPage={10}
-                count={100}
-                onChangePage={() => {}}
-            />
+                <Pagination />
             </Container>
         </section>
     );
