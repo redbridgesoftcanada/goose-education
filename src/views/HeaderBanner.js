@@ -30,7 +30,7 @@ function HeaderBanner(props) {
         {/* Increase the network loading priority of the background image. */}
         <img src={backgroundImage} alt='background banner'/>
         <Typography className={classes.title} color="inherit" align="center" variant="h4">
-          Goose Study Abroad
+          {props.title}
         </Typography>
       </PageBannerLayout>
     </div>

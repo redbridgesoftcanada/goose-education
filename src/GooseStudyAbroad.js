@@ -58,7 +58,7 @@ function GooseEdu(props) {
     return (
         <React.Fragment>
             <NavBar/>
-            <HeaderBanner/>
+            <HeaderBanner title={props.location.state.title}/>
             <Paper className={classes.root}>
                 <Tabs
                     value={value}

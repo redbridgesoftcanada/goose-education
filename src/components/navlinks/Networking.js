@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Link } from '@material-ui/core'
+import { Link as RouterLink } from "react-router-dom";
 
 function Networking(props) {
     const { classes } = props;
@@ -13,7 +14,14 @@ function Networking(props) {
                 variant="h6"
                 underline="none"
                 className={classes.rightLink}
-                // component={}
+                component={RouterLink} 
+                to=
+                  {{
+                    pathname: '/networking', 
+                    state: {
+                      title: 'Networking'
+                    }
+                  }}
               >
                 {'Networking'}
               </Link>
