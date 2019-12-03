@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
 
 function FilterDialog(props) {
     const classes = useStyles(); 
-    const { onClose, open } = props;
+    const { onClose, filterOpen } = props;
 
     const [option, setOption] = useState('title');
 
@@ -43,7 +43,7 @@ function FilterDialog(props) {
     };
   
     return (
-      <Dialog onClose={onClose} open={open}>
+      <Dialog onClose={onClose} open={filterOpen}>
         <DialogTitle className={classes.title}>Filter</DialogTitle>
         <div className={classes.container}>
             <TextField

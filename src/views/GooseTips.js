@@ -66,14 +66,14 @@ function GooseTips(props) {
     const { classes } = props;
 
     // COMPONENTS > Filter Dialog Modal 
-    const [open, setOpen] = React.useState(false);
-    const handleClickOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const [filterOpen, setFilterOpen] = React.useState(false);
+    const handleFilterClick = () => setFilterOpen(true);
+    const handleFilterClose = () => setFilterOpen(false);
 
     // COMPONENTS > Sort Popover
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const handleClick = event => setAnchorEl(event.currentTarget);
-    const handlePopoverClose = () => setAnchorEl(null);
+    const handleSortClick = event => setAnchorEl(event.currentTarget);
+    const handleSortClose = () => setAnchorEl(null);
 
     return (
         <section className={classes.root}>
@@ -81,9 +81,9 @@ function GooseTips(props) {
                 <Typography variant="h3" marked="center" className={classes.title}>
                     Goose Tips
                 </Typography>
-                <FilterSortSearch handleClick={handleClick} handleClickOpen={handleClickOpen} />
-                <FilterDialog open={open} onClose={handleClose} />
-                <SortPopover anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handlePopoverClose}/>
+                <FilterSortSearch handleFilterClick={handleFilterClick} handleSortClick={handleSortClick}/>
+                <FilterDialog filterOpen={filterOpen} onClose={handleFilterClose} />
+                <SortPopover anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleSortClose}/>
                 <Grid container>
                     <Grid item xs={12} md={4} className={classes.background}>
                         <div className={classes.item}>

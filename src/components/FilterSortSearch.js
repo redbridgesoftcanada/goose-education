@@ -26,7 +26,7 @@ const styles = theme => ({
 });
 
 function FilterSortSearch(props) {
-    const { classes, handleClick, handleClickOpen } = props;
+    const { classes, handleFilterClick, handleSortClick } = props;
 
     return (
         <div>
@@ -43,14 +43,14 @@ function FilterSortSearch(props) {
             />
             <Button 
                 className={classes.filterButton} 
-                onClick={handleClickOpen}
+                onClick={handleFilterClick}
                 startIcon={<SearchOutlined/>}
             >
                 Filter
             </Button>
             <Button 
                 className={classes.filterButton} 
-                onClick={handleClick}
+                onClick={handleSortClick}
                 startIcon={<UnfoldMoreOutlined/>}
             >
                 Sort
