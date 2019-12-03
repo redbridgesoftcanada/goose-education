@@ -4,8 +4,8 @@ import withRoot from './withRoot';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import FeatureBoard from './views/FeatureBoard';
-import ProductValues from './views/ProductValues';
-import ArticlePreview from './views/ArticlePreview';
+import ArticleThumbnails from './views/ArticleThumbnails';
+import TipsThumbnails from './views/TipsThumbnails';
 import Footer from './views/Footer';
 
 function Index() {
@@ -14,8 +14,8 @@ function Index() {
       <NavBar />
       <PageBanner />
       <FeatureBoard />
-      <ProductValues />
-      <ArticlePreview />
+      <ArticleThumbnails />
+      <TipsThumbnails />
       <Footer />
     </React.Fragment>
   );
