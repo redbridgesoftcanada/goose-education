@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Grid, withStyles } from '@material-ui/core';
 
@@ -65,15 +65,21 @@ const styles = theme => ({
 function GooseTips(props) {
     const { classes } = props;
 
-    // COMPONENTS > Filter Dialog Modal 
-    const [filterOpen, setFilterOpen] = React.useState(false);
-    const handleFilterClick = () => setFilterOpen(true);
-    const handleFilterClose = () => setFilterOpen(false);
+    const [state, setState] = useState({
+        filterOpen: false,
+        anchorEl: null,
+        articleOpen: false
+    });
 
-    // COMPONENTS > Sort Popover
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const handleSortClick = event => setAnchorEl(event.currentTarget);
-    const handleSortClose = () => setAnchorEl(null);
+    const { filterOpen, anchorEl } = state;
+
+    // COMPONENTS > Filter Dialog Modal 
+    const handleFilterClick = () => setState({...state, filterOpen: true});
+    const handleFilterClose = () => setState({...state, filterOpen: false});
+    
+    // // COMPONENTS > Sort Popover
+    const handleSortClick = (event) => setState({...state, anchorEl: event.currentTarget});
+    const handleSortClose = () => setState({...state, anchorEl: null});
 
     return (
         <section className={classes.root}>
