@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import { Container, Grid, withStyles } from '@material-ui/core';
 import Typography from '../components/onePirate/Typography';
 
-import FilterSortSearch from '../components/FilterSortSearch';
+import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
+import Sort from '../components/SortButton';
 import SortPopover from '../components/SortPopover';
+import SearchBar from '../components/SearchBar';
 import ArticleDialog from '../components/ArticleDialog';
 import Pagination from '../components/Pagination';
 
@@ -195,7 +197,9 @@ function ArticleBoard(props) {
     return (
         <section className={classes.root}>
             <Container>
-                <FilterSortSearch handleSortClick={handleSortClick} handleFilterClick={handleFilterClick} />
+                <Filter handleFilterClick={handleFilterClick}/>
+                <Sort handleSortClick={handleSortClick}/>
+                <SearchBar />
                 <FilterDialog filterOpen={filterOpen} onClose={handleFilterClose} />
                 <SortPopover anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleSortClose}/>
                 <Grid container>

@@ -4,9 +4,11 @@ import { Container, Grid, withStyles } from '@material-ui/core';
 
 import Typography from '../components/onePirate/Typography';
 
-import FilterSortSearch from '../components/FilterSortSearch';
+import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
+import Sort from '../components/SortButton';
 import SortPopover from '../components/SortPopover';
+import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
 
 const styles = theme => ({
@@ -87,7 +89,9 @@ function GooseTips(props) {
                 <Typography variant="h3" marked="center" className={classes.title}>
                     Goose Tips
                 </Typography>
-                <FilterSortSearch handleFilterClick={handleFilterClick} handleSortClick={handleSortClick}/>
+                <Filter handleFilterClick={handleFilterClick}/>
+                <Sort handleSortClick={handleSortClick}/>
+                <SearchBar />
                 <FilterDialog filterOpen={filterOpen} onClose={handleFilterClose} />
                 <SortPopover anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleSortClose}/>
                 <Grid container>
