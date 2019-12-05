@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Link, Menu, MenuItem } from '@material-ui/core'
+import { Button, Link, Menu, MenuItem } from '@material-ui/core';
+import { Link as RouterLink } from "react-router-dom";
 
 function SchoolInformation(props) {
     const { classes } = props;
@@ -31,7 +32,15 @@ function SchoolInformation(props) {
                   variant="h6"
                   underline="none"
                   className={classes.rightLink}
-                  // component={}
+                  component={RouterLink}
+                  to=
+                  {{
+                    pathname: '/schools', 
+                    state: {
+                      title: 'School Information',
+                      selected: 0
+                    }
+                  }}
                 >
                   {'School Information'}
                 </Link>
@@ -43,7 +52,15 @@ function SchoolInformation(props) {
                   variant="h6"
                   underline="none"
                   className={classes.rightLink}
-                  // component={}
+                  component={RouterLink}
+                  to=
+                  {{
+                    pathname: '/schools', 
+                    state: {
+                      title: 'School Information',
+                      selected: 1
+                    }
+                  }}
                 >
                   {'School Application'}
                 </Link>
