@@ -8,6 +8,8 @@ import NavBar from './views/NavBar';
 import HeaderBanner from './views/HeaderBanner';
 import SchoolsOverview from './views/SchoolsOverview';
 import ListOfSchools from './views/ListOfSchools';
+import HowToUse from './views/HowToUse';
+import CanadaVancouverPoster from './views/CanadaVancouverPoster';
 import Footer from './views/Footer';
 import SchoolInformation from './views/SchoolInformation';
 
@@ -178,6 +180,8 @@ function Schools(props) {
           <TabPanel value={value} index={1}>
           </TabPanel>
       </Paper>
+      <HowToUse/>
+      <CanadaVancouverPoster/>
       <Footer/>
     </>
   )
