@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Link, Menu, MenuItem } from '@material-ui/core'
+import { Button, Link, Menu, MenuItem } from '@material-ui/core';
+import { Link as RouterLink } from "react-router-dom";
 
 function ServiceCenter(props) {
     const { classes } = props;
@@ -17,7 +18,7 @@ function ServiceCenter(props) {
     return (
         <div>
             <Button aria-controls="service-center-dropdown" aria-haspopup="true" onMouseOver={handleClick}>
-              Service Center
+              Service Centre
             </Button>
             <Menu
               anchorEl={anchorEl}
@@ -31,9 +32,17 @@ function ServiceCenter(props) {
                   variant="h6"
                   underline="none"
                   className={classes.rightLink}
-                  // component={}
+                  component={RouterLink}
+                  to=
+                  {{
+                    pathname: '/services', 
+                    state: {
+                      title: 'Service Centre',
+                      selected: 0
+                    }
+                  }}
                 >
-                  {'Notice'}
+                  {'Announcements'}
                 </Link>
               </MenuItem>
 
@@ -43,9 +52,17 @@ function ServiceCenter(props) {
                   variant="h6"
                   underline="none"
                   className={classes.rightLink}
-                  // component={}
+                  component={RouterLink}
+                  to=
+                  {{
+                    pathname: '/services', 
+                    state: {
+                      title: 'Service Centre',
+                      selected: 1
+                    }
+                  }}
                 >
-                  {'Study Consultation'}
+                  {'Message Board'}
                 </Link>
               </MenuItem>
             </Menu>

@@ -10,7 +10,7 @@ import StudyAboard from '../components/navlinks/StudyAbroad';
 import Networking from '../components/navlinks/Networking';
 import SchoolInformation from '../components/navlinks/SchoolInformation';
 import StudyAbroadServices from '../components/navlinks/StudyAbroadServices';
-import ServiceCenter from '../components/navlinks/ServiceCenter';
+import ServiceCentre from '../components/navlinks/ServiceCentre';
 import StudyAbroadCounselling from '../components/navlinks/StudyAbroadCounselling';
 
 const styles = theme => ({
@@ -80,7 +80,7 @@ function NavBar(props) {
             <Networking classes={classes}/>
             <SchoolInformation classes={classes}/>
             <StudyAbroadServices classes={classes}/>
-            <ServiceCenter classes={classes}/>
+            <ServiceCentre classes={classes}/>
             <StudyAbroadCounselling classes={classes}/>
           </div>
         </Toolbar>
