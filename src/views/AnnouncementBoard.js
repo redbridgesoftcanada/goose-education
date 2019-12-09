@@ -1,29 +1,18 @@
 import React, { useState } from 'react';
-import { Container, Grid, IconButton, Link, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Typography, withStyles } from '@material-ui/core';
-import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
+import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 
 import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
 import SortPopover from '../components/SortPopover';
+import SocialMediaButtons from '../components/SocialMediaButtons';
 import Pagination from '../components/Pagination';
 
+const title = 'Announcement Board';
+const description = 'Check out the latest news from Goose!';
+
 const styles = theme => ({
-    title: {
-        marginTop: theme.spacing(5),
-    },
-    button: {
-        "&:hover": {
-          backgroundColor: "transparent"
-        }
-    },
-    email: {
-        fontSize: '35px',
-    },
-    image: {
-        width: '2rem',
-    },
     wrapper: {
         marginTop: theme.spacing(3),
     },
@@ -50,54 +39,7 @@ function AnnoucementBoard(props) {
 
     return (
         <Container>
-            <Typography variant='h4' className={classes.title}>
-                Announcement Board
-            </Typography>
-            <Typography variant='subtitle2'>
-                Check out the latest news from Goose!
-            </Typography>
-            <Grid container className={classes.title}>
-                <Grid item xs={3} md={3}>
-                    <Tooltip title='goose.education@gmail.com' placement='top'>
-                        <IconButton className={classes.button}>
-                            <EmailOutlinedIcon className={classes.email}/>
-                        </IconButton>
-                    </Tooltip>
-                </Grid>
-                <Grid item xs={3} md={3}>
-                    <Tooltip title='Kakao' placement='top'>
-                        <IconButton 
-                            className={classes.button}
-                            component={Link}
-                            href='https://pf.kakao.com/_hNspC'
-                            target='_blank'>
-                            <img src={require('../assets/img/kakaolink_btn_small.png')} alt='Kakao Talk'/>
-                        </IconButton>
-                    </Tooltip>
-                </Grid>
-                <Grid item xs={3} md={3}>
-                    <Tooltip title='Instagram' placement='top'>
-                        <IconButton 
-                        className={classes.button}
-                        component={Link}
-                        href='https://www.instagram.com/gooseedu/'
-                        target='_blank'>
-                            <img className={classes.image} src={require('../assets/img/glyph-logo_May2016.png')} alt='Instagram'/>
-                        </IconButton>
-                    </Tooltip>
-                </Grid>
-                <Grid item xs={3} md={3}>
-                    <Tooltip title='Facebook' placement='top'>
-                        <IconButton 
-                        className={classes.button}
-                        component={Link}
-                        href='https://www.facebook.com/gooseedu'
-                        target='_blank'>
-                            <img className={classes.image} src={require('../assets/img/f_logo_RGB-Blue_250.png')} alt='Facebook'/>
-                        </IconButton>
-                    </Tooltip>
-                </Grid>
-            </Grid>
+            <SocialMediaButtons title={title} description={description}/>
             <div className={classes.wrapper}>
                 <Filter handleFilterClick={handleFilterClick}/>
                 <Sort handleSortClick={handleSortClick}/>
@@ -123,7 +65,7 @@ function AnnoucementBoard(props) {
                                         component={RouterLink} 
                                         to=
                                         {{
-                                            pathname: `${match.path}/${announcement.id}`, 
+                                            pathname: `${match.path}/announcement/${announcement.id}`, 
                                             state: {
                                                 title: 'Service Centre',
                                                 selected: 0,
