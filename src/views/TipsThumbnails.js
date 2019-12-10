@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, IconButton, Typography, withStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import { Redirect } from "react-router-dom";
 
 const styles = theme => ({
     root: {
@@ -42,13 +43,23 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'column',
         padding: theme.spacing(3, 2),
+        "&:hover": {
+            // color: theme.palette.secondary.main,
+            cursor: 'pointer'
+        },
     },
     button: {
-        marginTop: '1.5em'
+        marginTop: '1.5em',
+        "&:hover": {
+            backgroundColor: "transparent"
+        }
     },
     buttonWhite: {
+        marginTop: '1.5em',
         color: theme.palette.common.white,
-        marginTop: '1.5em'
+        "&:hover": {
+            backgroundColor: "transparent"
+        }
     },
     header: {
         display: 'flex',
@@ -57,7 +68,42 @@ const styles = theme => ({
 });
 
 function ProductValues(props) {
-    const { classes } = props;
+    const { classes, previewSchools, previewTips } = props;
+
+    const [pathname, setPathname] = useState({});
+
+    const handleClick = (event) => {
+        switch(event.currentTarget.id) {
+            case 'school_information':
+                setPathname({
+                    pathname: '/schools', 
+                    state: {
+                        title: 'School Information',
+                        selected: 0
+                    }
+                });
+                break;
+            
+            case 'goose_tips':
+                setPathname({
+                    pathname: '/goose', 
+                    state: {
+                        title: 'Goose Tips',
+                        selected: 1
+                    }
+                });
+                break;
+            
+            default:
+                setPathname({
+                    pathname: `/schools`, 
+                    state: {
+                        title: 'School Information',
+                        selected: 0,
+                    }
+                });
+        }
+    };
 
     return (
         <section className={classes.root}>
@@ -67,65 +113,43 @@ function ProductValues(props) {
                         <Typography variant="h4" className={classes.title}>
                             School Information
                         </Typography>
-                        <IconButton aria-label="settings" className={classes.button}>
-                            <AddIcon />
-                        </IconButton>
+                        { (Object.entries(pathname).length) ? 
+                            <Redirect push to={pathname}/>
+                            :
+                            <IconButton id='school_information' className={classes.button} onClick={handleClick}>
+                                <AddIcon />
+                            </IconButton>
+                        }
                     </div>
                     <Grid item xs={12} md={12} className={classes.container}>
-                        <div className={classes.item}>
-                            <img
-                                className={classes.image}
-                                src={require("../assets/img/643318286_1fRTZOz6_dc1f626815427c94079076f6c9e8b8047d70a753.jpg")}
-                                alt="iTTTi logo"
-                            />
-                            <div className={classes.description}>
-                                <Typography variant="subtitle1">
-                                    iTTTi
-                                </Typography>
-                                <Typography variant="body2">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                </Typography>
-                                <Typography variant="body2">
-                                    2019-03-20
-                                </Typography>
-                            </div>
-                        </div>
-                        <div className={classes.item}>
-                            <img
-                                className={classes.image}
-                                src={require("../assets/img/643318286_rWCPoe2b_b73c26645a2423027ce454bad53c626ba551d40f.png")}
-                                alt="Canadian College logo"
-                            />
-                            <div className={classes.description}>
-                                <Typography variant="subtitle1">
-                                    Canadian College
-                                </Typography>
-                                <Typography variant="body2">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                </Typography>
-                                <Typography variant="body2">
-                                    2019-03-19
-                                </Typography>
-                            </div>
-                        </div>
-                        <div className={classes.item}>
-                            <img
-                                className={classes.image}
-                                src={require("../assets/img/643318286_pnTMAq4w_54ae6ae567fab4ace2b71e9a84c87a004246b72c.jpg")}
-                                alt="Canadian College of English Language logo"
-                            />
-                            <div className={classes.description}>
-                                <Typography variant="subtitle1">
-                                    Canadian College of English Language: CCEL
-                                </Typography>
-                                <Typography variant="body2">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                </Typography>
-                                <Typography variant="body2">
-                                    2019-03-16
-                                </Typography>
-                            </div>
-                        </div>
+                        {previewSchools.map(school => {
+                            return (
+                                <div key={school.id} className={classes.item}>
+                                    <img
+                                        className={classes.image}
+                                        src={require(`../assets/img/${school.image}`)}
+                                        alt="School Logo"
+                                    />
+                                    <div id={school.name} className={classes.description} onClick={handleClick}>
+                                    { (Object.entries(pathname).length) ? 
+                                        <Redirect push to={pathname}/>
+                                        :
+                                        <>
+                                            <Typography variant="subtitle1">
+                                                {school.name}
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                {school.features}
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                *2019-03-20
+                                            </Typography>
+                                        </>
+                                    }
+                                    </div>
+                                </div>
+                            )
+                        })}
                     </Grid>
                 </Grid>
                 <Grid item xs={12} md={6} className={classes.background}>
@@ -133,9 +157,13 @@ function ProductValues(props) {
                         <Typography variant="h4" className={classes.titleWhite}>
                             Goose Tips
                         </Typography>
-                        <IconButton aria-label="settings" className={classes.buttonWhite}>
-                            <AddIcon />
-                        </IconButton>
+                        { (Object.entries(pathname).length) ? 
+                            <Redirect push to={pathname}/>
+                            :
+                            <IconButton id='goose_tips' className={classes.buttonWhite} onClick={handleClick}>
+                                <AddIcon />
+                            </IconButton>
+                        }
                     </div>
                     <Grid item xs={12} md={12} className={classes.container} >
                         <div className={classes.item}>
@@ -144,16 +172,27 @@ function ProductValues(props) {
                                 src={require("../assets/img/6_copy_14_2_copy_6_1_copy_2_2948936627_zlcboNC3_e1e0cdafaaf268f678768639069a77d6921aba1e.jpg")}
                                 alt="article-thumbnail"
                             />
-                            <div className={classes.description}>
-                                <Typography variant="subtitle1">
-                                    [Goose Tips] Post Title
-                                </Typography>
-                                <Typography variant="body2">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                </Typography>
-                                <Typography variant="body2">
-                                    2018-12-31
-                                </Typography>
+                            <div id='goose_tips' className={classes.description} onClick={handleClick}>
+                                {previewTips.map(tip => {
+                                    return (
+                                        (Object.entries(pathname).length) ? 
+                                            <Redirect push to={pathname}/>
+                                            :
+                                            <>
+                                                <Typography variant="subtitle1">
+                                                    {tip.title}
+                                                </Typography>
+                                                <Typography variant="body2">
+                                                    {tip.description}
+                                                </Typography>
+                                                <Typography variant="body2">
+                                                    {tip.date}
+                                                </Typography>
+                                            </>
+                                        
+                                       
+                                    )
+                                })}
                             </div>
                         </div>
                     </Grid>

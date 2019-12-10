@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Grid, IconButton, Typography, withStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import { Redirect } from "react-router-dom";
+
+import ArticleDialog from '../components/ArticleDialog';
 
 const styles = theme => ({
     root: {
-        // display: 'flex',
         overflow: 'hidden',
         backgroundColor: theme.palette.primary.dark,
     },
@@ -14,6 +16,11 @@ const styles = theme => ({
         marginBottom: theme.spacing(15),
         display: 'flex',
         position: 'relative',
+    },
+    thumbnail: {
+        "&:hover": {
+            cursor: 'pointer',
+        },
     },
     image: {
         display: 'block',
@@ -48,7 +55,28 @@ const styles = theme => ({
 });
 
 function ProductValues(props) {
-    const { classes } = props;
+    const { classes, featuredArticles } = props;
+    
+    const [state, setState] = useState({
+        redirect: false,
+        articleOpen: false,
+        article: null,
+    });
+
+    const { articleOpen, article } = state;
+    
+    // // COMPONENTS > Article Dialog Modal 
+    const handleArticleClick = event => setState({...state, articleOpen: true, article: featuredArticles.find(article => article.id.toString() === event.currentTarget.id)});
+    const handleArticleClose = () => setState({...state, articleOpen: false, article: null});
+    
+    const [pathname, setPathname] = useState({});
+    
+    const handleClick = () => setPathname({
+        pathname: '/networking', 
+        state: {
+            title: 'Networking',
+        }
+    });
 
     return (
         <section className={classes.root}>
@@ -56,46 +84,36 @@ function ProductValues(props) {
                 <Typography variant="h4" className={classes.title}>
                     Networking
                 </Typography>
-                <IconButton aria-label="settings" className={classes.button}>
-                    <AddIcon />
-                </IconButton>
+                {
+                (Object.entries(pathname).length) ? 
+                    <Redirect push to={pathname}/>
+                    :
+                    <IconButton id='School Information' onClick={handleClick} className={classes.button}>
+                        <AddIcon />
+                    </IconButton>
+                }
             </div>
             <Typography variant="body2" className={classes.description}>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </Typography>
             <Container className={classes.container}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} md={3}>
-                        <div>
-                            <img
-                                className={classes.image}
-                                src={require("../assets/img/thumb-2919655616_Y4WrbPxp_61cb5518540dad6db53cd54c36ec8e933ca690f7_283x288.jpg")}
-                                alt="article-thumbnail"
-                            />
-                        </div>
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                        <img
-                            className={classes.image}
-                            src={require("../assets/img/thumb-2919655616_CBAr7uG6_6b5db15acd1fde70c69c532cf137351e2468feb1_283x288.jpg")}
-                            alt="article-thumbnail"
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                        <img
-                            className={classes.image}
-                            src={require("../assets/img/thumb-643318286_ydhXINOi_408f5fdb2cf23cfa89626254c8bf675a784b19cc_283x288.jpg")}
-                            alt="article-thumbnail"
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                        <img
-                            className={classes.image}
-                            src={require("../assets/img/thumb-643318286_VJOTHgMi_d12784f59d57b78a947c1584875ada7ecdcf3c5c_283x288.jpg")}
-                            alt="article-thumbnail"
-                        /></Grid>
+                    {featuredArticles.map(article => {
+                        return (
+                            <Grid item key={article.id} xs={12} md={3}>
+                            <div className={classes.thumbnail} id={article.id} onClick={handleArticleClick}>
+                                <img
+                                    className={classes.image}
+                                    src={require(`../assets/img/${article.image}`)}
+                                    alt="article-thumbnail"
+                                />
+                            </div>
+                        </Grid>
+                        )
+                    })}
                 </Grid>
             </Container>
+            <ArticleDialog articleOpen={articleOpen} onClose={handleArticleClose} article={article}/>
         </section>
     );
 }

@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core';
+import { Link as RouterLink } from "react-router-dom";
 
 import Button from '../components/onePirate/Button';
 import Typography from '../components/onePirate/Typography';
 import PageBannerLayout from './PageBannerLayout';
-
-import FeatureCarousel from '../components/FeatureCarousel';
 
 const backgroundImage =
   'https://images.unsplash.com/photo-1534854638093-bada1813ca19?auto=format&fit=crop&w=1400&q=80';
@@ -52,13 +51,19 @@ function PageBanner(props) {
           variant="contained"
           size="medium"
           className={classes.button}
-          component="a"
-          // href="/premium-themes/onepirate/sign-up/"
+          component={RouterLink}
+          to=
+          {{
+            pathname: '/goose', 
+            state: {
+              title: 'Goose Study Abroad',
+              selected: 0
+            }
+          }}
         >
           View More
         </Button>
       </PageBannerLayout>
-      <FeatureCarousel/>
     </div>
   );
 }

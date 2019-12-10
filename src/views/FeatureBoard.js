@@ -1,10 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import ButtonBase from '@material-ui/core/ButtonBase';
-import Container from '@material-ui/core/Container';
+import { ButtonBase, Container, withStyles } from '@material-ui/core';
+import { Redirect } from "react-router-dom";
 
 import Typography from '../components/onePirate/Typography';
+
+const images = [
+  {
+    id: 1,
+    url:
+      'https://images.unsplash.com/photo-1534081333815-ae5019106622?auto=format&fit=crop&w=400&q=80',
+    title: 'School Information',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    width: '37%',
+  },
+  {
+    id: 2,
+    url:
+      'https://images.unsplash.com/photo-1531299204812-e6d44d9a185c?auto=format&fit=crop&w=400&q=80',
+    title: 'Study Abroad',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    width: '18%',
+  },
+  {
+    id: 3,
+    url:
+      'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80',
+    title: 'Homestay',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    width: '22.5%',
+  },
+  {
+    id: 4,
+    url:
+      'https://images.unsplash.com/photo-1453747063559-36695c8771bd?auto=format&fit=crop&w=400&q=80',
+    title: 'Airport Ride',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    width: '22.5%',
+  }
+];
 
 const styles = theme => ({
   root: {
@@ -98,44 +132,55 @@ const styles = theme => ({
 function FeatureBoard(props) {
   const { classes } = props;
 
-  const images = [
-    {
-      url:
-        'https://images.unsplash.com/photo-1534081333815-ae5019106622?auto=format&fit=crop&w=400&q=80',
-      title: 'School Information',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      width: '37%',
-    },
-    {
-      url:
-        'https://images.unsplash.com/photo-1531299204812-e6d44d9a185c?auto=format&fit=crop&w=400&q=80',
-      title: 'Study Abroad',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      width: '18%',
-    },
-    {
-      url:
-        'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80',
-      title: 'Homestay',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      width: '22.5%',
-    },
-    {
-      url:
-        'https://images.unsplash.com/photo-1453747063559-36695c8771bd?auto=format&fit=crop&w=400&q=80',
-      title: 'Airport Ride',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      width: '22.5%',
+  const [ redirect, setRedirect ] = useState({});
+  const handleClick = (event) => {
+    switch(event.currentTarget.id) {
+      case 'School Information':
+        setRedirect({
+            pathname: '/schools', 
+            state: {
+              title: 'School Information',
+              selected: 0
+            }
+          });
+        break;
+      case 'Study Abroad': 
+        setRedirect({
+          pathname: '/goose', 
+          state: {
+            title: 'Goose Study Abroad',
+            selected: 0
+          }
+        });
+        break;
+      case 'Homestay':
+        setRedirect({
+          pathname: '/studyabroad', 
+          state: {
+            title: 'Study Abroad',
+            selected: 0
+          }
+        });
+        break;
+      case 'Airport Ride':
+        setRedirect({
+          pathname: '/studyabroad', 
+          state: {
+            title: 'Study Abroad',
+            selected: 1
+          }
+        });
+        break;
     }
-  ];
+  }
 
   return (
-    <Container className={classes.root} component="section">
+    <Container className={classes.root}>
       <div className={classes.row}>
         {
         images.map(image => (
           <ButtonBase
-            key={image.title}
+            key={image.id}
             className={classes.imageWrapper}
             style={{
               width: image.width,
@@ -148,9 +193,11 @@ function FeatureBoard(props) {
               }}
             />
             <div className={classes.imageBackdrop} />
-            <div className={classes.imageButton}>
+            <div className={classes.imageButton} id={image.title} onClick={handleClick}>
+              {(Object.entries(redirect).length) ? 
+              <Redirect push to={redirect}/> : 
               <Typography
-                component="h3"
+                component="span"
                 variant="h6"
                 color="inherit"
                 className={classes.imageTitle}
@@ -158,8 +205,9 @@ function FeatureBoard(props) {
                 {image.title}
                 <div className={classes.imageMarked} />
               </Typography>
+}
               <Typography
-                component="p"
+                component="span"
                 variant="caption"
                 color="inherit"
                 className={classes.imageDescription}
