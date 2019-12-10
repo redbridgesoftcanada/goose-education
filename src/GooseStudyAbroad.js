@@ -33,55 +33,54 @@ function TabPanel(props) {
         <Box pb={10}>{children}</Box>
       </Typography>
     );
-  }
-  
-  TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-  };
+};
 
 function GooseEdu(props) {
-    const classes = useStyles();
+  const classes = useStyles();
 
-    // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
-    const [value, setValue] = useState(props.location.state.selected);
+  const { tipsDB } = props;
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
+  // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
+  const [value, setValue] = useState(props.location.state.selected);
+  const handleChange = (event, newValue) => setValue(newValue);
 
-    useEffect(() => {
-      setValue(props.location.state.selected)
-    }, [props.location.state.selected]);
+  useEffect(() => {
+    setValue(props.location.state.selected)
+  }, [props.location.state.selected]);
 
-    return (
-        <React.Fragment>
-            <NavBar/>
-            <HeaderBanner title={props.location.state.title}/>
-            <Paper className={classes.root}>
-                <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    textColor="secondary"
-                    variant="fullWidth"
-                    centered
-                >
-                    <Tab label="Goose Education" />
-                    <Tab label="Goose Tips" />
-                </Tabs>
-                <TabPanel value={value} index={0}>
-                    <GooseOverview/>
-                    <GooseCoreFeatures/>
-                    <GoosePlatform/>
-                </TabPanel>
-                <TabPanel value={value} index={1}>
-                    <GooseTips/>
-                </TabPanel>
-            </Paper>
-            <Footer/>
-        </React.Fragment>
-    )
-}
+  return (
+      <>
+        <NavBar/>
+        <HeaderBanner title={props.location.state.title}/>
+        <Paper className={classes.root}>
+            <Tabs
+                value={value}
+                onChange={handleChange}
+                textColor="secondary"
+                variant="fullWidth"
+                centered
+            >
+                <Tab label="Goose Education" />
+                <Tab label="Goose Tips" />
+            </Tabs>
+            <TabPanel value={value} index={0}>
+                <GooseOverview/>
+                <GooseCoreFeatures/>
+                <GoosePlatform/>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+                <GooseTips tipsDB={tipsDB}/>
+            </TabPanel>
+        </Paper>
+        <Footer/>
+      </>
+  )
+};
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
 
 export default withRoot(GooseEdu);
