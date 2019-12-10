@@ -134,7 +134,7 @@ export default function AppFooter() {
                   color="inherit"
                   underline="none"
                   component={RouterLink} 
-                  to="/"
+                  to="/privacy"
                   >
                     {'Privacy Policy'}
                   </Link>

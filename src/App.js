@@ -10,6 +10,7 @@ import Networking from './Networking';
 import Schools from './Schools';
 import StudyAbroadServices from './StudyAbroadServices';
 import ServiceCentre from './ServiceCentre';
+import Privacy from './Privacy';
 
 const tipsDB = [
   { 
@@ -240,6 +241,7 @@ function App() {
     <div className="App">
       <ScrollToTop>
         <Switch>
+          <Route path="/privacy" render={() => <Privacy/>}/>
           <Route path="/services" render={(props) => <ServiceCentre {...props}/>}/>
           <Route path="/studyabroad" render={(props) => <StudyAbroadServices {...props} />}/>
           <Route path="/schools" render={(props) => <Schools {...props}/>}/>
