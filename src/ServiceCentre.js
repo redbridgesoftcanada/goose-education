@@ -14,20 +14,20 @@ import Footer from './views/Footer';
 
 const announcementsDB = [
   { 
-      id: 1,
-      title: '공지사항 게시판 타이틀입니다',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      author: '슈퍼관리자',
-      comments: [
-        {
-          avatar: '',
-          username: 'test',
-          content: 'test',
-          date: '01.31 09:31',
-        },
-      ],
-      views: 152,
-      date: '01.04 11:38', //replace with react-moment
+    id: 1,
+    title: '공지사항 게시판 타이틀입니다',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    author: '슈퍼관리자',
+    comments: [
+      {
+        avatar: '',
+        username: 'test',
+        content: 'test',
+        date: '01.31 09:31',
+      },
+    ],
+    views: 152,
+    date: '01.04 11:38', //replace with react-moment
   },
   { 
     id: 2,
@@ -157,41 +157,41 @@ function ServiceCenter(props) {
 
     return (
         <>
-            <NavBar/>
-            <HeaderBanner title={props.location.state.title}/>
-            <Paper className={classes.root}>
-                <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    textColor="secondary"
-                    variant="fullWidth"
-                    centered
-                >
-                    <Tab label="Announcements" />
-                    <Tab label="Message Board" />
-                </Tabs>
-                <TabPanel value={value} index={0}>
+          <NavBar/>
+          <HeaderBanner title={props.location.state.title}/>
+          <Paper className={classes.root}>
+              <Tabs
+                  value={value}
+                  onChange={handleChange}
+                  textColor="secondary"
+                  variant="fullWidth"
+                  centered
+              >
+                  <Tab label="Announcements" />
+                  <Tab label="Message Board" />
+              </Tabs>
+              <TabPanel value={value} index={0}>
+              <Switch>
+                <Route path={`${match.path}/announcement/:announcementID`}>
+                  <Announcement selectedAnnounce={selectedAnnounce} />
+                </Route>
+                <Route path={match.path}>
+                  <AnnouncementBoard announcementsDB={announcementsDB} handleClick={handleAnnounceClick}/>
+                </Route>
+              </Switch>
+              </TabPanel>
+              <TabPanel value={value} index={1}>
                 <Switch>
-                  <Route path={`${match.path}/announcement/:announcementID`}>
-                    <Announcement selectedAnnounce={selectedAnnounce} />
+                  <Route path={`${match.path}/message/:messageID`}>
+                    <Message selectedMessage={selectedMessage}/>
                   </Route>
                   <Route path={match.path}>
-                    <AnnouncementBoard announcementsDB={announcementsDB} handleClick={handleAnnounceClick}/>
+                    <MessageBoard messagesDB={messagesDB} handleClick={handleMessageClick}/>
                   </Route>
                 </Switch>
-                </TabPanel>
-                <TabPanel value={value} index={1}>
-                  <Switch>
-                    <Route path={`${match.path}/message/:messageID`}>
-                      <Message selectedMessage={selectedMessage}/>
-                    </Route>
-                    <Route path={match.path}>
-                      <MessageBoard messagesDB={messagesDB} handleClick={handleMessageClick}/>
-                    </Route>
-                  </Switch>
-                </TabPanel>
-            </Paper>
-            <Footer/>
+              </TabPanel>
+          </Paper>
+          <Footer/>
         </>
     )
 }
