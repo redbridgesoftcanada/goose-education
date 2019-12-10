@@ -9,6 +9,7 @@ import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
 import SortPopover from '../components/SortPopover';
 import SearchBar from '../components/SearchBar';
+import ArticleDialog from '../components/ArticleDialog';
 import Pagination from '../components/Pagination';
 
 const styles = theme => ({
@@ -17,24 +18,27 @@ const styles = theme => ({
     },
     image: {
         display: 'block',
-        border: '0',
+        border: 0,
         width: 'auto',
         maxWidth: '100%',
         height: 'auto',
-        margin: '0px auto',
+        margin: '0 auto',
     },
     item: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         padding: theme.spacing(3, 5),
-        textAlign: 'left'
+        textAlign: 'left',
+        "&:hover": {
+            cursor: 'pointer',
+        },
     },
     title: {
         marginTop: theme.spacing(7),
         marginBottom: theme.spacing(2),
     },
-    description: {
+    body: {
         display: 'flex',
         flexDirection: 'column',
         padding: theme.spacing(1, 0),
@@ -42,10 +46,15 @@ const styles = theme => ({
     articleTitle: {
         fontWeight: 700,
     },
+    articleDescription: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        width: '23em',
+    },
     search: {
         float: 'right',
         border: `2px solid ${theme.palette.secondary.main}`,
-        borderRadius: '5px',
+        borderRadius: 5,
         paddingLeft: theme.spacing(1),
     },
     searchButton: {
@@ -62,26 +71,41 @@ const styles = theme => ({
         paddingRight: theme.spacing(2),
         marginRight: theme.spacing(1),
     },
+    badge: {
+        backgroundColor: 'rgb(240, 150, 20)',
+        color: theme.palette.common.white,
+        padding: 3,
+        width: '4em',
+        fontSize: 12,
+        fontWeight: 600,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+    },
 });
 
 function GooseTips(props) {
-    const { classes } = props;
+    const { classes, tipsDB } = props;
 
     const [state, setState] = useState({
         filterOpen: false,
         anchorEl: null,
-        articleOpen: false
+        tipsOpen: false,
+        tip: null,
     });
 
-    const { filterOpen, anchorEl } = state;
+    const { filterOpen, anchorEl, tipsOpen, tip } = state;
 
     // COMPONENTS > Filter Dialog Modal 
     const handleFilterClick = () => setState({...state, filterOpen: true});
     const handleFilterClose = () => setState({...state, filterOpen: false});
     
     // // COMPONENTS > Sort Popover
-    const handleSortClick = (event) => setState({...state, anchorEl: event.currentTarget});
+    const handleSortClick = event => setState({...state, anchorEl: event.currentTarget});
     const handleSortClose = () => setState({...state, anchorEl: null});
+
+    // // COMPONENTS > Article Dialog Modal 
+    const handleTipClick = event => setState({...state, tipsOpen: true, tip: tipsDB.find(tip => tip.id.toString() === event.currentTarget.id)});
+    const handleTipClose = () => setState({...state, tipsOpen: false, tip: null});
 
     return (
         <section className={classes.root}>
@@ -95,58 +119,30 @@ function GooseTips(props) {
                 <FilterDialog filterOpen={filterOpen} onClose={handleFilterClose} />
                 <SortPopover anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleSortClose}/>
                 <Grid container>
-                    <Grid item xs={12} md={4} className={classes.background}>
-                        <div className={classes.item}>
-                            <img
-                                className={classes.image}
-                                src={require("../assets/img/6_copy_14_2_copy_6_1_copy_2_2948936627_zlcboNC3_e1e0cdafaaf268f678768639069a77d6921aba1e.jpg")}
-                                alt="article-thumbnail"
-                            />
-                            <div className={classes.description}>
-                                <Typography variant="body1" className={classes.articleTitle}>
-                                    [Goose Tips] Post Title
-                                </Typography>
-                                <Typography variant="body2">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                </Typography>
-                            </div>
-                        </div>
-                    </Grid>
-                    <Grid item xs={12} md={4} className={classes.background}>
-                    <div className={classes.item}>
-                            <img
-                                className={classes.image}
-                                src={require("../assets/img/6_copy_14_2_copy_6_1_copy_2_2948936627_zlcboNC3_e1e0cdafaaf268f678768639069a77d6921aba1e.jpg")}
-                                alt="article-thumbnail"
-                            />
-                            <div className={classes.description}>
-                                <Typography variant="body1" className={classes.articleTitle}>
-                                    [Goose Tips] Post Title
-                                </Typography>
-                                <Typography variant="body2">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                </Typography>
-                            </div>
-                        </div>
-                    </Grid>
-                    <Grid item xs={12} md={4} className={classes.background}>
-                    <div className={classes.item}>
-                            <img
-                                className={classes.image}
-                                src={require("../assets/img/6_copy_14_2_copy_6_1_copy_2_2948936627_zlcboNC3_e1e0cdafaaf268f678768639069a77d6921aba1e.jpg")}
-                                alt="article-thumbnail"
-                            />
-                            <div className={classes.description}>
-                                <Typography variant="body1" className={classes.articleTitle}>
-                                    [Goose Tips] Post Title
-                                </Typography>
-                                <Typography variant="body2">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                </Typography>
-                            </div>
-                        </div>
-                    </Grid>
+                    {tipsDB.map(tip => {
+                        return (
+                            <Grid item xs={12} md={4} key={tip.id} className={classes.background}>
+                                <div id={tip.id} onClick={handleTipClick} className={classes.item}>
+                                    <img
+                                        className={classes.image}
+                                        src={require(`../assets/img/${tip.image}`)}
+                                        alt="tip-thumbnail"
+                                    />
+                                    <div className={classes.body}>
+                                        {(tip.views > 100) ? <Typography className={classes.badge}>Hot</Typography> : ''}
+                                        <Typography variant="body1" className={classes.articleTitle}>
+                                            {tip.title}
+                                        </Typography>
+                                        <Typography noWrap variant="body2" className={classes.articleDescription}>
+                                            {tip.description}
+                                        </Typography>
+                                    </div>
+                                </div>
+                            </Grid>
+                        )
+                    })}
                 </Grid>
+                <ArticleDialog articleOpen={tipsOpen} onClose={handleTipClose} article={tip}/>
                 <Pagination />
             </Container>
         </section>

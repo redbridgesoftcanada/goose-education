@@ -49,12 +49,16 @@ function ArticleDialog(props) {
               <Grid item>
                 <Typography variant='body2' className={classes.item}>{article ? article.author : ''}</Typography>
               </Grid>
-              <Grid item >
-                <LocalOfferOutlined/>
-              </Grid>
-              <Grid item>
-                <Typography variant='body2' className={classes.item}>{article ? article.tag : ''}</Typography>
-              </Grid>
+              {article && article.tag ?
+              <>
+                <Grid item >
+                  <LocalOfferOutlined/>
+                </Grid>
+                <Grid item>
+                  <Typography variant='body2' className={classes.item}>{article.tag}</Typography>
+                </Grid>
+              </>
+              : ''}
               <Grid item >
                 <ChatBubbleOutlineOutlined/>
               </Grid>
@@ -80,13 +84,13 @@ function ArticleDialog(props) {
             </Grid>
           </div>
         </Box>
-        <DialogContent dividers={true}>
-          <img className={classes.image} src={require(`../assets/img/${article ? article.image : 'flogo.png'}`)} alt="article cover image"/>
+        <DialogContent dividers>
+          <img className={classes.image} src={require(`../assets/img/${article ? article.image : 'flogo.png'}`)} alt="article cover"/>
           <DialogContentText className={classes.description}>
             {article ? article.description : ''}
           </DialogContentText>
         </DialogContent>
-        <DialogContent dividers={true}>
+        <DialogContent dividers>
           <DialogContentText>
             {article ? article.comments.length : ''} Comments
           </DialogContentText>
