@@ -47,7 +47,7 @@ function StudyAbroadServices(props) {
     }, [props.location.state.selected]);
 
     return (
-        <React.Fragment>
+        <>
             <NavBar/>
             <HeaderBanner title={props.location.state.title}/>
             <Paper className={classes.root}>
@@ -82,7 +82,7 @@ function StudyAbroadServices(props) {
                 </TabPanel>
             </Paper>
             <Footer/>
-        </React.Fragment>
+        </>
     )
 }
 

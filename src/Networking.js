@@ -178,7 +178,7 @@ function Networking(props) {
   };
 
   return (
-    <React.Fragment>
+    <>
       <NavBar />
       <HeaderBanner title={props.location.state.title}/>
       <Typography variant="h3" marked="center" className={classes.title}>
@@ -202,7 +202,7 @@ function Networking(props) {
       </Paper>
       <VancouverPoster />
       <Footer />
-    </React.Fragment>
+    </>
   );
 }
 

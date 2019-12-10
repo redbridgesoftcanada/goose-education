@@ -178,7 +178,7 @@ function ProductValues(props) {
                                         (Object.entries(pathname).length) ? 
                                             <Redirect push to={pathname}/>
                                             :
-                                            <>
+                                            <div key={tip.id}>
                                                 <Typography variant="subtitle1">
                                                     {tip.title}
                                                 </Typography>
@@ -188,7 +188,7 @@ function ProductValues(props) {
                                                 <Typography variant="body2">
                                                     {tip.date}
                                                 </Typography>
-                                            </>
+                                            </div>
                                         
                                        
                                     )

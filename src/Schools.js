@@ -143,7 +143,7 @@ function Schools(props) {
   const [value, setValue] = useState(props.location.state.selected);
   const handleChange = (event, newValue) => setValue(newValue);
 
-  const [selectedSchool, setSelectedSchool] = useState(null);
+  const [selectedSchool, setSelectedSchool] = useState(props.location.state.selectedSchool);
   const handleSchoolClick = event => setSelectedSchool(schoolsDB.find(school => school.id.toString() === event.currentTarget.id));
 
   useEffect(() => {

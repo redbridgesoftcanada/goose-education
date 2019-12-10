@@ -78,7 +78,7 @@ function SchoolInformation(props) {
         <Container>
             <img
                 className={classes.image}
-                src={require(`../assets/img/${selectedSchool.image}`)}
+                src={require(`../assets/img/${(Object.entries(selectedSchool).length && selectedSchool.image) ? selectedSchool.image: 'flogo.png'}`)}
                 alt='school logo'
             />
             <Table>
@@ -93,11 +93,11 @@ function SchoolInformation(props) {
                 </TableHead>
                 <TableBody>
                     <TableRow>
-                        <TableCell align='center'>{selectedSchool.name}</TableCell>
-                        <TableCell align='center'>{selectedSchool.type}</TableCell>
-                        <TableCell align='center'>{selectedSchool.location}</TableCell>
-                        <TableCell align='center'>{selectedSchool.url}</TableCell>
-                        <TableCell align='center'>{selectedSchool.dateOfEstablishment}</TableCell>
+                        <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.name) ? selectedSchool.name : ''}</TableCell>
+                        <TableCell align='center'>{(Object.entries(selectedSchool) && selectedSchool.type) ? selectedSchool.type : ''}</TableCell>
+                        <TableCell align='center'>{(Object.entries(selectedSchool) && selectedSchool.location) ? selectedSchool.location : ''}</TableCell>
+                        <TableCell align='center'>{(Object.entries(selectedSchool) && selectedSchool.url) ? selectedSchool.url : ''}</TableCell>
+                        <TableCell align='center'>{(Object.entries(selectedSchool) && selectedSchool.dateOfEstablishment) ? selectedSchool.dateOfEstablishment : ''}</TableCell>
                     </TableRow>
                 </TableBody>
             </Table>
@@ -111,7 +111,7 @@ function SchoolInformation(props) {
                 <Collapse in={intro} timeout="auto" unmountOnExit>
                     <List component="div">
                         <ListItem>
-                            <ListItemText primary={(selectedSchool.introduction.length) ? selectedSchool.introduction : defaultMessage}/>
+                            <ListItemText primary={(Object.entries(selectedSchool) && selectedSchool.introduction) ? selectedSchool.introduction : defaultMessage}/>
                         </ListItem>
                     </List>
                 </Collapse>
@@ -123,7 +123,7 @@ function SchoolInformation(props) {
                 <Collapse in={features} timeout="auto" unmountOnExit>
                     <List component="div">
                         <ListItem>
-                            <ListItemText primary={(selectedSchool.features.length) ? selectedSchool.features : defaultMessage} />
+                            <ListItemText primary={(Object.entries(selectedSchool) && selectedSchool.features) ? selectedSchool.features : defaultMessage} />
                         </ListItem>
                     </List>
                 </Collapse>
@@ -135,7 +135,7 @@ function SchoolInformation(props) {
                 <Collapse in={programs} timeout="auto" unmountOnExit>
                     <List component="div">
                         <ListItem>
-                            <ListItemText primary={(selectedSchool.program.length) ? selectedSchool.program : defaultMessage} />
+                            <ListItemText primary={(Object.entries(selectedSchool) && selectedSchool.program) ? selectedSchool.program : defaultMessage} />
                         </ListItem>
                     </List>
                 </Collapse>
@@ -147,7 +147,7 @@ function SchoolInformation(props) {
                 <Collapse in={expenses} timeout="auto" unmountOnExit>
                     <List component="div">
                         <ListItem>
-                            <ListItemText primary={(selectedSchool.expenses.length) ? selectedSchool.expenses : defaultMessage} />
+                            <ListItemText primary={(Object.entries(selectedSchool) && selectedSchool.expenses) ? selectedSchool.expenses : defaultMessage} />
                         </ListItem>
                     </List>
                 </Collapse>
@@ -161,22 +161,22 @@ function SchoolInformation(props) {
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        {(selectedSchool.numberOfStudents.length) ? <TableCell align='center'>Number of Students</TableCell> : '' }
-                                        {(selectedSchool.numberOfStudents.length) ? <TableCell align='center'>Opening Process</TableCell> : '' }
-                                        {(selectedSchool.numberOfStudents.length) ? <TableCell align='center'>Accommodation</TableCell> : '' }
+                                        {(Object.entries(selectedSchool) && selectedSchool.numberOfStudents) ? <TableCell align='center'>Number of Students</TableCell> : '' }
+                                        {(Object.entries(selectedSchool) && selectedSchool.openingProcess) ? <TableCell align='center'>Opening Process</TableCell> : '' }
+                                        {(Object.entries(selectedSchool) && selectedSchool.accommodation) ? <TableCell align='center'>Accommodation</TableCell> : '' }
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     <TableRow>
-                                        {(selectedSchool.numberOfStudents.length) ? <TableCell align='center'>{selectedSchool.numberOfStudents}</TableCell> : ''}
-                                        {(selectedSchool.numberOfStudents.length) ? <TableCell align='center'>{selectedSchool.openingProcess}</TableCell> : '' }
-                                        {(selectedSchool.numberOfStudents.length) ? <TableCell align='center'>{selectedSchool.accommodation}</TableCell> : '' }
+                                        {(Object.entries(selectedSchool) && selectedSchool.numberOfStudents) ? <TableCell align='center'>{selectedSchool.numberOfStudents}</TableCell> : ''}
+                                        {(Object.entries(selectedSchool) && selectedSchool.openingProcess) ? <TableCell align='center'>{selectedSchool.openingProcess}</TableCell> : '' }
+                                        {(Object.entries(selectedSchool) && selectedSchool.accommodation) ? <TableCell align='center'>{selectedSchool.accommodation}</TableCell> : '' }
                                     </TableRow>
                                 </TableBody>
                             </Table>
                         </ListItem>
                         <ListItem>
-                            Embedded Google Maps: {(selectedSchool.googleUrl.length) ? selectedSchool.googleUrl : ''}
+                            Embedded Google Maps: {(Object.entries(selectedSchool) && selectedSchool.googleUrl) ? selectedSchool.googleUrl : ''}
                         </ListItem>
                     </List>
                 </Collapse>
@@ -193,7 +193,7 @@ function SchoolInformation(props) {
                             {(selectedSchool.youtubeUrl.length) ? 
                                 selectedSchool.youtubeUrl.map(video => {
                                     return (
-                                    <ListItem className={classes.video}>
+                                    <ListItem className={classes.video} key={video}>
                                         {parse(video)}
                                     </ListItem>
                                     )

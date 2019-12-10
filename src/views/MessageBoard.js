@@ -68,7 +68,7 @@ function MessageBoard(props) {
                                             pathname: `${match.path}/message/${message.id}`, 
                                             state: {
                                                 title: 'Service Centre',
-                                                selected: 0,
+                                                selected: 1,
                                             }
                                         }}
                                     >

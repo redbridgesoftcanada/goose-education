@@ -19,7 +19,7 @@ function Index(props) {
     const previewTips = tipsDB.slice(0,3);
 
   return (
-    <React.Fragment>
+    <>
       <NavBar />
       <PageBanner />
       <FeatureCarousel featuredSchools={featuredSchools}/>
@@ -27,7 +27,7 @@ function Index(props) {
       <ArticleThumbnails featuredArticles={featuredArticles} />
       <TipsThumbnails previewSchools={previewSchools} previewTips={previewTips}/>
       <Footer />
-    </React.Fragment>
+    </>
   );
 }
 

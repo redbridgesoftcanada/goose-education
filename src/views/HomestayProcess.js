@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -32,7 +31,7 @@ function getSteps() {
 
 function HorizontalLabelPositionBelowStepper(props) {
   const { classes } = props;
-  const [activeStep, setActiveStep] = React.useState(4);
+  const [activeStep] = React.useState(4);
   const steps = getSteps();
 
   return (
