@@ -4,7 +4,7 @@ import { Box, Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core
 
 import withRoot from './withRoot';
 import NavBar from './views/NavBar';
-import HeaderBanner from './views/HeaderBanner';
+import PageBanner from './views/PageBanner';
 import GooseOverview from './views/GooseOverview';
 import GooseCoreFeatures from './views/GooseCoreFeatures';
 import GoosePlatform from './views/GoosePlatform';
@@ -37,8 +37,9 @@ function TabPanel(props) {
 
 function GooseEdu(props) {
   const classes = useStyles();
-
   const { tipsDB } = props;
+
+  const background = 'https://images.unsplash.com/photo-1484704324500-528d0ae4dc7d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80';
 
   // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
   const [value, setValue] = useState(props.location.state.selected);
@@ -51,7 +52,7 @@ function GooseEdu(props) {
   return (
       <>
         <NavBar/>
-        <HeaderBanner title={props.location.state.title}/>
+        <PageBanner title={props.location.state.title} backgroundImage={background} layoutType='headerBanner'/>
         <Paper className={classes.root}>
             <Tabs
                 value={value}
@@ -64,7 +65,7 @@ function GooseEdu(props) {
                 <Tab label="Goose Tips" />
             </Tabs>
             <TabPanel value={value} index={0}>
-                <GooseOverview/>
+                {/* <GooseOverview/> */}
                 <GooseCoreFeatures/>
                 <GoosePlatform/>
             </TabPanel>

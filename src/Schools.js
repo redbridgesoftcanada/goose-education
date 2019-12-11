@@ -5,7 +5,7 @@ import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import withRoot from './withRoot';
 import NavBar from './views/NavBar';
-import HeaderBanner from './views/HeaderBanner';
+import PageBanner from './views/PageBanner';
 import SchoolsOverview from './views/SchoolsOverview';
 import ListOfSchools from './views/ListOfSchools';
 import HowToUse from './views/HowToUse';
@@ -111,6 +111,8 @@ const schoolsDB = [
   },
 ];
 
+const backgroundImage = 'https://images.unsplash.com/photo-1544108182-8810058c3a7d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80';
+
 const useStyles = makeStyles(theme => ({
     root: {
       flexGrow: 1,
@@ -153,7 +155,7 @@ function Schools(props) {
   return (
     <>
       <NavBar/>
-      <HeaderBanner title={props.location.state.title}/>
+      <PageBanner title={props.location.state.title} backgroundImage={backgroundImage} layoutType='headerBanner'/>
       <Paper className={classes.root}>
           <Tabs
               value={value}
@@ -172,7 +174,7 @@ function Schools(props) {
                 <SchoolInformation selectedSchool={selectedSchool} />
               </Route>
               <Route path={match.path}>
-                <SchoolsOverview/>
+                {/* <SchoolsOverview/> */}
                 <ListOfSchools schoolsDB={schoolsDB} handleSchoolClick={handleSchoolClick}/>
               </Route>
             </Switch>
@@ -181,7 +183,7 @@ function Schools(props) {
           </TabPanel>
       </Paper>
       <HowToUse/>
-      <CanadaVancouverPoster/>
+      {/* <CanadaVancouverPoster/> */}
       <Footer/>
     </>
   )

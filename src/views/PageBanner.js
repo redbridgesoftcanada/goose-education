@@ -1,75 +1,102 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { Link as RouterLink } from "react-router-dom";
 
 import Button from '../components/onePirate/Button';
 import Typography from '../components/onePirate/Typography';
 import PageBannerLayout from './PageBannerLayout';
 
-const backgroundImage =
-  'https://images.unsplash.com/photo-1534854638093-bada1813ca19?auto=format&fit=crop&w=1400&q=80';
+const useStyles = (props, options) => {
+  let styles;
+  switch(props.layoutType){
+    case 'headerBanner':
+      styles = makeStyles(theme => ({
+        background: {
+          backgroundImage: `url(${props.backgroundImage})`,
+          backgroundPosition: 'center',
+        },
+        title: {
+          position: 'absolute',
+          marginTop: 20,
+          color: theme.palette.common.white,
+        },
+      }))(props, options);
+      break;
 
-const styles = theme => ({
-  background: {
-    backgroundImage: `url(${backgroundImage})`,
-    backgroundColor: '#7fc7d9', // Average color of the background image.
-    backgroundPosition: 'center',
-  },
-  button: {
-    minWidth: 200,
-  },
-  h5: {
-    marginBottom: theme.spacing(4),
-    marginTop: theme.spacing(4),
-    [theme.breakpoints.up('sm')]: {
-      marginTop: theme.spacing(10),
-    },
-  },
-  more: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-});
+    case 'pageBanner':
+      styles = makeStyles(theme => ({
+        background: {
+          backgroundImage: `url(${props.backgroundImage})`,
+          backgroundPosition: 'center',
+        },
+        title: {
+          position: 'absolute',
+          marginTop: 90,
+          color: theme.palette.common.white,
+        },
+        button: {
+          minWidth: 200,
+        },
+        h5: {
+          marginBottom: theme.spacing(4),
+          marginTop: theme.spacing(4),
+          [theme.breakpoints.up('sm')]: {
+            marginTop: theme.spacing(10),
+          },
+        },
+        more: {
+          marginTop: theme.spacing(2),
+          marginBottom: theme.spacing(2),
+        },
+      }))(props, options); 
+      break;
+  }
+  return styles;
+}
 
 function PageBanner(props) {
-  const { classes } = props;
+  const classes = useStyles(props);
+  const { backgroundImage, title, layoutType } = props;
 
   return (
-    <div>
-      <PageBannerLayout backgroundClassName={classes.background} layoutType={'pageBanner'}>
+    <>
+      <PageBannerLayout backgroundClassName={classes.background} layoutType={layoutType}>
         {/* Increase the network loading priority of the background image. */}
-        <img style={{ display: 'none' }} src={backgroundImage} alt='background banner'/>
-        <Typography color="inherit" align="left" variant="h2" marked="center">
-          Find your own path, make your dreams come true
-        </Typography>
-        <Typography  color="inherit" align="left" variant="body1" className={classes.more}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </Typography>
-        <Button
-          color="secondary"
-          variant="contained"
-          size="medium"
-          className={classes.button}
-          component={RouterLink}
-          to=
-          {{
-            pathname: '/goose', 
-            state: {
-              title: 'Goose Study Abroad',
-              selected: 0
-            }
-          }}
-        >
-          View More
-        </Button>
+        <img style={{display:'none'}} src={backgroundImage} alt='header background banner'/>
+        {(layoutType === 'pageBanner') ?
+          <>
+            <Typography color="inherit" align="left" variant="h2" marked="center">
+              {title}
+            </Typography>
+            <Typography  color="inherit" align="left" variant="body1" className={classes.more}>
+              {props.caption}
+            </Typography>
+            <Button
+              color="secondary"
+              variant="contained"
+              size="medium"
+              className={classes.button}
+              component={RouterLink}
+              to=
+              {{
+                pathname: '/goose', 
+                state: {
+                  title: 'Goose Study Abroad',
+                  selected: 0
+                }
+              }}
+            >
+              View More
+            </Button>
+          </>
+        :  
+          <Typography className={classes.title} align="center" variant="h4">
+            {title}
+          </Typography>
+        }
       </PageBannerLayout>
-    </div>
+    </>
   );
 }
 
-PageBanner.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(PageBanner);
+export default PageBanner;

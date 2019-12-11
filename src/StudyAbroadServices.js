@@ -4,7 +4,7 @@ import { Box, Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core
 
 import withRoot from './withRoot';
 import NavBar from './views/NavBar';
-import HeaderBanner from './views/HeaderBanner';
+import PageBanner from './views/PageBanner';
 import Homestay from './views/Homestay';
 import HomestayProcess from './views/HomestayProcess';
 import AirportOverview from './views/AirportOverview';
@@ -36,6 +36,7 @@ function TabPanel(props) {
 
 function StudyAbroadServices(props) {
     const classes = useStyles();
+    const background = 'https://images.unsplash.com/photo-1461709444300-a6217cec3dff?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80';
 
     // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
     const [value, setValue] = useState(props.location.state.selected);
@@ -49,7 +50,7 @@ function StudyAbroadServices(props) {
     return (
         <>
             <NavBar/>
-            <HeaderBanner title={props.location.state.title}/>
+            <PageBanner title={props.location.state.title} backgroundImage={background} layoutType='headerBanner'/>
             <Paper className={classes.root}>
                 <Tabs
                     value={value}
@@ -68,7 +69,7 @@ function StudyAbroadServices(props) {
                     <Typography  color="inherit" align="center" variant="body1">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                     </Typography>
-                    <Homestay />
+                    {/* <Homestay /> */}
                     <HomestayProcess/>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
@@ -78,7 +79,7 @@ function StudyAbroadServices(props) {
                     <Typography  color="inherit" align="center" variant="body1">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                     </Typography>
-                    <AirportOverview/>
+                    {/* <AirportOverview/> */}
                 </TabPanel>
             </Paper>
             <Footer/>
