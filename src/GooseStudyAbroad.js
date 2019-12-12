@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Box, Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core';
+import { Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
 
 import withRoot from './withRoot';
+import TabPanel from './components/TabPanel';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import Poster from './views/Poster';
@@ -17,23 +18,6 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: theme.palette.background.paper,
     },
 }));
-
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <Typography
-        component="div"
-        role="tabpanel"
-        hidden={value !== index}
-        id={`scrollable-prevent-tabpanel-${index}`}
-        aria-labelledby={`scrollable-prevent-tab-${index}`}
-        {...other}
-      >
-        <Box pb={10}>{children}</Box>
-      </Typography>
-    );
-};
 
 function GooseEdu(props) {
   const classes = useStyles();

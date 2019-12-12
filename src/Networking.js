@@ -4,7 +4,7 @@ import { Box, Card, CardContent, Grid, Paper, Tabs, Tab, Typography as MUITypogr
 import withRoot from './withRoot';
 
 import Typography from './components/onePirate/Typography';
-
+import TabPanel from './components/TabPanel';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import ArticleBoard from './views/ArticleBoard';
@@ -33,32 +33,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
-function TabPanel(props) {
-  const classes = useStyles();
-  const { articlesDB, children, value, index, ...other } = props;
-  
-  return (
-    <MUITypography
-      className={classes.board}
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-        {...other}
-    >
-      <Box pb={10}>
-        <ArticleBoard articlesDB={articlesDB}/>
-        {/* {children} */}
-      </Box>
-    </MUITypography>
-  );
-}
-
 function createTabPanel(value, props) {
   let tabPanelItems = [];
 
   for (let i = 0; i <= tabs.length; i++){
-    tabPanelItems.push(<TabPanel articlesDB={props.articlesDB} value={value} index={i} key={i}></TabPanel>)
+    tabPanelItems.push(
+      <TabPanel value={value} index={i} key={i}>
+        <ArticleBoard articlesDB={props.articlesDB}/>
+      </TabPanel>
+    )
   }
   return tabPanelItems;
 }
@@ -74,7 +57,7 @@ function Networking(props) {
     caption: "On the Networking page, Vancouver's local landscapes, weather, hot places and restaurants, desserts, shops, sales, traffic, event, etc. Share your HOT info in Vancouver with lots of love.",
     other: (
       <Grid container spacing={3} className={classes.card}>
-        <Grid item xs={0} md={3}/>
+        <Grid item xs={false} md={3}/>
         <Grid item xs={12} md={3}>
           <Card>
               <CardContent>
@@ -101,7 +84,7 @@ function Networking(props) {
               </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={0} md={3}/>
+        <Grid item xs={false} md={3}/>
       </Grid>
     )
 }

@@ -4,6 +4,7 @@ import { Box, Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import withRoot from './withRoot';
+import TabPanel from './components/TabPanel';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import AnnouncementBoard from './views/AnnouncementBoard';
@@ -18,23 +19,6 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: theme.palette.background.paper,
     },
 }));
-
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <Typography
-        component="div"
-        role="tabpanel"
-        hidden={value !== index}
-        id={`scrollable-prevent-tabpanel-${index}`}
-        aria-labelledby={`scrollable-prevent-tab-${index}`}
-        {...other}
-      >
-        <Box pb={10}>{children}</Box>
-      </Typography>
-    );
-}
 
 function ServiceCenter(props) {
     const classes = useStyles();

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Box, Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core';
 
 import Button from './components/onePirate/Button';
+import TabPanel from './components/TabPanel';
 import withRoot from './withRoot';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
@@ -23,23 +24,6 @@ const useStyles = makeStyles(theme => ({
         minWidth: 200,
     },
 }));
-
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <Typography
-        component="div"
-        role="tabpanel"
-        hidden={value !== index}
-        id={`scrollable-prevent-tabpanel-${index}`}
-        aria-labelledby={`scrollable-prevent-tab-${index}`}
-        {...other}
-      >
-        <Box pb={10}>{children}</Box>
-      </Typography>
-    );
-}
 
 function StudyAbroadServices(props) {
     const classes = useStyles();
