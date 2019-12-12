@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link, withStyles } from '@material-ui/core';
+import { Link, Menu, MenuItem, withStyles } from '@material-ui/core';
 import { Link as RouterLink } from "react-router-dom";
 
 import HeaderBar from './HeaderBar';
@@ -13,31 +13,58 @@ import StudyAbroadServices from '../components/navlinks/StudyAbroadServices';
 import ServiceCentre from '../components/navlinks/ServiceCentre';
 import StudyAbroadCounselling from '../components/navlinks/StudyAbroadCounselling';
 
+const StyledMenu = withStyles(theme => ({
+  paper: {
+    border: `1px solid ${theme.palette.primary.main}`,
+  },
+}))(props => (
+  <Menu
+    elevation={0}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'center',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'center',
+    }}
+    {...props}
+  />
+));
+
+const StyledMenuItem = withStyles(theme => ({
+  root: {
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.main,
+    },
+}}))(MenuItem);
+
 const styles = theme => ({
-  title: {
-    fontSize: 24,
-  },
-  placeholder: toolbarStyles(theme).root,
-  toolbar: {
-    justifyContent: 'space-between',
-  },
   left: {
     flex: 1,
   },
-  leftLinkActive: {
-    color: theme.palette.common.white,
+  title: {
+    fontSize: 24,
   },
   center: {
     flex: 3,
     display: 'flex',
     justifyContent: 'flex-end',
   },
+  placeholder: toolbarStyles(theme).root,
+  toolbar: {
+    justifyContent: 'space-between',
+  },
+  leftLinkActive: {
+    color: theme.palette.common.white,
+  },
   right: {
     flex: 2.75,
     display: 'flex',
     justifyContent: 'flex-end',
   },
-  right1: {
+  logins: {
     flex: 1.61,
     display: 'flex',
     justifyContent: 'flex-end',
@@ -45,7 +72,6 @@ const styles = theme => ({
   rightLink: {
     fontSize: 14,
     color: theme.palette.common.black,
-    marginLeft: theme.spacing(3),
   },
   linkSecondary: {
     color: theme.palette.secondary.main,
@@ -56,10 +82,9 @@ function NavBar(props) {
   const { classes } = props;
 
   return (
-    <div>
+    <>
       <AppBar position="fixed">
-        <Toolbar className={classes.toolbar}>
-
+        <Toolbar>
           {/* GOOSE EDU BRAND LOGO */}
           <div className={classes.left}>
             <Link
@@ -76,18 +101,18 @@ function NavBar(props) {
 
           {/* COMPONENTS > NAVLINKS */}
           <div className={classes.center}>
-            <StudyAboard classes={classes}/>
+            <StudyAboard classes={classes} StyledMenu={StyledMenu} StyledMenuItem={StyledMenuItem}/>
             <Networking classes={classes}/>
-            <SchoolInformation classes={classes}/>
-            <StudyAbroadServices classes={classes}/>
-            <ServiceCentre classes={classes}/>
+            <SchoolInformation classes={classes} StyledMenu={StyledMenu} StyledMenuItem={StyledMenuItem}/>
+            <StudyAbroadServices classes={classes} StyledMenu={StyledMenu} StyledMenuItem={StyledMenuItem}/>
+            <ServiceCentre classes={classes} StyledMenu={StyledMenu} StyledMenuItem={StyledMenuItem}/>
             <StudyAbroadCounselling classes={classes}/>
           </div>
         </Toolbar>
       </AppBar>
       <Toolbar/>
       <HeaderBar classes={classes}/>
-    </div>
+    </>
   );
 }
 

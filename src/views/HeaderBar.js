@@ -48,7 +48,7 @@ function HeaderBar(props) {
 
 
                 {/* COMPONENTS > NAVLINKS */}
-                <div className={classes.right1}>
+                <div className={classes.logins}>
                     <Login classes={classes}/>
                     <SignIn classes={classes}/>
                     <MyPage classes={classes}/>
