@@ -50,7 +50,7 @@ const useStyles = (props, options) => {
         }))(props, options); 
         break;
     
-    case 'pageBanner':
+    default:
       styles = makeStyles(theme => ({
         root: {
           color: theme.palette.common.white,
