@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Dialog, DialogContent, DialogContentText, DialogTitle, Grid, withStyles } from '@material-ui/core';
-import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined } from '@material-ui/icons';
+import { Box, Dialog, DialogContent, DialogContentText, DialogTitle, Fab, Grid, withStyles } from '@material-ui/core';
+import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, PrintOutlined } from '@material-ui/icons';
 
 import Typography from '../components/onePirate/Typography';
 
@@ -32,13 +32,29 @@ const styles = theme => ({
   description: {
     marginTop: theme.spacing(2),
   },
+  print: {
+    float: 'right'
+  },
 });
+
+function printDiv(divName) {
+  let printContents = document.getElementById(divName).innerHTML;
+  let originalContents = document.body.innerHTML;
+
+  document.body.innerHTML = printContents;
+
+  setTimeout(()=> {
+    window.print();
+  }, 500);
+
+  document.body.innerHTML = originalContents;
+}
 
 function ArticleDialog(props) {
   const { article, classes, articleOpen, onClose } = props;
 
   return (
-      <Dialog open={articleOpen} scroll={'paper'} onClose={onClose}>
+      <Dialog open={articleOpen} scroll={'paper'} onClose={onClose} id='printableArea'>
         <DialogTitle>{article ? article.title : ''}</DialogTitle>
         <Box px={3} py={2} className={classes.meta}>
           <div className={classes.left}>
@@ -89,6 +105,9 @@ function ArticleDialog(props) {
           <DialogContentText className={classes.description}>
             {article ? article.description : ''}
           </DialogContentText>
+          <Fab size="small" color="secondary" className={classes.print} onClick={() => printDiv('printableArea')}>
+            <PrintOutlined />
+          </Fab>
         </DialogContent>
         <DialogContent dividers>
           <DialogContentText>

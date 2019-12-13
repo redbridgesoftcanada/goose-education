@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Container, Divider, Grid, withStyles } from '@material-ui/core';
-import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined } from '@material-ui/icons';
+import { Box, Container, Divider, Fab, Grid, withStyles } from '@material-ui/core';
+import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, PrintOutlined } from '@material-ui/icons';
 
 import Typography from '../components/onePirate/Typography';
 
@@ -37,13 +37,27 @@ const styles = theme => ({
         marginTop: theme.spacing(2),
         paddingBottom: theme.spacing(5),
       },
+      print: {
+        float: 'right'
+      },
 });
+
+function printDiv(divName) {
+    let printContents = document.getElementById(divName).innerHTML;
+    let originalContents = document.body.innerHTML;
+  
+    document.body.innerHTML = printContents;
+  
+    window.print();
+  
+    document.body.innerHTML = originalContents;
+}
 
 function Announcement(props) {
     const { classes, selectedAnnounce } = props;
 
     return (
-        <Container className={classes.root}>
+        <Container className={classes.root} id='printableArea'>
             <Typography variant='h6' align='left'>
                 {(selectedAnnounce && selectedAnnounce.title) ? selectedAnnounce.title : 'New Announcement' }
             </Typography>
@@ -84,6 +98,10 @@ function Announcement(props) {
             <Typography variant='body2' align='left' className={classes.description}>
                 {selectedAnnounce ? selectedAnnounce.description : ''}
             </Typography>
+            <Fab size="small" color="secondary" className={classes.print} onClick={() => printDiv('printableArea')}>
+                <PrintOutlined />
+            </Fab>
+            <br/><br/><br/>
             <Divider light/>
             <Typography variant='body1' align='left' className={classes.description}>
                 {selectedAnnounce ? selectedAnnounce.comments.length : ''} Comments
