@@ -13,6 +13,7 @@ import StudyAbroad from './StudyAbroadServices';
 import ServiceCentre from './ServiceCentre';
 import Privacy from './Privacy';
 
+// d u m m y  d a t a b a s e  o b j e c t s
 const tipsDB = [
   { 
       id: 1,
@@ -339,7 +340,7 @@ function App() {
           <Route path="/privacy" render={() => <Privacy/>}/>
           <Route path="/services" render={(props) => <ServiceCentre {...props} announcementsDB={announcementsDB} messagesDB={messagesDB}/>}/>
           <Route path="/studyabroad" render={(props) => <StudyAbroad {...props} />}/>
-          <Route path="/schools" render={(props) => <Schools {...props}/>}/>
+          <Route path="/schools" render={(props) => <Schools {...props} schoolsDB={schoolsDB}/>}/>
           <Route path="/networking" render={(props) => <Networking {...props} articlesDB={articlesDB}/>}/>
           <Route path="/goose" render={(props) => <Goose {...props} tipsDB={tipsDB}/>}/>
           <Route exact path="/" render={() => <Home tipsDB={tipsDB} articlesDB={articlesDB} schoolsDB={schoolsDB}/> }/>

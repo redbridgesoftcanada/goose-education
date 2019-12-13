@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Box, Card, CardContent, Grid, Paper, Tabs, Tab, Typography as MUITypography, makeStyles } from '@material-ui/core';
+import { Card, CardContent, Grid, Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
 import withRoot from './withRoot';
 
 import Typography from './components/onePirate/Typography';

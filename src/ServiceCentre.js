@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Box, Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core';
+import { Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import withRoot from './withRoot';

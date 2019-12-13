@@ -7,26 +7,26 @@ function Networking(props) {
     const { classes } = props;
 
     return (
-        <div>
-            <Button aria-controls="networking-button" aria-haspopup="true">
-              <Link
-                color="inherit"
-                variant="h6"
-                underline="none"
-                className={classes.rightLink}
-                component={RouterLink} 
-                to=
-                  {{
-                    pathname: '/networking', 
-                    state: {
-                      title: 'Networking'
-                    }
-                  }}
-              >
-                {'Networking'}
-              </Link>
-            </Button>
-        </div>
+      <>
+        <Button>
+          <Link
+            color="inherit"
+            variant="h6"
+            underline="none"
+            className={classes.rightLink}
+            component={RouterLink} 
+            to=
+              {{
+                pathname: '/networking', 
+                state: {
+                  title: 'Networking'
+                }
+              }}
+          >
+            {'Networking'}
+          </Link>
+        </Button>
+      </>
     );
 };
 

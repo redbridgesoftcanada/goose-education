@@ -3,10 +3,10 @@ import React from 'react';
 import withRoot from './withRoot';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
-import FeatureCarousel from './components/FeatureCarousel';
+import FeatureCarousel from './views/FeatureCarousel';
 import FeatureBoard from './views/FeatureBoard';
 import ArticleThumbnails from './views/ArticleThumbnails';
-import TipsThumbnails from './views/TipsThumbnails';
+import B2BThumbnails from './views/B2BThumbnails';
 import Footer from './views/Footer';
 
 const background = 'https://images.unsplash.com/photo-1532174990295-ced4e9211e1b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1351&q=80';
@@ -29,7 +29,7 @@ function Index(props) {
       <FeatureCarousel featuredSchools={featuredSchools}/>
       <FeatureBoard />
       <ArticleThumbnails featuredArticles={featuredArticles} />
-      <TipsThumbnails previewSchools={previewSchools} previewTips={previewTips}/>
+      <B2BThumbnails previewSchools={previewSchools} previewTips={previewTips}/>
       <Footer />
     </>
   );

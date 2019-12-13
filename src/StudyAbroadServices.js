@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Box, Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core';
+import { Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core';
 
 import Button from './components/onePirate/Button';
 import TabPanel from './components/TabPanel';

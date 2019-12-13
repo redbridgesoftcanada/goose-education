@@ -58,7 +58,6 @@ function ProductValues(props) {
     const { classes, featuredArticles } = props;
     
     const [state, setState] = useState({
-        redirect: false,
         articleOpen: false,
         article: null,
     });
