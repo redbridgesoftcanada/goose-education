@@ -70,20 +70,10 @@ const styles = theme => ({
 function ProductValues(props) {
     const { classes, previewSchools, previewTips } = props;
 
-    const [pathname, setPathname] = useState({});
+    const [ pathname, setPathname ] = useState({});
 
     const handleClick = (event) => {
-        switch(event.currentTarget.id) {
-            case 'school_information':
-                setPathname({
-                    pathname: '/schools', 
-                    state: {
-                        title: 'School Information',
-                        selected: 0
-                    }
-                });
-                break;
-            
+        switch(event.currentTarget.id) {            
             case 'goose_tips':
                 setPathname({
                     pathname: '/goose', 
@@ -95,15 +85,18 @@ function ProductValues(props) {
                 break;
             
             default:
+                let selectedSchool = previewSchools.find(school => school.id.toString() === event.currentTarget.id);
                 setPathname({
-                    pathname: `/schools`, 
+                    pathname: `/schools/${selectedSchool.name.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
                     state: {
                         title: 'School Information',
                         selected: 0,
+                        selectedSchool: selectedSchool
                     }
                 });
+                break;
         }
-    };
+    }
 
     return (
         <section className={classes.root}>
@@ -130,7 +123,7 @@ function ProductValues(props) {
                                         src={require(`../assets/img/${school.image}`)}
                                         alt="School Logo"
                                     />
-                                    <div id={school.name} className={classes.description} onClick={handleClick}>
+                                    <div id={school.id} className={classes.description} onClick={handleClick}>
                                     { (Object.entries(pathname).length) ? 
                                         <Redirect push to={pathname}/>
                                         :
