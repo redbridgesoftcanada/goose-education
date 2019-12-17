@@ -9,6 +9,7 @@ import Toolbar from '../components/onePirate/Toolbar';
 import Login from '../components/navlinks/Login';
 import Register from '../components/navlinks/Register';
 import MyPage from '../components/navlinks/MyPage';
+import Logout from '../components/navlinks/Logout';
 
 function HeaderBar(props) {
     const { classes } = props;
@@ -52,6 +53,7 @@ function HeaderBar(props) {
                     <Login classes={classes}/>
                     <Register classes={classes}/>
                     <MyPage classes={classes}/>
+                    <Logout classes={classes}/>
                 </div>
             </Toolbar>
         </AppBar>
