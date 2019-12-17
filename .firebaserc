@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "gooseeducation-3d46e"
+    "dev": "gooseeducation-3d46e",
+    "prod": "gooseeducation-prod"
   }
 }

@@ -1,24 +1,32 @@
-// "...to encapsulate all Firebase functionalities, realtime database, and authentication, as a well-defined API for the rest of the application. You need only instantiate the class once, after which it can use it then to interact with the Firebase API, your custom Firebase interface." (Robin Wieruch, 2018)
-
 import app from 'firebase/app';
+import 'firebase/auth';
 
-// (1) copying Firebase project's configuration & defining as environment variables
-const firebaseConfig = {
-  apiKey: process.env.REACT_APP_API_KEY,
-  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-  databaseURL: process.env.REACT_APP_DATABASE_URL,
-  projectId: process.env.REACT_APP_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_APP_ID,
-  measurementId: process.env.REACT_APP_MEASUREMENT_ID
+const devConfig = {
+  apiKey: process.env.REACT_APP_DEV_API_KEY,
+  authDomain: process.env.REACT_APP_DEV_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_DEV_DATABASE_URL,
+  projectId: process.env.REACT_APP_DEV_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_DEV_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_DEV_MESSAGING_SENDER_ID,
 };
 
-// (2) import firebase library (import app from 'firebase/app';) and use within a new Firebase class to initialize with the configuration
+const prodConfig = {
+  apiKey: process.env.REACT_APP_PROD_API_KEY,
+  authDomain: process.env.REACT_APP_PROD_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_PROD_DATABASE_URL,
+  projectId: process.env.REACT_APP_PROD_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_PROD_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_PROD_MESSAGING_SENDER_ID,
+};
+
+const firebaseConfig = process.env.NODE_ENV === 'production' ? prodConfig : devConfig;
+
 class Firebase {
-    constructor() {
-      app.initializeApp(firebaseConfig);
-    }
+  constructor() {
+    app.initializeApp(firebaseConfig);
+
+    this.auth = app.auth();
+  }
 };
 
 export default Firebase;
