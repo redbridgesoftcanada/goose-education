@@ -8,27 +8,27 @@ function StudyAbroadCounseling(props) {
     const { classes } = props;
 
     return (
-        <div>
-            <Button aria-controls="study-abroad-counselling-button" aria-haspopup="true">
-              <Link
-                color="inherit"
-                variant="h6"
-                underline="none"
-                className={clsx(classes.rightLink, classes.linkSecondary)}
-                component={RouterLink} 
-                to=
-                {{
-                  pathname: '/services', 
-                  state: {
-                    title: 'Service Centre',
-                    selected: 1
-                  }
-                }}
-              >
-                {'Study Abroad Counselling'}
-              </Link>
-            </Button>
-        </div>
+      <>
+        <Button aria-controls="study-abroad-counselling-button" aria-haspopup="true">
+          <Link
+            color="inherit"
+            variant="h6"
+            underline="none"
+            className={clsx(classes.rightLink, classes.linkSecondary)}
+            component={RouterLink} 
+            to=
+            {{
+              pathname: '/services', 
+              state: {
+                title: 'Service Centre',
+                selected: 1
+              }
+            }}
+          >
+            {'Study Abroad Counselling'}
+          </Link>
+        </Button>
+      </>
     );
 };
 

@@ -11,56 +11,56 @@ function ServiceCenter(props) {
     const handleClose = () => setAnchorEl(null);
 
     return (
-        <>
-          <Button onMouseOver={handleClick}>Service Centre</Button>
-          <StyledMenu
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            MenuListProps={{onMouseLeave: handleClose}}
-          >
-            <StyledMenuItem onClick={handleClose}>
-              <Link
-                color="inherit"
-                variant="h6"
-                underline="none"
-                className={classes.rightLink}
-                component={RouterLink}
-                to=
-                {{
-                  pathname: '/services', 
-                  state: {
-                    title: 'Service Centre',
-                    selected: 0
-                  }
-                }}
-              >
-                {'Announcements'}
-              </Link>
-            </StyledMenuItem>
+      <>
+        <Button onMouseOver={handleClick}>Service Centre</Button>
+        <StyledMenu
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          MenuListProps={{onMouseLeave: handleClose}}
+        >
+          <StyledMenuItem onClick={handleClose}>
+            <Link
+              color="inherit"
+              variant="h6"
+              underline="none"
+              className={classes.rightLink}
+              component={RouterLink}
+              to=
+              {{
+                pathname: '/services', 
+                state: {
+                  title: 'Service Centre',
+                  selected: 0
+                }
+              }}
+            >
+              {'Announcements'}
+            </Link>
+          </StyledMenuItem>
 
-            <StyledMenuItem onClick={handleClose}>
-              <Link
-                color="inherit"
-                variant="h6"
-                underline="none"
-                className={classes.rightLink}
-                component={RouterLink}
-                to=
-                {{
-                  pathname: '/services', 
-                  state: {
-                    title: 'Service Centre',
-                    selected: 1
-                  }
-                }}
-              >
-                {'Message Board'}
-              </Link>
-            </StyledMenuItem>
-          </StyledMenu>
-        </>
+          <StyledMenuItem onClick={handleClose}>
+            <Link
+              color="inherit"
+              variant="h6"
+              underline="none"
+              className={classes.rightLink}
+              component={RouterLink}
+              to=
+              {{
+                pathname: '/services', 
+                state: {
+                  title: 'Service Centre',
+                  selected: 1
+                }
+              }}
+            >
+              {'Message Board'}
+            </Link>
+          </StyledMenuItem>
+        </StyledMenu>
+      </>
     );
 };
 

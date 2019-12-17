@@ -7,26 +7,24 @@ function Networking(props) {
     const { classes } = props;
 
     return (
-      <>
-        <Button>
-          <Link
-            color="inherit"
-            variant="h6"
-            underline="none"
-            className={classes.rightLink}
-            component={RouterLink} 
-            to=
-              {{
-                pathname: '/networking', 
-                state: {
-                  title: 'Networking'
-                }
-              }}
-          >
-            {'Networking'}
-          </Link>
-        </Button>
-      </>
+      <Button>
+        <Link
+          color="inherit"
+          variant="h6"
+          underline="none"
+          className={classes.rightLink}
+          component={RouterLink} 
+          to=
+            {{
+              pathname: '/networking', 
+              state: {
+                title: 'Networking'
+              }
+            }}
+        >
+          {'Networking'}
+        </Link>
+      </Button>
     );
 };
 

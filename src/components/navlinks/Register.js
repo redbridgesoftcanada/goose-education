@@ -7,20 +7,18 @@ function Register(props) {
     const { classes } = props;
 
     return (
-        <div>
-            <Button>
-              <Link
-                color="inherit"
-                variant="h6"
-                underline="none"
-                className={classes.rightLink}
-                component={RouterLink}
-                to='/register'
-              >
-                {'Register'}
-              </Link>
-            </Button>
-        </div>
+      <Button>
+        <Link
+          color="inherit"
+          variant="h6"
+          underline="none"
+          className={classes.rightLink}
+          component={RouterLink}
+          to='/register'
+        >
+          {'Register'}
+        </Link>
+      </Button>
     );
 };
 

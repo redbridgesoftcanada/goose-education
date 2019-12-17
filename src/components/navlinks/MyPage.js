@@ -6,19 +6,17 @@ function MyPage(props) {
     const { classes } = props;
 
     return (
-        <div>
-            <Button aria-controls="my-page-button" aria-haspopup="true">
-              <Link
-                color="inherit"
-                variant="h6"
-                underline="none"
-                className={classes.rightLink}
-                // component={}
-              >
-                {'My Page'}
-              </Link>
-            </Button>
-        </div>
+      <Button aria-controls="my-page-button" aria-haspopup="true">
+        <Link
+          color="inherit"
+          variant="h6"
+          underline="none"
+          className={classes.rightLink}
+          // component={}
+        >
+          {'My Page'}
+        </Link>
+      </Button>
     );
 };
 
