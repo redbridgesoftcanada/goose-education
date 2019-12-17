@@ -1,29 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Link } from '@material-ui/core'
+import { Link as RouterLink } from 'react-router-dom';
 
-function SignIn(props) {
+function Register(props) {
     const { classes } = props;
 
     return (
         <div>
-            <Button aria-controls="sign-in-button" aria-haspopup="true">
+            <Button>
               <Link
                 color="inherit"
                 variant="h6"
                 underline="none"
                 className={classes.rightLink}
-                // component={}
+                component={RouterLink}
+                to='/register'
               >
-                {'Sign In'}
+                {'Register'}
               </Link>
             </Button>
         </div>
     );
 };
 
-SignIn.propTypes = {
+Register.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default SignIn;
+export default Register;

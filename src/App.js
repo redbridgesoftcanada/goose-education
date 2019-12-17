@@ -12,6 +12,7 @@ import Schools from './Schools';
 import StudyAbroad from './StudyAbroadServices';
 import ServiceCentre from './ServiceCentre';
 import Privacy from './Privacy';
+import Register from './Register';
 
 // d u m m y  d a t a b a s e  o b j e c t s
 const tipsDB = [
@@ -337,6 +338,7 @@ function App() {
     <div className="App">
       <ScrollToTop>
         <Switch>
+          <Route path="/register" render={() => <Register/>}/>
           <Route path="/privacy" render={() => <Privacy/>}/>
           <Route path="/services" render={(props) => <ServiceCentre {...props} announcementsDB={announcementsDB} messagesDB={messagesDB}/>}/>
           <Route path="/studyabroad" render={(props) => <StudyAbroad {...props} />}/>
