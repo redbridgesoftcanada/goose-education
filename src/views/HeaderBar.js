@@ -5,6 +5,7 @@ import { Facebook, Instagram, Search } from '@material-ui/icons';
 
 import AppBar from '../components/onePirate/AppBar';
 import Toolbar from '../components/onePirate/Toolbar';
+import { AuthUserContext } from '../components/session';
 
 import Login from '../components/navlinks/Login';
 import Register from '../components/navlinks/Register';
@@ -47,13 +48,21 @@ function HeaderBar(props) {
                 />
                 </div>
 
-
                 {/* COMPONENTS > NAVLINKS */}
                 <div className={classes.logins}>
-                    <Login classes={classes}/>
-                    <Register classes={classes}/>
-                    <MyPage classes={classes}/>
-                    <Logout classes={classes}/>
+                    <AuthUserContext.Consumer>
+                        {authUser => authUser ? 
+                        <>
+                            <MyPage classes={classes}/>
+                            <Logout classes={classes}/>
+                        </>
+                        : 
+                        <>
+                            <Login classes={classes}/>
+                            <Register classes={classes}/>
+                        </>
+                        }
+                    </AuthUserContext.Consumer>
                 </div>
             </Toolbar>
         </AppBar>
