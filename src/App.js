@@ -15,6 +15,9 @@ import Privacy from './Privacy';
 import Register from './Register';
 import Login from './Login';
 
+// React Context Components
+import { withAuthentication } from './components/session';
+
 // d u m m y  d a t a b a s e  o b j e c t s
 const tipsDB = [
   { 
@@ -354,4 +357,4 @@ function App() {
   );
 }
 
-export default App;
+export default withAuthentication(App);
