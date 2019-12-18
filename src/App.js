@@ -14,6 +14,7 @@ import ServiceCentre from './ServiceCentre';
 import Privacy from './Privacy';
 import Register from './Register';
 import Login from './Login';
+import ForgotPassword from './ForgotPassword';
 
 // React Context Components
 import { withAuthentication } from './components/session';
@@ -342,6 +343,7 @@ function App() {
     <div className="App">
       <ScrollToTop>
         <Switch>
+          <Route path="/forgotpassword" render={() => <ForgotPassword/>}/>
           <Route path="/login" render={() => <Login/>}/>
           <Route path="/register" render={() => <Register/>}/>
           <Route path="/privacy" render={() => <Privacy/>}/>
