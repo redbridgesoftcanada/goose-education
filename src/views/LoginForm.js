@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
     root: {
       '& .MuiTextField-root': {
         margin: theme.spacing(1),
-        width: 200,
+        width: 300,
       },
     },
     error: {
@@ -53,6 +53,7 @@ const LoginFormBase = props => {
           <form className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
             <div> 
               <TextField
+                color="secondary"
                 variant="outlined"
                 name="email"
                 value={email}
@@ -62,6 +63,7 @@ const LoginFormBase = props => {
                 error={(error && error.code.includes("email")) ? true : false}
               />
               <TextField
+                color="secondary"
                 variant="outlined"
                 name="password"
                 value={password}
@@ -89,7 +91,7 @@ const LoginFormBase = props => {
 }
 
 const LoginLink = () => (
-  <Typography variant="body">
+  <Typography variant="body2">
     Have an account? <Link to="/login" >Login</Link>
   </Typography>
 );

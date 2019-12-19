@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     "& .MuiTextField-root": {
       margin: theme.spacing(1),
-      width: 200,
+      width: 300,
     },
   },
   error: {
@@ -49,10 +49,11 @@ const RegisterFormBase = ({ firebase, history }) => {
 
   return (
     <>
-      <Typography variant="h4">Sign Up</Typography>
+      <Typography variant="h4">Create a New Account</Typography>
       <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
         <div>
           <TextField
+            color="secondary"
             variant="outlined"
             name="email"
             value={email}
@@ -60,23 +61,25 @@ const RegisterFormBase = ({ firebase, history }) => {
             type="text"
             placeholder="Email Address"
             error={(error && error.code.includes("email")) ? true : false}
-            />
+          />
           <TextField
+            color="secondary"
             variant="outlined"
             name="passwordOne"
             value={passwordOne}
             onChange={onChange}
             type="password"
             placeholder="Password"
-            />
+          />
           <TextField
+            color="secondary"
             variant="outlined"
             name="passwordTwo"
             value={passwordTwo}
             onChange={onChange}
             type="password"
             placeholder="Confirm Password"
-            />
+          />
         </div>
         {error && <Typography variant="body2" className={classes.error}>{error.message}</Typography>}
         <Button 

@@ -55,7 +55,7 @@ const PasswordForgetFormBase = ({ firebase }) => {
 }
 
 const PasswordForgetLink = () => (
-  <Typography variant="body">
+  <Typography variant="body2">
     <Link to="/forgotpassword">Forgot Password?</Link>
   </Typography>
 );
