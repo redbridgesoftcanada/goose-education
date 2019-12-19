@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Button, TextField, Typography, makeStyles } from '@material-ui/core'
 
 import { withFirebase } from '../components/firebase';
 import { RegisterLink } from './RegisterForm';
+import { PasswordForgetLink } from './ForgotPasswordForm';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -11,6 +12,9 @@ const useStyles = makeStyles(theme => ({
         margin: theme.spacing(1),
         width: 200,
       },
+    },
+    error: {
+      color: theme.palette.secondary.main
     },
 }));
 
@@ -35,7 +39,7 @@ const LoginFormBase = props => {
     const onSubmit = event => {
       firebase.doSignInWithEmailAndPassword(email, password)
       .then(() => {
-        setState({ ...INITIAL_STATE });
+        setState({...INITIAL_STATE});
         history.push('/');
       })
       .catch(error => setState({ error }));
@@ -45,30 +49,52 @@ const LoginFormBase = props => {
 
     return (
         <>
-          <Typography variant='h1'>Sign In</Typography>
+          <Typography variant='h4'>Login to Goose Education</Typography>
           <form className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
-              {error && <p>{error.message}</p>}
+            <div> 
               <TextField
-              name="email"
-              value={email}
-              onChange={onChange}
-              type="text"
-              placeholder="Email Address"
+                variant="outlined"
+                name="email"
+                value={email}
+                onChange={onChange}
+                type="text"
+                placeholder="Email Address"
+                error={(error && error.code.includes("email")) ? true : false}
               />
               <TextField
-              name="password"
-              value={password}
-              onChange={onChange}
-              type="password"
-              placeholder="Password"
+                variant="outlined"
+                name="password"
+                value={password}
+                onChange={onChange}
+                type="password"
+                placeholder="Password"
+                error={(error && error.code.includes("argument")) ? true : false}
               />
-              <Button variant="outlined" disabled={isInvalid} type="submit">Login</Button>
+              </div>
+            {error && <Typography variant="body2" className={classes.error}>{error.message}</Typography>}
+            <Button 
+              variant="contained" 
+              size="large" 
+              disabled={isInvalid} 
+              type="submit"
+            >
+              Login
+            </Button>
           </form>
+          <PasswordForgetLink/>
+          <br/><br/>
           <RegisterLink/>
         </>
     )
 }
 
+const LoginLink = () => (
+  <Typography variant="body">
+    Have an account? <Link to="/login" >Login</Link>
+  </Typography>
+);
+
 const LoginForm = withRouter(withFirebase(LoginFormBase));
 
 export default LoginForm;
+export { LoginLink };
