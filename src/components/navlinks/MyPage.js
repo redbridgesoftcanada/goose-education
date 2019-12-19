@@ -1,20 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Link } from '@material-ui/core'
+import { Button, Link } from '@material-ui/core';
+import { Link as RouterLink } from "react-router-dom";
 
 function MyPage(props) {
     const { classes } = props;
 
     return (
-      <Button aria-controls="my-page-button" aria-haspopup="true">
+      <Button>
         <Link
           color="inherit"
           variant="h6"
           underline="none"
           className={classes.rightLink}
-          // component={}
+          component={RouterLink}
+          to="/profile"
         >
-          {'My Page'}
+          {'Profile'}
         </Link>
       </Button>
     );
