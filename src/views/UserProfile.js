@@ -1,4 +1,5 @@
 import React from 'react';
+import { AuthUserContext, withAuthorization } from '../components/session';
 import { Typography, withStyles } from '@material-ui/core';
 
 const styles = theme => {
@@ -7,10 +8,16 @@ const styles = theme => {
 
 function UserProfile() {
   return (
-    <>
-        <Typography variant='h4'>Profile</Typography>
-    </>
+    <AuthUserContext.Consumer>
+      {authUser => 
+        <>
+          <Typography variant='h4'>Profile: {authUser.email}</Typography>
+        </>
+      }
+    </AuthUserContext.Consumer>
   );
 }
 
-export default withStyles(styles)(UserProfile);
+const condition = authUser => !!authUser;
+export default withAuthorization(condition)(UserProfile);
+// export default withStyles(styles)(UserProfile);

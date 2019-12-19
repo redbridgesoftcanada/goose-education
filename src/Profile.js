@@ -5,8 +5,9 @@ import NavBar from './views/NavBar';
 import UserProfile from './views/UserProfile';
 import Footer from './views/Footer';
 
-function Profile() {
+import { withAuthorization } from './components/session';
 
+function ProfileBase() {
   return (
     <>
       <NavBar />
@@ -16,4 +17,7 @@ function Profile() {
   );
 }
 
-export default withRoot(Profile);
+const profile = withRoot(ProfileBase);
+const condition = authUser => !!authUser;
+
+export default withAuthorization(condition)(profile);
