@@ -25,7 +25,7 @@ const INITIAL_STATE = {
   error: null,
 }
 
-const RegisterFormBase = ({ firebase, history }) => {
+function RegisterFormBase({ firebase, history }) {
   const classes = useStyles();
   
   const [ state, setState ] = useState({...INITIAL_STATE});
@@ -38,7 +38,12 @@ const RegisterFormBase = ({ firebase, history }) => {
   
   const onSubmit = event => {
     firebase.doCreateUserWithEmailAndPassword(email, passwordOne)
-      .then(() => {
+    .then(authUser => {
+      return firebase.user(authUser.user.uid).set({
+        username, email
+      }, {merge: true})
+    })  
+    .then(() => {
         setState({ ...INITIAL_STATE });
         history.push('/');
       })
@@ -51,8 +56,17 @@ const RegisterFormBase = ({ firebase, history }) => {
     <>
       <Typography variant="h4">Create a New Account</Typography>
       <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+        <TextField
+          color="secondary"
+          variant="outlined"
+          name="username"
+          value={username}
+          onChange={onChange}
+          type="text"
+          placeholder="Username"
+        />
         <div>
-          <TextField
+         <TextField
             color="secondary"
             variant="outlined"
             name="email"
@@ -60,8 +74,10 @@ const RegisterFormBase = ({ firebase, history }) => {
             onChange={onChange}
             type="text"
             placeholder="Email Address"
-            error={(error && error.code.includes("email")) ? true : false}
+            // error={(error && error.code.includes("email")) ? true : false}
           />
+        </div>
+        <div>
           <TextField
             color="secondary"
             variant="outlined"
@@ -96,7 +112,7 @@ const RegisterFormBase = ({ firebase, history }) => {
 )}
 
 const RegisterLink = () => (
-  <Typography variant="body">
+  <Typography variant="body2">
     Don't have an account? <Link to="/register" >Sign Up</Link>
   </Typography>
 );
