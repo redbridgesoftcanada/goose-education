@@ -30,6 +30,7 @@ function RegisterFormBase({ firebase, history }) {
   
   const [ state, setState ] = useState({...INITIAL_STATE});
   const { username, email, passwordOne, passwordTwo, error } = state;
+  const roles = {};
 
   // Firebase error objects have a message property by default, but only shown when there is an actual error using conditional rendering.
   const isInvalid = passwordOne !== passwordTwo || passwordOne === "" || email === "" || username === "";
@@ -40,8 +41,8 @@ function RegisterFormBase({ firebase, history }) {
     firebase.doCreateUserWithEmailAndPassword(email, passwordOne)
     .then(authUser => {
       return firebase.user(authUser.user.uid).set({
-        username, email
-      }, {merge: true})
+        username, email, roles
+      }, { merge: true })
     })  
     .then(() => {
         setState({ ...INITIAL_STATE });
