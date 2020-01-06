@@ -1,6 +1,6 @@
 import React, { useReducer } from "react";
 import { Link, withRouter } from "react-router-dom";
-import { Button, Checkbox, Container, FormControlLabel, FormHelperText, FormGroup, Snackbar, Step, StepLabel, Stepper, TextField, Typography, makeStyles } from "@material-ui/core";
+import { Button, Checkbox, Container, Divider, FormControlLabel, FormHelperText, FormGroup, Snackbar, Step, StepLabel, Stepper, TextField, Typography, makeStyles } from "@material-ui/core";
 
 import { withFirebase } from "../components/firebase";
 import { LoginLink } from "./LoginForm";
@@ -19,6 +19,10 @@ const useStyles = makeStyles(theme => ({
 
 const INITIAL_STATE = {
   activeStep: 0,
+  agreeToAll: false,
+  termsAndConditions: false,
+  collectionPersonalInfo: false,
+  gooseAlerts: false,
   username: "",
   email: "",
   passwordOne: "",
@@ -29,13 +33,13 @@ const INITIAL_STATE = {
   mobileNumber: "",
   address: "",
   receiveEmails: true,
-  receieveSMS: true,
-  setAccountPublic: true,
+  receiveSMS: true,
+  publicAccount: true,
   isError: false,
   error: null,
 }
 
-const steps = ['Account Setup', 'Personal Information', 'Notifications'];
+const steps = ['Terms of Service', 'Account Setup', 'Personal Information', 'Notifications'];
 
 function toggleReducer(state, action) {
   let type = action.type;
@@ -44,12 +48,6 @@ function toggleReducer(state, action) {
   let payload = action.payload;
 
   switch(type) {
-    case 'reset': 
-    return {
-      ...state,
-      activeStep: 0
-    }
-
     case 'next': 
     return {
       ...state,
@@ -73,7 +71,17 @@ function toggleReducer(state, action) {
         error: payload
       }
     
-    case 'checkbox':
+    case 'agreeToAll':
+      return {
+        ...state,
+        agreeToAll: payload.checked,
+        termsAndConditions: payload.checked,
+        collectionPersonalInfo: payload.checked,
+        gooseAlerts: payload.checked,
+      }
+
+    case 'notifications':
+    case 'termsOfService':
       return {
         ...state,
         [payload.name]: payload.checked
@@ -88,17 +96,93 @@ function toggleReducer(state, action) {
 
 function RegisterFormBase({ firebase, history }) {
   const classes = useStyles();
-
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { activeStep, username, email, passwordOne, passwordTwo, firstName, lastName, phoneNumber, mobileNumber, receiveEmails, receieveSMS, setAccountPublic, isError, error } = state;
+  const { activeStep, agreeToAll, termsAndConditions, collectionPersonalInfo, gooseAlerts, username, email, passwordOne, passwordTwo, firstName, lastName, phoneNumber, mobileNumber, address, receiveEmails, receiveSMS, publicAccount, isError, error } = state;
   const roles = {};
 
   // Firebase error objects have a message property by default, but only shown when there is an actual error using conditional rendering.
-  const isInvalid = passwordOne !== passwordTwo || passwordOne === "" || email === "" || username === "";
+  // const isInvalid = passwordOne !== passwordTwo || passwordOne === "" || email === "" || username === "";
+
+  const isButtonDisabled = () => {
+    switch (activeStep) {
+      case 0:
+        return !(agreeToAll || termsAndConditions && collectionPersonalInfo);
+
+      case 1:
+        return username === "" || email === "" || passwordOne === "" || passwordOne !== passwordTwo;
+
+      case 2: 
+        return firstName === "" || lastName === ""; 
+    }
+  }
   
+  const getStepButtons = () => {
+    return (
+      <>
+        <Button
+        disabled={activeStep === 0}
+        onClick={() => dispatch({ type: 'back' })}
+      >
+        Back
+      </Button>
+    
+      { activeStep === steps.length - 1 ? 
+      <Button 
+        variant="contained"
+        color="primary"
+        disabled={isButtonDisabled()} 
+        type="submit"
+      >
+        Sign Up
+      </Button>
+      :
+      <Button
+        variant="contained" 
+        color="primary" 
+        disabled={isButtonDisabled()}
+        onClick={() => dispatch({ type: 'next' })}
+      >
+        Next
+      </Button>
+      }
+    </>
+  )
+}
+
   const getStepContent = (stepIndex) => {
     switch (stepIndex) {
       case 0:
+        return (
+          <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+            <Typography variant="h6">Please agree to the Terms of Service.</Typography>
+            <Container>
+              <FormGroup>
+                <FormControlLabel
+                  control={<Checkbox checked={agreeToAll} name="agreeToAll" onChange={(event) => dispatch({ type: 'agreeToAll', payload: event.target })} />}
+                  label="Agree to All Terms"
+                />
+                <FormHelperText>This includes agreements to all required and optional terms. You may choose to agree or disagree to inidual terms. You may still use the service even if you do not agree to the optional terms.</FormHelperText>
+                <br/><br/>
+                <Divider />
+                <br/>
+                <FormControlLabel
+                  control={<Checkbox required checked={termsAndConditions} name="termsAndConditions" onChange={(event) => dispatch({ type: 'termsOfService', payload: event.target })} />}
+                  label="[Required] Goose Terms and Conditions"
+                />
+                <FormControlLabel
+                  control={<Checkbox required checked={collectionPersonalInfo} name="collectionPersonalInfo" onChange={(event) => dispatch({ type: 'termsOfService', payload: event.target })} />}
+                  label="[Required] Collection and Use of Personal Information"
+                />
+                <FormControlLabel
+                  control={<Checkbox checked={gooseAlerts} name="gooseAlerts" onChange={(event) => dispatch({ type: 'termsOfService', payload: event.target })} />}
+                  label="[Optional] Add Goose alerts and receive marketing messages."
+                />
+              </FormGroup>
+            </Container>
+            { getStepButtons() }
+          </form>
+        );
+      case 1:
         return (
           <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
             <TextField
@@ -143,9 +227,10 @@ function RegisterFormBase({ firebase, history }) {
               />
             </div>
             {error && <Typography variant="body2" className={classes.error}>{error.message}</Typography>}
+            { getStepButtons() }
           </form>
         );
-      case 1:
+      case 2:
         return (
           <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
             <TextField
@@ -186,36 +271,50 @@ function RegisterFormBase({ firebase, history }) {
                 name="mobileNumber"
                 value={mobileNumber}
                 onChange={(event) => dispatch({ type: event.target })}
-                type="password"
+                type="number"
                 placeholder="Mobile Number"
               />
             </div>
+            <div>
+              <TextField
+                disabled
+                color="secondary"
+                variant="outlined"
+                name="address"
+                value={address}
+                onChange={(event) => dispatch({ type: event.target })}
+                type="text"
+                placeholder="Address"
+              />
+            </div>
             {error && <Typography variant="body2" className={classes.error}>{error.message}</Typography>}
+            { getStepButtons() }
           </form>
         );
-      case 2:
+      case 3:
         return (
-          <Container>
-            <div>
+          <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+            <Container>
               <FormGroup>
                 <FormControlLabel
-                  control={<Checkbox checked={receiveEmails} name="receiveEmails" onChange={(event) => dispatch({ type: 'checkbox', payload: event.target })} />}
+                  control={<Checkbox checked={receiveEmails} name="receiveEmails" onChange={(event) => dispatch({ type: 'notifications', payload: event.target })} />}
                   label="Receive Emails"
                 />
                 <FormHelperText>I would like to receieve email notifications.</FormHelperText>
                 <FormControlLabel
-                  control={<Checkbox checked={receieveSMS} name="receieveSMS" onChange={(event) => dispatch({ type: 'checkbox', payload: event.target })} />}
+                  control={<Checkbox checked={receiveSMS} name="receieveSMS" onChange={(event) => dispatch({ type: 'notifications', payload: event.target })} />}
                   label="Receive SMS"
                 />
                 <FormHelperText>I would like to receieve SMS notifications. Additional charges may apply from your service provider.</FormHelperText>
                 <FormControlLabel
-                  control={<Checkbox checked={setAccountPublic} name="setAccountPublic" onChange={(event) => dispatch({ type: 'checkbox', payload: event.target })} />}
+                  control={<Checkbox checked={publicAccount} name="publicAccount" onChange={(event) => dispatch({ type: 'notifications', payload: event.target })} />}
                   label="Public Account"
                 />
                 <FormHelperText>Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.</FormHelperText>
               </FormGroup>
-            </div>
-        </Container>
+          </Container>
+          { getStepButtons() }
+        </form>
         );
       default:
         return 'Unknown step index';
@@ -226,7 +325,7 @@ function RegisterFormBase({ firebase, history }) {
     firebase.doCreateUserWithEmailAndPassword(email, passwordOne)
     .then(authUser => {
       return firebase.user(authUser.user.uid).set({
-        username, email, roles
+        username, email, firstName, lastName, phoneNumber, mobileNumber, receiveEmails, receiveSMS, publicAccount, roles
       }, { merge: true })
     })  
     .then(() => {
@@ -257,43 +356,7 @@ function RegisterFormBase({ firebase, history }) {
           </Step>
         ))}
       </Stepper>
-      <>
-      {activeStep === steps.length ? (
-          <>
-            <Typography>All steps completed</Typography>
-            <Button onClick={() => dispatch({ type: 'reset' })}>Reset</Button>
-          </>
-        ) : (
-          <>
-            { getStepContent(activeStep) }
-              <Button
-                disabled={activeStep === 0}
-                onClick={() => dispatch({ type: 'back' })}
-              >
-                Back
-              </Button>
-            
-            { activeStep === steps.length - 1 ? 
-              <Button 
-                variant="contained"
-                color="primary"
-                disabled={isInvalid} 
-                type="submit"
-              >
-                Sign Up
-              </Button>
-            :
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={() => dispatch({ type: 'next' })}
-            >
-              Next
-            </Button>
-            }
-          </>
-        )}
-      </>
+      { getStepContent(activeStep) }
       <LoginLink/>
     </>
 )}
