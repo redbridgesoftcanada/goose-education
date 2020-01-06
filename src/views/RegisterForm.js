@@ -35,11 +35,14 @@ const INITIAL_STATE = {
   error: null,
 }
 
-const steps = ['Account Setup', 'Personal Information', 'Subscriptions'];
+const steps = ['Account Setup', 'Personal Information', 'Notifications'];
 
 function toggleReducer(state, action) {
   let type = action.type;
   let { name, value } = type;
+
+  let payload = action.payload;
+
   switch(type) {
     case 'reset': 
     return {
@@ -67,14 +70,13 @@ function toggleReducer(state, action) {
     case 'error':
       return {
         isError: true,
-        error: action.payload
+        error: payload
       }
     
-    case 'receiveEmails':
-    case 'receiveSMS':
-    case 'setAccountPublic':
+    case 'checkbox':
       return {
-        [name]: !(state.name)
+        ...state,
+        [payload.name]: payload.checked
       }
     default: 
     return {
@@ -194,45 +196,29 @@ function RegisterFormBase({ firebase, history }) {
       case 2:
         return (
           <Container>
-          <div>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox checked={receiveEmails} name="receiveEmails" onChange={(event) => dispatch({ type: event.target })} />
-              }
-              label="Receive Emails"
-            />
-            <FormHelperText>I would like to receieve email notifications.</FormHelperText>
-            <FormControlLabel
-              control={
-                <Checkbox checked={receieveSMS} name="receieveSMS" onChange={(event) => dispatch({ type: event.target })} />
-              }
-              label="Receive SMS"
-            />
-            <FormHelperText>I would like to receieve SMS notifications. Additional charges may apply from your service provider.</FormHelperText>
-            <FormControlLabel
-              control={
-                <Checkbox checked={setAccountPublic} name="setAccountPublic" onChange={(event) => dispatch({ type: event.target })} />
-              }
-              label="Public Account"
-            />
-            <FormHelperText>Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.</FormHelperText>
-          </FormGroup>
-          </div>
-          <div>
-          <Button 
-          variant="contained" 
-          size="large"
-          disabled={isInvalid} 
-          type="submit"
-          >
-          Sign Up
-        </Button>
-        </div>
+            <div>
+              <FormGroup>
+                <FormControlLabel
+                  control={<Checkbox checked={receiveEmails} name="receiveEmails" onChange={(event) => dispatch({ type: 'checkbox', payload: event.target })} />}
+                  label="Receive Emails"
+                />
+                <FormHelperText>I would like to receieve email notifications.</FormHelperText>
+                <FormControlLabel
+                  control={<Checkbox checked={receieveSMS} name="receieveSMS" onChange={(event) => dispatch({ type: 'checkbox', payload: event.target })} />}
+                  label="Receive SMS"
+                />
+                <FormHelperText>I would like to receieve SMS notifications. Additional charges may apply from your service provider.</FormHelperText>
+                <FormControlLabel
+                  control={<Checkbox checked={setAccountPublic} name="setAccountPublic" onChange={(event) => dispatch({ type: 'checkbox', payload: event.target })} />}
+                  label="Public Account"
+                />
+                <FormHelperText>Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.</FormHelperText>
+              </FormGroup>
+            </div>
         </Container>
         );
       default:
-        return 'Unknown stepIndex';
+        return 'Unknown step index';
     }
   }
 
@@ -286,9 +272,25 @@ function RegisterFormBase({ firebase, history }) {
               >
                 Back
               </Button>
-              <Button variant="contained" color="primary" onClick={() => dispatch({ type: 'next' })}>
-                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+            
+            { activeStep === steps.length - 1 ? 
+              <Button 
+                variant="contained"
+                color="primary"
+                disabled={isInvalid} 
+                type="submit"
+              >
+                Sign Up
               </Button>
+            :
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={() => dispatch({ type: 'next' })}
+            >
+              Next
+            </Button>
+            }
           </>
         )}
       </>
