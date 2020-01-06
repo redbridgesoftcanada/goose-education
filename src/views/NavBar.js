@@ -76,6 +76,9 @@ const styles = theme => ({
   linkSecondary: {
     color: theme.palette.secondary.main,
   },
+  nested: {
+    paddingLeft: theme.spacing(4),
+  }
 });
 
 function NavBar(props) {
