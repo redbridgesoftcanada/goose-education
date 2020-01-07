@@ -16,7 +16,7 @@ function MyPage(props) {
           component={RouterLink}
           to="/profile"
         >
-          {'Profile'}
+          {'My Page'}
         </Link>
       </Button>
     );

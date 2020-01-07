@@ -3,6 +3,7 @@ import React from 'react';
 import withRoot from './withRoot';
 import NavBar from './views/NavBar';
 import UserProfile from './views/UserProfile';
+import UserApplicationHistory from './views/UserApplicationHistory';
 import PasswordChangeForm from './views/PasswordChangeForm';
 import Footer from './views/Footer';
 
@@ -13,9 +14,16 @@ function ProfileBase() {
     <>
       <NavBar />
       <AuthUserContext.Consumer>
-        {authUser => <UserProfile authUser={authUser} />}
+        {authUser =>
+          <>
+            <UserProfile authUser={authUser} />
+            <PasswordChangeForm/>
+            <br/>
+            <UserApplicationHistory authUser={authUser} />
+          </>
+        }
       </AuthUserContext.Consumer>
-      <PasswordChangeForm/>
+
       <Footer />
     </>
   );

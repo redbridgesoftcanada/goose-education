@@ -98,7 +98,7 @@ function HeaderBar(props) {
 
     const [ state, dispatch ] = useReducer(toggleReducer, false);
 
-    const userMenuItems = ['Profile', 'Change Information', 'Delete Account'];
+    const userMenuItems = ['My Page', 'Change Information', 'Delete Account'];
     const pageMenuItems = ['Study Abroad', 'Networking', 'School Information', 'Study Abroad Services', 'Service Centre'];
 
     return (
