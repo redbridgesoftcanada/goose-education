@@ -1,9 +1,11 @@
 import React, { useReducer } from "react";
 import { Link, withRouter } from "react-router-dom";
-import { Button, Checkbox, Container, Divider, FormControlLabel, FormHelperText, FormGroup, Snackbar, Step, StepLabel, Stepper, TextField, Typography, makeStyles } from "@material-ui/core";
+import { Button, Checkbox, Container, Divider, FormControlLabel, FormHelperText, FormGroup, IconButton, Snackbar, Step, StepLabel, Stepper, TextField, Typography, makeStyles } from "@material-ui/core";
+import ChevronRightOutlinedIcon from '@material-ui/icons/ChevronRightOutlined';
 
 import { withFirebase } from "../components/firebase";
 import { LoginLink } from "./LoginForm";
+import TermsofServiceDialog from "../components/TermsOfServiceDialog";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -12,15 +14,28 @@ const useStyles = makeStyles(theme => ({
       width: 300,
     },
   },
+  button: {
+    "&:hover": {
+      backgroundColor: "transparent"
+    }
+  },
+  gooseTermsAndConditions: {
+    display: 'inline-flex'
+  },
   error: {
     color: theme.palette.secondary.main
+  },
+  divider: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1),
   },
 }));
 
 const INITIAL_STATE = {
   activeStep: 0,
-  agreeToAll: false,
-  termsAndConditions: false,
+  allTermsAgreed: false,
+  gooseTermsAndConditions: false,
+  openTermsAndConditionsDialog: false,
   collectionPersonalInfo: false,
   gooseAlerts: false,
   username: "",
@@ -71,13 +86,19 @@ function toggleReducer(state, action) {
         error: payload
       }
     
-    case 'agreeToAll':
+    case 'allTermsAgreed':
       return {
         ...state,
-        agreeToAll: payload.checked,
-        termsAndConditions: payload.checked,
+        allTermsAgreed: payload.checked,
+        gooseTermsAndConditions: payload.checked,
         collectionPersonalInfo: payload.checked,
         gooseAlerts: payload.checked,
+      }
+
+    case 'dialog': 
+      return {
+        ...state,
+        openTermsAndConditionsDialog: !state.openTermsAndConditionsDialog,
       }
 
     case 'notifications':
@@ -86,6 +107,7 @@ function toggleReducer(state, action) {
         ...state,
         [payload.name]: payload.checked
       }
+
     default: 
     return {
       ...state,
@@ -97,7 +119,7 @@ function toggleReducer(state, action) {
 function RegisterFormBase({ firebase, history }) {
   const classes = useStyles();
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { activeStep, agreeToAll, termsAndConditions, collectionPersonalInfo, gooseAlerts, username, email, passwordOne, passwordTwo, firstName, lastName, phoneNumber, mobileNumber, address, receiveEmails, receiveSMS, publicAccount, isError, error } = state;
+  const { activeStep, allTermsAgreed, gooseTermsAndConditions, openTermsAndConditionsDialog, collectionPersonalInfo, gooseAlerts, username, email, passwordOne, passwordTwo, firstName, lastName, phoneNumber, mobileNumber, address, receiveEmails, receiveSMS, publicAccount, isError, error } = state;
   const roles = {};
 
   // Firebase error objects have a message property by default, but only shown when there is an actual error using conditional rendering.
@@ -106,7 +128,7 @@ function RegisterFormBase({ firebase, history }) {
   const isButtonDisabled = () => {
     switch (activeStep) {
       case 0:
-        return !(agreeToAll || termsAndConditions && collectionPersonalInfo);
+        return !(allTermsAgreed || gooseTermsAndConditions && collectionPersonalInfo);
 
       case 1:
         return username === "" || email === "" || passwordOne === "" || passwordOne !== passwordTwo;
@@ -120,11 +142,11 @@ function RegisterFormBase({ firebase, history }) {
     return (
       <>
         <Button
-        disabled={activeStep === 0}
-        onClick={() => dispatch({ type: 'back' })}
-      >
-        Back
-      </Button>
+          disabled={activeStep === 0}
+          onClick={() => dispatch({ type: 'back' })}
+        >
+          Back
+        </Button>
     
       { activeStep === steps.length - 1 ? 
       <Button 
@@ -158,17 +180,21 @@ function RegisterFormBase({ firebase, history }) {
             <Container>
               <FormGroup>
                 <FormControlLabel
-                  control={<Checkbox checked={agreeToAll} name="agreeToAll" onChange={(event) => dispatch({ type: 'agreeToAll', payload: event.target })} />}
+                  control={<Checkbox checked={allTermsAgreed} name="allTermsAgreed" onChange={(event) => dispatch({ type: 'allTermsAgreed', payload: event.target })} />}
                   label="Agree to All Terms"
                 />
                 <FormHelperText>This includes agreements to all required and optional terms. You may choose to agree or disagree to inidual terms. You may still use the service even if you do not agree to the optional terms.</FormHelperText>
-                <br/><br/>
-                <Divider />
-                <br/>
-                <FormControlLabel
-                  control={<Checkbox required checked={termsAndConditions} name="termsAndConditions" onChange={(event) => dispatch({ type: 'termsOfService', payload: event.target })} />}
-                  label="[Required] Goose Terms and Conditions"
-                />
+                <Divider className={classes.divider}/>
+                <div className={classes.gooseTermsAndConditions}>
+                  <FormControlLabel
+                    control={<Checkbox required checked={gooseTermsAndConditions} name="gooseTermsAndConditions" onChange={(event) => dispatch({ type: 'termsOfService', payload: event.target })} />}
+                    label="[Required] Goose Terms and Conditions"
+                  />
+                  <IconButton onClick={(event) => dispatch({ type: 'dialog', payload: event.target })}>
+                    <ChevronRightOutlinedIcon fontSize="small"/>
+                  </IconButton>
+                </div>
+                <TermsofServiceDialog open={openTermsAndConditionsDialog} onClose={(event) => dispatch({ type: 'dialog', payload: event.target })} />
                 <FormControlLabel
                   control={<Checkbox required checked={collectionPersonalInfo} name="collectionPersonalInfo" onChange={(event) => dispatch({ type: 'termsOfService', payload: event.target })} />}
                   label="[Required] Collection and Use of Personal Information"
@@ -182,6 +208,7 @@ function RegisterFormBase({ firebase, history }) {
             { getStepButtons() }
           </form>
         );
+
       case 1:
         return (
           <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
@@ -230,6 +257,7 @@ function RegisterFormBase({ firebase, history }) {
             { getStepButtons() }
           </form>
         );
+
       case 2:
         return (
           <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
@@ -291,6 +319,7 @@ function RegisterFormBase({ firebase, history }) {
             { getStepButtons() }
           </form>
         );
+
       case 3:
         return (
           <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
@@ -316,6 +345,7 @@ function RegisterFormBase({ firebase, history }) {
           { getStepButtons() }
         </form>
         );
+
       default:
         return 'Unknown step index';
     }
