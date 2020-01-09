@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { Collapse, Container, List, ListItem, ListItemText, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from '@material-ui/core';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import parse from 'html-react-parser';
@@ -31,6 +32,8 @@ const styles = theme => ({
 function SchoolInformation(props) {
     const { classes, selectedSchool } = props;
     const defaultMessage = "Please contact us for any further information.";
+
+    let match = useRouteMatch();
 
     const [state, setState] = useState({
         intro: true,
@@ -209,8 +212,16 @@ function SchoolInformation(props) {
                     variant="contained"
                     size="medium"
                     className={classes.button}
-                    // component="a"
-                    // href="/premium-themes/onepirate/sign-up/"
+                    component={RouterLink} 
+                    // onClick={handleSchoolClick}
+                    to=
+                    {{
+                        pathname: `/schools`, 
+                        state: {
+                            title: 'School Information',
+                            selected: 1,
+                        }
+                    }}
                     >
                     Apply Here
                 </Button>
