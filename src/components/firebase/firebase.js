@@ -40,8 +40,10 @@ class Firebase {
   // U S E R S
   users = () => this.db.collection("users");
   user = uid => this.db.doc(`users/${uid}`);
-  // user = uid => this.db.ref(`users/${uid}`);
-  // users = () => this.db.ref('users');
+
+  // S C H O O L  A P P L I C A T I O N S
+  schoolApplications = () => this.db.collection("schoolApplications");
+  schoolApplication = uid => this.db.doc(`schoolApplications/${uid}`);
 };
 
 export default Firebase;
