@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link as RouterLink, Switch, Route, useRouteMatch } from "react-router-dom";
 import PropTypes from 'prop-types';
 import { Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core';
 
@@ -9,6 +10,7 @@ import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import Poster from './views/Poster';
 import HomestayProcess from './views/HomestayProcess';
+import AbroadServiceApplication from './views/AbroadServiceApplication';
 import Footer from './views/Footer';
 
 const useStyles = makeStyles(theme => ({
@@ -27,6 +29,8 @@ const useStyles = makeStyles(theme => ({
 
 function StudyAbroadServices(props) {
     const classes = useStyles();
+    
+    let match = useRouteMatch();
 
     const background = 'https://images.unsplash.com/photo-1461709444300-a6217cec3dff?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80';
     const posterBackground = 'https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80';
@@ -41,18 +45,32 @@ function StudyAbroadServices(props) {
                 variant="contained"
                 size="medium"
                 className={classes.button}
-                component="a"
-                // href="/premium-themes/onepirate/sign-up/"
+                component={RouterLink} 
+                to=
+                {{
+                    pathname: `${match.path}/homestay`, 
+                    state: {
+                    title: 'Study Abroad',
+                    selected: 0
+                    }
+                }}
                 >
                 Apply For Homestay
                 </Button>
                 <Button
-                //   color="secondary"
+                // color="secondary"
                 variant="contained"
                 size="medium"
                 className={classes.button}
-                component="a"
-                // href="/premium-themes/onepirate/sign-up/"
+                component={RouterLink} 
+                to=
+                {{
+                    pathname: `${match.path}/airport`, 
+                    state: {
+                    title: 'Study Abroad',
+                    selected: 1
+                    }
+                }}
                 >
                 Apply For Airport Ride
                 </Button>
@@ -84,23 +102,35 @@ function StudyAbroadServices(props) {
                     <Tab label="Airport Ride" />
                 </Tabs>
                 <TabPanel value={value} index={0}>
-                    <Typography color="inherit" align="center" variant="h3" marked="center">
-                        Homestay
-                    </Typography>
-                    <Typography  color="inherit" align="center" variant="body1">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    </Typography>
-                    <Poster body={posterBody} backgroundImage={posterBackground} layoutType='study_abroad'/>
+                    <Switch>
+                        <Route path={`${match.path}/homestay`}>
+                            <AbroadServiceApplication classes={classes} />
+                        </Route>
+                        <Route path={match.path}>
+                            <Typography color="inherit" align="center" variant="h3" marked="center">Homestay</Typography>
+                            <Typography  color="inherit" align="center" variant="body1">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                            </Typography>
+                            <Poster body={posterBody} backgroundImage={posterBackground} layoutType='study_abroad'/>
+                        </Route>
+                    </Switch>
                     <HomestayProcess/>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    <Typography color="inherit" align="center" variant="h3" marked="center">
-                        Airport Ride
-                    </Typography>
-                    <Typography  color="inherit" align="center" variant="body1">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    </Typography>
-                    <Poster body={posterBody} backgroundImage={posterBackground} layoutType='study_abroad'/>
+                    <Switch>
+                        <Route path={`${match.path}/airport`}>
+                            <AbroadServiceApplication classes={classes} />
+                        </Route>
+                        <Route path={match.path}>
+                            <Typography color="inherit" align="center" variant="h3" marked="center">
+                                Airport Ride
+                            </Typography>
+                            <Typography  color="inherit" align="center" variant="body1">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                            </Typography>
+                            <Poster body={posterBody} backgroundImage={posterBackground} layoutType='study_abroad'/>
+                        </Route>
+                    </Switch>
                 </TabPanel>
             </Paper>
             <Footer/>
