@@ -10,7 +10,7 @@ import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import Poster from './views/Poster';
 import HomestayProcess from './views/HomestayProcess';
-import AbroadServiceApplication from './views/AbroadServiceApplication';
+import StudyAbroadServiceApplication from './views/StudyAbroadServiceApplication';
 import Footer from './views/Footer';
 
 const useStyles = makeStyles(theme => ({
@@ -104,7 +104,7 @@ function StudyAbroadServices(props) {
                 <TabPanel value={value} index={0}>
                     <Switch>
                         <Route path={`${match.path}/homestay`}>
-                            <AbroadServiceApplication classes={classes} />
+                            <StudyAbroadServiceApplication />
                         </Route>
                         <Route path={match.path}>
                             <Typography color="inherit" align="center" variant="h3" marked="center">Homestay</Typography>
@@ -119,7 +119,7 @@ function StudyAbroadServices(props) {
                 <TabPanel value={value} index={1}>
                     <Switch>
                         <Route path={`${match.path}/airport`}>
-                            <AbroadServiceApplication classes={classes} />
+                            <StudyAbroadServiceApplication />
                         </Route>
                         <Route path={match.path}>
                             <Typography color="inherit" align="center" variant="h3" marked="center">

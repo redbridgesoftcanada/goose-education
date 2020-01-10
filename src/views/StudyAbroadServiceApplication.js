@@ -1,4 +1,4 @@
-import React, { Fragment, useReducer } from 'react';
+import React, { Fragment, useEffect, useReducer } from 'react';
 import { useRouteMatch } from "react-router-dom";
 import { Button, Checkbox, Container, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Typography, withStyles } from '@material-ui/core';
 import { format } from 'date-fns';
@@ -20,48 +20,30 @@ const styles = theme => ({
     },
 });
 
-const applicationSections = {
+const totalApplicationSections = {
     personalInfo: ['last_name', 'first_name', 'gender', 'birth_date', 'email', 'phone_number', 'emergency_contact_number', 'emergency_contact_relation', 'address'],
     arrivalInfo: ['arrival_flight_date', 'arrival_flight_time', 'arrival_flight_name'],
     homestayInfo: ['homestay_start_date', 'homestay_end_date'],
     departureInfo: ['departure_flight_date', 'departure_flight_time', 'departure_flight_name'],
-
 };
 
-// i n i t i a l i z i n g  s t a t e
-let INITIAL_STATE = {
+const INITIAL_STATE = {
     isLoading: false,
     isError: false,
-    agreeToPrivacy: false,
-    additionalRequests: ''
+    agreeToPrivacy: false
 };
-
-Object.values(applicationSections).map(section => {
-    section.map(field => {
-        let camelCaseField = field.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
-        switch(field) {
-            case 'birth_date':
-            case 'arrival_date':
-            case 'start_date':
-            case 'end_date':
-            case 'departure_date':
-                return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: format(Date.now(), 'MM/dd/yyyy')}
-            
-            case 'arrival_time':
-            case 'departure_time':
-                return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: Date.now()}
-            
-            default:
-                return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: ''}
-        }
-    });
-});
 
 function toggleReducer(state, action) {
     let { type, payload } = action;
     let { name, value } = type;
 
     switch (type) {
+        case 'APPLICATION_TYPE':
+            return {
+                ...state,
+                applicationType: (payload.url.includes('homestay')) ? 'homestay' : 'airport'
+            }
+
         case 'birthDate':
         case 'arrivalDate':
         case 'startDate':
@@ -98,26 +80,15 @@ function toggleReducer(state, action) {
         }
   }
 
-function AbroadServiceApplicationBase(props) {
+function StudyAbroadServiceApplicationBase(props) {
     const { authUser, classes, firebase, history } = props;
-
-    // let match = useRouteMatch();
-    // const checkFormType = () => {
-    //     if (match.url.includes('homestay')) {
-    //         const { departureDate, departureTime, departureFlightName, ...homestayForm } = INITIAL_STATE;
-    //         return INITIAL_STATE = { ...homestayForm };
-    //     } 
-    //     return INITIAL_STATE;
-    // }
-
+    
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
-    
-    // let match = useRouteMatch();
-    // if (match.url.includes('homestay')) {
-    //     const { departureDate, departureTime, departureFlightName, ...homestayForm } = state;
-    //     return dispatch({ type: 'homestay', payload: {...homestayForm} });
-    // }
+    let applicationSections;
+    let match = useRouteMatch();
+    const { departureInfo, ...homestayForm } = totalApplicationSections;
+    (match.url.includes('homestay')) ? applicationSections = {...homestayForm} : applicationSections = totalApplicationSections;
 
     const onSubmit = event => {
         // const { isLoading, isError, agreeToPrivacy, ...applicationForm } = state;
@@ -131,6 +102,8 @@ function AbroadServiceApplicationBase(props) {
 
         //     event.preventDefault();
     }
+
+    useEffect(() => { dispatch ({ type: 'APPLICATION_TYPE', payload: match }) }, []);
 
     return (
         <Container>
@@ -158,10 +131,11 @@ function AbroadServiceApplicationBase(props) {
                                     </Fragment>
                                 )
                             
-                            case 'birth_date':
-                            case 'arrival_date':
-                            case 'start_date':
-                            case 'end_date':
+                                case 'birth_date':
+                                case 'arrival_flight_date':
+                                case 'departure_flight_date':
+                                case 'homestay_start_date':
+                                case 'homestay_end_date':
                                 return (
                                     <MuiPickersUtilsProvider utils={DateFnsUtils} key={i}>
                                         <FormLabel component="legend" className={classes.legend}>{capitalizedField}</FormLabel>
@@ -178,7 +152,8 @@ function AbroadServiceApplicationBase(props) {
                                     </MuiPickersUtilsProvider>
                                 )
 
-                            case 'arrival_time':
+                                case 'arrival_flight_time':
+                                case 'departure_flight_time':
                                 return (
                                     <MuiPickersUtilsProvider utils={DateFnsUtils} key={i}>
                                         <FormLabel component="legend" className={classes.legend}>{capitalizedField}</FormLabel>
@@ -237,7 +212,7 @@ function AbroadServiceApplicationBase(props) {
     )
 }
 
-const abroadServiceApplication = withStyles(styles)(AbroadServiceApplicationBase);
+const studyAbroadServiceApplication = withStyles(styles)(StudyAbroadServiceApplicationBase);
 const condition = authUser => !!authUser;
 
-export default withAuthorization(condition)(abroadServiceApplication);
+export default withAuthorization(condition)(studyAbroadServiceApplication);
