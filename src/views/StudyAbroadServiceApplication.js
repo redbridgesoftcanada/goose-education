@@ -1,9 +1,9 @@
 import React, { Fragment, useEffect, useReducer } from 'react';
 import { useRouteMatch } from "react-router-dom";
 import { Button, Checkbox, Container, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Typography, withStyles } from '@material-ui/core';
+import { MuiPickersUtilsProvider, KeyboardDatePicker, KeyboardTimePicker } from '@material-ui/pickers';
 import { format } from 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker, KeyboardTimePicker } from '@material-ui/pickers';
 
 import { withAuthorization } from '../components/session';
 
@@ -27,7 +27,7 @@ const totalApplicationSections = {
     departureInfo: ['departure_flight_date', 'departure_flight_time', 'departure_flight_name'],
 };
 
-const INITIAL_STATE = {
+let INITIAL_STATE = {
     isLoading: false,
     isError: false,
     agreeToPrivacy: false
@@ -38,11 +38,56 @@ function toggleReducer(state, action) {
     let { name, value } = type;
 
     switch (type) {
-        case 'APPLICATION_TYPE':
-            return {
-                ...state,
-                applicationType: (payload.url.includes('homestay')) ? 'homestay' : 'airport'
+        case 'INITIALIZE_FORM':
+            let applicationType = (payload.url.includes('homestay')) ? 'homestay' : 'airport';
+            
+            if (applicationType === 'homestay') {
+                const { departureInfo, ...homestaySections } = totalApplicationSections;
+                let homestayApplicationFields = [];
+                Object.values({...homestaySections}).forEach(section => homestayApplicationFields.push(...section));
+                
+                homestayApplicationFields.forEach(field => {
+                    let camelCaseField = field.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
+                    switch(field) {
+                        case 'birth_date':
+                        case 'homestay_start_date':
+                        case 'homestay_end_date':
+                        case 'arrival_flight_date':
+                            return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: format(Date.now(), 'MM/dd/yyyy')}
+                        
+                        case 'arrival_flight_time':
+                            return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: Date.now()}
+
+                        default:
+                            return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: ''}
+                    }
+                });
+
+            } else if (applicationType === 'airport') {
+                let airportApplicationFields = [];
+                Object.values(totalApplicationSections).forEach(section => airportApplicationFields.push(...section));
+
+                airportApplicationFields.forEach(field => {
+                    let camelCaseField = field.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
+                    switch(field) {
+                        case 'birth_date':
+                        case 'homestay_start_date':
+                        case 'homestay_end_date':
+                        case 'arrival_flight_date':
+                        case 'departure_flight_date':
+                            return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: format(Date.now(), 'MM/dd/yyyy')}
+                        
+                        case 'arrival_flight_time':
+                        case 'departure_flight_time':
+                            return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: Date.now()}
+
+                        default:
+                            return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: ''}
+                    }
+                });
             }
+
+            return { ...INITIAL_STATE, applicationType }
 
         case 'birthDate':
         case 'arrivalDate':
@@ -91,7 +136,7 @@ function StudyAbroadServiceApplicationBase(props) {
     (match.url.includes('homestay')) ? applicationSections = {...homestayForm} : applicationSections = totalApplicationSections;
 
     const onSubmit = event => {
-        // const { isLoading, isError, agreeToPrivacy, ...applicationForm } = state;
+        // const { isLoading, isError, agreeToPrivacy, applicationType ...applicationForm } = state;
 
         // firebase.schoolApplication(authUser.uid).set({...applicationForm}, { merge: true }) 
         // .then(() => {
@@ -103,7 +148,9 @@ function StudyAbroadServiceApplicationBase(props) {
         //     event.preventDefault();
     }
 
-    useEffect(() => { dispatch ({ type: 'APPLICATION_TYPE', payload: match }) }, []);
+    useEffect(() => { 
+        dispatch ({ type: 'INITIALIZE_FORM', payload: match })
+    }, []);
 
     return (
         <Container>
@@ -120,7 +167,7 @@ function StudyAbroadServiceApplicationBase(props) {
                                         <FormLabel component="legend" className={classes.legend}>Gender</FormLabel>
                                         <RadioGroup
                                         name={camelCaseField}
-                                        value={state[camelCaseField]}
+                                        defaultValue={state[camelCaseField]}
                                         onChange={(event) => dispatch({ type: event.target })}
                                         >
                                             <FormControlLabel value="female" control={<Radio />} label="Female" />
@@ -175,7 +222,7 @@ function StudyAbroadServiceApplicationBase(props) {
                                         color="secondary"
                                         variant="outlined"
                                         name={camelCaseField}
-                                        value={state[camelCaseField]}
+                                        defaultValue={state[camelCaseField]}
                                         onChange={(event) => dispatch({ type: event.target })}
                                         type="text"
                                         placeholder={capitalizedField}

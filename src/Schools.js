@@ -40,7 +40,9 @@ const posterBody2 = {
   other: ''
 }
 
-const INITIAL_STATE = {};
+const INITIAL_STATE = {
+  selectedTab: 0
+};
 
 function toggleReducer(state, action) {
   let { type, payload } = action;
