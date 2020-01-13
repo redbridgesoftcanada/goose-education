@@ -41,9 +41,15 @@ class Firebase {
   users = () => this.db.collection("users");
   user = uid => this.db.doc(`users/${uid}`);
 
-  // S C H O O L  A P P L I C A T I O N S
+  // A P P L I C A T I O N S
   schoolApplications = () => this.db.collection("schoolApplications");
   schoolApplication = uid => this.db.doc(`schoolApplications/${uid}`);
+
+  homestayApplications = () => this.db.collection("homestayApplications");
+  homestayApplication = uid => this.db.doc(`homestayApplications/${uid}`);
+
+  airportRideApplications = () => this.db.collection("airportRideApplications");
+  airportRideApplication = uid => this.db.doc(`airportRideApplications/${uid}`);
 };
 
 export default Firebase;

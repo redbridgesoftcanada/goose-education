@@ -136,21 +136,15 @@ function StudyAbroadServiceApplicationBase(props) {
     (match.url.includes('homestay')) ? applicationSections = {...homestayForm} : applicationSections = totalApplicationSections;
 
     const onSubmit = event => {
-        // const { isLoading, isError, agreeToPrivacy, applicationType ...applicationForm } = state;
+        const { isLoading, isError, agreeToPrivacy, applicationType, ...applicationForm } = state;
 
-        // firebase.schoolApplication(authUser.uid).set({...applicationForm}, { merge: true }) 
-        // .then(() => {
-        //     history.push('/profile');
-        //     })
-        //     .catch(error => 
-        //     dispatch({ type: 'error', payload: error }));
-
-        //     event.preventDefault();
+        ((applicationType === 'homestay') ? firebase.homestayApplication(authUser.uid).set({...applicationForm}, { merge: true }) : firebase.airportRideApplication(authUser.uid).set({...applicationForm}, { merge: true }) )
+        .then(() => history.push('/profile'))
+        .catch(error => dispatch({ type: 'error', payload: error }));
+        event.preventDefault();
     }
 
-    useEffect(() => { 
-        dispatch ({ type: 'INITIALIZE_FORM', payload: match })
-    }, []);
+    useEffect(() => dispatch ({ type: 'INITIALIZE_FORM', payload: match }), []);
 
     return (
         <Container>
