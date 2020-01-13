@@ -3,6 +3,7 @@ import { Link as RouterLink, Switch, Route, useRouteMatch } from "react-router-d
 import PropTypes from 'prop-types';
 import { Paper, Tabs, Tab, Typography, makeStyles } from '@material-ui/core';
 
+import { AuthUserContext } from './components/session';
 import Button from './components/onePirate/Button';
 import TabPanel from './components/TabPanel';
 import withRoot from './withRoot';
@@ -104,7 +105,9 @@ function StudyAbroadServices(props) {
                 <TabPanel value={value} index={0}>
                     <Switch>
                         <Route path={`${match.path}/homestay`}>
-                            <StudyAbroadServiceApplication />
+                        <AuthUserContext.Consumer>
+                            { authUser => authUser ? <StudyAbroadServiceApplication authUser={authUser} /> : <Typography variant="h5">Please Register or Login to Apply</Typography> }
+                        </AuthUserContext.Consumer>
                         </Route>
                         <Route path={match.path}>
                             <Typography color="inherit" align="center" variant="h3" marked="center">Homestay</Typography>
@@ -119,7 +122,9 @@ function StudyAbroadServices(props) {
                 <TabPanel value={value} index={1}>
                     <Switch>
                         <Route path={`${match.path}/airport`}>
-                            <StudyAbroadServiceApplication />
+                        <AuthUserContext.Consumer>
+                            { authUser => authUser ? <StudyAbroadServiceApplication authUser={authUser} /> : <Typography variant="h5">Please Register or Login to Apply</Typography> }
+                        </AuthUserContext.Consumer>
                         </Route>
                         <Route path={match.path}>
                             <Typography color="inherit" align="center" variant="h3" marked="center">
