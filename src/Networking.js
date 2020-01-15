@@ -5,6 +5,7 @@ import withRoot from './withRoot';
 
 import Typography from './components/onePirate/Typography';
 import TabPanel from './components/TabPanel';
+
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import ArticleBoard from './views/ArticleBoard';
@@ -90,8 +91,8 @@ function Networking(props) {
 }
   
   // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
-  const [value, setValue] = useState(0);
-  const handleChange = (event, newValue) => setValue(newValue);
+  const [selectedTab, setSelectedTab] = useState(0);
+
 
   return (
     <>
@@ -105,8 +106,8 @@ function Networking(props) {
       </Typography>
       <Paper className={classes.root}>
         <Tabs
-            value={value}
-            onChange={handleChange}
+            value={selectedTab}
+            onChange={(event, value) => setSelectedTab(value)}
             textColor="secondary"
             centered
         >
@@ -114,7 +115,7 @@ function Networking(props) {
             return <Tab key={tab.toLowerCase()} label={tab}/> 
           })}
         </Tabs>
-        {createTabPanel(value, props)}
+        {createTabPanel(selectedTab, props)}
       </Paper>
       <Poster body={posterBody} backgroundImage={posterBackground} layoutType='vancouver_now'/>
       <Footer />

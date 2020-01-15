@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Dialog, DialogContent, DialogContentText, DialogTitle, Fab, Grid, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, PrintOutlined } from '@material-ui/icons';
+
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 import Typography from '../components/onePirate/Typography';
 
@@ -52,6 +55,8 @@ function printDiv(divName) {
 
 function ArticleDialog(props) {
   const { article, classes, articleOpen, onClose } = props;
+
+  const [ comment, setComment ] = useState('');
 
   return (
       <Dialog open={articleOpen} scroll={'paper'} onClose={onClose} id='printableArea'>
@@ -113,6 +118,7 @@ function ArticleDialog(props) {
           <DialogContentText>
             {article ? article.comments.length : ''} Comments
           </DialogContentText>
+            <ReactQuill value={comment} onChange={value => setComment(value)}/>
         </DialogContent>
       </Dialog>
   );

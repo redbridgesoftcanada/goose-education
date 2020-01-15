@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Grid, withStyles } from '@material-ui/core';
 import Typography from '../components/onePirate/Typography';
 
+import { AuthUserContext } from '../components/session';
+import Compose from '../components/ComposeButton';
+import ComposeDialog from '../components/ComposeDialog';
 import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
@@ -70,43 +73,72 @@ const styles = theme => ({
     },
 });
 
-function ArticleBoard(props) {
-    const { classes, articlesDB } = props;
+function toggleReducer(state, action) {
+    let { type, payload } = action;
+  
+    switch(type) {
+        case 'OPEN_COMPOSE':
+            return { ...state, composeOpen: true }
 
-    const [state, setState] = useState({
-        filterOpen: false,
-        anchorEl: null,
-        articleOpen: false,
-        article: null,
-    });
+        case 'CLOSE_COMPOSE':
+            return { ...state, composeOpen: false }
 
-    const { filterOpen, anchorEl, articleOpen, article } = state;
+        case 'OPEN_FILTER':
+            return { ...state, filterOpen: true }
+        
+        case 'CLOSE_FILTER':
+            return { ...state, filterOpen: false }
+        
+        case 'OPEN_SORT':
+            return { ...state, anchorOpen: payload }
+        
+        case 'CLOSE_SORT':
+            return { ...state, anchorOpen: null }
+        
+        case 'OPEN_ARTICLE':
+            return { 
+                ...state, 
+                articleOpen: true, 
+                // article: articlesDB.find(article => article.id.toString() === payload.id)
+            }
+        
+        case 'CLOSE_ARTICLE':
+            return { ...state, articleOpen: false, article: null }
+    }
+}
 
-    // COMPONENTS > Filter Dialog Modal 
-    const handleFilterClick = () => setState({...state, filterOpen: true});
-    const handleFilterClose = () => setState({...state, filterOpen: false});
-    
-    // // COMPONENTS > Sort Popover
-    const handleSortClick = event => setState({...state, anchorEl: event.currentTarget});
-    const handleSortClose = () => setState({...state, anchorEl: null});
+const INITIAL_STATE = {
+    composeOpen: false,
+    filterOpen: false,
+    anchorOpen: null,
+    articleOpen: false,
+    article: null
+}
 
-    // // COMPONENTS > Article Dialog Modal 
-    const handleArticleClick = event => setState({...state, articleOpen: true, article: articlesDB.find(article => article.id.toString() === event.currentTarget.id)});
-    const handleArticleClose = () => setState({...state, articleOpen: false, article: null});
+function ArticleBoard({ classes, articlesDB }) {
+    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+    const { composeOpen, filterOpen, anchorOpen, articleOpen, article } = state;
 
     return (
         <section className={classes.root}>
             <Container>
-                <Filter handleFilterClick={handleFilterClick}/>
-                <Sort handleSortClick={handleSortClick}/>
+                <AuthUserContext.Consumer>
+                    { authUser => authUser ? <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> : '' }
+                </AuthUserContext.Consumer>
+                <Filter handleFilterClick={() => dispatch({ type: 'OPEN_FILTER' })}/>
+                <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
                 <SearchBar />
-                <FilterDialog filterOpen={filterOpen} onClose={handleFilterClose} />
-                <SortPopover anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleSortClose}/>
+
+                <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
+                <ComposeDialog composeOpen={composeOpen} onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
+                <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
+                <ArticleDialog articleOpen={articleOpen} onClose={() => dispatch({ type: 'CLOSE_ARTICLE' })} article={article}/>
+
                 <Grid container>
                     {articlesDB.map(article => {
                         return (
                             <Grid item xs={12} md={3} key={article.id} className={classes.background}>
-                                <div className={classes.item} id={article.id} onClick={handleArticleClick}>
+                                <div className={classes.item} id={article.id} onClick={event => dispatch({ type: 'OPEN_ARTICLE', payload: event.currentTarget })}>
                                     <img
                                         className={classes.image}
                                         src={require(`../assets/img/${article.image}`)}
@@ -125,7 +157,6 @@ function ArticleBoard(props) {
                         );
                     })}
                 </Grid>
-                <ArticleDialog articleOpen={articleOpen} onClose={handleArticleClose} article={article}/>
                 <Pagination />
             </Container>
         </section>

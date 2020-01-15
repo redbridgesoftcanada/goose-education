@@ -21,6 +21,8 @@
 .env.production
 .env.production.local
 
+serviceAccount.json
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
