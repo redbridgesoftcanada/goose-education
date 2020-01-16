@@ -1,69 +1,100 @@
-import React from 'react';
-import { Button, Dialog, DialogTitle, FormLabel, TextField, makeStyles, DialogContent } from '@material-ui/core';
+import React, { useReducer } from 'react';
+import { Button, Dialog, DialogContent, DialogTitle, FormLabel, MenuItem, TextField, Select, makeStyles } from '@material-ui/core';
 
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-const useStyles = makeStyles(theme => ({
-}));
+// const useStyles = makeStyles(theme => ({
+// }));
 
-function ComposeDialog({ onClose, composeOpen }) {
-    const classes = useStyles(); 
+const tags = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
+
+const INITIAL_STATE = {
+    title: '',
+    tag: '',
+    content: '',
+    instagramURL: '',
+    link1: '',
+    link2: ''
+}
+
+function toggleReducer(state, action) {
+    const { type, payload } = action;
+    const { name, value } = payload;
+    
+    switch(type) {
+        case 'RICH_TEXT':
+            return { ...state, content: payload }
+
+        default:
+            return { ...state, [name]: value }
+    }
+}
+
+function ComposeDialog(props) {
+    const { firebase, history, composeOpen, onClose } = props;
+    console.log(history)
+    // const classes = useStyles(); 
+
+    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+    const { title,  tag, content, instagramURL, link1, link2 } = state;
+
+    const onSubmit = event => {
+        firebase.articles().add({...state}, { merge: true }) 
+        // .then(() => {
+        //     history.push('/profile');
+        //     })
+        // .catch(error => 
+        // dispatch({ type: 'error', payload: error }));
+
+        event.preventDefault();
+    }
   
     return (
       <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='lg'>
-        <DialogTitle className={classes.title}>Create Post</DialogTitle>
+        <DialogTitle>Create Post</DialogTitle>
         <DialogContent>
-            <div>
-                <FormLabel component="legend" >Instagram</FormLabel>
-                <TextField
-                variant="outlined"
-                fullWidth
-                name="instagram"
-                // value={email}
-                // onChange={onChange}
-                type="text"
-                placeholder="https://www.instagram.com/gooseedu/"
-                InputLabelProps={{ shrink: true }}/>
-            </div>
-            <div>
-                <FormLabel component="legend" >Title</FormLabel>
-                <TextField
-                variant="outlined"
-                fullWidth
+            <form autoComplete="off" onSubmit={onSubmit}>
+                <FormLabel component="legend">Title</FormLabel>
+                <TextField type="text" variant="outlined" fullWidth InputLabelProps={{ shrink: true }}
                 name="title"
-                // value={email}
-                // onChange={onChange}
-                type="text"
-                // placeholder="https://www.instagram.com/gooseedu/"
-                InputLabelProps={{ shrink: true }}/>
-            </div>
-            
-            <ReactQuill/>
-            <div>
-                <FormLabel component="legend" >Link #1</FormLabel>
-                <TextField
-                variant="outlined"
-                fullWidth
+                value={title}
+                onChange={event => dispatch({ payload: event.target })}/>
+
+                <FormLabel component="legend">Tag</FormLabel>
+                <Select variant="outlined" displayEmpty
+                name='tag' 
+                value={tag} 
+                onChange={event => dispatch({ payload: event.target })}>
+                    <MenuItem value="" disabled>Select One</MenuItem>
+                    { tags.map((tag, i) => {
+                        return <MenuItem key={i} name={tag} value={tag.toLowerCase()}>{tag}</MenuItem>
+                    })}
+                </Select>
+
+                <ReactQuill value={content} onChange={value => dispatch({ type: 'RICH_TEXT', payload: value })}/>
+
+                <FormLabel component="legend">Instagram</FormLabel>
+                <TextField type="text" variant="outlined" fullWidth InputLabelProps={{ shrink: true }}
+                name="instagramURL"
+                value={instagramURL}
+                onChange={event => dispatch({ payload: event.target })}
+                placeholder="https://www.instagram.com/gooseedu/"/>
+
+                <FormLabel component="legend">Link #1</FormLabel>
+                <TextField type="text" variant="outlined" fullWidth InputLabelProps={{ shrink: true }}
                 name="link1"
-                // value={email}
-                // onChange={onChange}
-                type="text"
-                InputLabelProps={{ shrink: true }}/>
-            </div>
-            <div>
-                <FormLabel component="legend" >Link #2</FormLabel>
-                <TextField
-                variant="outlined"
-                fullWidth
+                value={link1}
+                onChange={event => dispatch({ payload: event.target })}/>
+
+                <FormLabel component="legend">Link #2</FormLabel>
+                <TextField type="text" variant="outlined" fullWidth InputLabelProps={{ shrink: true }}
                 name="link2"
-                // value={email}
-                // onChange={onChange}
-                type="text"
-                InputLabelProps={{ shrink: true }}/>
-            </div>
+                value={link2}
+                onChange={event => dispatch({ payload: event.target })}/>
+            <Button variant="contained" color="secondary" fullWidth type="submit">Submit</Button>
+            </form>
         </DialogContent>
-        <Button variant="contained" color="secondary">Submit</Button>
       </Dialog>
     )
 }

@@ -41,6 +41,10 @@ class Firebase {
   users = () => this.db.collection("users");
   user = uid => this.db.doc(`users/${uid}`);
 
+  // A R T I C L E S ( N e t w o r k i n g ) 
+  articles = () => this.db.collection("articles");
+  article = articleId => this.db.doc(`articles/${articleId}`);
+
   // A P P L I C A T I O N S
   schoolApplications = () => this.db.collection("schoolApplications");
   schoolApplication = uid => this.db.doc(`schoolApplications/${uid}`);
