@@ -18,7 +18,8 @@ function Networking(props) {
             {{
               pathname: '/networking', 
               state: {
-                title: 'Networking'
+                title: 'Networking', 
+                selected: 0
               }
             }}
         >

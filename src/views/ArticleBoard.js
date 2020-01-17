@@ -123,14 +123,21 @@ function ArticleBoard({ classes, articlesDB }) {
         <section className={classes.root}>
             <Container>
                 <AuthUserContext.Consumer>
-                    { authUser => authUser ? <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> : '' }
+                    { authUser => authUser ? 
+                    <>
+                        <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
+                        <ComposeDialog 
+                        authUser={authUser} 
+                        composeOpen={composeOpen} 
+                        onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
+                    </>
+                    : '' }
                 </AuthUserContext.Consumer>
                 <Filter handleFilterClick={() => dispatch({ type: 'OPEN_FILTER' })}/>
                 <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
                 <SearchBar />
 
                 <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
-                <ComposeDialog composeOpen={composeOpen} onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
                 <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
                 <ArticleDialog articleOpen={articleOpen} onClose={() => dispatch({ type: 'CLOSE_ARTICLE' })} article={article}/>
 

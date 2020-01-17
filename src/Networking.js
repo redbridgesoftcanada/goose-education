@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardContent, Grid, Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
 import withRoot from './withRoot';
@@ -11,8 +11,6 @@ import PageBanner from './views/PageBanner';
 import ArticleBoard from './views/ArticleBoard';
 import Poster from './views/Poster';
 import Footer from './views/Footer';
-
-const tabs = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,6 +31,13 @@ const useStyles = makeStyles(theme => ({
     marginTop: 270
   },
 }));
+
+const tabs = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
+
+let INITIAL_STATE = {
+  selectedTab: 0,
+  pageTitle: 'Networking'
+}
 
 function createTabPanel(value, props) {
   let tabPanelItems = [];
@@ -89,25 +94,34 @@ function Networking(props) {
       </Grid>
     )
 }
-  
-  // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
-  const [selectedTab, setSelectedTab] = useState(0);
 
+  // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
+  // const [selectedTab, setSelectedTab] = useState(0);
+  const [ state, setState ] = useState(INITIAL_STATE);
+  const { selectedTab, pageTitle } = state;
+
+  useEffect(() => {
+    if (props.location.state && props.location.state.selected && props.location.state.title) {
+      INITIAL_STATE = {
+        selectedTab: props.location.state.selected,
+        pageTitle: props.location.state.title
+      }
+    }
+    setState(INITIAL_STATE);
+  }, [props.location.state]);
 
   return (
     <>
       <NavBar />
-      <PageBanner title={props.location.state.title} backgroundImage={background} layoutType='headerBanner'/>
-      <Typography variant="h3" marked="center" className={classes.title}>
-        {props.location.state.title}
-      </Typography>
+      <PageBanner title={pageTitle} backgroundImage={background} layoutType='headerBanner'/>
+      <Typography variant="h3" marked="center" className={classes.title}>{pageTitle}</Typography>
       <Typography variant="body1" marked="center" className={classes.description}>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </Typography>
       <Paper className={classes.root}>
         <Tabs
             value={selectedTab}
-            onChange={(event, value) => setSelectedTab(value)}
+            onChange={(event, value) => setState({...state, selectedTab: value})}
             textColor="secondary"
             centered
         >

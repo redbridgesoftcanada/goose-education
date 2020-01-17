@@ -1,21 +1,24 @@
-import React, { useReducer } from 'react';
-import { Button, Dialog, DialogContent, DialogTitle, FormLabel, MenuItem, TextField, Select, makeStyles } from '@material-ui/core';
-
+import React, { useReducer, useEffect } from 'react';
+import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, MenuItem, TextField, Select, makeStyles } from '@material-ui/core';
+import { format } from 'date-fns';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-// const useStyles = makeStyles(theme => ({
-// }));
+import { withAuthorization } from '../components/session';
 
 const tags = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
 const INITIAL_STATE = {
+    isLoading: false,
+    isError: false,
     title: '',
+    description: '',
+    author: '',
     tag: '',
-    content: '',
     instagramURL: '',
     link1: '',
-    link2: ''
+    link2: '',
+    date: '',
 }
 
 function toggleReducer(state, action) {
@@ -23,35 +26,54 @@ function toggleReducer(state, action) {
     const { name, value } = payload;
     
     switch(type) {
+        case 'SET_METADATA':
+            return {
+                ...state,
+                author: payload.author,
+                date: format(Date.now(), 'MM/dd/yyyy') }
+                
+        case 'INITIALIZE_SAVE':
+            return {
+                ...state,
+                isLoading: true,
+                isError: false }
+        
+        case 'SUCCESS_SAVE':
+            return { ...INITIAL_STATE }
+
         case 'RICH_TEXT':
-            return { ...state, content: payload }
+            return { ...state, description: payload }
 
         default:
             return { ...state, [name]: value }
     }
 }
 
-function ComposeDialog(props) {
-    const { firebase, history, composeOpen, onClose } = props;
-    console.log(history)
-    // const classes = useStyles(); 
+function ComposeDialogBase(props) {
+    const { authUser, firebase, composeOpen, onClose } = props;
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { title,  tag, content, instagramURL, link1, link2 } = state;
+    const { isLoading, title, tag, description, instagramURL, link1, link2 } = state;
 
     const onSubmit = event => {
-        firebase.articles().add({...state}, { merge: true }) 
-        // .then(() => {
-        //     history.push('/profile');
-        //     })
-        // .catch(error => 
-        // dispatch({ type: 'error', payload: error }));
-
+        dispatch({ type: 'INITIALIZE_SAVE', payload: { name: '', value: ''} })
+        const { isLoading, isError, ...articleForm } = state;
+        
+        firebase.articles().add({...articleForm})
+        .then(() => {
+            dispatch({ type: 'SUCCESS_SAVE', payload: {name: '', value: ''} });
+            onClose();
+            })
+        .catch(error => dispatch({ type: 'error', payload: error }))
         event.preventDefault();
     }
+
+    useEffect(() => {
+        dispatch({ type: 'SET_METADATA', payload: { author: authUser.uid, name: '', value: ''} })
+    }, [])
   
     return (
-      <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='lg'>
+      <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='md'>
         <DialogTitle>Create Post</DialogTitle>
         <DialogContent>
             <form autoComplete="off" onSubmit={onSubmit}>
@@ -72,7 +94,7 @@ function ComposeDialog(props) {
                     })}
                 </Select>
 
-                <ReactQuill value={content} onChange={value => dispatch({ type: 'RICH_TEXT', payload: value })}/>
+                <ReactQuill value={description} onChange={value => dispatch({ type: 'RICH_TEXT', payload: value })}/>
 
                 <FormLabel component="legend">Instagram</FormLabel>
                 <TextField type="text" variant="outlined" fullWidth InputLabelProps={{ shrink: true }}
@@ -92,11 +114,18 @@ function ComposeDialog(props) {
                 name="link2"
                 value={link2}
                 onChange={event => dispatch({ payload: event.target })}/>
-            <Button variant="contained" color="secondary" fullWidth type="submit">Submit</Button>
+
+                <Button variant="contained" color="secondary" fullWidth type="submit">
+                { isLoading ? <CircularProgress /> : 'Submit' }
+                </Button>
             </form>
         </DialogContent>
       </Dialog>
     )
 }
 
-export default ComposeDialog;
+// const composeDialog = withStyles(styles)(ComposeDialogBase);
+const composeDialog = ComposeDialogBase;
+const condition = authUser => !!authUser;
+
+export default withAuthorization(condition)(composeDialog);
