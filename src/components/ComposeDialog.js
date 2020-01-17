@@ -31,7 +31,7 @@ function toggleReducer(state, action) {
                 ...state,
                 author: payload.author,
                 date: format(Date.now(), 'MM/dd/yyyy') }
-                
+
         case 'INITIALIZE_SAVE':
             return {
                 ...state,
@@ -50,7 +50,7 @@ function toggleReducer(state, action) {
 }
 
 function ComposeDialogBase(props) {
-    const { authUser, firebase, composeOpen, onClose } = props;
+    const { authUser, firebase, history, composeOpen, onClose } = props;
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
     const { isLoading, title, tag, description, instagramURL, link1, link2 } = state;
@@ -63,6 +63,7 @@ function ComposeDialogBase(props) {
         .then(() => {
             dispatch({ type: 'SUCCESS_SAVE', payload: {name: '', value: ''} });
             onClose();
+            history.push('/networking');
             })
         .catch(error => dispatch({ type: 'error', payload: error }))
         event.preventDefault();
