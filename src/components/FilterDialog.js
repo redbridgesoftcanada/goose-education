@@ -37,10 +37,6 @@ function FilterDialog(props) {
     const { onClose, filterOpen } = props;
 
     const [option, setOption] = useState('title');
-
-    const handleChange = (event) => {
-        setOption(event.target.value);
-    };
   
     return (
       <Dialog onClose={onClose} open={filterOpen}>
@@ -51,7 +47,7 @@ function FilterDialog(props) {
             label="Content"
             className={classes.menu}
             value={option}
-            onChange={handleChange}
+            onChange={event => setOption(event.target.value)}
             margin="normal"
             >
             {filterOptions.map(option => (
@@ -65,7 +61,7 @@ function FilterDialog(props) {
                 label="And/Or"
                 className={classes.menu}
                 value={option}
-                onChange={handleChange}
+                onChange={event => setOption(event.target.value)}
                 margin="normal"
             >
                 {additiveOptions.map(option => (

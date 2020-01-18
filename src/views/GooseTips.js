@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Grid, withStyles } from '@material-ui/core';
 
@@ -83,29 +83,56 @@ const styles = theme => ({
     },
 });
 
+const INITIAL_STATE = {
+    composeOpen: false,
+    composeOpen: false,
+    filterOpen: false,
+    anchorOpen: null,
+    tipOpen: false,
+    selectedTip: null
+}
+
+function toggleReducer(state, action) {
+    let { type, payload } = action;
+  
+    switch(type) {
+        case 'OPEN_COMPOSE':
+            return { ...state, composeOpen: true }
+
+        case 'CLOSE_COMPOSE':
+            return { ...state, composeOpen: false }
+
+        case 'OPEN_FILTER':
+            return { ...state, filterOpen: true }
+        
+        case 'CLOSE_FILTER':
+            return { ...state, filterOpen: false }
+        
+        case 'OPEN_SORT':
+            return { ...state, anchorOpen: payload }
+        
+        case 'CLOSE_SORT':
+            return { ...state, anchorOpen: null }
+        
+        case 'OPEN_TIP':
+            let selectedTip = payload.database.find(tip => tip.id.toString() === payload.selected.id);
+        return { 
+            ...state, 
+            selectedTip,
+            tipOpen: true, 
+        }
+        
+        case 'CLOSE_TIP':
+            return { ...state, tipOpen: false, tip: null }
+    }
+}
+
 function GooseTips(props) {
     const { classes, tipsDB } = props;
-
-    const [state, setState] = useState({
-        filterOpen: false,
-        anchorEl: null,
-        tipsOpen: false,
-        tip: null,
-    });
-
-    const { filterOpen, anchorEl, tipsOpen, tip } = state;
-
-    // COMPONENTS > Filter Dialog Modal 
-    const handleFilterClick = () => setState({...state, filterOpen: true});
-    const handleFilterClose = () => setState({...state, filterOpen: false});
     
-    // // COMPONENTS > Sort Popover
-    const handleSortClick = event => setState({...state, anchorEl: event.currentTarget});
-    const handleSortClose = () => setState({...state, anchorEl: null});
-
-    // // COMPONENTS > Article Dialog Modal 
-    const handleTipClick = event => setState({...state, tipsOpen: true, tip: tipsDB.find(tip => tip.id.toString() === event.currentTarget.id)});
-    const handleTipClose = () => setState({...state, tipsOpen: false, tip: null});
+    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+    const { filterOpen, anchorOpen, articleOpen, tipOpen, selectedTip } = state;
+    // let match = useRouteMatch();
 
     return (
         <section className={classes.root}>
@@ -113,16 +140,17 @@ function GooseTips(props) {
                 <Typography variant="h3" marked="center" className={classes.title}>
                     Goose Tips
                 </Typography>
-                <Filter handleFilterClick={handleFilterClick}/>
-                <Sort handleSortClick={handleSortClick}/>
+                <Filter handleFilterClick={() => dispatch({ type: 'OPEN_FILTER' })}/>
+                <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
                 <SearchBar />
-                <FilterDialog filterOpen={filterOpen} onClose={handleFilterClose} />
-                <SortPopover anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleSortClose}/>
+
+                <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
+                <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
                 <Grid container>
                     {tipsDB.map(tip => {
                         return (
                             <Grid item xs={12} md={4} key={tip.id} className={classes.background}>
-                                <div id={tip.id} onClick={handleTipClick} className={classes.item}>
+                                <div id={tip.id} onClick={event => dispatch({ type: 'OPEN_TIP', payload: { selected: event.currentTarget, database: tipsDB } })} className={classes.item}>
                                     <img
                                         className={classes.image}
                                         src={require(`../assets/img/${tip.image}`)}
@@ -142,7 +170,7 @@ function GooseTips(props) {
                         )
                     })}
                 </Grid>
-                <ArticleDialog articleOpen={tipsOpen} onClose={handleTipClose} article={tip}/>
+                <ArticleDialog articleOpen={tipOpen} onClose={() => dispatch({ type: 'CLOSE_TIP' })} article={selectedTip}/>
                 <Pagination />
             </Container>
         </section>

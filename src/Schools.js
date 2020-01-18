@@ -91,7 +91,7 @@ function Schools(props) {
               variant="fullWidth"
               centered
               value={selectedTab}
-              onChange={(event) => dispatch({ type: 'SELECTED_TAB', payload: event.target })}
+              onChange={(event, newValue) => dispatch({ type: 'SELECTED_TAB', payload: newValue })}
           >
               <Tab label="School Information" />
               <Tab label="School Application" />

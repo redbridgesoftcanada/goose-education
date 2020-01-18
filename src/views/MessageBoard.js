@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 
+import { AuthUserContext } from '../components/session';
+import Compose from '../components/ComposeButton';
+import ComposeDialog from '../components/ComposeDialog';
 import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
@@ -18,34 +21,65 @@ const styles = theme => ({
     },
 });
 
+const INITIAL_STATE = {
+    composeOpen: false,
+    composeOpen: false,
+    filterOpen: false,
+    anchorOpen: null
+}
+
+function toggleReducer(state, action) {
+    let { type, payload } = action;
+  
+    switch(type) {
+        case 'OPEN_COMPOSE':
+            return { ...state, composeOpen: true }
+
+        case 'CLOSE_COMPOSE':
+            return { ...state, composeOpen: false }
+
+        case 'OPEN_FILTER':
+            return { ...state, filterOpen: true }
+        
+        case 'CLOSE_FILTER':
+            return { ...state, filterOpen: false }
+        
+        case 'OPEN_SORT':
+            return { ...state, anchorOpen: payload }
+        
+        case 'CLOSE_SORT':
+            return { ...state, anchorOpen: null }
+    }
+}
+
 function MessageBoard(props) {
     const { messagesDB, handleClick, classes } = props;
+
+    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+    const { composeOpen, filterOpen, anchorOpen } = state;
     let match = useRouteMatch();
-
-    const [state, setState] = useState({
-        filterOpen: false,
-        anchorEl: null,
-    });
-
-    const { filterOpen, anchorEl } = state;
-
-    // COMPONENTS > Filter Dialog Modal 
-    const handleFilterClick = () => setState({...state, filterOpen: true});
-    const handleFilterClose = () => setState({...state, filterOpen: false});
-    
-    // // COMPONENTS > Sort Popover
-    const handleSortClick = event => setState({...state, anchorEl: event.currentTarget});
-    const handleSortClose = () => setState({...state, anchorEl: null});
 
     return (
         <Container>
             <SocialMediaButtons title={title} description={description}/>
             <div className={classes.wrapper}>
-                <Filter handleFilterClick={handleFilterClick}/>
-                <Sort handleSortClick={handleSortClick}/>
+                <AuthUserContext.Consumer>
+                    { authUser => authUser ? 
+                    <>
+                        <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
+                        <ComposeDialog 
+                        authUser={authUser} 
+                        composeType={match.url}
+                        composeOpen={composeOpen} 
+                        onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
+                    </>
+                    : '' }
+                </AuthUserContext.Consumer>
+                <Filter handleFilterClick={() => dispatch({ type: 'OPEN_FILTER' })}/>
+                <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
             </div>
-            <FilterDialog filterOpen={filterOpen} onClose={handleFilterClose} />
-            <SortPopover anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleSortClose}/>
+            <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
+            <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
             <Table>
                 <TableHead>
                     <TableRow>
