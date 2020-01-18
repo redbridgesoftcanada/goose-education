@@ -54,6 +54,10 @@ class Firebase {
 
   airportRideApplications = () => this.db.collection("airportRideApplications");
   airportRideApplication = uid => this.db.doc(`airportRideApplications/${uid}`);
+
+  // M E S S A G E S ( S t u d y  A b r o a d  C o u n s e l l i n g )
+  messages = () => this.db.collection("messages");
+  message = messageId => this.db.doc(`messages/${messageId}`);
 };
 
 export default Firebase;

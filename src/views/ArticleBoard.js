@@ -1,6 +1,7 @@
 import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Grid, withStyles } from '@material-ui/core';
+import { useRouteMatch } from "react-router-dom";
 import Typography from '../components/onePirate/Typography';
 
 import { AuthUserContext } from '../components/session';
@@ -118,6 +119,7 @@ const INITIAL_STATE = {
 function ArticleBoard({ classes, articlesDB }) {
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
     const { composeOpen, filterOpen, anchorOpen, articleOpen, article } = state;
+    let match = useRouteMatch();
 
     return (
         <section className={classes.root}>
@@ -128,6 +130,7 @@ function ArticleBoard({ classes, articlesDB }) {
                         <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
                         <ComposeDialog 
                         authUser={authUser} 
+                        composeType={match.url}
                         composeOpen={composeOpen} 
                         onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
                     </>

@@ -18,6 +18,7 @@ const INITIAL_STATE = {
     instagramURL: '',
     link1: '',
     link2: '',
+    attachments: '',
     date: '',
 }
 
@@ -50,23 +51,37 @@ function toggleReducer(state, action) {
 }
 
 function ComposeDialogBase(props) {
-    const { authUser, firebase, history, composeOpen, onClose } = props;
+    const { authUser, firebase, history, composeOpen, onClose, composeType } = props;
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { isLoading, title, tag, description, instagramURL, link1, link2 } = state;
+    const { isLoading, title, tag, description, instagramURL, link1, link2, attachments } = state;
 
     const onSubmit = event => {
-        dispatch({ type: 'INITIALIZE_SAVE', payload: { name: '', value: ''} })
-        const { isLoading, isError, ...articleForm } = state;
-        
-        firebase.articles().add({...articleForm})
-        .then(() => {
-            dispatch({ type: 'SUCCESS_SAVE', payload: {name: '', value: ''} });
-            onClose();
-            history.push('/networking');
-            })
-        .catch(error => dispatch({ type: 'error', payload: error }))
-        event.preventDefault();
+        dispatch({ type: 'INITIALIZE_SAVE', payload: { name: '', value: ''} });
+        if (composeType === '/networking') {
+            const { isLoading, isError, ...articleForm } = state;
+            
+            firebase.articles().add({...articleForm})
+            .then(() => {
+                dispatch({ type: 'SUCCESS_SAVE', payload: {name: '', value: ''} });
+                onClose();
+                history.push('/networking');
+                })
+            .catch(error => dispatch({ type: 'error', payload: error }))
+            event.preventDefault();
+
+        } else if (composeType === '/services') {
+            const { isLoading, isError, tag, instagramURL, ...messageForm } = state;
+            
+            firebase.messages().add({...messageForm})
+            .then(() => {
+                dispatch({ type: 'SUCCESS_SAVE', payload: {name: '', value: ''} });
+                onClose();
+                history.push('/services');
+                })
+            .catch(error => dispatch({ type: 'error', payload: error }))
+            event.preventDefault();
+        }
     }
 
     useEffect(() => {
@@ -75,7 +90,7 @@ function ComposeDialogBase(props) {
   
     return (
       <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='md'>
-        <DialogTitle>Create Post</DialogTitle>
+        <DialogTitle>{ composeType === '/networking' ? 'Create Post' : 'Create Counselling Request' }</DialogTitle>
         <DialogContent>
             <form autoComplete="off" onSubmit={onSubmit}>
                 <FormLabel component="legend">Title</FormLabel>
@@ -84,25 +99,29 @@ function ComposeDialogBase(props) {
                 value={title}
                 onChange={event => dispatch({ payload: event.target })}/>
 
-                <FormLabel component="legend">Tag</FormLabel>
-                <Select variant="outlined" displayEmpty
-                name='tag' 
-                value={tag} 
-                onChange={event => dispatch({ payload: event.target })}>
-                    <MenuItem value="" disabled>Select One</MenuItem>
-                    { tags.map((tag, i) => {
-                        return <MenuItem key={i} name={tag} value={tag.toLowerCase()}>{tag}</MenuItem>
-                    })}
-                </Select>
+                { composeType === '/networking' ? 
+                <>
+                    <FormLabel component="legend">Tag</FormLabel>
+                    <Select variant="outlined" displayEmpty
+                    name='tag' 
+                    value={tag} 
+                    onChange={event => dispatch({ payload: event.target })}>
+                        <MenuItem value="" disabled>Select One</MenuItem>
+                        { tags.map((tag, i) => {
+                            return <MenuItem key={i} name={tag} value={tag.toLowerCase()}>{tag}</MenuItem>
+                        })}
+                    </Select>
+
+                    <FormLabel component="legend">Instagram</FormLabel>
+                    <TextField type="text" variant="outlined" fullWidth InputLabelProps={{ shrink: true }}
+                    name="instagramURL"
+                    value={instagramURL}
+                    onChange={event => dispatch({ payload: event.target })}
+                    placeholder="https://www.instagram.com/gooseedu/"/>
+                </>
+                : '' }
 
                 <ReactQuill value={description} onChange={value => dispatch({ type: 'RICH_TEXT', payload: value })}/>
-
-                <FormLabel component="legend">Instagram</FormLabel>
-                <TextField type="text" variant="outlined" fullWidth InputLabelProps={{ shrink: true }}
-                name="instagramURL"
-                value={instagramURL}
-                onChange={event => dispatch({ payload: event.target })}
-                placeholder="https://www.instagram.com/gooseedu/"/>
 
                 <FormLabel component="legend">Link #1</FormLabel>
                 <TextField type="text" variant="outlined" fullWidth InputLabelProps={{ shrink: true }}
