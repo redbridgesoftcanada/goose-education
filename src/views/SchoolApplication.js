@@ -20,7 +20,7 @@ const styles = theme => ({
 });
 
 const applicationSections = {
-    studentInfo: ['last_name', 'first_name', 'gender', 'birth_date', 'phone_number', 'emergency_contact_number', 'emergency_contact_relation', 'address', 'visa'],
+    studentInfo: ['last_name', 'first_name', 'gender', 'birth_date', 'phone_number', 'email', 'emergency_contact_number', 'emergency_contact_relation', 'address', 'visa'],
     programInfo: ['school_name', 'program_name', 'program_duration', 'start_date'],
     otherInfo: ['insurance', 'arrival_date'],
 };
