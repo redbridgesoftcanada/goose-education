@@ -1,5 +1,7 @@
 import React, { useEffect, useReducer } from 'react';
-import { CircularProgress, Container, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core';
+import { CircularProgress, Container, IconButton, Snackbar, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import { format } from 'date-fns';
 import { withAuthorization } from '../components/session';
 
 // const styles = theme => {
@@ -7,10 +9,10 @@ import { withAuthorization } from '../components/session';
 // };
 
 const INITIAL_STATE = {
-  user: {},
   isLoading: false,
-  isError: false
-};
+  isError: false,
+  application: null
+}
 
 function toggleReducer(state, action) {
   let { errorMessage, payload } = action;
@@ -21,21 +23,21 @@ function toggleReducer(state, action) {
         ...state,
         isLoading: true,
         isError: false
-      };
+      }
     case 'FETCH_SUCCESS':
       return {
         ...state,
         isLoading: false,
         isError: false,
-        user: payload,
-      };
+        application: payload,
+      }
     case 'FETCH_FAILURE':
       return {
         ...state,
         isLoading: true,
         isError: true,
         errorMessage: errorMessage
-      };
+      }
     default: {
       throw new Error(`Unhandled type: ${action.type}.`)
     }
@@ -44,27 +46,21 @@ function toggleReducer(state, action) {
 
 function UserApplicationHistory({ authUser, firebase }) {
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+  const { application } = state;
 
-  // useEffect(() => {
-  //   const findUserById = async () => {
-  //     dispatch({ type: 'FETCH_INIT' });
-  //     try {
-  //       const response = await firebase.user(authUser.uid).get();
-  //       let user = response.data();
-  //       dispatch ({ type: 'FETCH_SUCCESS', payload: user });
-  //     } catch(error) {
-  //       dispatch ({ type: 'FETCH_FAILURE', errorMessage: 'Sorry, something went wrong!' });
-  //     }
-  //   }
-  //   findUserById();
-  // }, []);
-
-  // const { username, firstName, lastName, email, phoneNumber, mobileNumber, publicAccount, receieveEmails, receieveSMS } = state.user;
-  // const { lastSignInTime, creationTime } = authUser.metadata;
-
-  // const options = { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
-  // const formattedSignInTime = new Date(lastSignInTime).toLocaleDateString('en', options);
-  // const formattedCreationTime = new Date(creationTime).toLocaleDateString('en', options);
+  useEffect(() => {
+    const findSchoolApplicationById = async () => {
+      dispatch({ type: 'FETCH_INIT' });
+      try {
+        const response = await firebase.schoolApplication(authUser.uid).get();
+        let application = response.data();
+        dispatch ({ type: 'FETCH_SUCCESS', payload: application });
+      } catch(error) {
+        dispatch ({ type: 'FETCH_FAILURE', errorMessage: 'Sorry, something went wrong!' });
+      }
+    }
+    findSchoolApplicationById();
+  }, []);
 
   return (
     <>
@@ -94,7 +90,27 @@ function UserApplicationHistory({ authUser, firebase }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* map application from DB */}
+                { state.application ? 
+                <TableRow>
+                  <TableCell align='center'>1</TableCell>
+                  <TableCell align='center'>{application.programName}, {application.schoolName}</TableCell>
+                  <TableCell align='center'>{application.status}</TableCell>
+                  <TableCell align='center'>{format(application.createdAt, 'Pp')}</TableCell>
+                  <TableCell align='center'>
+                    <IconButton size='small'>
+                      <GetAppIcon />
+                  </IconButton>
+                  </TableCell>
+                </TableRow>
+                : 
+                <TableRow>
+                  <TableCell/>
+                  <TableCell/>
+                  <TableCell align='center'>You have no submitted applications.</TableCell>
+                  <TableCell/>
+                  <TableCell/>
+                </TableRow>
+                }
               </TableBody>
             </Table>
           </Container>
