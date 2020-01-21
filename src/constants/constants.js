@@ -1,0 +1,1 @@
+export const STATUSES = ['submitted', 'completed', 'tuition required', 'approved'];

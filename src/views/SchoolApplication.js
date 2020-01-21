@@ -5,6 +5,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
 import { withAuthorization } from '../components/session';
+import * as APPLICATION from '../constants/constants';
 
 const styles = theme => ({
     root: {
@@ -23,15 +24,14 @@ const applicationSections = {
     studentInfo: ['last_name', 'first_name', 'gender', 'birth_date', 'phone_number', 'email', 'emergency_contact_number', 'emergency_contact_relation', 'address', 'visa'],
     programInfo: ['school_name', 'program_name', 'program_duration', 'start_date'],
     otherInfo: ['insurance', 'arrival_date'],
-};
+}
 
-// i n i t i a l i z i n g  s t a t e
 let INITIAL_STATE = {
     isLoading: false,
     isError: false,
     agreeToPrivacy: false,
     additionalRequests: ''
-};
+}
 
 Object.values(applicationSections).map(section => {
     section.map(field => {
@@ -87,8 +87,12 @@ function SchoolApplicationBase(props) {
 
     const onSubmit = event => {
         const { isLoading, isError, agreeToPrivacy, ...applicationForm } = state;
-
-        firebase.schoolApplication(authUser.uid).set({...applicationForm}, { merge: true }) 
+        firebase.schoolApplication(authUser.uid).set({
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            status: APPLICATION.STATUSES[0],
+            ...applicationForm
+        }, { merge: true }) 
         .then(() => {
             history.push('/profile');
             })
