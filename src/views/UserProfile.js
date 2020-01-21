@@ -3,7 +3,6 @@ import { CircularProgress, Container, Snackbar, Table, TableBody, TableCell, Tab
 import { withAuthorization } from '../components/session';
 
 // const styles = theme => {
-
 // };
 
 const INITIAL_STATE = {
@@ -45,6 +44,13 @@ function toggleReducer(state, action) {
 function UserProfile({ authUser, firebase }) {
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
+  const { email } = state.user;
+  const { lastSignInTime, creationTime } = authUser.metadata;
+
+  const options = { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
+  const formattedSignInTime = new Date(lastSignInTime).toLocaleDateString('en', options);
+  const formattedCreationTime = new Date(creationTime).toLocaleDateString('en', options);
+
   useEffect(() => {
     const findUserById = async () => {
       dispatch({ type: 'FETCH_INIT' });
@@ -58,13 +64,6 @@ function UserProfile({ authUser, firebase }) {
     }
     findUserById();
   }, []);
-
-  const { username, firstName, lastName, email, phoneNumber, mobileNumber, publicAccount, receieveEmails, receieveSMS } = state.user;
-  const { lastSignInTime, creationTime } = authUser.metadata;
-
-  const options = { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
-  const formattedSignInTime = new Date(lastSignInTime).toLocaleDateString('en', options);
-  const formattedCreationTime = new Date(creationTime).toLocaleDateString('en', options);
 
   return (
     <>

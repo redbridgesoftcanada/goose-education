@@ -97,14 +97,15 @@ function toggleReducer(state, action) {
             return { ...state, anchorOpen: null }
         
         case 'OPEN_ARTICLE':
+            let selectedArticle = payload.database.find(article => article.id.toString() === payload.selected.id)
             return { 
                 ...state, 
                 articleOpen: true, 
-                // article: articlesDB.find(article => article.id.toString() === payload.id)
+                selectedArticle
             }
         
         case 'CLOSE_ARTICLE':
-            return { ...state, articleOpen: false, article: null }
+            return { ...state, articleOpen: false, selectedArticle: null }
     }
 }
 
@@ -113,12 +114,12 @@ const INITIAL_STATE = {
     filterOpen: false,
     anchorOpen: null,
     articleOpen: false,
-    article: null
+    selectedArticle: null
 }
 
 function ArticleBoard({ classes, articlesDB }) {
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { composeOpen, filterOpen, anchorOpen, articleOpen, article } = state;
+    const { composeOpen, filterOpen, anchorOpen, articleOpen, selectedArticle } = state;
     let match = useRouteMatch();
 
     return (
@@ -142,13 +143,13 @@ function ArticleBoard({ classes, articlesDB }) {
 
                 <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
                 <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
-                <ArticleDialog articleOpen={articleOpen} onClose={() => dispatch({ type: 'CLOSE_ARTICLE' })} article={article}/>
+                <ArticleDialog articleOpen={articleOpen} onClose={() => dispatch({ type: 'CLOSE_ARTICLE' })} article={selectedArticle}/>
 
                 <Grid container>
                     {articlesDB.map(article => {
                         return (
                             <Grid item xs={12} md={3} key={article.id} className={classes.background}>
-                                <div className={classes.item} id={article.id} onClick={event => dispatch({ type: 'OPEN_ARTICLE', payload: event.currentTarget })}>
+                                <div className={classes.item} id={article.id} onClick={event => dispatch({ type: 'OPEN_ARTICLE', payload: { selected: event.currentTarget, database: articlesDB }})}>
                                     <img
                                         className={classes.image}
                                         src={require(`../assets/img/${article.image}`)}

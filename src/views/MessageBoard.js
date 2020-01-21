@@ -23,7 +23,6 @@ const styles = theme => ({
 
 const INITIAL_STATE = {
     composeOpen: false,
-    composeOpen: false,
     filterOpen: false,
     anchorOpen: null
 }

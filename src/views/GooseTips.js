@@ -85,7 +85,6 @@ const styles = theme => ({
 
 const INITIAL_STATE = {
     composeOpen: false,
-    composeOpen: false,
     filterOpen: false,
     anchorOpen: null,
     tipOpen: false,
@@ -123,7 +122,7 @@ function toggleReducer(state, action) {
         }
         
         case 'CLOSE_TIP':
-            return { ...state, tipOpen: false, tip: null }
+            return { ...state, tipOpen: false, selectedTip: null }
     }
 }
 
@@ -131,7 +130,7 @@ function GooseTips(props) {
     const { classes, tipsDB } = props;
     
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { filterOpen, anchorOpen, articleOpen, tipOpen, selectedTip } = state;
+    const { filterOpen, anchorOpen, tipOpen, selectedTip } = state;
     // let match = useRouteMatch();
 
     return (
