@@ -1,4 +1,5 @@
-// importing seed data into Firestore: run `node firestore.imports.js` to seed data as collections in Firestore DB.
+// import seed data into Firestore: run `node firestore.import.js` to seed data as collections in Firestore DB.
+// note. overwrites existing data in Firestore collections!
 
 const firestoreService = require('firestore-export-import');
 const serviceAccount = require('./serviceAccount.json');
