@@ -40,7 +40,7 @@ const posterBody2 = {
   other: ''
 }
 
-const INITIAL_STATE = {
+let INITIAL_STATE = {
   selectedTab: 0
 };
 
@@ -54,14 +54,13 @@ function toggleReducer(state, action) {
         selectedTab: payload
       }
     
-    // case 'SELECTED_SCHOOL':
-    // let response = schoolsDB.find(school => school.id.toString() === payload.id);
-    //   return {
-    //     ...state,
-    //     selectedSchool: selectedSchoolData
-    //   }
+    case 'SELECTED_SCHOOL':
+      let selectedSchool = payload.database.find(school => school.id.toString() === payload.selected.id);
+      return {
+        ...state,
+        selectedSchool
+      }
   }
-
 }
 
 function Schools(props) {
@@ -70,16 +69,15 @@ function Schools(props) {
   let match = useRouteMatch();
 
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { selectedTab } = state;
+  const { selectedTab, selectedSchool } = state;
 
-  // **WORK IN PROGRESS = replace with DB query in the reducer function to find selected school data.
-  const [selectedSchool, setSelectedSchool] = useState(props.location.state.selectedSchool);
-  const handleSchoolClick = event => setSelectedSchool(schoolsDB.find(school => school.id.toString() === event.currentTarget.id));
-  
-  // opening the corresponding tab content on School Information (/schools) page.
   useEffect(() => {
-    dispatch({ type: 'SELECTED_TAB', payload: props.location.state.selected });
-  }, [props.location.state.selected]);
+    if (props.location.state && props.location.state.selected) {
+      INITIAL_STATE = {
+        selectedTab: props.location.state.selected
+      }
+    }
+  }, [INITIAL_STATE]);
 
   return (
     <>
@@ -103,7 +101,7 @@ function Schools(props) {
               </Route>
               <Route path={match.path}>
                 <Poster body={posterBody} backgroundImage={posterBackground} layoutType='school_information'/>
-                <ListOfSchools schoolsDB={schoolsDB} handleSchoolClick={handleSchoolClick}/>
+                <ListOfSchools schoolsDB={schoolsDB} handleSchoolClick={event => dispatch({ type: 'SELECTED_SCHOOL', payload: { selected: event.target, database: schoolsDB } })}/>
               </Route>
             </Switch>
           </TabPanel>

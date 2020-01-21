@@ -108,7 +108,7 @@ function Networking(props) {
       }
     }
     setState(INITIAL_STATE);
-  }, [props.location.state]);
+  }, [INITIAL_STATE]);
 
   return (
     <>
