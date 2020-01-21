@@ -9,7 +9,8 @@
             "comments": [],
             "views": 162,
             "createdAt": 1579576698361,
-            "updatedAt": 1579576698361
+            "updatedAt": 1579576698361,
+            "isFeatured": true
         }
     ]
 }

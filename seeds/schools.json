@@ -18,7 +18,9 @@
             "googleUrl": "",
             "youtubeUrl": ["<iframe width='800' height='450' src='https://www.youtube.com/embed/AC4UTGSWE8s' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>"],
             "recommendation": false,
-            "isFeatured": false
+            "isFeatured": false,
+            "createdAt": 1579576698361,
+            "updatedAt": 1579576698361
         },
         { 
             "id": 2,
@@ -38,7 +40,9 @@
             "googleUrl": "",
             "youtubeUrl": ["<iframe width='800' height='450' src='https://www.youtube.com/embed/7MSMit3R2Yg' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>"],
             "recommendation": false,
-            "isFeatured": false
+            "isFeatured": false,
+            "createdAt": 1579576698361,
+            "updatedAt": 1579576698361
         },
         { 
             "id": 3,
@@ -58,7 +62,9 @@
             "googleUrl": "",
             "youtubeUrl": ["<iframe width='800' height='450' src='https://www.youtube.com/embed/_Jup8n53lpQ' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>"],
             "recommendation": false,
-            "isFeatured": false
+            "isFeatured": false,
+            "createdAt": 1579576698361,
+            "updatedAt": 1579576698361
         },
         { 
             "id": 4,
@@ -79,7 +85,9 @@
             "youtubeUrl": ["<iframe width='800' height='450' src='https://www.youtube.com/embed/q_Xz3ICFEA8' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>", "<iframe width='800' height='450' src='https://www.youtube.com/embed/77MOeoeQkEk' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>"],
             "recommendation": true,
             "isFeatured": true
-        },
+,
+"createdAt": 1579576698361,
+            "updatedAt": 1579576698361        },
         { 
             "id": 5,
             "name": "Language Across Borders: LAB",
@@ -99,6 +107,8 @@
             "youtubeUrl": ["<iframe width='800' height='450' src='https://www.youtube.com/embed/8rsVCS_Bxmw' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>", "<iframe width='800' height='450' src='https://www.youtube.com/embed/fnPgTtpZ73A' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>"],
             "recommendation": true,
             "isFeatured": true
-        }
+,
+"createdAt": 1579576698361,
+            "updatedAt": 1579576698361        }
     ]
 }
