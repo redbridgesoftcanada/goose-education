@@ -29,11 +29,11 @@ const jsonToFirestore = async () => {
     await firestoreService.initializeApp(serviceAccount, firebaseConfig.databaseURL);
     console.log('Initialized - begin importing seed data.');
 
-    console.log('Importing schools.')
+    console.log('Importing articles.')
     await firestoreService.restore('./seeds/articles.json');
     console.log('Upload Success.');
 
-    console.log('Importing articles.')
+    console.log('Importing schools.')
     await firestoreService.restore('./seeds/schools.json');
     console.log('Upload Success.');
 

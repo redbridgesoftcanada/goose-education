@@ -9,7 +9,8 @@
             "tag": "Restaurant",
             "comments": [],
             "views": 38,
-            "date": "08.16 05: 19",
+            "createdAt": 1579576698361,
+            "updatedAt": 1579576698361,
             "url": "",
             "isFeatured": true
         },
@@ -22,7 +23,8 @@
             "tag": "Other",
             "comments": [],
             "views": 33,
-            "date": "08.16 05: 13",
+            "createdAt": 1579576698361,
+            "updatedAt": 1579576698361,
             "url": "",
             "isFeatured": true
         },
@@ -35,7 +37,8 @@
             "tag": "Restaurant",
             "comments": [],
             "views": 39,
-            "date": "08.14 04: 44",
+            "createdAt": 1579576698361,
+            "updatedAt": 1579576698361,
             "url": "https: //www.facebook.com/thebbtshop/",
             "isFeatured": true
         },
@@ -48,7 +51,8 @@
             "tag": "Restaurant",
             "comments": [],
             "views": 57,
-            "date": "08.14 04: 42",
+            "createdAt": 1579576698361,
+            "updatedAt": 1579576698361,
             "url": "https: //www.xingfutang.ca/vancouver-menu.html",
             "isFeatured": true
         }
