@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Grid, IconButton, Typography, withStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { Redirect } from "react-router-dom";
+import { format } from 'date-fns';
 
 const styles = theme => ({
     root: {
@@ -135,7 +136,7 @@ function ProductValues(props) {
                                                 {school.features}
                                             </Typography>
                                             <Typography variant="body2">
-                                                *2019-03-20
+                                                {(school.updatedAt > school.createdAt) ? format(school.updatedAt, 'yyyy-MM-dd') : format(school.createdAt, 'yyyy-MM-dd')}
                                             </Typography>
                                         </>
                                     }
@@ -179,7 +180,7 @@ function ProductValues(props) {
                                                     {tip.description}
                                                 </Typography>
                                                 <Typography variant="body2">
-                                                    {tip.date}
+                                                    {(tip.updatedAt > tip.createdAt) ? format(tip.updatedAt, 'yyyy-MM-dd') : format(tip.createdAt, 'yyyy-MM-dd')}
                                                 </Typography>
                                             </div>
                                         
