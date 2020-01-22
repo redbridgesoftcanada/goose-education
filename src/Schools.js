@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { Paper, Tabs, Tab, makeStyles, Typography } from '@material-ui/core';
+import { Paper, Tabs, Tab, makeStyles, LinearProgress, Typography } from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import withRoot from './withRoot';
 import TabPanel from './components/TabPanel';
+import { withFirebase } from './components/firebase';
 import { AuthUserContext } from './components/session';
 
 import NavBar from './views/NavBar';
@@ -41,13 +42,28 @@ const posterBody2 = {
 }
 
 let INITIAL_STATE = {
-  selectedTab: 0
+  isLoading: false,
+  selectedTab: 0,
+  listOfSchools: [],
 };
 
 function toggleReducer(state, action) {
   let { type, payload } = action;
 
   switch(type) {
+    case 'FETCH_INIT':
+      return {
+        ...state,
+        isLoading: true
+      }
+      
+    case 'FETCH_SUCCESS':
+      return {
+        ...state,
+        isLoading: false,
+        listOfSchools: payload
+      }
+
     case 'SELECTED_TAB':
       return {
         ...state,
@@ -55,7 +71,7 @@ function toggleReducer(state, action) {
       }
     
     case 'SELECTED_SCHOOL':
-      let selectedSchool = payload.database.find(school => school.id.toString() === payload.selected.id);
+      let selectedSchool = state.listOfSchools.find(school => school.id.toString() === payload.id);
       return {
         ...state,
         selectedSchool
@@ -64,20 +80,38 @@ function toggleReducer(state, action) {
 }
 
 function Schools(props) {
-  const { schoolsDB } = props; 
+  const firebase = props.firebase;
   const classes = useStyles();
   let match = useRouteMatch();
 
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { selectedTab, selectedSchool } = state;
+  const { isLoading, selectedTab, selectedSchool, listOfSchools } = state;
 
   useEffect(() => {
-    if (props.location.state && props.location.state.selected) {
-      INITIAL_STATE = {
-        selectedTab: props.location.state.selected
-      }
+    dispatch({ type: 'FETCH_INIT' });
+    const findAllSchools = () => {
+      const schoolsQuery = firebase.schools().get();
+      schoolsQuery.then(snapshot => {
+        if (snapshot.empty) {
+          console.log('No matching documents.');
+          return;
+        }  
+    
+        const allSchools = [];
+        snapshot.forEach(doc => {
+          allSchools.push(doc.data());
+        });
+
+        dispatch({ type: 'FETCH_SUCCESS', payload: allSchools });
+
+      })
+      .catch(err => {
+        console.log('Error getting documents', err);
+      });
     }
-  }, [INITIAL_STATE]);
+
+  findAllSchools();
+  }, []);
 
   return (
     <>
@@ -101,7 +135,10 @@ function Schools(props) {
               </Route>
               <Route path={match.path}>
                 <Poster body={posterBody} backgroundImage={posterBackground} layoutType='school_information'/>
-                <ListOfSchools schoolsDB={schoolsDB} handleSchoolClick={event => dispatch({ type: 'SELECTED_SCHOOL', payload: { selected: event.target, database: schoolsDB } })}/>
+                { isLoading ? <LinearProgress color='secondary'/> 
+                :
+                <ListOfSchools listOfSchools={listOfSchools} handleSchoolClick={event => dispatch({ type: 'SELECTED_SCHOOL', payload: event.target })}/>
+                }
               </Route>
             </Switch>
           </TabPanel>
@@ -124,4 +161,4 @@ TabPanel.propTypes = {
   // value: PropTypes.any.isRequired,
 };
 
-export default withRoot(Schools);
+export default withRoot(withFirebase(Schools));
