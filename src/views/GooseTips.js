@@ -1,9 +1,9 @@
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { Container, Grid, withStyles } from '@material-ui/core';
+import { Container, Grid, LinearProgress, withStyles } from '@material-ui/core';
 
 import Typography from '../components/onePirate/Typography';
-
+import { withFirebase } from '../components/firebase';
 import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
@@ -84,6 +84,8 @@ const styles = theme => ({
 });
 
 const INITIAL_STATE = {
+    isLoading: false,
+    gooseTips: [],
     composeOpen: false,
     filterOpen: false,
     anchorOpen: null,
@@ -95,6 +97,12 @@ function toggleReducer(state, action) {
     let { type, payload } = action;
   
     switch(type) {
+        case 'FETCH_INIT': 
+            return { ...state, isLoading: true }
+
+        case 'FETCH_TIPS':
+            return { ...state, isLoading: false, gooseTips: payload }
+        
         case 'OPEN_COMPOSE':
             return { ...state, composeOpen: true }
 
@@ -114,7 +122,7 @@ function toggleReducer(state, action) {
             return { ...state, anchorOpen: null }
         
         case 'OPEN_TIP':
-            let selectedTip = payload.database.find(tip => tip.id.toString() === payload.selected.id);
+            let selectedTip = state.gooseTips.find(tip => tip.id.toString() === payload.id);
         return { 
             ...state, 
             selectedTip,
@@ -126,49 +134,76 @@ function toggleReducer(state, action) {
     }
 }
 
-function GooseTips(props) {
-    const { classes, tipsDB } = props;
+function GooseTipsBase(props) {
+    const { classes, firebase } = props;
     
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { filterOpen, anchorOpen, tipOpen, selectedTip } = state;
-    // let match = useRouteMatch();
+    const { gooseTips, filterOpen, anchorOpen, tipOpen, selectedTip } = state;
+
+    useEffect(() => {
+        dispatch({ type: 'FETCH_INIT' });
+        const findAllTips = () => {
+            const tipsQuery = firebase.tips().get();
+            tipsQuery.then(snapshot => {
+              if (snapshot.empty) {
+                console.log('No matching documents.');
+                return;
+              }  
+          
+              let gooseTips = [];
+              snapshot.forEach(doc => {
+                gooseTips.push(doc.data());
+              });
+              dispatch({ type: 'FETCH_TIPS', payload: gooseTips });
+    
+            })
+            .catch(err => {
+              console.log('Error getting documents', err);
+            });
+        }
+
+        findAllTips();
+    }, []);
+    
 
     return (
         <section className={classes.root}>
             <Container>
-                <Typography variant="h3" marked="center" className={classes.title}>
-                    Goose Tips
-                </Typography>
+                <Typography variant="h3" marked="center" className={classes.title}>Goose Tips</Typography>
                 <Filter handleFilterClick={() => dispatch({ type: 'OPEN_FILTER' })}/>
                 <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
                 <SearchBar />
 
                 <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
                 <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
-                <Grid container>
-                    {tipsDB.map(tip => {
-                        return (
-                            <Grid item xs={12} md={4} key={tip.id} className={classes.background}>
-                                <div id={tip.id} onClick={event => dispatch({ type: 'OPEN_TIP', payload: { selected: event.currentTarget, database: tipsDB } })} className={classes.item}>
-                                    <img
-                                        className={classes.image}
-                                        src={require(`../assets/img/${tip.image}`)}
-                                        alt="tip-thumbnail"
-                                    />
-                                    <div className={classes.body}>
-                                        {(tip.views > 100) ? <Typography className={classes.badge}>Hot</Typography> : ''}
-                                        <Typography variant="body1" className={classes.articleTitle}>
-                                            {tip.title}
-                                        </Typography>
-                                        <Typography noWrap variant="body2" className={classes.articleDescription}>
-                                            {tip.description}
-                                        </Typography>
+                { gooseTips.length ? 
+                    <Grid container>
+                        { gooseTips.map(tip => {
+                            return (
+                                <Grid item xs={12} md={4} key={tip.id} className={classes.background}>
+                                    <div id={tip.id} onClick={event => dispatch({ type: 'OPEN_TIP', payload: event.currentTarget })} className={classes.item}>
+                                        <img
+                                            className={classes.image}
+                                            src={require(`../assets/img/${tip.image}`)}
+                                            alt="tip-thumbnail"
+                                        />
+                                        <div className={classes.body}>
+                                            {(tip.views > 100) ? <Typography className={classes.badge}>Hot</Typography> : ''}
+                                            <Typography variant="body1" className={classes.articleTitle}>
+                                                {tip.title}
+                                            </Typography>
+                                            <Typography noWrap variant="body2" className={classes.articleDescription}>
+                                                {tip.description}
+                                            </Typography>
+                                        </div>
                                     </div>
-                                </div>
-                            </Grid>
-                        )
-                    })}
-                </Grid>
+                                </Grid>
+                            )
+                        }) }
+                    </Grid>
+                    : 
+                    <LinearProgress color='secondary'/>
+                    }
                 <ArticleDialog articleOpen={tipOpen} onClose={() => dispatch({ type: 'CLOSE_TIP' })} article={selectedTip}/>
                 <Pagination />
             </Container>
@@ -176,8 +211,8 @@ function GooseTips(props) {
     );
 }
 
-GooseTips.propTypes = {
+GooseTipsBase.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(GooseTips);
+export default withStyles(styles)(withFirebase(GooseTipsBase));

@@ -21,7 +21,6 @@ const useStyles = makeStyles(theme => ({
 
 function GooseEdu(props) {
   const classes = useStyles();
-  const { tipsDB } = props;
 
   const background = 'https://images.unsplash.com/photo-1484704324500-528d0ae4dc7d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80';
   const posterBackground = 'https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80';
@@ -61,7 +60,7 @@ function GooseEdu(props) {
                 <GoosePlatform/>
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <GooseTips tipsDB={tipsDB}/>
+                <GooseTips/>
             </TabPanel>
         </Paper>
         <Footer/>
