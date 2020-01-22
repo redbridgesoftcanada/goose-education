@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { Card, CardContent, Grid, Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
-import withRoot from './withRoot';
+import { Card, CardContent, Grid, Paper, Tabs, Tab, makeStyles, LinearProgress } from '@material-ui/core';
 
+import withRoot from './withRoot';
+import { withFirebase } from './components/firebase';
 import Typography from './components/onePirate/Typography';
 import TabPanel from './components/TabPanel';
 
@@ -32,28 +33,50 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const tabs = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
+const tags = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
 let INITIAL_STATE = {
+  isLoading: false,
   selectedTab: 0,
-  pageTitle: 'Networking'
+  pageTitle: 'Networking',
+  articles: []
 }
 
-function createTabPanel(value, props) {
-  let tabPanelItems = [];
-
-  for (let i = 0; i <= tabs.length; i++){
-    tabPanelItems.push(
-      <TabPanel value={value} index={i} key={i}>
-        <ArticleBoard articlesDB={props.articlesDB}/>
+function createTabPanel(currentTab, state) {
+  let { isLoading, articles } = state;
+  let tabArticles = articles[currentTab];
+  return (
+    <>
+      { isLoading ? 
+      <LinearProgress color='secondary'/> 
+      :
+      <TabPanel value={currentTab} index={currentTab} key={currentTab}>
+        { (tabArticles && tabArticles.length) ? <ArticleBoard articlesDB={tabArticles} /> : <Typography variant='subtitle1'>There are currently no articles on this topic.</Typography> }
       </TabPanel>
-    )
+      }
+    </>
+  )
+}
+
+function toggleReducer(state, action) {
+  let { type, payload } = action;
+
+  switch(type) {
+    case 'FETCH_INIT': 
+      return { ...state, isLoading: true }
+
+    case 'FETCH_SUCCESS':
+      return { ...state, isLoading: false, articles: payload }
+      
+    case 'SELECTED_TAB':
+      return { ...state, selectedTab: payload }
   }
-  return tabPanelItems;
 }
 
 function Networking(props) {
   const classes = useStyles();
+
+  const firebase = props.firebase;
   
   const background = 'https://images.unsplash.com/photo-1564573732309-36969653e65c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1929&q=80';
   const posterBackground = 'https://images.unsplash.com/photo-1543357115-92e515b2c9b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80';
@@ -93,21 +116,48 @@ function Networking(props) {
         <Grid item xs={false} md={3}/>
       </Grid>
     )
-}
+  }
 
   // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
-  // const [selectedTab, setSelectedTab] = useState(0);
-  const [ state, setState ] = useState(INITIAL_STATE);
+  const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
   const { selectedTab, pageTitle } = state;
 
   useEffect(() => {
-    if (props.location.state && props.location.state.selected && props.location.state.title) {
-      INITIAL_STATE = {
-        selectedTab: props.location.state.selected,
-        pageTitle: props.location.state.title
-      }
+    dispatch({ type: 'FETCH_INIT' });
+    const findAllArticles = () => {
+        const articlesQuery = firebase.articles().get();
+        articlesQuery.then(snapshot => {
+          if (snapshot.empty) {
+            console.log('No matching documents.');
+            return;
+          }  
+      
+          const allArticles = [];
+          snapshot.forEach(doc => {
+            allArticles.push(doc.data());
+          });
+
+          const taggedArticles = [];
+          tags.forEach(tag => {
+            let matchArticleTag = [];
+            if (tag === 'All') {
+              taggedArticles.push(allArticles);
+            } else {
+              matchArticleTag = allArticles.filter(article => article.tag === tag);
+              taggedArticles.push(matchArticleTag);
+            }
+          });
+
+          dispatch({ type: 'FETCH_SUCCESS', payload: taggedArticles });
+
+        })
+        .catch(err => {
+          console.log('Error getting documents', err);
+        });
     }
-    setState(INITIAL_STATE);
+
+    findAllArticles();
+
   }, [INITIAL_STATE]);
 
   return (
@@ -121,15 +171,15 @@ function Networking(props) {
       <Paper className={classes.root}>
         <Tabs
             value={selectedTab}
-            onChange={(event, value) => setState({...state, selectedTab: value})}
+            onChange={(event, value) => dispatch({ type: 'SELECTED_TAB', payload: value })}
             textColor="secondary"
             centered
         >
-          {tabs.map(tab => {
+          { tags.map(tab => {
             return <Tab key={tab.toLowerCase()} label={tab}/> 
-          })}
+          }) }
         </Tabs>
-        {createTabPanel(selectedTab, props)}
+        { createTabPanel(selectedTab, state) }
       </Paper>
       <Poster body={posterBody} backgroundImage={posterBackground} layoutType='vancouver_now'/>
       <Footer />
@@ -143,4 +193,4 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-export default withRoot(Networking);
+export default withRoot(withFirebase(Networking));

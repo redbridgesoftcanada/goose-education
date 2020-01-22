@@ -21,114 +21,6 @@ import Profile from './Profile';
 import { withAuthentication } from './components/session';
 
 // d u m m y  d a t a b a s e  o b j e c t s
-const articlesDB = [
-{ 
-    id: 1,
-    title: '벤쿠버 수시 맛집 – Nanaimo Sushi',
-    description: '다양한 롤과 사시미!',
-    image: 'thumb-2919655616_Y4WrbPxp_61cb5518540dad6db53cd54c36ec8e933ca690f7_283x288.jpg',
-    author: '최고관리자',
-    tag: 'Restaurant',
-    comments: [],
-    views: 38,
-    date: '08.16 05:19', //replace with react-moment
-    url: '',
-    isFeatured: true,
-},
-{ 
-    id: 2,
-    title: '밴쿠버 캠핑 핫플 – Paradise Valley Campground',
-    description: '밴쿠버에서 여름을 즐기기 위한 액티비티로 빠질 수 없는 캠핑!',
-    image: 'thumb-2919655616_CBAr7uG6_6b5db15acd1fde70c69c532cf137351e2468feb1_283x288.jpg',
-    author: '최고관리자',
-    tag: 'Other',
-    comments: [],
-    views: 33,
-    date: '08.16 05:13', //replace with react-moment
-    url: '',
-    isFeatured: true,
-},
-{ 
-    id: 3,
-    title: 'Bubble Tea Shop',
-    description: `1680 Robson St, Vancouver; 4651 No 3 Rd #105, Richmond; 1764 Manitoba St, Vancouver`,
-    image: 'thumb-643318286_ydhXINOi_408f5fdb2cf23cfa89626254c8bf675a784b19cc_283x288.jpg',
-    author: '최고관리자',
-    tag: 'Restaurant',
-    comments: [],
-    views: 39,
-    date: '08.14 04:44', //replace with react-moment
-    url: 'https://www.facebook.com/thebbtshop/',
-    isFeatured: true,
-},
-{ 
-    id: 4,
-    title: 'Xing Fu Tang',
-    description: `3432 Cambie Street, Vancouver; 1180 Pinetree Way, Coquitlam; 8030 Granville Street, Vancouver; 2675 Kingsway, Vancouver; 130-8311 Lansdowne Rd, Richmond`,
-    image: 'thumb-643318286_VJOTHgMi_d12784f59d57b78a947c1584875ada7ecdcf3c5c_283x288.jpg',
-    author: '최고관리자',
-    tag: 'Restaurant',
-    comments: [],
-    views: 57,
-    date: '08.14 04:42', //replace with react-moment
-    url: 'https://www.xingfutang.ca/vancouver-menu.html',
-    isFeatured: true,
-    
-},
-{ 
-    id: 5,
-    title: '벤쿠버 수시 맛집 – Nanaimo Sushi',
-    description: '다양한 롤과 사시미!',
-    image: 'thumb-2919655616_Y4WrbPxp_61cb5518540dad6db53cd54c36ec8e933ca690f7_283x288.jpg',
-    author: '최고관리자',
-    tag: 'Restaurant',
-    comments: [],
-    views: 38,
-    date: '08.16 05:19', //replace with react-moment
-    url: '',
-    isFeatured: false,
-},
-{ 
-    id: 6,
-    title: '밴쿠버 캠핑 핫플 – Paradise Valley Campground',
-    description: '밴쿠버에서 여름을 즐기기 위한 액티비티로 빠질 수 없는 캠핑!',
-    image: 'thumb-2919655616_CBAr7uG6_6b5db15acd1fde70c69c532cf137351e2468feb1_283x288.jpg',
-    author: '최고관리자',
-    tag: 'Other',
-    comments: [],
-    views: 33,
-    date: '08.16 05:13', //replace with react-moment
-    url: '',
-    isFeatured: false,
-},
-{ 
-    id: 7,
-    title: 'Bubble Tea Shop',
-    description: `1680 Robson St, Vancouver; 4651 No 3 Rd #105, Richmond; 1764 Manitoba St, Vancouver`,
-    image: 'thumb-643318286_ydhXINOi_408f5fdb2cf23cfa89626254c8bf675a784b19cc_283x288.jpg',
-    author: '최고관리자',
-    tag: 'Restaurant',
-    comments: [],
-    views: 39,
-    date: '08.14 04:44', //replace with react-moment
-    url: 'https://www.facebook.com/thebbtshop/',
-    isFeatured: false,
-},
-{ 
-    id: 8,
-    title: 'Xing Fu Tang',
-    description: `3432 Cambie Street, Vancouver; 1180 Pinetree Way, Coquitlam; 8030 Granville Street, Vancouver; 2675 Kingsway, Vancouver; 130-8311 Lansdowne Rd, Richmond`,
-    image: 'thumb-643318286_VJOTHgMi_d12784f59d57b78a947c1584875ada7ecdcf3c5c_283x288.jpg',
-    author: '최고관리자',
-    tag: 'Restaurant',
-    comments: [],
-    views: 57,
-    date: '08.14 04:42', //replace with react-moment
-    url: 'https://www.xingfutang.ca/vancouver-menu.html',
-    isFeatured: false,  
-},
-];
-
 const schoolsDB = [
 { 
     id: 1,
@@ -339,7 +231,7 @@ function App() {
           <Route path="/services" render={(props) => <ServiceCentre {...props} announcementsDB={announcementsDB} messagesDB={messagesDB}/>}/>
           <Route path="/studyabroad" render={(props) => <StudyAbroad {...props} />}/>
           <Route path="/schools" render={(props) => <Schools {...props} schoolsDB={schoolsDB}/>}/>
-          <Route path="/networking" render={(props) => <Networking {...props} articlesDB={articlesDB}/>}/>
+          <Route path="/networking" render={(props) => <Networking {...props} />}/>
           <Route path="/goose" render={(props) => <Goose {...props} />}/>
           <Route exact path="/" render={() => <Home /> }/>
         </Switch>
