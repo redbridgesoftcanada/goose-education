@@ -34,12 +34,16 @@ const jsonToFirestore = async () => {
     await firestoreService.restore('./seeds/articles.json');
     console.log('Upload Success.');
 
+    console.log('Importing goose tips.')
+    await firestoreService.restore('./seeds/tips.json');
+    console.log('Upload Success.');
+
     console.log('Importing schools.')
     await firestoreService.restore('./seeds/schools.json');
     console.log('Upload Success.');
 
-    console.log('Importing goose tips.')
-    await firestoreService.restore('./seeds/tips.json');
+    console.log('Importing announcements.')
+    await firestoreService.restore('./seeds/announcements.json');
     console.log('Upload Success.');
 
     console.log('Completed importing all seed data.')

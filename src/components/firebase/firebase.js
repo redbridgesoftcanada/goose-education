@@ -63,7 +63,11 @@ class Firebase {
   airportRideApplications = () => this.db.collection("airportRideApplications");
   airportRideApplication = uid => this.db.doc(`airportRideApplications/${uid}`);
 
-  // M E S S A G E S ( S t u d y  A b r o a d  C o u n s e l l i n g )
+  // A N N O U N C E M E N T S ( S t u d y  A b r o a d  S e r v i c e s )
+  announcements = () => this.db.collection("announcements");
+  announcement = announcementId => this.db.doc(`announcements/${announcementId}`);
+
+  // M E S S A G E S ( S t u d y  A b r o a d  S e r v i c e s )
   messages = () => this.db.collection("messages");
   message = messageId => this.db.doc(`messages/${messageId}`);
 };
