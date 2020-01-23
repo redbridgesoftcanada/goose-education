@@ -30,21 +30,21 @@ function toggleReducer(state, action) {
     case 'FETCH_INIT': 
       return { ...state, isLoading: true }
 
-    case 'FEATURED_SCHOOLS':
+    case 'FETCH_FEAT_SCHOOLS':
       return {
         ...state,
         isLoading: false,
         featuredSchools: payload
       }
 
-    case 'FEATURED_ARTICLES':
+    case 'FETCH_FEAT_ARTICLES':
       return {
         ...state,
         isLoading: false,
         featuredArticles: payload
       }
 
-    case 'FEATURED_TIPS':
+    case 'FETCH_FEAT_TIPS':
       return {
         ...state,
         isLoading: false,
@@ -73,7 +73,7 @@ function Index(props) {
           snapshot.forEach(doc => {
             featuredSchools.push(doc.data());
           });
-          dispatch({ type: 'FEATURED_SCHOOLS', payload: featuredSchools });
+          dispatch({ type: 'FETCH_FEAT_SCHOOLS', payload: featuredSchools });
 
         })
         .catch(err => {
@@ -94,7 +94,7 @@ function Index(props) {
           snapshot.forEach(doc => {
             featuredArticles.push(doc.data());
           });
-          dispatch({ type: 'FEATURED_ARTICLES', payload: featuredArticles });
+          dispatch({ type: 'FETCH_FEAT_ARTICLES', payload: featuredArticles });
 
         })
         .catch(err => {
@@ -115,7 +115,7 @@ function Index(props) {
           snapshot.forEach(doc => {
             featuredTips.push(doc.data());
           });
-          dispatch({ type: 'FEATURED_TIPS', payload: featuredTips });
+          dispatch({ type: 'FETCH_FEAT_TIPS', payload: featuredTips });
 
         })
         .catch(err => {

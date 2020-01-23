@@ -74,17 +74,17 @@ const styles = theme => ({
 });
 
 function ListOfSchools(props) {
-    const { classes, handleSchoolClick, schoolsDB } = props;
+    const { classes, handleSchoolClick, listOfSchools } = props;
 
     let match = useRouteMatch();
 
     return (
         <section className={classes.root}>
             <Container>
-                <Typography variant="body2" className={classes.counter}>There are a total of <b>{schoolsDB.length}</b> schools.</Typography>
+                <Typography variant="body2" className={classes.counter}>There are a total of <b>{listOfSchools.length}</b> schools.</Typography>
                 <SearchBar />
                 <Grid container>
-                    {schoolsDB.map(school => {
+                    {listOfSchools.map(school => {
                         return (
                             <Grid item xs={12} md={12} key={school.id}>
                                 <div className={classes.item}>
