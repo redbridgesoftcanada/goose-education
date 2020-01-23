@@ -1,6 +1,7 @@
 import React, { useReducer } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
+import { format } from 'date-fns';
 
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
@@ -108,8 +109,8 @@ function MessageBoard(props) {
                                         {message.title}
                                     </Link>
                                 </TableCell>
-                                <TableCell align='center'>{message.author}</TableCell>
-                                <TableCell align='center'>{message.date}</TableCell>
+                                <TableCell align='center'>{message.authorDisplayName}</TableCell>
+                                <TableCell align='center'>{(message.updatedAt > message.createdAt) ? format(message.updatedAt, 'Pp') : format(message.createdAt, 'Pp')}</TableCell>
                             </TableRow>
                         );
                     })}

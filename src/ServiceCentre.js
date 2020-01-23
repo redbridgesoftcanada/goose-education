@@ -4,6 +4,7 @@ import { Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import withRoot from './withRoot';
+import { withFirebase } from './components/firebase';
 import TabPanel from './components/TabPanel';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
@@ -23,50 +24,82 @@ const useStyles = makeStyles(theme => ({
 const background = 'https://images.unsplash.com/photo-1566694271474-27e7b2de5c16?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1351&q=80';
 
 let INITIAL_STATE = {
+  isLoading: false,
   selectedTab: 0,
   pageTitle: 'Service Centre',
   selectedAnnounce: null,
-  selectedMessage: null
+  selectedMessage: null,
+  messagesDB: [],
 }
 
 function toggleReducer(state, action) {
   const { type, payload } = action;
 
   switch(type) {
-    case 'INITIALIZE':
-      return { ...INITIAL_STATE }
+    case 'FETCH_INIT':
+      return {
+        ...state,
+        isLoading: true
+      }
+    
+    case 'FETCH_MESSAGES':
+      return {
+        ...state,
+        isLoading: false,
+        messagesDB: payload
+      }
 
     case 'SELECTED_TAB':
       return { ...state, selectedTab: payload }
     
-    case 'ANNOUNCEMENT':
+    case 'SELECTED_ANNOUNCEMENT':
       let selectedAnnounce = payload.database.find(announcement => announcement.id.toString() === payload.selected.id);
       return { ...state, selectedAnnounce }
 
-    case 'MESSAGE':
-      let selectedMessage = payload.database.find(message => message.id.toString() === payload.selected.id);
+    case 'SELECTED_MESSAGE':
+      let selectedMessage = state.messagesDB.find(message => message.id.toString() === payload.id);
       return { ...state, selectedMessage }
   }
 }
 
 function ServiceCenter(props) {
   const classes = useStyles();
-  const { announcementsDB, messagesDB } = props;
+  const firebase = props.firebase;
+  const { announcementsDB } = props;
   let match = useRouteMatch();
 
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { selectedTab, pageTitle, selectedAnnounce, selectedMessage } = state;
+  const { selectedTab, pageTitle, selectedAnnounce, selectedMessage, messagesDB } = state;
   
   useEffect(() => {
-    if (props.location.state && props.location.state.selected && props.location.state.title) {
-      INITIAL_STATE = {
-        ...INITIAL_STATE,
-        selectedTab: props.location.state.selected,
-        pageTitle: props.location.state.title
-      }
+    dispatch({ type: 'FETCH_INIT' });
+
+    const findAllMessages = () => {
+      const messagesQuery = firebase.messages().get();
+      messagesQuery.then(snapshot => {
+        if (snapshot.empty) {
+          console.log('No matching documents.');
+          return;
+        }  
+    
+        const allMessages = [];
+        snapshot.forEach(doc => {
+          let message = doc.data();
+          let messageID = allMessages.length + 1;
+          message = {...message, id: messageID}
+          allMessages.push(message)
+        });
+
+        dispatch({ type: 'FETCH_MESSAGES', payload: allMessages });
+
+      })
+      .catch(err => {
+        console.log('Error getting documents', err);
+      });
     }
-    dispatch({ type: 'INITIALIZE' });
-  }, [INITIAL_STATE]);
+
+  findAllMessages();
+  }, []);
 
     return (
       <>
@@ -87,7 +120,7 @@ function ServiceCenter(props) {
                 <Announcement selectedAnnounce={selectedAnnounce} />
               </Route>
               <Route path={match.path}>
-                <AnnouncementBoard announcementsDB={announcementsDB} handleClick={event => dispatch({ type: 'ANNOUNCEMENT', payload: { selected: event.currentTarget, database: announcementsDB } })}/>
+                <AnnouncementBoard announcementsDB={announcementsDB} handleClick={event => dispatch({ type: 'SELECTED_ANNOUNCEMENT', payload: { selected: event.currentTarget, database: announcementsDB } })}/>
               </Route>
             </Switch>
           </TabPanel>
@@ -98,7 +131,7 @@ function ServiceCenter(props) {
                 <Message selectedMessage={selectedMessage}/>
               </Route>
               <Route path={match.path}>
-                <MessageBoard messagesDB={messagesDB} handleClick={event => dispatch({ type: 'MESSAGE', payload: { selected: event.currentTarget, database: messagesDB } })}/>
+                <MessageBoard messagesDB={messagesDB} handleClick={event => dispatch({ type: 'SELECTED_MESSAGE', payload: event.currentTarget })}/>
               </Route>
             </Switch>
           </TabPanel>
@@ -114,4 +147,4 @@ TabPanel.propTypes = {
     // value: PropTypes.any.isRequired,
 };
 
-export default withRoot(ServiceCenter);
+export default withRoot(withFirebase(ServiceCenter));

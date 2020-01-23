@@ -94,27 +94,6 @@ const announcementsDB = [
   },
 ];
 
-const messagesDB = [
-  { 
-    id: 1,
-    title: 'test',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    author: 'test',
-    comments: [],
-    views: 3,
-    date: '01.21 09:35', //replace with react-moment
-  },
-  { 
-    id: 2,
-    title: '학비 질문',
-    description: '밴쿠버 ESL 학교, LAB의 기본영어 클래스 학비가 어떻게 되나요?',
-    author: 'Goose',
-    comments: [],
-    views: 6,
-    date: '01.28 07:46', //replace with react-moment
-  },
-];
-
 function App() {
   return (
     <div className="App">
@@ -125,7 +104,7 @@ function App() {
           <Route path="/login" render={() => <Login/>}/>
           <Route path="/register" render={() => <Register/>}/>
           <Route path="/privacy" render={() => <Privacy/>}/>
-          <Route path="/services" render={(props) => <ServiceCentre {...props} announcementsDB={announcementsDB} messagesDB={messagesDB}/>}/>
+          <Route path="/services" render={(props) => <ServiceCentre {...props} announcementsDB={announcementsDB} />}/>
           <Route path="/studyabroad" render={(props) => <StudyAbroad {...props} />}/>
           <Route path="/schools" render={(props) => <Schools {...props} />}/>
           <Route path="/networking" render={(props) => <Networking {...props} />}/>

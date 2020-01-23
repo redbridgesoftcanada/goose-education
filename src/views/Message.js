@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Container, Divider, Grid, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined } from '@material-ui/icons';
+import { format } from 'date-fns';
 
 import Typography from '../components/onePirate/Typography';
 
@@ -54,19 +55,19 @@ function Announcement(props) {
                         <AccountCircleOutlined/>
                     </Grid>
                     <Grid item>
-                        <Typography variant='body2' className={classes.item}>{selectedMessage.author ? selectedMessage.author : ''}</Typography>
+                        <Typography variant='body2' className={classes.item}>{selectedMessage && selectedMessage.authorDisplayName ? selectedMessage.authorDisplayName : 'Goose User'}</Typography>
                     </Grid>
                     <Grid item >
                         <ChatBubbleOutlineOutlined/>
                     </Grid>
                     <Grid item>
-                        <Typography variant='body2' className={classes.item}>{selectedMessage.comments ? selectedMessage.comments.length : ''}</Typography>
+                        <Typography variant='body2' className={classes.item}>{selectedMessage && selectedMessage.comments ? selectedMessage.comments.length : 0 }</Typography>
                     </Grid>
                     <Grid item >
                         <VisibilityOutlined/>
                     </Grid>
                     <Grid item>
-                        <Typography variant='body2' className={classes.item}>{selectedMessage.views ? selectedMessage.views : ''}</Typography>
+                        <Typography variant='body2' className={classes.item}>{selectedMessage && selectedMessage.views ? selectedMessage.views : 0 }</Typography>
                     </Grid>
                     </Grid>
                 </div>
@@ -76,7 +77,7 @@ function Announcement(props) {
                         <ScheduleOutlined/>
                     </Grid>
                     <Grid item>
-                        <Typography variant='body2'>{selectedMessage ? selectedMessage.date : ''}</Typography>
+                        <Typography variant='body2'>{(selectedMessage && selectedMessage.updatedAt > selectedMessage.createdAt) ? format(selectedMessage.updatedAt, 'Pp') : format(selectedMessage.createdAt, 'Pp')}</Typography>
                     </Grid>
                     </Grid>
                 </div>
@@ -85,9 +86,9 @@ function Announcement(props) {
                 {selectedMessage ? selectedMessage.description : ''}
             </Typography>
             <Divider light/>
-            <Typography variant='body1' align='left' className={classes.description}>
+            {/* <Typography variant='body1' align='left' className={classes.description}>
                 {selectedMessage ? selectedMessage.comments.length : ''} Comments
-            </Typography>
+            </Typography> */}
         </Container>
     )
 }
