@@ -354,10 +354,14 @@ function RegisterFormBase({ firebase, history }) {
   const onSubmit = event => {
     firebase.doCreateUserWithEmailAndPassword(email, passwordOne)
     .then(authUser => {
-      return firebase.user(authUser.user.uid).set({
+      const user = authUser.user;
+      user.updateProfile({
+        displayName: username
+      });
+      return firebase.user(user.uid).set({
         username, email, firstName, lastName, phoneNumber, mobileNumber, receiveEmails, receiveSMS, publicAccount, roles
       }, { merge: true })
-    })  
+    })
     .then(() => {
         dispatch({ type: 'submit' });
         history.push('/');

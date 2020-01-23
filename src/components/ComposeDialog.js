@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer } from 'react';
 import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, MenuItem, TextField, Select, makeStyles } from '@material-ui/core';
 import { format } from 'date-fns';
 import ReactQuill from 'react-quill';
@@ -13,13 +13,11 @@ const INITIAL_STATE = {
     isError: false,
     title: '',
     description: '',
-    author: '',
     tag: '',
     instagramURL: '',
     link1: '',
     link2: '',
-    attachments: '',
-    date: '',
+    attachments: ''
 }
 
 function toggleReducer(state, action) {
@@ -27,12 +25,6 @@ function toggleReducer(state, action) {
     const { name, value } = payload;
     
     switch(type) {
-        case 'SET_METADATA':
-            return {
-                ...state,
-                author: payload.author,
-                date: format(Date.now(), 'MM/dd/yyyy') }
-
         case 'INITIALIZE_SAVE':
             return {
                 ...state,
@@ -61,7 +53,13 @@ function ComposeDialogBase(props) {
         if (composeType === '/networking') {
             const { isLoading, isError, ...articleForm } = state;
             
-            firebase.articles().add({...articleForm})
+            firebase.articles().add({
+                authorID: authUser.uid,
+                authorDisplayName: authUser.displayName,
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                ...articleForm
+            })
             .then(() => {
                 dispatch({ type: 'SUCCESS_SAVE', payload: {name: '', value: ''} });
                 onClose();
@@ -73,7 +71,13 @@ function ComposeDialogBase(props) {
         } else if (composeType === '/services') {
             const { isLoading, isError, tag, instagramURL, ...messageForm } = state;
             
-            firebase.messages().add({...messageForm})
+            firebase.messages().add({
+                authorID: authUser.uid,
+                authorDisplayName: authUser.displayName,
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                ...messageForm
+            })
             .then(() => {
                 dispatch({ type: 'SUCCESS_SAVE', payload: {name: '', value: ''} });
                 onClose();
@@ -83,10 +87,6 @@ function ComposeDialogBase(props) {
             event.preventDefault();
         }
     }
-
-    useEffect(() => {
-        dispatch({ type: 'SET_METADATA', payload: { author: authUser.uid, name: '', value: ''} })
-    }, [])
   
     return (
       <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='md'>
