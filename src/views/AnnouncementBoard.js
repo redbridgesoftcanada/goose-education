@@ -1,6 +1,7 @@
 import React, { useReducer } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
+import { format } from 'date-fns';
 
 import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
@@ -94,7 +95,7 @@ function AnnouncementBoard(props) {
                                     </Link>
                                 </TableCell>
                                 <TableCell align='center'>{announcement.author}</TableCell>
-                                <TableCell align='center'>{announcement.date}</TableCell>
+                                <TableCell align='center'> {(announcement.updatedAt > announcement.createdAt) ? format(announcement.updatedAt, 'yyyy-MM-dd') : format(announcement.createdAt, 'yyyy-MM-dd')}</TableCell>
                             </TableRow>
                         );
                     })}

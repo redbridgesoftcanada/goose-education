@@ -30,6 +30,7 @@ let INITIAL_STATE = {
   selectedAnnounce: null,
   selectedMessage: null,
   messagesDB: [],
+  announcementsDB: [],
 }
 
 function toggleReducer(state, action) {
@@ -49,11 +50,18 @@ function toggleReducer(state, action) {
         messagesDB: payload
       }
 
+    case 'FETCH_ANNOUNCEMENTS':
+      return {
+        ...state,
+        isLoading: false,
+        announcementsDB: payload
+      }
+
     case 'SELECTED_TAB':
       return { ...state, selectedTab: payload }
     
     case 'SELECTED_ANNOUNCEMENT':
-      let selectedAnnounce = payload.database.find(announcement => announcement.id.toString() === payload.selected.id);
+      let selectedAnnounce = state.announcementsDB.find(announcement => announcement.id.toString() === payload.id);
       return { ...state, selectedAnnounce }
 
     case 'SELECTED_MESSAGE':
@@ -62,17 +70,18 @@ function toggleReducer(state, action) {
   }
 }
 
-function ServiceCenter(props) {
+function ServiceCentre(props) {
   const classes = useStyles();
   const firebase = props.firebase;
-  const { announcementsDB } = props;
   let match = useRouteMatch();
 
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { selectedTab, pageTitle, selectedAnnounce, selectedMessage, messagesDB } = state;
+  const { selectedTab, pageTitle, selectedAnnounce, selectedMessage, messagesDB, announcementsDB } = state;
   
   useEffect(() => {
-    dispatch({ type: 'FETCH_INIT' });
+    if (props.location.state && props.location.state.selected) {
+      dispatch({ type: 'SELECTED_TAB', payload: props.location.state.selected })
+    }
 
     const findAllMessages = () => {
       const messagesQuery = firebase.messages().get();
@@ -85,8 +94,8 @@ function ServiceCenter(props) {
         const allMessages = [];
         snapshot.forEach(doc => {
           let message = doc.data();
-          let messageID = allMessages.length + 1;
-          message = {...message, id: messageID}
+          let messageId = doc.id;
+          message = {...message, id: messageId}
           allMessages.push(message)
         });
 
@@ -98,7 +107,35 @@ function ServiceCenter(props) {
       });
     }
 
+    const findAllAnnouncements = () => {
+      const announcementsQuery = firebase.announcements().get();
+      announcementsQuery.then(snapshot => {
+        if (snapshot.empty) {
+          console.log('No matching documents.');
+          return;
+        }  
+    
+        const allAnnnouncements = [];
+        snapshot.forEach(doc => {
+          let announcement = doc.data();
+          let announcementId = doc.id;
+          announcement = {...announcement, id: announcementId}
+          allAnnnouncements.push(announcement)
+        });
+
+        dispatch({ type: 'FETCH_ANNOUNCEMENTS', payload: allAnnnouncements });
+
+      })
+      .catch(err => {
+        console.log('Error getting documents', err);
+      });
+    }
+    
+  dispatch({ type: 'FETCH_INIT' });
   findAllMessages();
+
+  dispatch({ type: 'FETCH_INIT' });
+  findAllAnnouncements();
   }, []);
 
     return (
@@ -120,7 +157,7 @@ function ServiceCenter(props) {
                 <Announcement selectedAnnounce={selectedAnnounce} />
               </Route>
               <Route path={match.path}>
-                <AnnouncementBoard announcementsDB={announcementsDB} handleClick={event => dispatch({ type: 'SELECTED_ANNOUNCEMENT', payload: { selected: event.currentTarget, database: announcementsDB } })}/>
+                <AnnouncementBoard announcementsDB={announcementsDB} handleClick={event => dispatch({ type: 'SELECTED_ANNOUNCEMENT', payload: event.currentTarget })}/>
               </Route>
             </Switch>
           </TabPanel>
@@ -147,4 +184,4 @@ TabPanel.propTypes = {
     // value: PropTypes.any.isRequired,
 };
 
-export default withRoot(withFirebase(ServiceCenter));
+export default withRoot(withFirebase(ServiceCentre));

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Container, Divider, Fab, Grid, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, PrintOutlined } from '@material-ui/icons';
-
+import { format } from 'date-fns';
 import Typography from '../components/onePirate/Typography';
 
 const styles = theme => ({
@@ -90,7 +90,7 @@ function Announcement(props) {
                         <ScheduleOutlined/>
                     </Grid>
                     <Grid item>
-                        <Typography variant='body2'>{selectedAnnounce ? selectedAnnounce.date : ''}</Typography>
+                        <Typography variant='body2'>{(selectedAnnounce.updatedAt > selectedAnnounce.createdAt) ? format(selectedAnnounce.updatedAt, 'Pp') : format(selectedAnnounce.createdAt, 'Pp')}</Typography>
                     </Grid>
                     </Grid>
                 </div>

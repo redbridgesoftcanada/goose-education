@@ -20,80 +20,6 @@ import Profile from './Profile';
 // React Context Components
 import { withAuthentication } from './components/session';
 
-// d u m m y  d a t a b a s e  o b j e c t s
-const announcementsDB = [
-  { 
-    id: 1,
-    title: '공지사항 게시판 타이틀입니다',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    author: '슈퍼관리자',
-    comments: [
-      {
-        avatar: '',
-        username: 'test',
-        content: 'test',
-        date: '01.31 09:31',
-      },
-    ],
-    views: 152,
-    date: '01.04 11:38', //replace with react-moment
-  },
-  { 
-    id: 2,
-    title: '공지사항 게시판 타이틀입니다',
-    description: '공지사항 게시판 타이틀입니다',
-    author: '슈퍼관리자',
-    comments: [],
-    views: 76,
-    date: '01.04 11:38', //replace with react-moment
-  },
-  { 
-    id: 3,
-    title: '공지사항 게시판 타이틀입니다',
-    description: '공지사항 게시판 타이틀입니다',
-    author: '슈퍼관리자',
-    comments: [],
-    views: 77,
-    date: '01.04 11:38', //replace with react-moment
-  },
-  { 
-    id: 4,
-    title: '공지사항 게시판 타이틀입니다',
-    description: '공지사항 게시판 타이틀입니다',
-    author: '슈퍼관리자',
-    comments: [],
-    views: 82,
-    date: '01.04 11:38', //replace with react-moment
-  },
-  { 
-    id: 5,
-    title: '공지사항 게시판 타이틀입니다',
-    description: '공지사항 게시판 타이틀입니다',
-    author: '슈퍼관리자',
-    comments: [],
-    views: 78,
-    date: '01.04 11:38', //replace with react-moment
-  },
-  { 
-    id: 6,
-    title: '공지사항 게시판 타이틀입니다',
-    description: '공지사항 게시판 타이틀입니다',
-    author: '슈퍼관리자',
-    comments: [],
-    views: 72,
-    date: '01.04 11:38', //replace with react-moment
-  },
-  { 
-    id: 7,
-    title: '공지사항 게시판 타이틀입니다',
-    description: '공지사항 게시판 타이틀입니다',
-    author: '슈퍼관리자',
-    comments: [],
-    views: 79,
-    date: '01.04 11:38', //replace with react-moment
-  },
-];
-
 function App() {
   return (
     <div className="App">
@@ -104,7 +30,7 @@ function App() {
           <Route path="/login" render={() => <Login/>}/>
           <Route path="/register" render={() => <Register/>}/>
           <Route path="/privacy" render={() => <Privacy/>}/>
-          <Route path="/services" render={(props) => <ServiceCentre {...props} announcementsDB={announcementsDB} />}/>
+          <Route path="/services" render={(props) => <ServiceCentre {...props} />}/>
           <Route path="/studyabroad" render={(props) => <StudyAbroad {...props} />}/>
           <Route path="/schools" render={(props) => <Schools {...props} />}/>
           <Route path="/networking" render={(props) => <Networking {...props} />}/>
