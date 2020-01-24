@@ -28,7 +28,10 @@ class Firebase {
 
     this.auth = app.auth();
     this.db = app.firestore();
+    this.fieldValue = app.firestore.FieldValue;
   }
+
+  updateArray = () => this.fieldValue;
 
   // A U T H E N T I C A T I O N  A P I
   doCreateUserWithEmailAndPassword = (email, password) => this.auth.createUserWithEmailAndPassword(email, password);

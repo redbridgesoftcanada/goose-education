@@ -157,7 +157,7 @@ function ServiceCentre(props) {
             <Switch>
               <Route path={`${match.path}/announcement/:announcementID`}>
               <AuthUserContext.Consumer>
-                {authUser => <Announcement authUser={authUser} selectedAnnounce={selectedAnnounce} /> }
+                {authUser => <Announcement history={props.history} authUser={authUser} selectedAnnounce={selectedAnnounce} /> }
               </AuthUserContext.Consumer>
               </Route>
               <Route path={match.path}>

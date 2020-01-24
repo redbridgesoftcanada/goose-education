@@ -56,11 +56,21 @@ function printDiv(divName) {
 }
 
 function Announcement(props) {
-    const { authUser, classes, firebase, selectedAnnounce } = props;
+    const { authUser, classes, firebase, history, selectedAnnounce } = props;
     const [ comment, setComment ] = useState('');
 
     const onSubmit = event => {
-        // ...
+        firebase.announcement(selectedAnnounce.id).update({ 
+            "comments": firebase.updateArray().arrayUnion({
+                authorDisplayName: authUser.displayName,
+                authorID: authUser.uid,
+                description: comment,
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            }) 
+        })
+        .then(() => { history.push('/services') })
+        // .catch(error => dispatch({ type: 'error', payload: error }))
         event.preventDefault();
     }
 
@@ -120,7 +130,7 @@ function Announcement(props) {
                     {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
                     value={comment} 
                     onChange={value => setComment(value)} />
-                    <Button disabled={!authUser || comment.length === 0 } variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+                    <Button disabled={!authUser} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
                 </form>
             </div>
             <br/>
