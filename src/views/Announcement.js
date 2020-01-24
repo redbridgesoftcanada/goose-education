@@ -69,7 +69,10 @@ function Announcement(props) {
                 updatedAt: Date.now()
             }) 
         })
-        .then(() => { history.push('/services') })
+        .then(() => { 
+            setComment('');
+            history.push('/services') 
+        })
         // .catch(error => dispatch({ type: 'error', payload: error }))
         event.preventDefault();
     }
@@ -124,16 +127,6 @@ function Announcement(props) {
             <Typography variant='body1' align='left' className={classes.description}>
                 {selectedAnnounce ? selectedAnnounce.comments.length : ''} Comments
             </Typography>
-            <div>
-                <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
-                    <ReactQuill 
-                    {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
-                    value={comment} 
-                    onChange={value => setComment(value)} />
-                    <Button disabled={!authUser} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-                </form>
-            </div>
-            <br/>
             {selectedAnnounce.comments.map((comment, i) => {
                 return (
                     <Fragment key={i}>
@@ -150,7 +143,16 @@ function Announcement(props) {
                     </Fragment>
                 )
             })}
-            
+            <br/>
+            <div>
+                <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+                    <ReactQuill 
+                    {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
+                    value={comment} 
+                    onChange={value => setComment(value)} />
+                    <Button disabled={!authUser} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+                </form>
+            </div>
         </Container>
     )
 }
