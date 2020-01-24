@@ -56,6 +56,7 @@ function ComposeDialogBase(props) {
             firebase.articles().add({
                 authorID: authUser.uid,
                 authorDisplayName: authUser.displayName,
+                comments: [],
                 createdAt: Date.now(),
                 updatedAt: Date.now(),
                 ...articleForm
@@ -74,6 +75,7 @@ function ComposeDialogBase(props) {
             firebase.messages().add({
                 authorID: authUser.uid,
                 authorDisplayName: authUser.displayName,
+                comments: [],
                 createdAt: Date.now(),
                 updatedAt: Date.now(),
                 ...messageForm

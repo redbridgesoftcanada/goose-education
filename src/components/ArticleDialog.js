@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { Box, Dialog, DialogContent, DialogContentText, DialogTitle, Fab, Grid, withStyles } from '@material-ui/core';
+import React, { Fragment, useState } from 'react';
+import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Fab, Grid, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, PrintOutlined } from '@material-ui/icons';
-
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-
+import { format } from 'date-fns';
 import Typography from '../components/onePirate/Typography';
+import { withFirebase } from '../components/firebase';
 
 const styles = theme => ({
   meta: {
@@ -54,12 +53,30 @@ function printDiv(divName) {
 }
 
 function ArticleDialog(props) {
-  const { article, classes, articleOpen, onClose } = props;
-
+  const { authUser, classes, firebase, history, article, articleOpen, onClose } = props;
   const [ comment, setComment ] = useState('');
 
+  const onSubmit = event => {
+    firebase.article(article.id).update({ 
+        "comments": firebase.updateArray().arrayUnion({
+            authorDisplayName: authUser.displayName,
+            authorID: authUser.uid,
+            description: comment,
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+        }) 
+    })
+    .then(() => { 
+      setComment('');
+      onClose();
+      history.push('/networking');
+    });
+    // .catch(error => dispatch({ type: 'error', payload: error }))
+    event.preventDefault();
+}
+
   return (
-      <Dialog open={articleOpen} scroll={'paper'} onClose={onClose} id='printableArea'>
+      <Dialog open={articleOpen} scroll='paper' onClose={onClose} id='printableArea' fullWidth maxWidth='md'>
         <DialogTitle>{article ? article.title : ''}</DialogTitle>
         <Box px={3} py={2} className={classes.meta}>
           <div className={classes.left}>
@@ -113,15 +130,42 @@ function ArticleDialog(props) {
           <Fab size="small" color="secondary" className={classes.print} onClick={() => printDiv('printableArea')}>
             <PrintOutlined />
           </Fab>
-        </DialogContent>
-        <DialogContent dividers>
-          <DialogContentText>
-            {article ? article.comments.length : ''} Comments
-          </DialogContentText>
-            <ReactQuill value={comment} onChange={value => setComment(value)}/>
+          <br/><br/><br/>
+          <Divider/>
+          <br/>
+          <DialogContentText>{article ? article.comments.length : ''} Comments</DialogContentText>
+            { article && article.comments.length ? article.comments.map((comment, i) => {
+              return (
+                <Fragment key={i}>
+                    <div className={classes.left}>
+                        <Typography variant='body2' align='left' color='secondary'>{comment.authorDisplayName}</Typography>
+                    </div>
+                    <div className={classes.right}>
+                        <Typography variant='body2' align='left'>
+                            {(comment.updatedAt > comment.createdAt) ? format(comment.updatedAt, 'Pp') : format(comment.createdAt, 'Pp')}
+                        </Typography>
+                    </div>
+                    <br/>
+                    <Typography variant='body2' align='left'>{comment.description}</Typography>
+                </Fragment>
+              )
+            })
+          :
+          <DialogContentText>There are currently no comments.</DialogContentText>
+          }
+          <br/>
+          <div>
+            <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+              <ReactQuill 
+              {...(!authUser ? { readOnly: true, placeholder:'Please Register or Login to Comment.' } : {} )}
+              value={comment} 
+              onChange={value => setComment(value)} />
+              <Button disabled={!authUser} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+            </form>
+          </div>
         </DialogContent>
       </Dialog>
   );
 }
 
-export default withStyles(styles)(ArticleDialog);
+export default withStyles(styles)(withFirebase(ArticleDialog));

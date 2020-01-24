@@ -42,7 +42,7 @@ let INITIAL_STATE = {
   articles: []
 }
 
-function createTabPanel(currentTab, state) {
+function createTabPanel(currentTab, state, history) {
   let { isLoading, articles } = state;
   let tabArticles = articles[currentTab];
   return (
@@ -51,7 +51,7 @@ function createTabPanel(currentTab, state) {
       <LinearProgress color='secondary'/> 
       :
       <TabPanel value={currentTab} index={currentTab} key={currentTab}>
-        { (tabArticles && tabArticles.length) ? <ArticleBoard articlesDB={tabArticles} /> : <Typography variant='subtitle1'>There are currently no articles on this topic.</Typography> }
+        { (tabArticles && tabArticles.length) ? <ArticleBoard articlesDB={tabArticles} history={history} /> : <Typography variant='subtitle1'>There are currently no articles on this topic.</Typography> }
       </TabPanel>
       }
     </>
@@ -75,8 +75,7 @@ function toggleReducer(state, action) {
 
 function Networking(props) {
   const classes = useStyles();
-
-  const firebase = props.firebase;
+  const { firebase, history } = props;
   
   const background = 'https://images.unsplash.com/photo-1564573732309-36969653e65c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1929&q=80';
   const posterBackground = 'https://images.unsplash.com/photo-1543357115-92e515b2c9b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80';
@@ -179,7 +178,7 @@ function Networking(props) {
             return <Tab key={tab.toLowerCase()} label={tab}/> 
           }) }
         </Tabs>
-        { createTabPanel(selectedTab, state) }
+        { createTabPanel(selectedTab, state, history) }
       </Paper>
       <Poster body={posterBody} backgroundImage={posterBackground} layoutType='vancouver_now'/>
       <Footer />

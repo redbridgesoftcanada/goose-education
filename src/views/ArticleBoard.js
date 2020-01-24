@@ -117,7 +117,8 @@ const INITIAL_STATE = {
     selectedArticle: null
 }
 
-function ArticleBoard({ classes, articlesDB }) {
+function ArticleBoard(props) {
+    const { classes, history, articlesDB } = props;
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
     const { composeOpen, filterOpen, anchorOpen, articleOpen, selectedArticle } = state;
     let match = useRouteMatch();
@@ -134,6 +135,11 @@ function ArticleBoard({ classes, articlesDB }) {
                         composeType={match.url}
                         composeOpen={composeOpen} 
                         onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
+                        <ArticleDialog 
+                        authUser={authUser} 
+                        history={history}
+                        articleOpen={articleOpen} 
+                        onClose={() => dispatch({ type: 'CLOSE_ARTICLE' })} article={selectedArticle}/>
                     </>
                     : '' }
                 </AuthUserContext.Consumer>
@@ -143,7 +149,6 @@ function ArticleBoard({ classes, articlesDB }) {
 
                 <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
                 <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
-                <ArticleDialog articleOpen={articleOpen} onClose={() => dispatch({ type: 'CLOSE_ARTICLE' })} article={selectedArticle}/>
 
                 <Grid container>
                     {articlesDB.map(article => {
