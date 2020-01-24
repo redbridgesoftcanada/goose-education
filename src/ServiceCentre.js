@@ -170,7 +170,9 @@ function ServiceCentre(props) {
           <TabPanel value={selectedTab} index={1}>
             <Switch>
               <Route path={`${match.path}/message/:messageID`}>
-                <Message selectedMessage={selectedMessage}/>
+                <AuthUserContext.Consumer>
+                  {authUser => <Message history={props.history} authUser={authUser} selectedMessage={selectedMessage} /> }
+                </AuthUserContext.Consumer>
               </Route>
               <Route path={match.path}>
                 {isLoading ? <LinearProgress color='secondary' /> : <MessageBoard messagesDB={messagesDB} handleClick={event => dispatch({ type: 'SELECTED_MESSAGE', payload: event.currentTarget })}/>
