@@ -1,8 +1,10 @@
-import React from 'react';
-import { Box, Container, Divider, Fab, Grid, withStyles } from '@material-ui/core';
+import React, { Fragment, useState } from 'react';
+import { Box, Button, Container, Divider, Fab, Grid, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, PrintOutlined } from '@material-ui/icons';
 import { format } from 'date-fns';
+import ReactQuill from 'react-quill';
 import Typography from '../components/onePirate/Typography';
+import { withFirebase } from '../components/firebase';
 
 const styles = theme => ({
     root: {
@@ -54,7 +56,13 @@ function printDiv(divName) {
 }
 
 function Announcement(props) {
-    const { classes, selectedAnnounce } = props;
+    const { authUser, classes, firebase, selectedAnnounce } = props;
+    const [ comment, setComment ] = useState('');
+
+    const onSubmit = event => {
+        // ...
+        event.preventDefault();
+    }
 
     return (
         <Container className={classes.root} id='printableArea'>
@@ -106,8 +114,35 @@ function Announcement(props) {
             <Typography variant='body1' align='left' className={classes.description}>
                 {selectedAnnounce ? selectedAnnounce.comments.length : ''} Comments
             </Typography>
+            <div>
+                <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+                    <ReactQuill 
+                    {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
+                    value={comment} 
+                    onChange={value => setComment(value)} />
+                    <Button disabled={!authUser || comment.length === 0 } variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+                </form>
+            </div>
+            <br/>
+            {selectedAnnounce.comments.map((comment, i) => {
+                return (
+                    <Fragment key={i}>
+                        <div className={classes.left}>
+                            <Typography variant='body2' align='left' color='secondary'>{comment.authorDisplayName}</Typography>
+                        </div>
+                        <div className={classes.right}>
+                            <Typography variant='body2' align='left'>
+                                {(comment.updatedAt > comment.createdAt) ? format(comment.updatedAt, 'Pp') : format(comment.createdAt, 'Pp')}
+                            </Typography>
+                        </div>
+                        <br/>
+                        <Typography variant='body2' align='left'>{comment.description}</Typography>
+                    </Fragment>
+                )
+            })}
+            
         </Container>
     )
 }
 
-export default withStyles(styles)(Announcement);
+export default withStyles(styles)(withFirebase(Announcement));

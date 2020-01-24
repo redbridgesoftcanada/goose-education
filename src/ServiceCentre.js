@@ -1,10 +1,12 @@
 import React, { useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
+import { LinearProgress, Paper, Tabs, Tab, makeStyles} from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import withRoot from './withRoot';
 import { withFirebase } from './components/firebase';
+import { AuthUserContext } from './components/session';
+
 import TabPanel from './components/TabPanel';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
@@ -76,7 +78,7 @@ function ServiceCentre(props) {
   let match = useRouteMatch();
 
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { selectedTab, pageTitle, selectedAnnounce, selectedMessage, messagesDB, announcementsDB } = state;
+  const { isLoading, selectedTab, pageTitle, selectedAnnounce, selectedMessage, messagesDB, announcementsDB } = state;
   
   useEffect(() => {
     if (props.location.state && props.location.state.selected) {
@@ -154,10 +156,13 @@ function ServiceCentre(props) {
           <TabPanel value={selectedTab} index={0}>
             <Switch>
               <Route path={`${match.path}/announcement/:announcementID`}>
-                <Announcement selectedAnnounce={selectedAnnounce} />
+              <AuthUserContext.Consumer>
+                {authUser => <Announcement authUser={authUser} selectedAnnounce={selectedAnnounce} /> }
+              </AuthUserContext.Consumer>
               </Route>
               <Route path={match.path}>
-                <AnnouncementBoard announcementsDB={announcementsDB} handleClick={event => dispatch({ type: 'SELECTED_ANNOUNCEMENT', payload: event.currentTarget })}/>
+                {isLoading ? <LinearProgress color='secondary'/> : <AnnouncementBoard announcementsDB={announcementsDB} handleClick={event => dispatch({ type: 'SELECTED_ANNOUNCEMENT', payload: event.currentTarget })}/>
+                }
               </Route>
             </Switch>
           </TabPanel>
@@ -168,7 +173,8 @@ function ServiceCentre(props) {
                 <Message selectedMessage={selectedMessage}/>
               </Route>
               <Route path={match.path}>
-                <MessageBoard messagesDB={messagesDB} handleClick={event => dispatch({ type: 'SELECTED_MESSAGE', payload: event.currentTarget })}/>
+                {isLoading ? <LinearProgress color='secondary' /> : <MessageBoard messagesDB={messagesDB} handleClick={event => dispatch({ type: 'SELECTED_MESSAGE', payload: event.currentTarget })}/>
+                }
               </Route>
             </Switch>
           </TabPanel>
