@@ -4,9 +4,7 @@ import withRoot from './withRoot';
 import NavBar from './views/NavBar';
 import UserProfile from './views/UserProfile';
 import UserApplicationHistory from './views/UserApplicationHistory';
-import PasswordChangeForm from './views/PasswordChangeForm';
 import Footer from './views/Footer';
-
 import { AuthUserContext, withAuthorization } from './components/session';
 
 function ProfileBase() {
@@ -17,7 +15,6 @@ function ProfileBase() {
         {authUser =>
           <>
             <UserProfile authUser={authUser} />
-            <PasswordChangeForm/>
             <br/>
             <UserApplicationHistory authUser={authUser} />
           </>

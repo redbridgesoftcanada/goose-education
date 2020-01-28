@@ -1,6 +1,8 @@
 import React, { useEffect, useReducer } from 'react';
-import { CircularProgress, Container, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core';
+import { CircularProgress, Container, Snackbar, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
 import { withAuthorization } from '../components/session';
+
+import EditProfile from '../components/navlinks/EditProfile';
 
 // const styles = theme => {
 // };
@@ -81,6 +83,7 @@ function UserProfile({ authUser, firebase }) {
       :
         <>
           <Typography variant='h4'>My Page</Typography>
+          <EditProfile/>
           <br/>
           <Container>
             <Typography variant='h5'>My Info</Typography>
