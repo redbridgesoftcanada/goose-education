@@ -1,22 +1,35 @@
 import React, { useState } from 'react';
 import { withFirebase } from '../components/firebase';
-import { Button, Collapse, TextField } from '@material-ui/core';
+import { Button, FormLabel, TextField, makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        "& .MuiTextField-root": {
+          margin: theme.spacing(1),
+          width: 500,
+        },
+    },
+
+    formField: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+}));
 
 const INITIAL_STATE = {
-    isOpen: false,
     passwordOne: '',
     passwordTwo: '',
     error: null,
 };
 
 function PasswordChangeForm(props) {
+    const classes = useStyles();
     const [ state, setState ] = useState({...INITIAL_STATE});
-    const { isOpen, passwordOne, passwordTwo, error } = state;
+    const { passwordOne, passwordTwo, error } = state;
 
     // Firebase error objects have a message property by default, but only shown when there is an actual error using conditional rendering.
     const isInvalid = passwordOne !== passwordTwo || passwordOne === '';
 
-    const onClick = () => setState({...state, isOpen: !isOpen})
     const onChange = event => setState({...state, [event.target.name]: event.target.value});
     const onSubmit = event => {
         props.firebase.doPasswordUpdate(passwordOne)
@@ -26,14 +39,9 @@ function PasswordChangeForm(props) {
     }
 
     return (
-        <>
-            <div onClick={onClick}>
-                <Button>
-                    Reset My Password
-                </Button>
-            </div>
-            <Collapse in={isOpen}>
-                <form onSubmit={onSubmit}>
+        <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+            <div className={classes.formField}>
+                <FormLabel>New Password</FormLabel>
                 <TextField
                     color="secondary"
                     variant="outlined"
@@ -41,8 +49,11 @@ function PasswordChangeForm(props) {
                     value={passwordOne}
                     onChange={onChange}
                     type="password"
-                    placeholder="New Password"
                 />
+            </div>
+
+            <div className={classes.formField}>
+                <FormLabel>Confirm New Password</FormLabel>
                 <TextField
                     color="secondary"
                     variant="outlined"
@@ -50,19 +61,12 @@ function PasswordChangeForm(props) {
                     value={passwordTwo}
                     onChange={onChange}
                     type="password"
-                    placeholder="Confirm New Password"
                 />
-                <Button 
-                    variant="contained" 
-                    disabled={isInvalid} 
-                    type="submit"
-                >
-                    Reset My Password
-                </Button>
-                {error && <p>{error.message}</p>}
-                </form>
-            </Collapse>
-        </>
+            </div>
+
+            <Button variant="contained" disabled={isInvalid} type="submit">Reset My Password</Button>
+            {error && <p>{error.message}</p>}
+        </form>
     );
 
 }
