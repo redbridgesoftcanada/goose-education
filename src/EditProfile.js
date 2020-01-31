@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function ProfileBase() {
+function EditProfileBase(props) {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -45,7 +45,9 @@ function ProfileBase() {
 
       <Grid item xs={10}>
         <TabPanel value={selectedTab} index={0}>
-          <EditProfileForm/>
+          <AuthUserContext.Consumer>
+            {authUser => <EditProfileForm authUser={authUser} user={props.location.state.user}/> }
+          </AuthUserContext.Consumer>
         </TabPanel>
 
         <TabPanel value={selectedTab} index={1}>
@@ -67,7 +69,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-const profile = withRoot(ProfileBase);
+const editProfile = withRoot(EditProfileBase);
 const condition = authUser => !!authUser;
 
-export default withAuthorization(condition)(profile);
+export default withAuthorization(condition)(editProfile);

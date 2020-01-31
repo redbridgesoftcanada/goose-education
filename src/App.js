@@ -26,7 +26,7 @@ function App() {
     <div className="App">
       <ScrollToTop>
         <Switch>
-          <Route path="/profile/edit" render={() => <EditProfile/>}/>
+          <Route path="/profile/edit" render={(props) => <EditProfile {...props} />}/>
           <Route path="/profile" render={() => <Profile/>}/>
           <Route path="/forgotpassword" render={() => <ForgotPassword/>}/>
           <Route path="/login" render={() => <Login/>}/>

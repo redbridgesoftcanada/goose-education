@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Link } from '@material-ui/core';
 import { Link as RouterLink } from "react-router-dom";
 
-function EditProfile() {
+function EditProfile(props) {
     return (
       <Button variant="outlined">
         <Link
@@ -11,7 +11,13 @@ function EditProfile() {
           variant="h6"
           underline="none"
           component={RouterLink}
-          to="/profile/edit"
+          to=
+            {{
+              pathname: '/profile/edit', 
+              state: {
+                user: props.user
+              }
+            }}
         >
           {'Edit'}
         </Link>

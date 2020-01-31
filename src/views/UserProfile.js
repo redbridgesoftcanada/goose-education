@@ -83,7 +83,7 @@ function UserProfile({ authUser, firebase }) {
       :
         <>
           <Typography variant='h4'>My Page</Typography>
-          <EditProfile/>
+          <EditProfile user={state.user}/>
           <br/>
           <Container>
             <Typography variant='h5'>My Info</Typography>
