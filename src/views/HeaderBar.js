@@ -105,21 +105,20 @@ function HeaderBar(props) {
         <AppBar position="static">
             <Toolbar className={classes.toolbar}>
                 <div className={classes.left}>
-                <IconButton aria-label="Instagram">
+                <IconButton>
                     <Instagram/>
                 </IconButton>
-                <IconButton aria-label="Facebook">
+                <IconButton>
                     <Facebook/>
                 </IconButton>
-                <IconButton aria-label="Kakao Talk">
-                    <img src={require("../assets/img/sns_03.jpg")} alt="Kakao Talk"/>
+                <IconButton>
+                    <img className={classes.kakao} src={require('../assets/img/kakao-talk.svg')} alt="Kakao Talk"/>
                 </IconButton>
-                <IconButton aria-label="Naver">
-                    <img src={require("../assets/img/sns_04.jpg")} alt="Naver"/>
+                <IconButton>
+                    <img className={classes.naver} src={require('../assets/img/icon_blog.png')} alt="Naver"/>
                 </IconButton>
                 <TextField
                     className={classes.textField}
-                    id="input-with-icon-textfield"
                     placeholder="Search"
                     variant="outlined"
                     InputProps={{

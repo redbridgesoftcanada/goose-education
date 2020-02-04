@@ -78,7 +78,16 @@ const styles = theme => ({
   },
   nested: {
     paddingLeft: theme.spacing(4),
-  }
+  },
+  kakao: {
+    width: 25,
+    marginLeft: 1,
+    marginTop: 1,
+  },
+  naver: {
+    width: 27,
+    marginLeft: 1,
+  },
 });
 
 function NavBar(props) {
