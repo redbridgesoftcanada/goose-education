@@ -59,6 +59,7 @@ function ComposeDialogBase(props) {
                 comments: [],
                 createdAt: Date.now(),
                 updatedAt: Date.now(),
+                views: 0,
                 ...articleForm
             })
             .then(() => {
@@ -78,6 +79,7 @@ function ComposeDialogBase(props) {
                 comments: [],
                 createdAt: Date.now(),
                 updatedAt: Date.now(),
+                views: 0,
                 ...messageForm
             })
             .then(() => {
