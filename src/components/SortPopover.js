@@ -12,19 +12,19 @@ function SortPopover(props) {
             open={open}
             onClose={onClose}
         >
-            <MenuItem onClick={onClose}>
+            <MenuItem id="reset" onClick={onClose}>
                 <ListItemIcon>
                     <PowerSettingsNewOutlined fontSize="small"/>
                 </ListItemIcon>
                 <ListItemText primary="Reset"/>
             </MenuItem>
-            <MenuItem onClick={onClose}>
+            <MenuItem id="date" onClick={onClose}>
                 <ListItemIcon>
                     <ScheduleOutlined fontSize="small"/>
                 </ListItemIcon>
                 <ListItemText primary="Date"/>
             </MenuItem>
-            <MenuItem onClick={onClose}>
+            <MenuItem id="views" onClick={onClose}>
                 <ListItemIcon>
                     <VisibilityOutlined fontSize="small"/>
                 </ListItemIcon>

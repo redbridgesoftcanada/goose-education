@@ -22,12 +22,6 @@ const styles = theme => ({
     },
 });
 
-const INITIAL_STATE = {
-    composeOpen: false,
-    filterOpen: false,
-    anchorOpen: null
-}
-
 function toggleReducer(state, action) {
     let { type, payload } = action;
   
@@ -48,13 +42,32 @@ function toggleReducer(state, action) {
             return { ...state, anchorOpen: payload }
         
         case 'CLOSE_SORT':
-            return { ...state, anchorOpen: null }
+            const selectedSort = payload.id;
+            let sortedMessages;
+            if (selectedSort === 'date') {
+                sortedMessages = state.messages.sort((a,b) => (a.updatedAt > b.updatedAt) ? -1 : ((b.updatedAt > a.updatedAt) ? 1 : 0))
+            } else if (selectedSort === 'views') {
+                sortedMessages = state.messages.sort((a,b) => (a.views > b.views) ? -1 : ((b.views > a.views) ? 1 : 0))
+            } else {
+                sortedMessages = state.messages.sort((a,b) => (a.createdAt > b.createdAt) ? 1 : ((b.createdAt > a.createdAt) ? -1 : 0));
+            }
+
+            return { 
+                ...state, 
+                anchorOpen: null,
+                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : null,
+                messages: sortedMessages
+            }
     }
 }
 
-function MessageBoard(props) {
-    const { messagesDB, handleClick, classes } = props;
-
+function MessageBoard({classes, handleClick, messagesDB}) {
+    const INITIAL_STATE = {
+        messages: messagesDB,
+        composeOpen: false,
+        filterOpen: false,
+        anchorOpen: null
+    }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
     const { composeOpen, filterOpen, anchorOpen } = state;
     let match = useRouteMatch();
@@ -79,7 +92,7 @@ function MessageBoard(props) {
                 <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
             </div>
             <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
-            <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
+            <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
             <Table>
                 <TableHead>
                     <TableRow>

@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format } from 'date-fns';
@@ -19,16 +19,13 @@ const styles = theme => ({
     },
 });
 
-const INITIAL_STATE = {
-    composeOpen: false,
-    filterOpen: false,
-    anchorOpen: null
-}
-
 function toggleReducer(state, action) {
     let { type, payload } = action;
   
     switch(type) {
+        case 'INIT_ANNOUNCEMENTS': 
+            return { ...state, announcements: payload }
+
         case 'OPEN_COMPOSE':
             return { ...state, composeOpen: true }
 
@@ -45,16 +42,40 @@ function toggleReducer(state, action) {
             return { ...state, anchorOpen: payload }
         
         case 'CLOSE_SORT':
-            return { ...state, anchorOpen: null }
+            const selectedSort = payload.id;
+            let sortedAnnouncements;
+            if (selectedSort === 'date') {
+                sortedAnnouncements = state.announcements.sort((a,b) => (a.createdAt > b.createdAt) ? -1 : ((b.createdAt > a.createdAt) ? 1 : 0))
+            } else if (selectedSort === 'views') {
+                sortedAnnouncements = state.announcements.sort((a,b) => (a.views > b.views) ? -1 : ((b.views > a.views) ? 1 : 0))
+            } else {
+                sortedAnnouncements = state.announcements.sort((a,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0));
+            }
+
+            return { 
+                ...state, 
+                anchorOpen: null,
+                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : null,
+                announcements: sortedAnnouncements
+            }
     }
 }
 
-function AnnouncementBoard(props) {
-    const { announcementsDB, handleClick, classes } = props;
-    
+function AnnouncementBoard({classes, handleClick, announcementsDB}) {
+    const INITIAL_STATE = {
+        announcements: [],
+        composeOpen: false,
+        filterOpen: false,
+        anchorOpen: null,
+    }
+
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { filterOpen, anchorOpen } = state;
+    const { announcements, filterOpen, anchorOpen } = state;
     let match = useRouteMatch();
+
+    useEffect(() => {
+        dispatch({ type: 'INIT_ANNOUNCEMENTS', payload: announcementsDB })
+    }, [announcementsDB])
 
     return (
         <Container>
@@ -64,7 +85,7 @@ function AnnouncementBoard(props) {
                 <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
             </div>
             <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
-            <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
+            <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -74,7 +95,7 @@ function AnnouncementBoard(props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {announcementsDB.map(announcement => {
+                    {announcements.map(announcement => {
                         return (
                             <TableRow hover key={announcement.id} id={announcement.id} onClick={handleClick}>
                                 <TableCell align='center'>
