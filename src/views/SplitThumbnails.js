@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { Redirect } from "react-router-dom";
 import { Grid, IconButton, Typography, withStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { Redirect } from "react-router-dom";
 import { format } from 'date-fns';
 
 const styles = theme => ({
@@ -68,15 +67,24 @@ const styles = theme => ({
     }
 });
 
-function ProductValues(props) {
-    const { classes, previewSchools, previewTips } = props;
-
-    const [ pathname, setPathname ] = useState({});
-
-    const handleClick = (event) => {
-        switch(event.currentTarget.id) {            
+function SplitThumbnails({classes, previewSchools, previewTips}) {
+    const INITIAL_STATE = {};
+    const [ route, setRoute ] = useState(INITIAL_STATE);
+    
+    const handleClick = event => {
+        switch(event.currentTarget.id) {        
+            case 'school_information':
+                setRoute({
+                    pathname: '/schools', 
+                    state: {
+                        title: 'School Information',
+                        selected: 0
+                    }
+                });
+                break;
+        
             case 'goose_tips':
-                setPathname({
+                setRoute({
                     pathname: '/goose', 
                     state: {
                         title: 'Goose Tips',
@@ -87,13 +95,13 @@ function ProductValues(props) {
             
             default:
                 let selectedSchool = previewSchools.find(school => school.id.toString() === event.currentTarget.id);
-                setPathname({
+                setRoute({
                     pathname: `/schools/${selectedSchool.name.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
                     state: {
                         title: 'School Information',
                         selected: 0,
-                        selectedSchool: selectedSchool
-                    }
+                        selectedSchool
+                    },
                 });
                 break;
         }
@@ -107,14 +115,15 @@ function ProductValues(props) {
                         <Typography variant="h4" className={classes.title}>
                             School Information
                         </Typography>
-                        { (Object.entries(pathname).length) ? 
-                            <Redirect push to={pathname}/>
+                        { (Object.entries(route).length) ? 
+                            <Redirect push to={route}/>
                             :
                             <IconButton id='school_information' className={classes.button} onClick={handleClick}>
                                 <AddIcon />
                             </IconButton>
                         }
                     </div>
+
                     <Grid item xs={12} md={12} className={classes.container}>
                         {previewSchools.map(school => {
                             return (
@@ -125,8 +134,8 @@ function ProductValues(props) {
                                         alt="School Logo"
                                     />
                                     <div id={school.id} className={classes.description} onClick={handleClick}>
-                                    { (Object.entries(pathname).length) ? 
-                                        <Redirect push to={pathname}/>
+                                    { (Object.entries(route).length) ? 
+                                        <Redirect push to={route}/>
                                         :
                                         <>
                                             <Typography variant="subtitle1">
@@ -151,8 +160,8 @@ function ProductValues(props) {
                         <Typography variant="h4" className={classes.titleWhite}>
                             Goose Tips
                         </Typography>
-                        { (Object.entries(pathname).length) ? 
-                            <Redirect push to={pathname}/>
+                        { (Object.entries(route).length) ? 
+                            <Redirect push to={route}/>
                             :
                             <IconButton id='goose_tips' className={classes.buttonWhite} onClick={handleClick}>
                                 <AddIcon />
@@ -169,8 +178,8 @@ function ProductValues(props) {
                             <div id='goose_tips' className={classes.description} onClick={handleClick}>
                                 {previewTips.map(tip => {
                                     return (
-                                        (Object.entries(pathname).length) ? 
-                                            <Redirect push to={pathname}/>
+                                        (Object.entries(route).length) ? 
+                                            <Redirect key={tip.id} push to={route}/>
                                             :
                                             <div key={tip.id}>
                                                 <Typography variant="subtitle1">
@@ -183,8 +192,6 @@ function ProductValues(props) {
                                                     {(tip.updatedAt > tip.createdAt) ? format(tip.updatedAt, 'yyyy-MM-dd') : format(tip.createdAt, 'yyyy-MM-dd')}
                                                 </Typography>
                                             </div>
-                                        
-                                       
                                     )
                                 })}
                             </div>
@@ -196,8 +203,4 @@ function ProductValues(props) {
     );
 }
 
-ProductValues.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(ProductValues);
+export default withStyles(styles)(SplitThumbnails);

@@ -1,9 +1,8 @@
-import React, { useReducer } from 'react';
-import { Link as RouterLink } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link as RouterLink, withRouter } from "react-router-dom";
 import { Collapse, Container, List, ListItem, ListItemText, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from '@material-ui/core';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import parse from 'html-react-parser';
-
 import Button from '../components/onePirate/Button';
 
 const styles = theme => ({
@@ -29,42 +28,37 @@ const styles = theme => ({
     },
 });
 
-const INITIAL_STATE = {
-    intro: true,
-    features: true,
-    programs: true,
-    expenses: true,
-    details: true,
-    media: true
-}
-
-function toggleReducer(state, action) {
-    let { type } = action;
-    let { id } = type;
-
-    switch(id) {
-        default:
-            return {
-                ...state,
-                [id]: !state[id]
-            }
-    }
-  }
-
 function SchoolInformation(props) {
-    const { classes, selectedSchool } = props;
-    const defaultMessage = "Please contact us for any further information.";
+    
+    const INITIAL_STATE = {
+        intro: true,
+        features: true,
+        programs: true,
+        expenses: true,
+        details: true,
+        media: true,
+    }
+    const defaultMessage = "Please contact us for any further information."
 
-    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { intro, features, programs, expenses, details, media } = state;
+    const [ open, setOpen ] = useState(INITIAL_STATE);
+    const { intro, features, programs, expenses, details, media } = open;
+
+    const handleClick = event => {
+        setOpen(prevState => ({
+            ...prevState, 
+            [event.currentTarget.id]: !open[event.currentTarget.id]
+        }))
+    }
+
+    let { classes, selectedSchool } = props;
+    // to access props from <Redirect /> rather than passed directly to the component;
+    if (props.location.state && props.location.state.selectedSchool) selectedSchool = props.location.state.selectedSchool
 
     return (
         <>
             <Container>
-                <img
-                    className={classes.image}
+                <img className={classes.image} alt='school logo'
                     src={require(`../assets/img/${(Object.entries(selectedSchool).length && selectedSchool.image) ? selectedSchool.image: 'flogo.png'}`)}
-                    alt='school logo'
                 />
                 <Table>
                     <TableHead>
@@ -79,64 +73,64 @@ function SchoolInformation(props) {
                     <TableBody>
                         <TableRow>
                             <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.name) ? selectedSchool.name : ''}</TableCell>
-                            <TableCell align='center'>{(Object.entries(selectedSchool) && selectedSchool.type) ? selectedSchool.type : ''}</TableCell>
-                            <TableCell align='center'>{(Object.entries(selectedSchool) && selectedSchool.location) ? selectedSchool.location : ''}</TableCell>
-                            <TableCell align='center'>{(Object.entries(selectedSchool) && selectedSchool.url) ? selectedSchool.url : ''}</TableCell>
-                            <TableCell align='center'>{(Object.entries(selectedSchool) && selectedSchool.dateOfEstablishment) ? selectedSchool.dateOfEstablishment : ''}</TableCell>
+                            <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.type) ? selectedSchool.type : ''}</TableCell>
+                            <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.location) ? selectedSchool.location : ''}</TableCell>
+                            <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.url) ? selectedSchool.url : ''}</TableCell>
+                            <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.dateOfEstablishment) ? selectedSchool.dateOfEstablishment : ''}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
 
                 <Typography variant="h6">School Information</Typography>
                 <List component="nav" className={classes.root}>
-                    <ListItem button divider id="intro" onClick={(event) => dispatch({ type: event.currentTarget })}>
+                    <ListItem button divider id="intro" onClick={handleClick}>
                         <ListItemText primary="Introduction" primaryTypographyProps={{className: classes.header}} />
                         {intro ? <ExpandLess /> : <ExpandMore />}
                     </ListItem>
                     <Collapse in={intro} timeout="auto" unmountOnExit>
                         <List component="div">
                             <ListItem>
-                                <ListItemText primary={(Object.entries(selectedSchool) && selectedSchool.introduction) ? selectedSchool.introduction : defaultMessage}/>
+                                <ListItemText primary={(Object.entries(selectedSchool).length && selectedSchool.introduction) ? selectedSchool.introduction : defaultMessage}/>
                             </ListItem>
                         </List>
                     </Collapse>
 
-                    <ListItem button divider id="features" onClick={(event) => dispatch({ type: event.currentTarget })}>
+                    <ListItem button divider id="features" onClick={handleClick}>
                         <ListItemText primary="Features" primaryTypographyProps={{className: classes.header}}/>
                         {features ? <ExpandLess /> : <ExpandMore />}
                     </ListItem>
                     <Collapse in={features} timeout="auto" unmountOnExit>
                         <List component="div">
                             <ListItem>
-                                <ListItemText primary={(Object.entries(selectedSchool) && selectedSchool.features) ? selectedSchool.features : defaultMessage} />
+                                <ListItemText primary={(Object.entries(selectedSchool).length && selectedSchool.features) ? selectedSchool.features : defaultMessage} />
                             </ListItem>
                         </List>
                     </Collapse>
 
-                    <ListItem button divider id="programs" onClick={(event) => dispatch({ type: event.currentTarget })}>
+                    <ListItem button divider id="programs" onClick={handleClick}>
                         <ListItemText primary="Program" primaryTypographyProps={{className: classes.header}}/>
                         {programs ? <ExpandLess /> : <ExpandMore />}
                     </ListItem>
                     <Collapse in={programs} timeout="auto" unmountOnExit>
                         <List component="div">
                             <ListItem>
-                                <ListItemText primary={(Object.entries(selectedSchool) && selectedSchool.program) ? selectedSchool.program : defaultMessage} />
+                                <ListItemText primary={(Object.entries(selectedSchool).length && selectedSchool.program) ? selectedSchool.program : defaultMessage} />
                             </ListItem>
                         </List>
                     </Collapse>
 
-                    <ListItem button divider id="expenses" onClick={(event) => dispatch({ type: event.currentTarget })}>
+                    <ListItem button divider id="expenses" onClick={handleClick}>
                         <ListItemText primary="Expenses" primaryTypographyProps={{className: classes.header}}/>
                         {expenses ? <ExpandLess /> : <ExpandMore />}
                     </ListItem>
                     <Collapse in={expenses} timeout="auto" unmountOnExit>
                         <List component="div">
                             <ListItem>
-                                <ListItemText primary={(Object.entries(selectedSchool) && selectedSchool.expenses) ? selectedSchool.expenses : defaultMessage} />
+                                <ListItemText primary={(Object.entries(selectedSchool).length && selectedSchool.expenses) ? selectedSchool.expenses : defaultMessage} />
                             </ListItem>
                         </List>
                     </Collapse>
-                    <ListItem button divider id="details" onClick={(event) => dispatch({ type: event.currentTarget })}>
+                    <ListItem button divider id="details" onClick={handleClick}>
                         <ListItemText primary="Additional Details" primaryTypographyProps={{className: classes.header}} />
                         {details ? <ExpandLess /> : <ExpandMore />}
                     </ListItem>
@@ -146,22 +140,22 @@ function SchoolInformation(props) {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            {(Object.entries(selectedSchool) && selectedSchool.numberOfStudents) ? <TableCell align='center'>Number of Students</TableCell> : '' }
-                                            {(Object.entries(selectedSchool) && selectedSchool.openingProcess) ? <TableCell align='center'>Opening Process</TableCell> : '' }
-                                            {(Object.entries(selectedSchool) && selectedSchool.accommodation) ? <TableCell align='center'>Accommodation</TableCell> : '' }
+                                            {(Object.entries(selectedSchool).length && selectedSchool.numberOfStudents) ? <TableCell align='center'>Number of Students</TableCell> : '' }
+                                            {(Object.entries(selectedSchool).length && selectedSchool.openingProcess) ? <TableCell align='center'>Opening Process</TableCell> : '' }
+                                            {(Object.entries(selectedSchool).length && selectedSchool.accommodation) ? <TableCell align='center'>Accommodation</TableCell> : '' }
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         <TableRow>
-                                            {(Object.entries(selectedSchool) && selectedSchool.numberOfStudents) ? <TableCell align='center'>{selectedSchool.numberOfStudents}</TableCell> : ''}
-                                            {(Object.entries(selectedSchool) && selectedSchool.openingProcess) ? <TableCell align='center'>{selectedSchool.openingProcess}</TableCell> : '' }
-                                            {(Object.entries(selectedSchool) && selectedSchool.accommodation) ? <TableCell align='center'>{selectedSchool.accommodation}</TableCell> : '' }
+                                            {(Object.entries(selectedSchool).length && selectedSchool.numberOfStudents) ? <TableCell align='center'>{selectedSchool.numberOfStudents}</TableCell> : ''}
+                                            {(Object.entries(selectedSchool).length && selectedSchool.openingProcess) ? <TableCell align='center'>{selectedSchool.openingProcess}</TableCell> : '' }
+                                            {(Object.entries(selectedSchool).length && selectedSchool.accommodation) ? <TableCell align='center'>{selectedSchool.accommodation}</TableCell> : '' }
                                         </TableRow>
                                     </TableBody>
                                 </Table>
                             </ListItem>
                             <ListItem>
-                                Embedded Google Maps: {(Object.entries(selectedSchool) && selectedSchool.googleUrl) ? selectedSchool.googleUrl : ''}
+                                Embedded Google Maps: {(Object.entries(selectedSchool).length && selectedSchool.googleUrl) ? selectedSchool.googleUrl : ''}
                             </ListItem>
                         </List>
                     </Collapse>
@@ -169,7 +163,7 @@ function SchoolInformation(props) {
 
                 <Typography variant="h6">School Guide</Typography>
                     <List component="nav" className={classes.root}>
-                        <ListItem button divider id="media" onClick={(event) => dispatch({ type: event.currentTarget })}>
+                        <ListItem button divider id="media" onClick={handleClick}>
                             <ListItemText primary="Media" primaryTypographyProps={{className: classes.header}} />
                             {media ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
@@ -189,13 +183,8 @@ function SchoolInformation(props) {
                             </List>
                         </Collapse>
                     </List>
-                    <Button
-                        color="secondary"
-                        variant="contained"
-                        size="medium"
-                        className={classes.button}
+                    <Button className={classes.button} color="secondary" variant="contained" size="medium"
                         component={RouterLink} 
-                        // onClick={handleSchoolClick}
                         to=
                         {{
                             pathname: `/schools`, 
@@ -212,4 +201,4 @@ function SchoolInformation(props) {
     )
 }
 
-export default withStyles(styles)(SchoolInformation);
+export default withRouter(withStyles(styles)(SchoolInformation));
