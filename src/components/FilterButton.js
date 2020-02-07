@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, withStyles } from '@material-ui/core';
+import { Button, withStyles, Typography } from '@material-ui/core';
 import { HighlightOffOutlined, SearchOutlined } from '@material-ui/icons';
 
 const styles = theme => ({
@@ -9,7 +9,8 @@ const styles = theme => ({
         marginRight: theme.spacing(1),
         
         "&:hover": {
-            backgroundColor: theme.palette.primary.light
+            backgroundColor: theme.palette.primary.light,
+            color: '#FFF'
         }
     },
 });
@@ -17,15 +18,25 @@ const styles = theme => ({
 function Filter(props) {
     const { classes, isFilter, handleFilterClick, handleFilterReset } = props;
 
+    const notFiltered = {
+        onClick: handleFilterClick, 
+        startIcon: <SearchOutlined/>,
+        children: 'Filter'
+    };
+    
+    const isFiltered = {
+        onClick: handleFilterReset, 
+        startIcon: <HighlightOffOutlined/>,
+        children: 'Clear'
+    };
+
     return (
         <Button
-            color='inherit'
-            variant='contained'
+            variant='outlined'
             size='medium' 
             className={classes.filterButton} 
-            {...(isFilter) ? {onClick: handleFilterReset, startIcon:<HighlightOffOutlined/>} : {onClick: handleFilterClick, startIcon:<SearchOutlined/>}}
+            {...(isFilter) ? isFiltered : notFiltered}
         >
-            {(isFilter) ? 'Clear' : 'Filter' }
         </Button>
     )
 }
