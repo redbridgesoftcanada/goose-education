@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { Button, Dialog, DialogTitle, MenuItem, TextField, makeStyles } from '@material-ui/core';
+import React from 'react';
+import { Button, Dialog, DialogTitle, MenuItem, TextField, makeStyles, Typography } from '@material-ui/core';
 import { CheckOutlined, CloseOutlined } from '@material-ui/icons';
 
-const filterOptions = ['Title', 'Contents', 'Title + Contents', 'Member ID', 'Member ID (코)', 'Author', 'Author (코)'];
-
-const additiveOptions = ["And", "Or"];
+const filterOptions = ['Title', 'Contents', 'Title + Contents', 'Author'];   // 'Author (코)', 'Member ID', 'Member ID (코)';
+const filterConjunctions = ["And", "Or"];
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -32,64 +31,63 @@ const useStyles = makeStyles(theme => ({
     },
   }));
 
-function FilterDialog(props) {
+function FilterDialog({filterOpen, filterOption, filterConjunction, filterQuery, onClose, handleSearchQuery, handleSearchClick, error, isError}) {
     const classes = useStyles(); 
-    const { onClose, filterOpen } = props;
-
-    const [option, setOption] = useState('title');
   
     return (
       <Dialog onClose={onClose} open={filterOpen}>
         <DialogTitle className={classes.title}>Filter</DialogTitle>
         <div className={classes.container}>
-            <TextField
+            <TextField className={classes.menu}
             select
             label="Content"
-            className={classes.menu}
-            value={option}
-            onChange={event => setOption(event.target.value)}
+            name="filterOption"
+            value={filterOption}
+            onChange={handleSearchQuery}
             margin="normal"
             >
-            {filterOptions.map(option => (
-                <MenuItem key={option} value={option}>
+            {filterOptions.map((option, i) => (
+                <MenuItem key={i} value={option}>
                 {option}
                 </MenuItem>
             ))}
             </TextField>
-            <TextField
+            <TextField className={classes.menu}
                 select
                 label="And/Or"
-                className={classes.menu}
-                value={option}
-                onChange={event => setOption(event.target.value)}
+                name="filterConjunction"
+                value={filterConjunction}
+                onChange={handleSearchQuery}
                 margin="normal"
             >
-                {additiveOptions.map(option => (
-                    <MenuItem key={option} value={option}>
+                {filterConjunctions.map((option, i) => (
+                    <MenuItem key={i} value={option}>
                     {option}
                     </MenuItem>
                 ))}
             </TextField>
-            <TextField
+            <TextField className={classes.search}
                 placeholder="Search Term"
                 type="search"
-                className={classes.search}
-                margin="dense"
+                name="filterQuery"
+                value={filterQuery}
                 variant="outlined"
+                onChange={handleSearchQuery}
+                margin="dense"
             />
         </div>
         <div className={classes.container}>
+        {(isError) && <Typography>{error}</Typography>}
             <Button
                 variant="contained"
-                // color="secondary"
                 className={classes.button}
-                startIcon={<CheckOutlined />}
+                startIcon={<CheckOutlined/>}
+                onClick={handleSearchClick} 
             >
                 Search
             </Button>
             <Button
                 variant="contained"
-                // color="secondary"
                 className={classes.button}
                 startIcon={<CloseOutlined />}
                 onClick={onClose}
