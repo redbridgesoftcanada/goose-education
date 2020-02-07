@@ -17,6 +17,7 @@ import Login from './Login';
 import ForgotPassword from './ForgotPassword';
 import Profile from './Profile';
 import EditProfile from './EditProfile';
+import Search from './Search';
 
 // React Context Components
 import { withAuthentication } from './components/session';
@@ -26,6 +27,7 @@ function App() {
     <div className="App">
       <ScrollToTop>
         <Switch>
+          <Route path="/search" render={(props) => <Search {...props} />}/>
           <Route path="/profile/edit" render={(props) => <EditProfile {...props} />}/>
           <Route path="/profile" render={() => <Profile/>}/>
           <Route path="/forgotpassword" render={() => <ForgotPassword/>}/>

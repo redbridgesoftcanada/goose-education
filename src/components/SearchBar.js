@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, InputAdornment, InputBase, withStyles } from '@material-ui/core';
+import { Button, InputAdornment, Input, withStyles } from '@material-ui/core';
 
 const styles = theme => ({
     search: {
@@ -17,22 +17,22 @@ const styles = theme => ({
 });
 
 function SearchBar(props) {
-    const { classes } = props;
+    const { classes, handleSearch, handleSearchClick } = props;
 
     return (
-        <>
-            <InputBase
-                className={classes.search}
-                placeholder="Enter a search term"
-                endAdornment={
-                    <InputAdornment>
-                        <Button className={classes.searchButton}>
-                            Search
-                        </Button>
-                    </InputAdornment>
-                }
-            />
-        </>
+        <Input
+            className={classes.search}
+            placeholder="Enter a search term"
+            disableUnderline
+            onChange={handleSearch}
+            endAdornment={
+                <InputAdornment>
+                    <Button className={classes.searchButton} onClick={handleSearchClick}>
+                        Search
+                    </Button>
+                </InputAdornment>
+            }
+        />
     )
 }
 
