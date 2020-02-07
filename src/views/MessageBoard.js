@@ -107,7 +107,7 @@ function toggleReducer(state, action) {
             return { 
                 ...state, 
                 anchorOpen: null,
-                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : null,
+                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
                 messages: sortedMessages
             }
     }
@@ -118,6 +118,7 @@ function MessageBoard({classes, handleClick, messagesDB}) {
         messages: [],
         composeOpen: false,
         anchorOpen: null,
+        selectedAnchor: '',
         isFiltered: false,
         filterOpen: false,
         filterOption: 'Title',
@@ -127,7 +128,7 @@ function MessageBoard({classes, handleClick, messagesDB}) {
         error: null
     }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { messages, composeOpen, anchorOpen, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery } = state;
+    const { messages, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery } = state;
     let match = useRouteMatch();
 
     useEffect(() => {
@@ -153,8 +154,10 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                 <Filter 
                  isFilter={isFiltered} 
                  handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
-                 handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: messagesDB})}/>/>
-                <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
+                 handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: messagesDB})}/>
+                <Sort 
+                selectedAnchor={selectedAnchor}
+                handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
             </div>
             <FilterDialog  
                 isError={state.isError}
@@ -165,7 +168,10 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                 filterOpen={filterOpen} 
                 onClose={() => dispatch({ type: 'CLOSE_FILTER' })}  
             />
-            <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
+            <SortPopover 
+            anchorEl={anchorOpen} 
+            open={Boolean(anchorOpen)} 
+            onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
             <Table>
                 <TableHead>
                     <TableRow>

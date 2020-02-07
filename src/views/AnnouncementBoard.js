@@ -104,7 +104,7 @@ function toggleReducer(state, action) {
             return { 
                 ...state, 
                 anchorOpen: null,
-                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : null,
+                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
                 announcements: sortedAnnouncements
             }
     }
@@ -115,6 +115,7 @@ function AnnouncementBoard({classes, handleClick, announcementsDB}) {
         announcements: [],
         composeOpen: false,
         anchorOpen: null,
+        selectedAnchor: '',
         isFiltered: false,
         filterOpen: false,
         filterOption: 'Title',
@@ -125,7 +126,7 @@ function AnnouncementBoard({classes, handleClick, announcementsDB}) {
     }
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { announcements, filterOpen, anchorOpen, isFiltered, filterOption, filterConjunction, filterQuery } = state;
+    const { announcements, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery } = state;
     let match = useRouteMatch();
 
     useEffect(() => {
@@ -140,7 +141,9 @@ function AnnouncementBoard({classes, handleClick, announcementsDB}) {
                 isFilter={isFiltered} 
                 handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
                 handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: announcementsDB})}/>
-                <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
+                <Sort 
+                selectedAnchor={selectedAnchor}
+                handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
             </div>
             <FilterDialog  
                 isError={state.isError}
@@ -150,7 +153,10 @@ function AnnouncementBoard({classes, handleClick, announcementsDB}) {
                 handleSearchClick={() => dispatch({type:'FILTER_ANNOUNCEMENTS'})} 
                 filterOpen={filterOpen} 
                 onClose={() => dispatch({ type: 'CLOSE_FILTER' })}/>
-            <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
+            <SortPopover 
+            anchorEl={anchorOpen} 
+            open={Boolean(anchorOpen)} 
+            onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
             <Table>
                 <TableHead>
                     <TableRow>

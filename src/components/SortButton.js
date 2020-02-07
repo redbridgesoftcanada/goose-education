@@ -1,31 +1,44 @@
 import React from 'react';
 import { Button, withStyles } from '@material-ui/core';
-import { UnfoldMoreOutlined } from '@material-ui/icons';
+import { ScheduleOutlined, VisibilityOutlined, UnfoldMoreOutlined } from '@material-ui/icons';
 
 const styles = theme => ({
-    filterButton: {
+    sortButton: {
         float: 'left',
-        color: theme.palette.primary.light,
         border: `2px solid ${theme.palette.primary.light}`,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
         marginRight: theme.spacing(1),
+
+        "&:hover": {
+            backgroundColor: theme.palette.primary.light,
+            color: '#FFF'
+        }
     },
 });
 
 function Sort(props) {
-    const { classes, handleSortClick } = props;
+    const { classes, selectedAnchor, handleSortClick} = props;
+
+    const setStartIcon = () => {
+        switch(selectedAnchor) {
+            case 'date':
+                return <ScheduleOutlined/>;
+            case 'views':
+                return <VisibilityOutlined/>;
+            default:
+                return <UnfoldMoreOutlined/>;
+        }
+    }
 
     return (
-        <>
-            <Button 
-                className={classes.filterButton} 
-                onClick={handleSortClick}
-                startIcon={<UnfoldMoreOutlined/>}
-            >
-                Sort
-            </Button>
-        </>
+        <Button
+            variant='outlined'
+            size='medium'
+            className={classes.sortButton}
+            onClick={handleSortClick}
+            startIcon={setStartIcon()}
+        >
+            {(selectedAnchor && selectedAnchor !== 'reset') ? selectedAnchor : 'Sort'}
+        </Button>
     )
 }
 
