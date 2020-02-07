@@ -174,6 +174,10 @@ function toggleReducer(state, action) {
         
         case 'CLOSE_ARTICLE':
             return { ...state, articleOpen: false, selectedArticle: null }
+        
+        case 'SEARCH_QUERY':
+            const searchQuery = payload.value;
+            return {...state, searchQuery}
                     
         default:
             break;
@@ -194,10 +198,11 @@ function ArticleBoard({classes, history, articlesDB}) {
         filterConjunction: 'And',
         filterQuery: '',
         isError: false,
+        searchQuery: '',
         error: null
     }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { articles, articleOpen, selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery } = state;
+    const { articles, articleOpen, selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, searchQuery } = state;
     const match = useRouteMatch();
 
     useEffect(() => {
@@ -225,13 +230,15 @@ function ArticleBoard({classes, history, articlesDB}) {
                     : '' }
                 </AuthUserContext.Consumer>
                 <Filter 
-                isFilter={isFiltered} 
-                handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
-                handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: articlesDB})}/>
+                    isFilter={isFiltered} 
+                    handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
+                    handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: articlesDB})}/>
                 <Sort 
-                selectedAnchor={selectedAnchor}
-                handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
-                <SearchBar />
+                    selectedAnchor={selectedAnchor}
+                    handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
+                <SearchBar 
+                    handleSearch={event => dispatch({type: 'SEARCH_QUERY', payload: event.target})}
+                    handleSearchClick={() => history.push(`/search/${searchQuery}`)}/>
 
                 <FilterDialog
                     isError={state.isError}
