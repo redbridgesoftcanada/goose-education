@@ -3,6 +3,7 @@ import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, with
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format } from 'date-fns';
 
+import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
 import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
@@ -23,7 +24,7 @@ function toggleReducer(state, action) {
     let { type, payload } = action;
   
     switch(type) {
-        case 'INIT_ANNOUNCEMENTS': 
+        case 'LOAD_ANNOUNCEMENTS': 
             return { ...state, announcements: payload }
 
         case 'OPEN_COMPOSE':
@@ -37,21 +38,69 @@ function toggleReducer(state, action) {
         
         case 'CLOSE_FILTER':
             return { ...state, filterOpen: false }
+
+        case 'FILTER_QUERY':
+            const filterType = payload.name;
+            const selectedType = payload.value;
+            return {
+                ...state,
+                [filterType]: selectedType,
+                isError: false,
+                error: null,
+            }
+
+        case 'FILTER_ANNOUNCEMENTS':
+            const { announcements, filterOption, filterConjunction, filterQuery } = state;
+            let filteredContent = [];
+
+            if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
+                filteredContent = multipleFilterQuery(announcements, filterOption, filterConjunction, filterQuery);
+
+            } else if (Boolean(filterQuery)) {
+                filteredContent = singleFilterQuery(announcements, filterOption, filterQuery);
+
+            } else {
+                return {
+                    ...state,
+                    isError: true,
+                    error: 'Please enter one or more filter terms.'
+                }
+            }
+
+            if (filteredContent.length) {
+                return {
+                    ...state,
+                    announcements: filteredContent,
+                    isFiltered: true,
+                    filterOpen: false
+                }
+            } else {
+                return {
+                    ...state,
+                    isError: true,
+                    error: 'Sorry, no matches found!'
+                }
+            }
         
+        case 'RESET_FILTER':
+            return { 
+                ...state,
+                announcements: payload,
+                isFiltered: false,
+                filterOpen: false,
+                filterOption: 'Title',
+                filterConjunction: 'And',
+                filterQuery: '',
+                isError: false,
+                error: null,                
+            }
+    
         case 'OPEN_SORT':
             return { ...state, anchorOpen: payload }
         
         case 'CLOSE_SORT':
             const selectedSort = payload.id;
-            let sortedAnnouncements;
-            if (selectedSort === 'date') {
-                sortedAnnouncements = state.announcements.sort((a,b) => (a.createdAt > b.createdAt) ? -1 : ((b.createdAt > a.createdAt) ? 1 : 0))
-            } else if (selectedSort === 'views') {
-                sortedAnnouncements = state.announcements.sort((a,b) => (a.views > b.views) ? -1 : ((b.views > a.views) ? 1 : 0))
-            } else {
-                sortedAnnouncements = state.announcements.sort((a,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0));
-            }
-
+            const sortedAnnouncements = sortQuery('announcements', state.announcements, selectedSort);
             return { 
                 ...state, 
                 anchorOpen: null,
@@ -65,26 +114,42 @@ function AnnouncementBoard({classes, handleClick, announcementsDB}) {
     const INITIAL_STATE = {
         announcements: [],
         composeOpen: false,
-        filterOpen: false,
         anchorOpen: null,
+        isFiltered: false,
+        filterOpen: false,
+        filterOption: 'Title',
+        filterConjunction: 'And',
+        filterQuery: '',
+        isError: false,
+        error: null
     }
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { announcements, filterOpen, anchorOpen } = state;
+    const { announcements, filterOpen, anchorOpen, isFiltered, filterOption, filterConjunction, filterQuery } = state;
     let match = useRouteMatch();
 
     useEffect(() => {
-        dispatch({ type: 'INIT_ANNOUNCEMENTS', payload: announcementsDB })
-    }, [announcementsDB])
+        dispatch({ type: 'LOAD_ANNOUNCEMENTS', payload: announcementsDB })
+    }, [announcementsDB]);
 
     return (
         <Container>
             <SocialMediaButtons title={title} description={description}/>
             <div className={classes.wrapper}>
-                <Filter handleFilterClick={() => dispatch({ type: 'OPEN_FILTER' })}/>
+                <Filter  
+                isFilter={isFiltered} 
+                handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
+                handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: announcementsDB})}/>
                 <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
             </div>
-            <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
+            <FilterDialog  
+                isError={state.isError}
+                error={state.error}
+                filterOption={filterOption} filterConjunction={filterConjunction} filterQuery={filterQuery}
+                handleSearchQuery={event => dispatch({type:'FILTER_QUERY', payload: event.target})}
+                handleSearchClick={() => dispatch({type:'FILTER_ANNOUNCEMENTS'})} 
+                filterOpen={filterOpen} 
+                onClose={() => dispatch({ type: 'CLOSE_FILTER' })}/>
             <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
             <Table>
                 <TableHead>

@@ -4,6 +4,7 @@ import { Container, Grid, withStyles } from '@material-ui/core';
 import { useRouteMatch } from "react-router-dom";
 import Typography from '../components/onePirate/Typography';
 
+import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';
@@ -75,11 +76,11 @@ const styles = theme => ({
 });
 
 function toggleReducer(state, action) {
-    let { type, payload } = action;
+    const { type, payload } = action;
   
     switch(type) {
-        case 'INIT_ARTICLES': 
-        return { ...state, articles: payload }
+        case 'LOAD_ARTICLES': 
+            return { ...state, articles: payload }
 
         case 'OPEN_COMPOSE':
             return { ...state, composeOpen: true }
@@ -92,29 +93,79 @@ function toggleReducer(state, action) {
         
         case 'CLOSE_FILTER':
             return { ...state, filterOpen: false }
+
+        case 'FILTER_QUERY':
+            const filterType = payload.name;
+            const selectedType = payload.value;
+            return {
+                ...state,
+                [filterType]: selectedType,
+                isError: false,
+                error: null,
+            }
+
+        case 'FILTER_ARTICLES':
+            const { articles, filterOption, filterConjunction, filterQuery } = state;
+            let filteredContent = [];
+
+            if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
+                filteredContent = multipleFilterQuery(articles, filterOption, filterConjunction, filterQuery);
+
+            } else if (Boolean(filterQuery)) {
+                filteredContent = singleFilterQuery(articles, filterOption, filterQuery);
+
+            } else {
+                return {
+                    ...state,
+                    isError: true,
+                    error: 'Please enter one or more filter terms.'
+                }
+            }
+
+            if (filteredContent.length) {
+                return {
+                    ...state,
+                    articles: filteredContent,
+                    isFiltered: true,
+                    filterOpen: false
+                }
+            } else {
+                return {
+                    ...state,
+                    isError: true,
+                    error: 'Sorry, no matches found!'
+                }
+            }
         
+        case 'RESET_FILTER':
+            return { 
+                ...state,
+                articles: payload,
+                isFiltered: false,
+                filterOpen: false,
+                filterOption: 'Title',
+                filterConjunction: 'And',
+                filterQuery: '',
+                isError: false,
+                error: null,                
+            }
+
         case 'OPEN_SORT':
             return { ...state, anchorOpen: payload }
         
         case 'CLOSE_SORT':
             const selectedSort = payload.id;
-            let sortedArticles;
-            if (selectedSort === 'date') {
-                sortedArticles = state.articles.sort((a,b) => (a.createdAt > b.createdAt) ? -1 : ((b.createdAt > a.createdAt) ? 1 : 0))
-            } else if (selectedSort === 'views') {
-                sortedArticles = state.articles.sort((a,b) => (a.views > b.views) ? -1 : ((b.views > a.views) ? 1 : 0))
-            } else {
-                sortedArticles = state.articles.sort((a,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0));
-            }
-
+            const sortedArticles = sortQuery('articles', state.articles, selectedSort);
+            
             return { 
                 ...state, 
                 anchorOpen: null,
+                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : null,
                 articles: sortedArticles
             }
         
         case 'OPEN_ARTICLE':
-            let selectedArticle = payload.database.find(article => article.id.toString() === payload.selected.id)
+            const selectedArticle = payload.database.find(article => article.id.toString() === payload.selected.id)
             return { 
                 ...state, 
                 articleOpen: true, 
@@ -123,25 +174,34 @@ function toggleReducer(state, action) {
         
         case 'CLOSE_ARTICLE':
             return { ...state, articleOpen: false, selectedArticle: null }
+                    
+        default:
+            break;
     }
 }
 
 function ArticleBoard({classes, history, articlesDB}) {
     const INITIAL_STATE = {
         articles: [],
-        composeOpen: false,
-        filterOpen: false,
-        anchorOpen: null,
         articleOpen: false,
         selectedArticle: null,
+        composeOpen: false,
+        anchorOpen: null,
+        isFiltered: false,
+        filterOpen: false,
+        filterOption: 'Title',
+        filterConjunction: 'And',
+        filterQuery: '',
+        isError: false,
+        error: null
     }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { articles, composeOpen, filterOpen, anchorOpen, articleOpen, selectedArticle } = state;
+    const { articles, articleOpen, selectedArticle, composeOpen, anchorOpen, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery } = state;
     const match = useRouteMatch();
 
     useEffect(() => {
-        dispatch({ type: 'INIT_ARTICLES', payload: articlesDB })
-    }, [articlesDB])
+        dispatch({ type: 'LOAD_ARTICLES', payload: articlesDB })
+    }, [articlesDB]);
 
     return (
         <section className={classes.root}>
@@ -163,11 +223,22 @@ function ArticleBoard({classes, history, articlesDB}) {
                     </>
                     : '' }
                 </AuthUserContext.Consumer>
-                <Filter handleFilterClick={() => dispatch({ type: 'OPEN_FILTER' })}/>
+                <Filter 
+                isFilter={isFiltered} 
+                handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
+                handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: articlesDB})}/>
                 <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
                 <SearchBar />
 
-                <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
+                <FilterDialog
+                    isError={state.isError}
+                    error={state.error}
+                    filterOption={filterOption} filterConjunction={filterConjunction} filterQuery={filterQuery}
+                    handleSearchQuery={event => dispatch({type:'FILTER_QUERY', payload: event.target})}
+                    handleSearchClick={() => dispatch({type:'FILTER_ARTICLES'})} 
+                    filterOpen={filterOpen} 
+                    onClose={() => dispatch({ type: 'CLOSE_FILTER' })} 
+                />
                 <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
 
                 <Grid container>

@@ -1,8 +1,9 @@
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format } from 'date-fns';
 
+import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';
@@ -26,6 +27,9 @@ function toggleReducer(state, action) {
     let { type, payload } = action;
   
     switch(type) {
+        case 'LOAD_MESSAGES': 
+            return { ...state, messages: payload }
+
         case 'OPEN_COMPOSE':
             return { ...state, composeOpen: true }
 
@@ -37,21 +41,69 @@ function toggleReducer(state, action) {
         
         case 'CLOSE_FILTER':
             return { ...state, filterOpen: false }
+
+        case 'FILTER_QUERY':
+            const filterType = payload.name;
+            const selectedType = payload.value;
+            return {
+                ...state,
+                [filterType]: selectedType,
+                isError: false,
+                error: null,
+            }
+
+        case 'FILTER_MESSAGES':
+            const { messages, filterOption, filterConjunction, filterQuery } = state;
+            let filteredContent = [];
+
+            if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
+                filteredContent = multipleFilterQuery(messages, filterOption, filterConjunction, filterQuery);
+
+            } else if (Boolean(filterQuery)) {
+                filteredContent = singleFilterQuery(messages, filterOption, filterQuery);
+
+            } else {
+                return {
+                    ...state,
+                    isError: true,
+                    error: 'Please enter one or more filter terms.'
+                }
+            }
+
+            if (filteredContent.length) {
+                return {
+                    ...state,
+                    messages: filteredContent,
+                    isFiltered: true,
+                    filterOpen: false
+                }
+            } else {
+                return {
+                    ...state,
+                    isError: true,
+                    error: 'Sorry, no matches found!'
+                }
+            }
         
+        case 'RESET_FILTER':
+            return { 
+                ...state,
+                messages: payload,
+                isFiltered: false,
+                filterOpen: false,
+                filterOption: 'Title',
+                filterConjunction: 'And',
+                filterQuery: '',
+                isError: false,
+                error: null,                
+            }
+
         case 'OPEN_SORT':
             return { ...state, anchorOpen: payload }
         
         case 'CLOSE_SORT':
             const selectedSort = payload.id;
-            let sortedMessages;
-            if (selectedSort === 'date') {
-                sortedMessages = state.messages.sort((a,b) => (a.updatedAt > b.updatedAt) ? -1 : ((b.updatedAt > a.updatedAt) ? 1 : 0))
-            } else if (selectedSort === 'views') {
-                sortedMessages = state.messages.sort((a,b) => (a.views > b.views) ? -1 : ((b.views > a.views) ? 1 : 0))
-            } else {
-                sortedMessages = state.messages.sort((a,b) => (a.createdAt > b.createdAt) ? 1 : ((b.createdAt > a.createdAt) ? -1 : 0));
-            }
-
+            const sortedMessages = sortQuery('messages', state.messages, selectedSort);
             return { 
                 ...state, 
                 anchorOpen: null,
@@ -63,14 +115,24 @@ function toggleReducer(state, action) {
 
 function MessageBoard({classes, handleClick, messagesDB}) {
     const INITIAL_STATE = {
-        messages: messagesDB,
+        messages: [],
         composeOpen: false,
+        anchorOpen: null,
+        isFiltered: false,
         filterOpen: false,
-        anchorOpen: null
+        filterOption: 'Title',
+        filterConjunction: 'And',
+        filterQuery: '',
+        isError: false,
+        error: null
     }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { composeOpen, filterOpen, anchorOpen } = state;
+    const { messages, composeOpen, anchorOpen, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery } = state;
     let match = useRouteMatch();
+
+    useEffect(() => {
+        dispatch({ type: 'LOAD_MESSAGES', payload: messagesDB })
+    }, [messagesDB])
 
     return (
         <Container>
@@ -88,10 +150,21 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                     </>
                     : '' }
                 </AuthUserContext.Consumer>
-                <Filter handleFilterClick={() => dispatch({ type: 'OPEN_FILTER' })}/>
+                <Filter 
+                 isFilter={isFiltered} 
+                 handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
+                 handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: messagesDB})}/>/>
                 <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
             </div>
-            <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
+            <FilterDialog  
+                isError={state.isError}
+                error={state.error}
+                filterOption={filterOption} filterConjunction={filterConjunction} filterQuery={filterQuery}
+                handleSearchQuery={event => dispatch({type:'FILTER_QUERY', payload: event.target})}
+                handleSearchClick={() => dispatch({type:'FILTER_MESSAGES'})} 
+                filterOpen={filterOpen} 
+                onClose={() => dispatch({ type: 'CLOSE_FILTER' })}  
+            />
             <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
             <Table>
                 <TableHead>
@@ -102,7 +175,7 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {messagesDB.map(message => {
+                    {messages.map(message => {
                         return (
                             <TableRow hover key={message.id} id={message.id} onClick={handleClick}>
                                 <TableCell align='center'>
