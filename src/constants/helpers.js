@@ -61,6 +61,12 @@ export function multipleFilterQuery(resources, option, conjunction, words) {
                     const resourceContent = resource.description.toLowerCase();
                     return filterWords.every(word => resourceTitle.includes(word) || resourceContent.includes(word))});
                 break;
+            
+            case 'Author':
+                filteredContent = resources.filter(resource => {
+                    const resourceAuthor = resource.author.toLowerCase();
+                    return filterWords.every(word => resourceAuthor.includes(word))});
+                break;
                                         
             default:
                 break;
