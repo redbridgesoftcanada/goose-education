@@ -1,39 +1,87 @@
 import React from 'react';
-import { Button, InputAdornment, Input, withStyles } from '@material-ui/core';
+import { Button, Container, MenuItem, TextField } from '@material-ui/core';
+import { SearchOutlined } from '@material-ui/icons';
+import withRoot from '../withRoot';
 
-const styles = theme => ({
-    search: {
-        float: 'right',
-        border: `2px solid ${theme.palette.secondary.main}`,
-        borderRadius: '5px',
-        paddingLeft: theme.spacing(1),
-    },
-    searchButton: {
-        color: theme.palette.common.white,
-        backgroundColor: theme.palette.secondary.main,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2)
-    },
-});
+const searchCategories = ['All', 'Goose Study Abroad', 'Networking', 'School Information', 'Study Abroad Services', 'Service Centre'];
+const searchOptions = ['Title', 'Contents', 'Title + Contents', 'Author'];   // 'Author (코)', 'Member ID', 'Member ID (코)';
+const searchConjunctions = ["And", "Or"];
 
 function SearchBar(props) {
-    const { classes, handleSearch, handleSearchClick } = props;
+    const { classes, handleSearchQuery, searchProps } = props;
+    const { searchCategory, searchOption, searchConjunction, searchQuery } = searchProps;
 
     return (
-        <Input
-            className={classes.search}
-            placeholder="Enter a search term"
-            disableUnderline
-            onChange={handleSearch}
-            endAdornment={
-                <InputAdornment>
-                    <Button className={classes.searchButton} onClick={handleSearchClick}>
-                        Search
-                    </Button>
-                </InputAdornment>
-            }
-        />
+        <Container className={classes.container}>
+            <TextField className={classes.menu}
+            select
+            label="Categories"
+            name="searchCategory"
+            value={searchCategory}
+            onChange={handleSearchQuery}
+            margin="dense"
+            variant="outlined"
+            >
+            {searchCategories.map((option, i) => (
+                <MenuItem key={i} value={option}>
+                {option}
+                </MenuItem>
+            ))}
+            </TextField>
+
+            <TextField className={classes.menu}
+            select
+            label="Content"
+            name="searchOption"
+            value={searchOption}
+            onChange={handleSearchQuery}
+            margin="dense"
+            variant="outlined"
+            >
+            {searchOptions.map((option, i) => (
+                <MenuItem key={i} value={option}>
+                {option}
+                </MenuItem>
+            ))}
+            </TextField>
+
+            <TextField className={classes.menu}
+                select
+                label="And/Or"
+                name="searchConjunction"
+                value={searchConjunction}
+                onChange={handleSearchQuery}
+                margin="dense"
+                variant="outlined"
+            >
+                {searchConjunctions.map((option, i) => (
+                    <MenuItem key={i} value={option}>
+                    {option}
+                    </MenuItem>
+                ))}
+            </TextField>
+
+            <TextField
+                placeholder="Search Term"
+                type="search"
+                name="searchQuery"
+                variant="outlined"
+                margin="dense"
+                value={searchQuery}
+                onChange={handleSearchQuery}
+            />
+
+            <Button
+                variant="contained"
+                color="secondary"
+                size="small"
+                startIcon={<SearchOutlined/>}
+                // onClick={handleSearchClick} 
+            >
+                Search
+            </Button>
+      </Container>
     )
 }
 
-export default withStyles(styles)(SearchBar);
+export default withRoot(SearchBar);
