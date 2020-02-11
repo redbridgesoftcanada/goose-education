@@ -12,7 +12,7 @@ import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
 import SortPopover from '../components/SortPopover';
-import SearchBar from '../components/SearchBar';
+import SearchField from '../components/SearchField';
 import ArticleDialog from '../components/ArticleDialog';
 import Pagination from '../components/Pagination';
 
@@ -177,7 +177,7 @@ function toggleReducer(state, action) {
         
         case 'SEARCH_QUERY':
             const searchQuery = payload.value;
-            return {...state, searchQuery}
+            return { ...state, searchQuery }
                     
         default:
             break;
@@ -236,9 +236,9 @@ function ArticleBoard({classes, history, articlesDB}) {
                 <Sort 
                     selectedAnchor={selectedAnchor}
                     handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
-                <SearchBar 
+                <SearchField 
                     handleSearch={event => dispatch({type: 'SEARCH_QUERY', payload: event.target})}
-                    handleSearchClick={() => history.push(`/search/${searchQuery}`)}/>
+                    handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, resources: articles} })}/>
 
                 <FilterDialog
                     isError={state.isError}

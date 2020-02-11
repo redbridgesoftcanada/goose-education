@@ -4,7 +4,7 @@ import { Container, Grid, Link, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import Typography from '../components/onePirate/Typography';
 
-import SearchBar from '../components/SearchBar';
+import SearchField from '../components/SearchField';
 import Pagination from '../components/Pagination';
 
 const styles = theme => ({
@@ -82,7 +82,7 @@ function ListOfSchools(props) {
         <section className={classes.root}>
             <Container>
                 <Typography variant="body2" className={classes.counter}>There are a total of <b>{listOfSchools.length}</b> schools.</Typography>
-                <SearchBar />
+                <SearchField />
                 <Grid container>
                     {listOfSchools.map(school => {
                         return (

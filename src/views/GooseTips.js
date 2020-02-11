@@ -8,7 +8,7 @@ import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
 import SortPopover from '../components/SortPopover';
-import SearchBar from '../components/SearchBar';
+import SearchField from '../components/SearchField';
 import ArticleDialog from '../components/ArticleDialog';
 import Pagination from '../components/Pagination';
 
@@ -172,7 +172,7 @@ function GooseTipsBase(props) {
                 <Typography variant="h3" marked="center" className={classes.title}>Goose Tips</Typography>
                 <Filter handleFilterClick={() => dispatch({ type: 'OPEN_FILTER' })}/>
                 <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
-                <SearchBar />
+                <SearchField />
 
                 <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
                 <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
