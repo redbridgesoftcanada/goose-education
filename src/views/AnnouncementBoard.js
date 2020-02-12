@@ -107,6 +107,10 @@ function toggleReducer(state, action) {
                 selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
                 announcements: sortedAnnouncements
             }
+
+        case 'CHANGE_PAGE':
+            const currentPage = payload;
+            return { ...state, currentPage }
     }
 }
 
@@ -121,13 +125,21 @@ function AnnouncementBoard({classes, handleClick, announcementsDB}) {
         filterOption: 'Title',
         filterConjunction: 'And',
         filterQuery: '',
+        currentPage: 0,
+        announcesPerPage: 10,
         isError: false,
         error: null
     }
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { announcements, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery } = state;
-    let match = useRouteMatch();
+    const { announcements, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery, currentPage, announcesPerPage } = state;
+    const match = useRouteMatch();
+
+    const totalAnnouncements = announcements.length;
+    const totalPages = Math.ceil(totalAnnouncements / announcesPerPage);
+    const indexOfLastAnnouncement = (currentPage * announcesPerPage) + 1;
+    const indexOfFirstAnnouncement = indexOfLastAnnouncement - announcesPerPage;
+    const paginatedAnnouncements = (totalPages > 1) ? announcements.slice(indexOfFirstAnnouncement, indexOfLastAnnouncement) : announcements;
 
     useEffect(() => {
         dispatch({ type: 'LOAD_ANNOUNCEMENTS', payload: announcementsDB })
@@ -166,7 +178,7 @@ function AnnouncementBoard({classes, handleClick, announcementsDB}) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {announcements.map(announcement => {
+                    {paginatedAnnouncements.map(announcement => {
                         return (
                             <TableRow hover key={announcement.id} id={announcement.id} onClick={handleClick}>
                                 <TableCell align='center'>
@@ -193,7 +205,12 @@ function AnnouncementBoard({classes, handleClick, announcementsDB}) {
                     })}
                 </TableBody>
             </Table>
-            <Pagination />
+            <Pagination 
+            totalPages={totalPages}
+            currentPage={currentPage} 
+            resourcesPerPage={announcesPerPage}
+            handlePageChange={(event, newPage) => dispatch({type:'CHANGE_PAGE', payload: newPage})}
+            />
         </Container>
     )
 }

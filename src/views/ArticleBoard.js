@@ -178,6 +178,10 @@ function toggleReducer(state, action) {
         case 'SEARCH_QUERY':
             const searchQuery = payload.value;
             return { ...state, searchQuery }
+
+        case 'CHANGE_PAGE':
+            const currentPage = payload;
+            return { ...state, currentPage }
                     
         default:
             break;
@@ -197,12 +201,20 @@ function ArticleBoard({classes, history, articlesDB}) {
         filterOption: 'Title',
         filterConjunction: 'And',
         filterQuery: '',
+        currentPage: 0,
+        articlesPerPage: 10,
         isError: false,
         error: null
     }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { articles, articleOpen, selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, searchQuery } = state;
+    const { articles, articleOpen, selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, searchQuery, currentPage, articlesPerPage } = state;
     const match = useRouteMatch();
+
+    const totalArticles = articles.length;
+    const totalPages = Math.ceil(totalArticles / articlesPerPage);
+    const indexOfLastArticle = (currentPage * articlesPerPage) + 1;
+    const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+    const paginatedArticles = (totalPages > 1) ? articles.slice(indexOfFirstArticle, indexOfLastArticle) : articles;
 
     useEffect(() => {
         dispatch({ type: 'LOAD_ARTICLES', payload: articlesDB })
@@ -254,7 +266,7 @@ function ArticleBoard({classes, history, articlesDB}) {
                 onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
 
                 <Grid container>
-                    {articles.map(article => {
+                    {paginatedArticles.map(article => {
                         return (
                             <Grid item xs={12} md={3} key={article.id} className={classes.background}>
                                 <div className={classes.item} id={article.id} onClick={event => dispatch({ type: 'OPEN_ARTICLE', payload: { selected: event.currentTarget, database: articlesDB }})}>
@@ -276,7 +288,12 @@ function ArticleBoard({classes, history, articlesDB}) {
                         );
                     })}
                 </Grid>
-                <Pagination />
+                <Pagination 
+                    totalPages={totalPages}
+                    currentPage={currentPage} 
+                    resourcesPerPage={articlesPerPage}
+                    handlePageChange={(event, newPage) => dispatch({type:'CHANGE_PAGE', payload: newPage})}
+                />
             </Container>
         </section>
     );

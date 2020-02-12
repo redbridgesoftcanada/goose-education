@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Container, Grid, Link, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import Typography from '../components/onePirate/Typography';
-
 import SearchField from '../components/SearchField';
 import Pagination from '../components/Pagination';
 
@@ -78,6 +77,16 @@ function ListOfSchools(props) {
     const match = useRouteMatch();
     
     const [ searchQuery, setSearchQuery ] = useState('');
+    const [ pagination, setPagination ] = useState({currentPage: 0, schoolsPerPage: 10});
+    const { currentPage, schoolsPerPage } = pagination;
+
+    const handlePageChange = (event, newPage) => setPagination({...pagination, currentPage: newPage});
+
+    const totalSchools = listOfSchools.length;
+    const totalPages = Math.ceil(totalSchools / schoolsPerPage);
+    const indexOfLastSchool = (currentPage * schoolsPerPage) + 1;
+    const indexOfFirstSchool = indexOfLastSchool - schoolsPerPage;
+    const paginatedSchools = (totalPages === 1) ? listOfSchools : listOfSchools.slice(indexOfFirstSchool, indexOfLastSchool);
 
     return (
         <section className={classes.root}>
@@ -87,7 +96,7 @@ function ListOfSchools(props) {
                     handleSearch={event => setSearchQuery(event.target.value)}
                     handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {resources: listOfSchools} })}/>
                 <Grid container>
-                    {listOfSchools.map(school => {
+                    {paginatedSchools.map(school => {
                         return (
                             <Grid item xs={12} md={12} key={school.id}>
                                 <div className={classes.item}>
@@ -145,7 +154,12 @@ function ListOfSchools(props) {
                         );
                     })}
                 </Grid>
-                <Pagination />
+                <Pagination 
+                    totalPages={totalPages}
+                    currentPage={currentPage} 
+                    resourcesPerPage={schoolsPerPage}
+                    handlePageChange={handlePageChange}
+                />
             </Container>
         </section>
     );

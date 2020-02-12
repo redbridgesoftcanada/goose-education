@@ -2,7 +2,6 @@ import React, { useEffect, useReducer } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format } from 'date-fns';
-
 import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
@@ -110,6 +109,10 @@ function toggleReducer(state, action) {
                 selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
                 messages: sortedMessages
             }
+
+        case 'CHANGE_PAGE':
+            const currentPage = payload;
+            return { ...state, currentPage }
     }
 }
 
@@ -124,12 +127,20 @@ function MessageBoard({classes, handleClick, messagesDB}) {
         filterOption: 'Title',
         filterConjunction: 'And',
         filterQuery: '',
+        currentPage: 0,
+        messagesPerPage: 10,
         isError: false,
         error: null
     }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { messages, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery } = state;
-    let match = useRouteMatch();
+    const { messages, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, currentPage, messagesPerPage } = state;
+    const match = useRouteMatch();
+
+    const totalMessages = messages.length;
+    const totalPages = Math.ceil(totalMessages / messagesPerPage);
+    const indexOfLastMessage = (currentPage * messagesPerPage) + 1;
+    const indexOfFirstMessage = indexOfLastMessage - messagesPerPage;
+    const paginatedMessages = (totalPages > 1) ? messages.slice(indexOfFirstMessage, indexOfLastMessage) : messages;
 
     useEffect(() => {
         dispatch({ type: 'LOAD_MESSAGES', payload: messagesDB })
@@ -181,7 +192,7 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {messages.map(message => {
+                    {paginatedMessages.map(message => {
                         return (
                             <TableRow hover key={message.id} id={message.id} onClick={handleClick}>
                                 <TableCell align='center'>
@@ -208,7 +219,12 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                     })}
                 </TableBody>
             </Table>
-            <Pagination />
+            <Pagination 
+            totalPages={totalPages}
+            currentPage={currentPage} 
+            resourcesPerPage={messagesPerPage}
+            handlePageChange={(event, newPage) => dispatch({type:'CHANGE_PAGE', payload: newPage})}
+            />
         </Container>
     )
 }

@@ -48,13 +48,23 @@ function Search(props) {
     searchCategory: 'All',
     searchOption: 'Title + Contents',
     searchConjunction: 'Or',
-    searchQuery: ''
+    searchQuery: '',
+    currentPage: 0,
+    resourcesPerPage: 10
   }
   const classes = useStyles();
   const [ state, setState ] = useState(INITIAL_STATE);
-  const { searchedResources, searchCategory, searchOption, searchConjunction } = state;
+  const { searchedResources, searchCategory, searchOption, searchConjunction, currentPage, resourcesPerPage } = state;
   
   const handleSearchQuery = event => setState({...state, [event.target.name]: event.target.value});
+
+  const handlePageChange = (event, newPage) => setState({...state, currentPage: newPage});
+
+  const totalResources = searchedResources.length;
+  const totalPages = Math.ceil(totalResources / resourcesPerPage);
+  const indexOfLastResource = (currentPage * resourcesPerPage) + 1;
+  const indexOfFirstResource = indexOfLastResource - resourcesPerPage;
+  const paginatedResources = (totalPages === 1) ? searchedResources : searchedResources.slice(indexOfFirstResource, indexOfLastResource);
   
   useEffect(() => {
     const resourcesDB = props.location.state.resources;
@@ -77,43 +87,46 @@ function Search(props) {
       <SearchBar classes={classes} searchProps={{...state}} handleSearchQuery={handleSearchQuery} />
       <Container>
         <Typography align="left" variant="h6">My Search Results</Typography>
-        <>
-          {searchedResources.map((resource, i) => {
-            return (
-              <Fragment key={i}>
-                <Grid container alignItems="center" className={classes.item}>
-                  <Grid item xs={3} md={3}>
-                    <img
-                      className={classes.image}
-                      src={require(`./assets/img/${resource.image}`)}
-                      // alt=''
-                  />
-                  </Grid>
-                  <Grid item xs={9} md={9} className={classes.body}>
-                    <div>{resource.title}</div>
-                    <Grid container spacing={2} >
-                      <Grid item>
-                        <AccountCircleOutlined fontSize="small"/>
-                        {resource.author}
-                      </Grid>
-                      <Grid item>
-                        <LocalOfferOutlined fontSize="small"/>
-                        {resource.tag}
-                      </Grid>
-                      <Grid item>
-                      <ScheduleOutlined fontSize="small"/>
-                      {(resource && resource.updatedAt > resource.createdAt) ? format(resource.updatedAt, 'Pp') : format(resource.createdAt, 'Pp')}
-                      </Grid>
-                    </Grid>
-                    <div>{resource.description}</div>
-                  </Grid>
+        {paginatedResources.map((resource, i) => {
+          return (
+            <Fragment key={i}>
+              <Grid container alignItems="center" className={classes.item}>
+                <Grid item xs={3} md={3}>
+                  <img
+                    className={classes.image}
+                    src={require(`./assets/img/${resource.image}`)}
+                    // alt=''
+                />
                 </Grid>
-              </Fragment>
-            )
-          })}
-        </>
+                <Grid item xs={9} md={9} className={classes.body}>
+                  <div>{resource.title}</div>
+                  <Grid container spacing={2} >
+                    <Grid item>
+                      <AccountCircleOutlined fontSize="small"/>
+                      {resource.author}
+                    </Grid>
+                    <Grid item>
+                      <LocalOfferOutlined fontSize="small"/>
+                      {resource.tag}
+                    </Grid>
+                    <Grid item>
+                    <ScheduleOutlined fontSize="small"/>
+                    {(resource && resource.updatedAt > resource.createdAt) ? format(resource.updatedAt, 'Pp') : format(resource.createdAt, 'Pp')}
+                    </Grid>
+                  </Grid>
+                  <div>{resource.description}</div>
+                </Grid>
+              </Grid>
+            </Fragment>
+          )
+        })}
       <Typography variant="caption">{(searchCategory !== "All") && `More ${searchCategory.toUpperCase()}`}</Typography>
-      <Pagination/>
+      <Pagination 
+        totalPages={totalPages}
+        currentPage={currentPage} 
+        resourcesPerPage={resourcesPerPage}
+        handlePageChange={handlePageChange}
+      />
       </Container>
       <Footer />
     </>

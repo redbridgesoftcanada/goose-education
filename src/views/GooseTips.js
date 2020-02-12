@@ -126,6 +126,10 @@ function toggleReducer(state, action) {
         
         case 'CLOSE_TIP':
             return { ...state, tipOpen: false, selectedTip: null }
+        
+        case 'CHANGE_PAGE':
+            const currentPage = payload;
+            return { ...state, currentPage }
     }
 }
 
@@ -140,10 +144,18 @@ function GooseTipsBase(props) {
         anchorOpen: null,
         tipOpen: false,
         selectedTip: null,
-        searchQuery: ''
+        searchQuery: '',
+        currentPage: 0,
+        tipsPerPage: 10
     }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { gooseTips, filterOpen, anchorOpen, tipOpen, selectedTip, searchQuery } = state;
+    const { gooseTips, filterOpen, anchorOpen, tipOpen, selectedTip, searchQuery, currentPage, tipsPerPage } = state;
+
+    const totalTips = gooseTips.length;
+    const totalPages = Math.ceil(totalTips / tipsPerPage);
+    const indexOfLastTip = (currentPage * tipsPerPage) + 1;
+    const indexOfFirstTip = indexOfLastTip - tipsPerPage;
+    const paginatedTips = (totalPages > 1) ? gooseTips.slice(indexOfFirstTip, indexOfLastTip) : gooseTips;
 
     useEffect(() => {
         dispatch({ type: 'FETCH_INIT' });
@@ -196,7 +208,7 @@ function GooseTipsBase(props) {
 
                 { gooseTips.length ? 
                     <Grid container>
-                        { gooseTips.map(tip => {
+                        { paginatedTips.map(tip => {
                             return (
                                 <Grid item xs={12} md={4} key={tip.id} className={classes.background}>
                                     <div id={tip.id} onClick={event => dispatch({ type: 'OPEN_TIP', payload: event.currentTarget })} className={classes.item}>
@@ -222,7 +234,12 @@ function GooseTipsBase(props) {
                     : 
                     <LinearProgress color='secondary'/>
                     }
-                <Pagination />
+                    <Pagination 
+                    totalPages={totalPages}
+                    currentPage={currentPage} 
+                    resourcesPerPage={tipsPerPage}
+                    handlePageChange={(event, newPage) => dispatch({type:'CHANGE_PAGE', payload: newPage})}
+                    />
             </Container>
         </section>
     );
