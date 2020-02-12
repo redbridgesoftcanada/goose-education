@@ -60,7 +60,7 @@ function GooseEdu(props) {
                 <GoosePlatform/>
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <GooseTips/>
+                <GooseTips {...props}/>
             </TabPanel>
         </Paper>
         <Footer/>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Grid, Link, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
@@ -74,15 +74,18 @@ const styles = theme => ({
 });
 
 function ListOfSchools(props) {
-    const { classes, handleSchoolClick, listOfSchools } = props;
-
-    let match = useRouteMatch();
+    const { classes, history, handleSchoolClick, listOfSchools } = props;
+    const match = useRouteMatch();
+    
+    const [ searchQuery, setSearchQuery ] = useState('');
 
     return (
         <section className={classes.root}>
             <Container>
                 <Typography variant="body2" className={classes.counter}>There are a total of <b>{listOfSchools.length}</b> schools.</Typography>
-                <SearchField />
+                <SearchField 
+                    handleSearch={event => setSearchQuery(event.target.value)}
+                    handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {resources: listOfSchools} })}/>
                 <Grid container>
                     {listOfSchools.map(school => {
                         return (
@@ -106,14 +109,14 @@ function ListOfSchools(props) {
                                         onClick={handleSchoolClick}
                                         to=
                                         {{
-                                            pathname: `${match.path}/${school.name.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
+                                            pathname: `${match.path}/${school.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
                                             state: {
                                                 title: 'School Information',
                                                 selected: 0,
                                             }
                                         }}
                                         >
-                                            {school.name}
+                                            {school.title}
                                         </Link>
 
                                         {(school.recommendation) ? <Typography className={classes.badge}>Recommend</Typography> : ''}
@@ -127,14 +130,14 @@ function ListOfSchools(props) {
                                             onClick={handleSchoolClick}
                                             to=
                                             {{
-                                                pathname: `${match.path}/${school.name.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
+                                                pathname: `${match.path}/${school.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
                                                 state: {
                                                     title: 'School Information',
                                                     selected: 0,
                                                 }
                                             }}
                                         >
-                                            {school.introduction}
+                                            {school.description}
                                         </Link>
                                     </Grid>
                                 </div>

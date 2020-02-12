@@ -80,7 +80,7 @@ function toggleReducer(state, action) {
 }
 
 function Schools(props) {
-  const firebase = props.firebase;
+  const { firebase, history } = props;
   const classes = useStyles();
   let match = useRouteMatch();
 
@@ -137,7 +137,10 @@ function Schools(props) {
                 <Poster body={posterBody} backgroundImage={posterBackground} layoutType='school_information'/>
                 { isLoading ? <LinearProgress color='secondary'/> 
                 :
-                <ListOfSchools listOfSchools={listOfSchools} handleSchoolClick={event => dispatch({ type: 'SELECTED_SCHOOL', payload: event.target })}/>
+                <ListOfSchools
+                  history={history}
+                  listOfSchools={listOfSchools} 
+                  handleSchoolClick={event => dispatch({ type: 'SELECTED_SCHOOL', payload: event.target })}/>
                 }
               </Route>
             </Switch>

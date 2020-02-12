@@ -83,16 +83,6 @@ const styles = theme => ({
     },
 });
 
-const INITIAL_STATE = {
-    isLoading: false,
-    gooseTips: [],
-    composeOpen: false,
-    filterOpen: false,
-    anchorOpen: null,
-    tipOpen: false,
-    selectedTip: null
-}
-
 function toggleReducer(state, action) {
     let { type, payload } = action;
   
@@ -120,6 +110,10 @@ function toggleReducer(state, action) {
         
         case 'CLOSE_SORT':
             return { ...state, anchorOpen: null }
+
+        case 'SEARCH_QUERY':
+            const searchQuery = payload.value;
+            return { ...state, searchQuery }
         
         case 'OPEN_TIP':
             let selectedTip = state.gooseTips.find(tip => tip.id.toString() === payload.id);
@@ -135,10 +129,20 @@ function toggleReducer(state, action) {
 }
 
 function GooseTipsBase(props) {
-    const { classes, firebase } = props;
+    const { classes, firebase, history } = props;
     
+    const INITIAL_STATE = {
+        isLoading: false,
+        gooseTips: [],
+        composeOpen: false,
+        filterOpen: false,
+        anchorOpen: null,
+        tipOpen: false,
+        selectedTip: null,
+        searchQuery: ''
+    }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { gooseTips, filterOpen, anchorOpen, tipOpen, selectedTip } = state;
+    const { gooseTips, filterOpen, anchorOpen, tipOpen, selectedTip, searchQuery } = state;
 
     useEffect(() => {
         dispatch({ type: 'FETCH_INIT' });
@@ -172,7 +176,9 @@ function GooseTipsBase(props) {
                 <Typography variant="h3" marked="center" className={classes.title}>Goose Tips</Typography>
                 <Filter handleFilterClick={() => dispatch({ type: 'OPEN_FILTER' })}/>
                 <Sort handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
-                <SearchField />
+                <SearchField 
+                    handleSearch={event => dispatch({type: 'SEARCH_QUERY', payload: event.target})}
+                    handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, resources: gooseTips} })}/>
 
                 <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
                 <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>

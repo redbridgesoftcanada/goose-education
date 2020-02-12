@@ -198,7 +198,6 @@ function ArticleBoard({classes, history, articlesDB}) {
         filterConjunction: 'And',
         filterQuery: '',
         isError: false,
-        searchQuery: '',
         error: null
     }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
