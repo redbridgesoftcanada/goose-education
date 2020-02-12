@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Container, Grid, LinearProgress, withStyles } from '@material-ui/core';
 
 import Typography from '../components/onePirate/Typography';
+import { AuthUserContext } from '../components/session';
 import { withFirebase } from '../components/firebase';
 import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
@@ -182,6 +183,17 @@ function GooseTipsBase(props) {
 
                 <FilterDialog filterOpen={filterOpen} onClose={() => dispatch({ type: 'CLOSE_FILTER' })} />
                 <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={() => dispatch({ type: 'CLOSE_SORT'})}/>
+                <AuthUserContext.Consumer>
+                    { authUser => authUser ?
+                        <ArticleDialog  
+                        authUser={authUser} 
+                        history={history}
+                        articleOpen={tipOpen}
+                        article={selectedTip}
+                        onClose={() => dispatch({ type: 'CLOSE_TIP' })}/>
+                    : '' }
+                </AuthUserContext.Consumer>
+
                 { gooseTips.length ? 
                     <Grid container>
                         { gooseTips.map(tip => {
@@ -210,7 +222,6 @@ function GooseTipsBase(props) {
                     : 
                     <LinearProgress color='secondary'/>
                     }
-                <ArticleDialog articleOpen={tipOpen} onClose={() => dispatch({ type: 'CLOSE_TIP' })} article={selectedTip}/>
                 <Pagination />
             </Container>
         </section>
