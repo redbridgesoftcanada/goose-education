@@ -96,7 +96,7 @@ function SplitThumbnails({classes, previewSchools, previewTips}) {
             default:
                 let selectedSchool = previewSchools.find(school => school.id.toString() === event.currentTarget.id);
                 setRoute({
-                    pathname: `/schools/${selectedSchool.name.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
+                    pathname: `/schools/${selectedSchool.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
                     state: {
                         title: 'School Information',
                         selected: 0,
@@ -139,7 +139,7 @@ function SplitThumbnails({classes, previewSchools, previewTips}) {
                                         :
                                         <>
                                             <Typography variant="subtitle1">
-                                                {school.name}
+                                                {school.title}
                                             </Typography>
                                             <Typography variant="body2">
                                                 {school.features}

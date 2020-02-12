@@ -72,7 +72,7 @@ function SchoolInformation(props) {
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.name) ? selectedSchool.name : ''}</TableCell>
+                            <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.title) ? selectedSchool.title : ''}</TableCell>
                             <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.type) ? selectedSchool.type : ''}</TableCell>
                             <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.location) ? selectedSchool.location : ''}</TableCell>
                             <TableCell align='center'>{(Object.entries(selectedSchool).length && selectedSchool.url) ? selectedSchool.url : ''}</TableCell>
@@ -90,7 +90,7 @@ function SchoolInformation(props) {
                     <Collapse in={intro} timeout="auto" unmountOnExit>
                         <List component="div">
                             <ListItem>
-                                <ListItemText primary={(Object.entries(selectedSchool).length && selectedSchool.introduction) ? selectedSchool.introduction : defaultMessage}/>
+                                <ListItemText primary={(Object.entries(selectedSchool).length && selectedSchool.description) ? selectedSchool.description : defaultMessage}/>
                             </ListItem>
                         </List>
                     </Collapse>

@@ -38,7 +38,7 @@ function FeatureCarousel(props) {
             default:
                 let selectedSchool = featuredSchools.find(school => school.id.toString() === event.currentTarget.id);
                 setPathname({
-                    pathname: `/schools/${selectedSchool.name.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
+                    pathname: `/schools/${selectedSchool.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
                     state: {
                         title: 'School Information',
                         selected: 0,
