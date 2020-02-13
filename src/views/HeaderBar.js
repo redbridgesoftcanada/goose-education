@@ -28,6 +28,14 @@ function toggleReducer(state, action) {
                 [selectedMenu]: !state[selectedMenu]
             }
 
+        case 'menu_item':
+            const selectedMenuItem = payload.toLowerCase().replace(/ /g,"_");
+            return {
+                ...state,
+                drawerOpen: false,
+                [selectedMenuItem]: !state[selectedMenuItem]
+            }
+
         default: 
             break;
     }
@@ -72,7 +80,8 @@ function HeaderBar(props) {
                             authUser={authUser}
                             isOpen={state.drawerOpen} 
                             state={{...state}}
-                            handleClick={event => dispatch({ type: 'menu', payload: event.currentTarget.id })} 
+                            handleMenuClick={event => dispatch({ type: 'menu', payload: event.currentTarget.id })} 
+                            handleMenuItemClick={event => dispatch({ type:'menu_item', payload: event.currentTarget.id })}
                             onClose={() => dispatch({ type: 'drawer' })}/>
                             <MyPage classes={classes}/>
                             <Logout classes={classes}/>

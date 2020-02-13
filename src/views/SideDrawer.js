@@ -76,7 +76,7 @@ function createNestedMenuLinks(selectedPage) {
 }
 
 export default function SideDrawer(props) {
-    const { authUser, classes, isOpen, handleClick, onClose, state } = props;
+    const { authUser, classes, isOpen, handleMenuClick, handleMenuItemClick, onClose, state } = props;
     const user = {
         username: authUser.displayName,
         email: authUser.email
@@ -111,7 +111,7 @@ export default function SideDrawer(props) {
                                 <ListItemText primary={item}/>
                             </ListItem>
                             :
-                            <ListItem button id={item} onClick={handleClick}>
+                            <ListItem button id={item} onClick={handleMenuClick}>
                                 <ListItemText primary={item}/>
                                 {(formattedText !== 'networking' && state[formattedText]) ? <ExpandLess /> : <ExpandMore />}
                             </ListItem>
@@ -120,7 +120,7 @@ export default function SideDrawer(props) {
                                 const nestedPageLink = createNestedMenuLinks(item);
                                 return (
                                     <Collapse key={i} in={state[formattedText]} timeout='auto' unmountOnExit>
-                                        <ListItem button component={RouterLink} to={nestedPageLink} className={classes.nested}>
+                                        <ListItem button component={RouterLink} to={nestedPageLink} className={classes.nested} onClick={handleMenuItemClick}>
                                             <ListItemText primary={item}/>
                                         </ListItem>
                                     </Collapse>
