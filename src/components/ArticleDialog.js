@@ -2,6 +2,7 @@ import React, { Fragment, useState } from 'react';
 import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Fab, Grid, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, PrintOutlined } from '@material-ui/icons';
 import ReactQuill from 'react-quill';
+import parse from 'html-react-parser';
 import { format } from 'date-fns';
 import Typography from '../components/onePirate/Typography';
 import { withFirebase } from '../components/firebase';
@@ -146,7 +147,7 @@ function ArticleDialog(props) {
                         </Typography>
                     </div>
                     <br/>
-                    <Typography variant='body2' align='left'>{comment.description}</Typography>
+                    <div variant='body2' align='left'>{parse(comment.description)}</div>
                 </Fragment>
               )
             })

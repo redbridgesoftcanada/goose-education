@@ -3,6 +3,7 @@ import { Box, Button, Container, Divider, Grid, withStyles } from '@material-ui/
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined } from '@material-ui/icons';
 import { format } from 'date-fns';
 import ReactQuill from 'react-quill';
+import parse from 'html-react-parser';
 
 import { withFirebase } from '../components/firebase';
 import Typography from '../components/onePirate/Typography';
@@ -122,7 +123,7 @@ function Message(props) {
                             </Typography>
                         </div>
                         <br/>
-                        <Typography variant='body2' align='left'>{comment.description}</Typography>
+                        <Typography variant='body2' align='left'>{parse(comment.description)}</Typography>
                     </Fragment>
                 )
             })
