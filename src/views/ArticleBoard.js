@@ -1,10 +1,10 @@
 import React, { useReducer, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Container, Grid, withStyles } from '@material-ui/core';
 import { useRouteMatch } from "react-router-dom";
-import Typography from '../components/onePirate/Typography';
+import parse from 'html-react-parser';
 
 import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
+import Typography from '../components/onePirate/Typography';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';
@@ -224,7 +224,7 @@ function ArticleBoard({classes, history, articlesDB}) {
         <section className={classes.root}>
             <Container>
                 <AuthUserContext.Consumer>
-                    { authUser => authUser ? 
+                    { authUser => authUser &&
                     <>
                         <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
                         <ComposeDialog 
@@ -238,7 +238,7 @@ function ArticleBoard({classes, history, articlesDB}) {
                         articleOpen={articleOpen} 
                         onClose={() => dispatch({ type: 'CLOSE_ARTICLE' })} article={selectedArticle}/>
                     </>
-                    : '' }
+                    }
                 </AuthUserContext.Consumer>
                 <Filter 
                     isFilter={isFiltered} 
@@ -268,19 +268,19 @@ function ArticleBoard({classes, history, articlesDB}) {
                 <Grid container>
                     {paginatedArticles.map(article => {
                         return (
-                            <Grid item xs={12} md={3} key={article.id} className={classes.background}>
+                            <Grid key={article.id} item xs={12} md={3} className={classes.background}>
                                 <div className={classes.item} id={article.id} onClick={event => dispatch({ type: 'OPEN_ARTICLE', payload: { selected: event.currentTarget, database: articlesDB }})}>
                                     <img
                                         className={classes.image}
-                                        src={require(`../assets/img/${article.image}`)}
+                                        src={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)}
                                         alt='article-thumbnail'
                                     />
                                     <div className={classes.body}>
                                         <Typography variant='body1' className={classes.articleTitle} >
                                             {article.title}
                                         </Typography>
-                                        <Typography noWrap variant='body2' className={classes.articleDescription}>
-                                            {article.description}
+                                        <Typography component='div' noWrap variant='body2' className={classes.articleDescription}>
+                                            {parse(article.description)}
                                         </Typography>
                                     </div>
                                 </div>
@@ -298,9 +298,5 @@ function ArticleBoard({classes, history, articlesDB}) {
         </section>
     );
 }
-
-ArticleBoard.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(ArticleBoard);

@@ -57,6 +57,10 @@ function ArticleDialog(props) {
   const { authUser, classes, firebase, history, article, articleOpen, onClose } = props;
   const [ comment, setComment ] = useState('');
 
+  if (!article) {
+    return null;
+  }
+
   const onSubmit = event => {
     firebase.article(article.id).update({ 
         "comments": firebase.updateArray().arrayUnion({
@@ -74,7 +78,7 @@ function ArticleDialog(props) {
     });
     // .catch(error => dispatch({ type: 'error', payload: error }))
     event.preventDefault();
-}
+  }
 
   return (
       <Dialog open={articleOpen} scroll='paper' onClose={onClose} id='printableArea' fullWidth maxWidth='md'>
@@ -86,9 +90,9 @@ function ArticleDialog(props) {
                 <AccountCircleOutlined/>
               </Grid>
               <Grid item>
-                <Typography variant='body2' className={classes.item}>{article ? article.author : ''}</Typography>
+                <Typography variant='body2' className={classes.item}>{article.authorDisplayName}</Typography>
               </Grid>
-              {article && article.tag ?
+              {article.tag &&
               <>
                 <Grid item >
                   <LocalOfferOutlined/>
@@ -97,18 +101,18 @@ function ArticleDialog(props) {
                   <Typography variant='body2' className={classes.item}>{article.tag}</Typography>
                 </Grid>
               </>
-              : ''}
+              }
               <Grid item >
                 <ChatBubbleOutlineOutlined/>
               </Grid>
               <Grid item>
-                <Typography variant='body2' className={classes.item}>{article ? article.comments.length : ''}</Typography>
+                <Typography variant='body2' className={classes.item}>{article.comments.length}</Typography>
               </Grid>
               <Grid item >
                 <VisibilityOutlined/>
               </Grid>
               <Grid item>
-                <Typography variant='body2' className={classes.item}>{article ? article.views : ''}</Typography>
+                <Typography variant='body2' className={classes.item}>{article.views}</Typography>
               </Grid>
             </Grid>
           </div>
@@ -118,24 +122,26 @@ function ArticleDialog(props) {
                 <ScheduleOutlined/>
               </Grid>
               <Grid item>
-                <Typography variant='body2'>{article ? article.date : ''}</Typography>
+                <Typography variant='body2'>{article.createdAt && article.updatedAt ? format(article.updatedAt, 'Pp') : format(article.createdAt, 'Pp')}</Typography>
               </Grid>
             </Grid>
           </div>
         </Box>
         <DialogContent dividers>
-          <img className={classes.image} src={require(`../assets/img/${article ? article.image : 'flogo.png'}`)} alt="article cover"/>
-          <DialogContentText className={classes.description}>
-            {article ? article.description : ''}
-          </DialogContentText>
+          <img className={classes.image} 
+          src={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)} 
+          alt="article cover"/>
+          <DialogContent className={classes.description}>
+            {parse(article.description)}
+          </DialogContent>
           <Fab size="small" color="secondary" className={classes.print} onClick={() => printDiv('printableArea')}>
             <PrintOutlined />
           </Fab>
           <br/><br/><br/>
           <Divider/>
           <br/>
-          <DialogContentText>{article ? article.comments.length : ''} Comments</DialogContentText>
-            { article && article.comments.length ? article.comments.map((comment, i) => {
+          <DialogContentText>{article.comments.length} Comments</DialogContentText>
+            { article.comments.length ? article.comments.map((comment, i) => {
               return (
                 <Fragment key={i}>
                     <div className={classes.left}>

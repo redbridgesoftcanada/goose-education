@@ -1,6 +1,7 @@
 import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/storage';
 
 const devConfig = {
   apiKey: process.env.REACT_APP_DEV_API_KEY,
@@ -28,10 +29,9 @@ class Firebase {
 
     this.auth = app.auth();
     this.db = app.firestore();
+    this.storage = app.storage();
     this.fieldValue = app.firestore.FieldValue;
   }
-
-  updateArray = () => this.fieldValue;
 
   // A U T H E N T I C A T I O N  A P I
   doCreateUserWithEmailAndPassword = (email, password) => this.auth.createUserWithEmailAndPassword(email, password);
@@ -73,6 +73,13 @@ class Firebase {
   // M E S S A G E S ( S t u d y  A b r o a d  S e r v i c e s )
   messages = () => this.db.collection("messages");
   message = messageId => this.db.doc(`messages/${messageId}`);
+
+  // U P L O A D S
+  images = file => this.storage.ref('images').child(file.name).put(file);
+  attachments = file => this.storage.ref('attachments').child(file.name).put(file);
+
+  // H E L P E R S
+  updateArray = () => this.fieldValue;  // to merge & update an array in an existing document (e.g. comments)
 };
 
 export default Firebase;
