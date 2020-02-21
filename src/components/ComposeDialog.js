@@ -1,8 +1,8 @@
 import React, { useEffect, useReducer } from 'react';
 import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, Input, MenuItem, TextField } from '@material-ui/core';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { withAuthorization } from '../components/session';
 import { FileValidator, EditorValidator, SelectValidator } from '../components/CustomValidators';
+import { withAuthorization } from '../components/session';
 
 const tags = ['Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
@@ -53,12 +53,12 @@ function ComposeDialogBase(props) {
     dispatch({type: 'INITIALIZE_SAVE'});
 
     let uploadKey, formContent, newDoc, uploadRef;
-    if (composeType === '/networking') {
+    if (composeType.includes('/networking')) {
       const { isLoading, uploads, ...articleForm } = state;
       uploadKey = 'image';
       formContent = {...articleForm};
       newDoc = firebase.articles().doc();
-    } else if (composeType === '/services') {
+    } else if (composeType.includes('/services')) {
       const { isLoading, tag, instagramURL, uploads, ...messageForm } = state;
       uploadKey = 'attachments';
       formContent = {...messageForm};
@@ -67,9 +67,9 @@ function ComposeDialogBase(props) {
 
     // if user uploads a file with the form
     if (uploads.length) { 
-      if (composeType === '/networking') {
+      if (composeType.includes('/networking')) {
         uploadRef = firebase.images(uploads);
-      } else if (composeType === '/services') {
+      } else if (composeType.includes('/services')) {
         uploadRef = firebase.attachments(uploads);
       }
 
@@ -130,7 +130,7 @@ function ComposeDialogBase(props) {
   
   return (
     <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='md'>
-      <DialogTitle>{ composeType === '/networking' ? 'Create Post' : 'Create Counselling Request' }</DialogTitle>
+      <DialogTitle>{ composeType.includes('/networking') ? 'Create Post' : 'Create Counselling Request' }</DialogTitle>
       <DialogContent>
         <ValidatorForm onSubmit={onSubmit}>
           <FormLabel component="legend">Title</FormLabel>
@@ -145,7 +145,7 @@ function ComposeDialogBase(props) {
             validators={['required']}
             errorMessages={['Cannot submit an empty title.']}/>
 
-          {composeType === '/networking' &&
+          {composeType.includes('/networking') &&
             <>
               <FormLabel component="legend">Tag</FormLabel>
               <SelectValidator 
@@ -202,7 +202,7 @@ function ComposeDialogBase(props) {
           onChange={event => dispatch({ payload: event.target })}/>
 
           <FormLabel component="legend">Uploads</FormLabel>
-          {composeType === '/networking' ?
+          {composeType.includes('/networking') ?
             <FileValidator
               disableUnderline
               onChange={event => dispatch({ type: 'FILE_UPLOAD', payload: event.target.files[0] })}

@@ -51,6 +51,7 @@ class Firebase {
   // A R T I C L E S ( N e t w o r k i n g ) 
   articles = () => this.db.collection("articles");
   article = articleId => this.db.doc(`articles/${articleId}`);
+  deleteArticle = articleId => this.db.doc(`articles/${articleId}`).delete();
 
   // S C H O O L S 
   schools = () => this.db.collection("schools");
@@ -73,6 +74,7 @@ class Firebase {
   // M E S S A G E S ( S t u d y  A b r o a d  S e r v i c e s )
   messages = () => this.db.collection("messages");
   message = messageId => this.db.doc(`messages/${messageId}`);
+  deleteMessage = messageId => this.db.doc(`messages/${messageId}`).delete();
 
   // U P L O A D S
   images = file => this.storage.ref('images').child(file.name).put(file);
