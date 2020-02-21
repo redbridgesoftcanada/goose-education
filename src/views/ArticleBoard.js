@@ -1,7 +1,8 @@
 import React, { useReducer, useEffect } from 'react';
-import { Container, Grid, withStyles } from '@material-ui/core';
-import { useRouteMatch } from "react-router-dom";
+import { Container, Grid, Link, withStyles } from '@material-ui/core';
+import { Switch, Route, Link as RouterLink, useRouteMatch } from "react-router-dom";
 import parse from 'html-react-parser';
+import { ValidatorForm } from 'react-material-ui-form-validator';
 
 import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
 import Typography from '../components/onePirate/Typography';
@@ -13,7 +14,7 @@ import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
 import SortPopover from '../components/SortPopover';
 import SearchField from '../components/SearchField';
-import ArticleDialog from '../components/ArticleDialog';
+import Article from '../views/Article';
 import Pagination from '../components/Pagination';
 
 const styles = theme => ({
@@ -165,7 +166,7 @@ function toggleReducer(state, action) {
             }
         
         case 'OPEN_ARTICLE':
-            const selectedArticle = payload.database.find(article => article.id.toString() === payload.selected.id)
+            const selectedArticle = payload.database.find(article => article.id.toString() === payload.selected.id);
             return { 
                 ...state, 
                 articleOpen: true, 
@@ -217,13 +218,32 @@ function ArticleBoard({classes, history, articlesDB}) {
     const paginatedArticles = (totalPages > 1) ? articles.slice(indexOfFirstArticle, indexOfLastArticle) : articles;
 
     useEffect(() => {
-        dispatch({ type: 'LOAD_ARTICLES', payload: articlesDB })
+        dispatch({ type: 'LOAD_ARTICLES', payload: articlesDB });
+
+        ValidatorForm.addValidationRule('isNotHTML', value => {
+            if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
+                return false;
+            }
+            return true;
+        });
     }, [articlesDB]);
 
     return (
         <section className={classes.root}>
             <Container>
-                <AuthUserContext.Consumer>
+            <Switch>
+              <Route path={`${match.path}/:articleID`}>
+              <AuthUserContext.Consumer>
+                {authUser => <Article 
+                        article={selectedArticle}
+                        authUser={authUser} 
+                        history={history}
+                        articleOpen={articleOpen} 
+                        /> }
+              </AuthUserContext.Consumer>
+              </Route>
+              <Route path={match.path}>
+              <AuthUserContext.Consumer>
                     { authUser => authUser &&
                     <>
                         <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
@@ -232,11 +252,6 @@ function ArticleBoard({classes, history, articlesDB}) {
                         composeType={match.url}
                         composeOpen={composeOpen} 
                         onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
-                        <ArticleDialog 
-                        authUser={authUser} 
-                        history={history}
-                        articleOpen={articleOpen} 
-                        onClose={() => dispatch({ type: 'CLOSE_ARTICLE' })} article={selectedArticle}/>
                     </>
                     }
                 </AuthUserContext.Consumer>
@@ -270,6 +285,19 @@ function ArticleBoard({classes, history, articlesDB}) {
                         return (
                             <Grid key={article.id} item xs={12} md={3} className={classes.background}>
                                 <div className={classes.item} id={article.id} onClick={event => dispatch({ type: 'OPEN_ARTICLE', payload: { selected: event.currentTarget, database: articlesDB }})}>
+                                <Link
+                                        color="inherit"
+                                        underline="none"
+                                        component={RouterLink} 
+                                        to=
+                                        {{
+                                            pathname: `${match.path}/${article.id}`, 
+                                            state: {
+                                                title: 'Networking',
+                                            }
+                                        }}
+                                    >
+
                                     <img
                                         className={classes.image}
                                         src={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)}
@@ -283,6 +311,7 @@ function ArticleBoard({classes, history, articlesDB}) {
                                             {parse(article.description)}
                                         </Typography>
                                     </div>
+                                    </Link>
                                 </div>
                             </Grid>
                         );
@@ -294,6 +323,9 @@ function ArticleBoard({classes, history, articlesDB}) {
                     resourcesPerPage={articlesPerPage}
                     handlePageChange={(event, newPage) => dispatch({type:'CHANGE_PAGE', payload: newPage})}
                 />
+              </Route>
+              </Switch>
+                
             </Container>
         </section>
     );
