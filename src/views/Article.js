@@ -6,7 +6,7 @@ import { ValidatorForm } from 'react-material-ui-form-validator';
 import parse from 'html-react-parser';
 import { format } from 'date-fns';
 import { withFirebase } from '../components/firebase';
-import { EditorValidator } from '../components/CustomValidators';
+import { EditorValidator } from '../constants/customValidators';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
 
@@ -61,7 +61,11 @@ function toggleReducer(state, action) {
             }
         
         case 'NEW_EDIT':
-            return { ...state, dialogOpen: !state.dialogOpen }
+            return { 
+                ...state, 
+                dialogOpen: !state.dialogOpen,
+                ...(!state.dialogOpen) && { anchorEl: null }   // synchronize closing the EDIT/DELETE menu in the background
+            }
     }
 }
 
@@ -79,11 +83,12 @@ function Article(props) {
     const anchorOpen = Boolean(anchorEl);
     
     const match = useRouteMatch();
-    const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });
     const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
     const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS', payload:null });
+    const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });
     const handleConfirmation = () => dispatch({ type:'CONFIRM_ACTIONS' });
     const handleEdit = () => dispatch({ type: 'NEW_EDIT' });
+    const handleDelete = () => firebase.deleteArticle(article.id).then(() => history.push('/networking'));
 
     let isArticleOwner;
     if (!article) {
@@ -108,14 +113,6 @@ function Article(props) {
       // .catch(error => dispatch({ type: 'error', payload: error }))
       event.preventDefault();
     }
-
-    // useEffect(() => {
-    //     ValidatorForm.addValidationRule('isNotHTML', value => {
-    //       if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-    //           return false;
-    //       }
-    //       return true;
-    // })});
 
     return (
         <Container className={classes.mt3}>
@@ -215,7 +212,7 @@ function Article(props) {
                 composeOpen={dialogOpen} 
                 onClose={handleEdit} 
             />
-            <DeleteConfirmation open={confirmOpen} onClose={handleConfirmation}/> 
+            <DeleteConfirmation open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/> 
 
             <Divider light/>
 

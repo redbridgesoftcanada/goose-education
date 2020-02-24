@@ -24,9 +24,23 @@ class SelectValidator extends ValidatorComponent {
     return (
       <>
         <Select {...rest}>{children}</Select>
-        {createErrorText(this.state, this.getErrorMessage())}
+        {this.errorText()}
+        {/* {createErrorText(this.state, this.getErrorMessage())} */}
       </>
   )}
+  errorText() {
+    const { isValid } = this.state;
+
+    if (isValid) {
+        return null;
+    }
+
+    return (
+        <div style={{ color: 'red' }}>
+            {this.getErrorMessage()}
+        </div>
+    );
+}
 }
 
 class EditorValidator extends ValidatorComponent {
@@ -35,10 +49,25 @@ class EditorValidator extends ValidatorComponent {
     return (
       <>
         <ReactQuill {...rest}/>
-        {createErrorText(this.state, this.getErrorMessage())}
+        {this.errorText()}
+        {/* {createErrorText(this.state, this.getErrorMessage())} */}
       </>
   )}
+  errorText() {
+    const { isValid } = this.state;
+  
+    if (isValid) {
+        return null;
+    }
+  
+    return (
+        <div style={{ color: 'red' }}>
+            {this.getErrorMessage()}
+        </div>
+    );
+  }
 }
+
 
 class FileValidator extends ValidatorComponent {
   render() {
@@ -48,9 +77,23 @@ class FileValidator extends ValidatorComponent {
       <>
         <Input type="file" {...rest}
         error={!isValid}/>
-        {createErrorText(this.state, this.getErrorMessage())}
+        {this.errorText()}
+        {/* {createErrorText(this.state, this.getErrorMessage())} */}
       </>
   )}
+  errorText() {
+    const { isValid } = this.state;
+
+    if (isValid) {
+        return null;
+    }
+
+    return (
+        <div style={{ color: 'red' }}>
+            {this.getErrorMessage()}
+        </div>
+    );
+}
 }
 
 export { SelectValidator, EditorValidator, FileValidator }

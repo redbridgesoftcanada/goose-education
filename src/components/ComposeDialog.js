@@ -1,47 +1,47 @@
 import React, { useEffect, useReducer } from 'react';
-import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, Input, MenuItem, TextField } from '@material-ui/core';
+import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, Input, MenuItem, TextField, Select } from '@material-ui/core';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { FileValidator, EditorValidator, SelectValidator } from '../components/CustomValidators';
+import { FileValidator, EditorValidator, SelectValidator } from '../constants/customValidators';
 import { withAuthorization } from '../components/session';
 
 const tags = ['Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
 const INITIAL_STATE = {
-    isLoading: false,
-    title: '',
-    description: '',
-    tag: '',
-    instagramURL: '',
-    link1: '',
-    link2: '',
-    uploads: []
+  isLoading: false,
+  title: '',
+  description: '',
+  tag: '',
+  instagramURL: '',
+  link1: '',
+  link2: '',
+  uploads: []
 }
 
 function toggleReducer(state, action) {
     const { type, payload } = action;
     
     switch(type) {
-        case 'INITIALIZE_SAVE':
-          return { ...state, isLoading: true }
+      case 'INITIALIZE_SAVE':
+        return { ...state, isLoading: true }
 
-        case 'SUCCESS_SAVE':
-          return { ...INITIAL_STATE }
+      case 'SUCCESS_SAVE':
+        return { ...INITIAL_STATE }
 
-        case 'RICH_TEXT':
-          return { ...state, description: payload }
+      case 'RICH_TEXT':
+        return { ...state, description: payload }
 
-        case 'FILE_UPLOAD':
-          const uploadFile = payload;
-          if (!uploadFile) {
-            return { ...state, uploads: [] }
-          }
-          return { ...state, uploads: uploadFile }
+      case 'FILE_UPLOAD':
+        const uploadFile = payload;
+        if (!uploadFile) {
+          return { ...state, uploads: [] }
+        }
+        return { ...state, uploads: uploadFile }
 
-        default:
-          const inputField = payload.name;
-          const inputValue = payload.value;
-          return { ...state, [inputField]: inputValue }
-    }
+      default:
+        const inputField = payload.name;
+        const inputValue = payload.value;
+        return { ...state, [inputField]: inputValue }
+  }
 }
 
 function ComposeDialogBase(props) {
@@ -49,9 +49,12 @@ function ComposeDialogBase(props) {
   const { isLoading, title, tag, description, instagramURL, link1, link2, uploads } = state;
   const { authUser, firebase, history, composeOpen, onClose, composeType } = props;
 
+  const handleFormFields = event => dispatch({ payload:event.target });
+  const handleRichText = value => dispatch({ type:'RICH_TEXT', payload:value });
+  const handleFileUpload = event => dispatch({ type:'FILE_UPLOAD', payload:event.target.files[0] });
+
   const onSubmit = event => {
     dispatch({type: 'INITIALIZE_SAVE'});
-
     let uploadKey, formContent, newDoc, uploadRef;
     if (composeType.includes('/networking')) {
       const { isLoading, uploads, ...articleForm } = state;
@@ -65,8 +68,8 @@ function ComposeDialogBase(props) {
       newDoc = firebase.messages().doc();
     }
 
-    // if user uploads a file with the form
-    if (uploads.length) { 
+    // if user uploads a file with the form (note. empty array overwrites to a File object)
+    if (!uploads || uploads.length !== 0) { 
       if (composeType.includes('/networking')) {
         uploadRef = firebase.images(uploads);
       } else if (composeType.includes('/services')) {
@@ -85,7 +88,7 @@ function ComposeDialogBase(props) {
             views: 0,
             [uploadKey]: downloadURL, 
             ...formContent
-          }).then(() => {
+          }, { merge: true }).then(() => {
             dispatch({type: 'SUCCESS_SAVE'});
             onClose();
             history.push(composeType)})
@@ -103,7 +106,7 @@ function ComposeDialogBase(props) {
         views: 0,
         [uploadKey]: uploads, 
         ...formContent
-      }).then(() => {
+      }, { merge: true }).then(() => {
         dispatch({type: 'SUCCESS_SAVE'});
         onClose();
         history.push(composeType)})
@@ -141,21 +144,23 @@ function ComposeDialogBase(props) {
             InputLabelProps={{shrink: true}}
             name="title"
             value={title}
-            onChange={event => dispatch({ payload: event.target })}
+            onChange={handleFormFields}
             validators={['required']}
             errorMessages={['Cannot submit an empty title.']}/>
 
           {composeType.includes('/networking') &&
             <>
               <FormLabel component="legend">Tag</FormLabel>
-              <SelectValidator 
+              <SelectValidator
                 variant="outlined"
                 displayEmpty
                 name='tag' 
-                value={tag} 
-                onChange={event => dispatch({ payload: event.target })}
+                defaultValue={tag}
+                value={tag}
+                onChange={handleFormFields}
                 validators={['required']}
                 errorMessages={['Please select a tag.']}>
+                  {/* <InputLabel>Select One</InputLabel> */}
                   <MenuItem value="" disabled>Select One</MenuItem>
                   {tags.map((tag, i) => {
                       return <MenuItem key={i} name={tag} value={tag}>{tag}</MenuItem>
@@ -170,14 +175,14 @@ function ComposeDialogBase(props) {
                 InputLabelProps={{shrink: true}}
                 name="instagramURL"
                 value={instagramURL}
-                onChange={event => dispatch({ payload: event.target })}
+                onChange={handleFormFields}
                 placeholder="https://www.instagram.com/gooseedu/"/>
             </>
           }
 
           <EditorValidator 
             value={description} 
-            onChange={value => dispatch({ type: 'RICH_TEXT', payload: value })}
+            onChange={handleRichText}
             validators={['isNotHTML']}
             errorMessages={['Cannot submit an empty post.']}/>
 
@@ -189,7 +194,7 @@ function ComposeDialogBase(props) {
           InputLabelProps={{shrink: true}}
           name="link1"
           value={link1}
-          onChange={event => dispatch({ payload: event.target })}/>
+          onChange={handleFormFields}/>
 
           <FormLabel component="legend">Link #2</FormLabel>
           <TextField 
@@ -199,18 +204,19 @@ function ComposeDialogBase(props) {
           InputLabelProps={{shrink: true}}
           name="link2"
           value={link2}
-          onChange={event => dispatch({ payload: event.target })}/>
+          onChange={handleFormFields}/>
 
           <FormLabel component="legend">Uploads</FormLabel>
           {composeType.includes('/networking') ?
             <FileValidator
               disableUnderline
-              onChange={event => dispatch({ type: 'FILE_UPLOAD', payload: event.target.files[0] })}
+              onChange={handleFileUpload}
+              name="file"
               value={uploads}
-              validators={['isRequiredUpload', 'allowedExtensions: image/jpeg, image/png']}
-              errorMessages={['Please upload an image.', 'Only JPEG or PNG files supported.']} />
+              validators={['isRequiredUpload']}
+              errorMessages={['Please upload an image.']} />
             :
-            <Input type="file" disableUnderline onChange={event => dispatch({ type: 'FILE_UPLOAD', payload: event.target.files[0] })}/>
+            <Input type="file" disableUnderline onChange={handleFileUpload}/>
           }
 
           <Button variant="contained" color="secondary" fullWidth type="submit">

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 
-export default function DeleteConfirmation({open, onClose}) {
+export default function DeleteConfirmation({open, handleDelete, onClose}) {
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>Delete this post?</DialogTitle>
@@ -10,7 +10,7 @@ export default function DeleteConfirmation({open, onClose}) {
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>CANCEL</Button>
-                <Button onClick={onClose} color="secondary">DELETE</Button>
+                <Button onClick={handleDelete} color="secondary">DELETE</Button>
             </DialogActions>
         </Dialog>
     );
