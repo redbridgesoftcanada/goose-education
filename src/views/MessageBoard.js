@@ -151,7 +151,7 @@ function MessageBoard({classes, handleClick, messagesDB}) {
             <SocialMediaButtons title={title} description={description}/>
             <div className={classes.wrapper}>
                 <AuthUserContext.Consumer>
-                    { authUser => authUser ? 
+                    { authUser => authUser && 
                     <>
                         <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
                         <ComposeDialog
@@ -161,7 +161,7 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                         composeOpen={composeOpen} 
                         onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
                     </>
-                    : '' }
+                    }
                 </AuthUserContext.Consumer>
                 <Filter 
                  isFilter={isFiltered} 

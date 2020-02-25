@@ -171,7 +171,7 @@ function ServiceCentre(props) {
             <Switch>
               <Route path={`${match.path}/message/:messageID`}>
                 <AuthUserContext.Consumer>
-                  {authUser => <Message history={props.history} authUser={authUser} selectedMessage={selectedMessage} /> }
+                  {authUser => <Message history={props.history} authUser={authUser} selectedMessage={selectedMessage} match={match} /> }
                 </AuthUserContext.Consumer>
               </Route>
               <Route path={match.path}>

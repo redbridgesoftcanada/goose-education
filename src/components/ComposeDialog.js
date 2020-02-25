@@ -62,8 +62,7 @@ function ComposeDialogBase(props) {
     if (composePath.includes('/networking')) {
       const { isEdit, isLoading, uploads, ...articleForm } = state;
       uploadKey = 'image';
-      uploadRef = (!uploads || uploads.length !== 0) ? firebase.imagesRef(uploads) : '';
-      uploadTask = (!uploads || uploads.length !== 0) ? uploadRef.put(uploads) : '';
+      uploadRef = (!uploads || uploads.length !== 0) && firebase.imagesRef(uploads);
       newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
       formContent = {...articleForm};
       redirectPath = '/networking';
@@ -71,16 +70,16 @@ function ComposeDialogBase(props) {
     } else if (composePath.includes('/services')) {
       const { isEdit, isLoading, tag, instagramURL, uploads, ...messageForm } = state;
       uploadKey = 'attachments';
-      uploadRef = (!uploads || uploads.length !== 0) ? firebase.attachmentsRef(uploads) : '';
-      uploadTask = (!uploads || uploads.length !== 0) ? uploadRef.put(uploads) : '';
-      newDoc = firebase.messages().doc();
-      // newDoc = isEdit ? firebase.message(state.id) : firebase.messages.doc();
+      uploadRef = (!uploads || uploads.length !== 0) && firebase.attachmentsRef(uploads);
+      newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
       formContent = {...messageForm};
       redirectPath = '/services';
     }
     
     // user uploads a file with the form (note. empty array overwrites to a File object)
     if (uploadRef) {
+      uploadTask = uploadRef.put(uploads);
+
       uploadTask.on('state_changed', function (snapshot) {
       }, function(error) {
         console.log(error)
