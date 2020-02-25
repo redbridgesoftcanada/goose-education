@@ -6,26 +6,16 @@ import { withAuthorization } from '../components/session';
 
 const tags = ['Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
-const INITIAL_STATE = {
-  isLoading: false,
-  title: '',
-  description: '',
-  tag: '',
-  instagramURL: '',
-  link1: '',
-  link2: '',
-  uploads: []
-}
-
 function toggleReducer(state, action) {
     const { type, payload } = action;
     
     switch(type) {
+      case 'EDIT_FORM':
+        const { image, ...prevContent } = payload.prevContent;
+        return { ...prevContent, isEdit: payload.isEdit, isLoading: false }
+
       case 'INITIALIZE_SAVE':
         return { ...state, isLoading: true }
-
-      case 'SUCCESS_SAVE':
-        return { ...INITIAL_STATE }
 
       case 'RICH_TEXT':
         return { ...state, description: payload }
@@ -45,95 +35,116 @@ function toggleReducer(state, action) {
 }
 
 function ComposeDialogBase(props) {
+  const INITIAL_STATE = {
+    isEdit: false,
+    isLoading: false,
+    title: '',
+    description: '',
+    tag: '',
+    instagramURL: '',
+    link1: '',
+    link2: '',
+    uploads: []
+  }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { isLoading, title, tag, description, instagramURL, link1, link2, uploads } = state;
-  const { authUser, firebase, history, composeOpen, onClose, composeType } = props;
+  const { isEdit, isLoading, title, tag, description, instagramURL, link1, link2, uploads } = state;
+  const { authUser, firebase, history, composeOpen, onClose, composePath } = props;
 
+  const configureEditForm = (isEdit, prevContent) => dispatch({ type:'EDIT_FORM', payload: { isEdit, prevContent }});
   const handleFormFields = event => dispatch({ payload:event.target });
   const handleRichText = value => dispatch({ type:'RICH_TEXT', payload:value });
   const handleFileUpload = event => dispatch({ type:'FILE_UPLOAD', payload:event.target.files[0] });
 
   const onSubmit = event => {
-    dispatch({type: 'INITIALIZE_SAVE'});
-    let uploadKey, formContent, newDoc, uploadRef;
-    if (composeType.includes('/networking')) {
-      const { isLoading, uploads, ...articleForm } = state;
+    dispatch({ type: 'INITIALIZE_SAVE' });
+    // configure Firestore collection/document locations
+    let uploadKey, uploadRef, uploadTask, newDoc, formContent, redirectPath;
+    if (composePath.includes('/networking')) {
+      const { isEdit, isLoading, uploads, ...articleForm } = state;
       uploadKey = 'image';
+      uploadRef = (!uploads || uploads.length !== 0) ? firebase.imagesRef(uploads) : '';
+      uploadTask = (!uploads || uploads.length !== 0) ? uploadRef.put(uploads) : '';
+      newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
       formContent = {...articleForm};
-      newDoc = firebase.articles().doc();
-    } else if (composeType.includes('/services')) {
-      const { isLoading, tag, instagramURL, uploads, ...messageForm } = state;
+      redirectPath = '/networking';
+
+    } else if (composePath.includes('/services')) {
+      const { isEdit, isLoading, tag, instagramURL, uploads, ...messageForm } = state;
       uploadKey = 'attachments';
-      formContent = {...messageForm};
+      uploadRef = (!uploads || uploads.length !== 0) ? firebase.attachmentsRef(uploads) : '';
+      uploadTask = (!uploads || uploads.length !== 0) ? uploadRef.put(uploads) : '';
       newDoc = firebase.messages().doc();
+      // newDoc = isEdit ? firebase.message(state.id) : firebase.messages.doc();
+      formContent = {...messageForm};
+      redirectPath = '/services';
     }
-
-    // if user uploads a file with the form (note. empty array overwrites to a File object)
-    if (!uploads || uploads.length !== 0) { 
-      if (composeType.includes('/networking')) {
-        uploadRef = firebase.images(uploads);
-      } else if (composeType.includes('/services')) {
-        uploadRef = firebase.attachments(uploads);
-      }
-
-      uploadRef.on('state_changed', () => {
-        uploadRef.snapshot.ref.getDownloadURL().then(downloadURL => {
+    
+    // user uploads a file with the form (note. empty array overwrites to a File object)
+    if (uploadRef) {
+      uploadTask.on('state_changed', function (snapshot) {
+      }, function(error) {
+        console.log(error)
+      }, function () {
+        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
           newDoc.set({
             id: newDoc.id,
             authorID: authUser.uid,
             authorDisplayName: authUser.displayName,
             comments: [],
-            createdAt: Date.now(),
+            ...isEdit ? {} : { createdAt: Date.now() },
             updatedAt: Date.now(),
             views: 0,
             [uploadKey]: downloadURL, 
             ...formContent
           }, { merge: true }).then(() => {
-            dispatch({type: 'SUCCESS_SAVE'});
             onClose();
-            history.push(composeType)})
+            history.push(redirectPath)});
           // .catch(error => dispatch({ type: 'error', payload: error }))
-      })})
-      
+      })});
+
+    // user does not upload a file with the form
     } else {
       newDoc.set({
         id: newDoc.id,
         authorID: authUser.uid,
         authorDisplayName: authUser.displayName,
         comments: [],
-        createdAt: Date.now(),
+        ...isEdit ? {} : { createdAt: Date.now() },
         updatedAt: Date.now(),
         views: 0,
         [uploadKey]: uploads, 
         ...formContent
       }, { merge: true }).then(() => {
-        dispatch({type: 'SUCCESS_SAVE'});
         onClose();
-        history.push(composeType)})
+        history.push(redirectPath)});
       // .catch(error => dispatch({ type: 'error', payload: error }));
     }
     event.preventDefault();
   }
 
   useEffect(() => {
-    ValidatorForm.addValidationRule('isNotHTML', value => {
+    const isEdit = props.isEdit;
+    const prevContent = props.article;
+    prevContent && configureEditForm(isEdit, prevContent);
+
+    ValidatorForm.addValidationRule('isQuillEmpty', value => {
       if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-          return false;
+        return false;
       }
       return true;
     });
 
     ValidatorForm.addValidationRule('isRequiredUpload', value => {
-      if (value.length === 0) {
-          return false;
+      if (!value || value.length === 0) {
+        return false;
       }
       return true;
     });
-  });
+  }, [props.article]);
   
   return (
     <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='md'>
-      <DialogTitle>{ composeType.includes('/networking') ? 'Create Post' : 'Create Counselling Request' }</DialogTitle>
+      <DialogTitle>{ composePath.includes('/networking') ? 'Create Post' : 'Create Counselling Request' }</DialogTitle>
       <DialogContent>
         <ValidatorForm onSubmit={onSubmit}>
           <FormLabel component="legend">Title</FormLabel>
@@ -148,7 +159,7 @@ function ComposeDialogBase(props) {
             validators={['required']}
             errorMessages={['Cannot submit an empty title.']}/>
 
-          {composeType.includes('/networking') &&
+          {composePath.includes('/networking') &&
             <>
               <FormLabel component="legend">Tag</FormLabel>
               <SelectValidator
@@ -160,7 +171,6 @@ function ComposeDialogBase(props) {
                 onChange={handleFormFields}
                 validators={['required']}
                 errorMessages={['Please select a tag.']}>
-                  {/* <InputLabel>Select One</InputLabel> */}
                   <MenuItem value="" disabled>Select One</MenuItem>
                   {tags.map((tag, i) => {
                       return <MenuItem key={i} name={tag} value={tag}>{tag}</MenuItem>
@@ -175,39 +185,39 @@ function ComposeDialogBase(props) {
                 InputLabelProps={{shrink: true}}
                 name="instagramURL"
                 value={instagramURL}
-                onChange={handleFormFields}
-                placeholder="https://www.instagram.com/gooseedu/"/>
+                onChange={handleFormFields}/>
             </>
           }
 
           <EditorValidator 
+            defaultValue={description}
             value={description} 
             onChange={handleRichText}
-            validators={['isNotHTML']}
+            validators={['isQuillEmpty']}
             errorMessages={['Cannot submit an empty post.']}/>
 
           <FormLabel component="legend">Link #1</FormLabel>
           <TextField 
-          type="url" 
-          variant="outlined" 
-          fullWidth 
-          InputLabelProps={{shrink: true}}
-          name="link1"
-          value={link1}
-          onChange={handleFormFields}/>
+            type="url" 
+            variant="outlined" 
+            fullWidth 
+            InputLabelProps={{shrink: true}}
+            name="link1"
+            value={link1}
+            onChange={handleFormFields}/>
 
           <FormLabel component="legend">Link #2</FormLabel>
           <TextField 
-          type="url" 
-          variant="outlined" 
-          fullWidth 
-          InputLabelProps={{shrink: true}}
-          name="link2"
-          value={link2}
-          onChange={handleFormFields}/>
+            type="url" 
+            variant="outlined" 
+            fullWidth 
+            InputLabelProps={{shrink: true}}
+            name="link2"
+            value={link2}
+            onChange={handleFormFields}/>
 
           <FormLabel component="legend">Uploads</FormLabel>
-          {composeType.includes('/networking') ?
+          {composePath.includes('/networking') ?
             <FileValidator
               disableUnderline
               onChange={handleFileUpload}

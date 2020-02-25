@@ -10,14 +10,6 @@ const helperTextMUI = {
   margin: '8px 14px 0',
 }
 
-function createErrorText(state, getErrorMessage) {
-  const { isValid } = state;
-  if (isValid) {
-    return null;
-  }
-  return <Typography style={helperTextMUI}>{getErrorMessage}</Typography>;
-}
-
 class SelectValidator extends ValidatorComponent {
   render() {
     const { children, errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
@@ -25,22 +17,15 @@ class SelectValidator extends ValidatorComponent {
       <>
         <Select {...rest}>{children}</Select>
         {this.errorText()}
-        {/* {createErrorText(this.state, this.getErrorMessage())} */}
       </>
   )}
+
   errorText() {
     const { isValid } = this.state;
+    if (isValid) return null;
 
-    if (isValid) {
-        return null;
-    }
-
-    return (
-        <div style={{ color: 'red' }}>
-            {this.getErrorMessage()}
-        </div>
-    );
-}
+    return <Typography style={helperTextMUI}>{this.getErrorMessage()}</Typography>
+  }
 }
 
 class EditorValidator extends ValidatorComponent {
@@ -50,21 +35,13 @@ class EditorValidator extends ValidatorComponent {
       <>
         <ReactQuill {...rest}/>
         {this.errorText()}
-        {/* {createErrorText(this.state, this.getErrorMessage())} */}
       </>
   )}
   errorText() {
     const { isValid } = this.state;
-  
-    if (isValid) {
-        return null;
-    }
-  
-    return (
-        <div style={{ color: 'red' }}>
-            {this.getErrorMessage()}
-        </div>
-    );
+    if (isValid) return null;
+
+    return <Typography style={helperTextMUI}>{this.getErrorMessage()}</Typography>
   }
 }
 
@@ -72,28 +49,19 @@ class EditorValidator extends ValidatorComponent {
 class FileValidator extends ValidatorComponent {
   render() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
-    const { isValid } = this.state;
     return (
       <>
-        <Input type="file" {...rest}
-        error={!isValid}/>
+        <Input type="file" {...rest}/>
         {this.errorText()}
-        {/* {createErrorText(this.state, this.getErrorMessage())} */}
       </>
   )}
+
   errorText() {
     const { isValid } = this.state;
+    if (isValid) return null;
 
-    if (isValid) {
-        return null;
-    }
-
-    return (
-        <div style={{ color: 'red' }}>
-            {this.getErrorMessage()}
-        </div>
-    );
-}
+    return <Typography style={helperTextMUI}>{this.getErrorMessage()}</Typography>
+  }
 }
 
 export { SelectValidator, EditorValidator, FileValidator }

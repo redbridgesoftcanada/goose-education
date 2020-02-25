@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect } from 'react';
 import { Container, Grid, Link, withStyles } from '@material-ui/core';
-import { Switch, Route, Link as RouterLink, useRouteMatch } from "react-router-dom";
+import { Switch, Route, Link as RouterLink, useRouteMatch, useLocation } from "react-router-dom";
 import parse from 'html-react-parser';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 
@@ -223,7 +223,7 @@ function ArticleBoard({classes, history, articlesDB}) {
         ValidatorForm.addValidationRule('isNotHTML', value => {
             if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
                 return false;
-            }
+            } 
             return true;
         });
     }, [articlesDB]);
@@ -233,27 +233,29 @@ function ArticleBoard({classes, history, articlesDB}) {
             <Container>
             <Switch>
               <Route path={`${match.path}/:articleID`}>
-              <AuthUserContext.Consumer>
-                {authUser => <Article 
-                        article={selectedArticle}
-                        authUser={authUser} 
-                        history={history}
-                        articleOpen={articleOpen} 
+                <AuthUserContext.Consumer>
+                    {authUser => 
+                        <Article 
+                            article={selectedArticle}
+                            authUser={authUser} 
+                            history={history}
+                            articleOpen={articleOpen} 
                         /> }
-              </AuthUserContext.Consumer>
+                </AuthUserContext.Consumer>
               </Route>
               <Route path={match.path}>
-              <AuthUserContext.Consumer>
-                    { authUser => authUser &&
-                    <>
-                        <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
-                        <ComposeDialog 
-                        authUser={authUser} 
-                        composeType={match.url}
-                        composeOpen={composeOpen} 
-                        onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
-                    </>
-                    }
+                <AuthUserContext.Consumer>
+                        { authUser => authUser &&
+                        <>
+                            <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
+                            <ComposeDialog
+                            isEdit={false}
+                            authUser={authUser} 
+                            composePath={match.url}
+                            composeOpen={composeOpen} 
+                            onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
+                        </>
+                        }
                 </AuthUserContext.Consumer>
                 <Filter 
                     isFilter={isFiltered} 

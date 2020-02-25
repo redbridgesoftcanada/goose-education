@@ -1,6 +1,6 @@
 import React, { Fragment, useReducer } from 'react';
 import { Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, withStyles } from '@material-ui/core';
-import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined } from '@material-ui/icons';
+import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, LanguageOutlined } from '@material-ui/icons';
 import { useRouteMatch } from "react-router-dom";
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import parse from 'html-react-parser';
@@ -202,17 +202,40 @@ function Article(props) {
                     </>
                     }
                 </Grid>
-
             </Grid>
 
             {/* EDIT & DELETE FEATURE FOR ARTICLE OWNER */}
-            <ComposeDialog 
+            <ComposeDialog
+                isEdit={true}
+                article={article}
                 authUser={authUser} 
-                composeType={match.url}
+                composePath={match.url}
                 composeOpen={dialogOpen} 
                 onClose={handleEdit} 
             />
-            <DeleteConfirmation open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/> 
+            <DeleteConfirmation open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/>
+
+            {article.link1 &&
+                <Grid container spacing={1}>
+                    <Grid item>
+                        <LanguageOutlined fontSize='small'/>
+                    </Grid>
+                    <Grid item>
+                        <Typography variant='body2'>{article.link1}</Typography>
+                    </Grid>
+                </Grid>
+            }
+
+            {article.link2 &&
+                <Grid container spacing={1}>
+                    <Grid item>
+                        <LanguageOutlined fontSize='small'/>
+                    </Grid>
+                    <Grid item>
+                        <Typography variant='body2'>{article.link2}</Typography>
+                    </Grid>
+                </Grid>
+            } 
 
             <Divider light/>
 

@@ -77,8 +77,8 @@ class Firebase {
   deleteMessage = messageId => this.db.doc(`messages/${messageId}`).delete();
 
   // U P L O A D S
-  images = file => this.storage.ref('images').child(file.name).put(file);
-  attachments = file => this.storage.ref('attachments').child(file.name).put(file);
+  imagesRef = file => this.storage.ref('images').child(file.name);
+  attachmentsRef = file => this.storage.ref('attachments').child(file.name);
 
   // H E L P E R S
   updateArray = () => this.fieldValue;  // to merge & update an array in an existing document (e.g. comments)

@@ -154,9 +154,10 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                     { authUser => authUser ? 
                     <>
                         <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
-                        <ComposeDialog 
+                        <ComposeDialog
+                        isEdit={false}
                         authUser={authUser} 
-                        composeType={match.url}
+                        composePath={match.url}
                         composeOpen={composeOpen} 
                         onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
                     </>
