@@ -209,11 +209,11 @@ function Article(props) {
                 isEdit={true}
                 article={article}
                 authUser={authUser} 
-                composePath={match.url}
+                composeType='article'
                 composeOpen={dialogOpen} 
                 onClose={handleEdit} 
             />
-            <DeleteConfirmation open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/>
+            <DeleteConfirmation deleteType='article' open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/>
 
             {article.link1 &&
                 <Grid container spacing={1}>

@@ -69,7 +69,6 @@ function toggleReducer(state, action) {
 
 function Message(props) {
     const { authUser, classes, firebase, history, match, selectedMessage } = props;
-    // const [ comment, setComment ] = useState('');
 
     const INITIAL_STATE = {
         comment: '',
@@ -187,11 +186,11 @@ function Message(props) {
                 isEdit={true}
                 article={selectedMessage}
                 authUser={authUser} 
-                composePath={match.url}
+                composeType='message'
                 composeOpen={dialogOpen} 
                 onClose={handleEdit} 
             />
-            <DeleteConfirmation open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/>
+            <DeleteConfirmation deleteType='message' open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/>
 
             <Divider light/>
             <Typography variant='body1' align='left' className={classes.mt3}>

@@ -251,7 +251,7 @@ function ArticleBoard({classes, history, articlesDB}) {
                             <ComposeDialog
                             isEdit={false}
                             authUser={authUser} 
-                            composePath={match.url}
+                            composeType='article'
                             composeOpen={composeOpen} 
                             onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
                         </>
