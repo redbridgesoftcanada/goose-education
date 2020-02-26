@@ -42,7 +42,7 @@ function FeatureCarousel(props) {
                     state: {
                         title: 'School Information',
                         selected: 0,
-                        selectedSchool: selectedSchool
+                        selectedSchool
                     }
                 });
                 break;

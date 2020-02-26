@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, withStyles, Typography } from '@material-ui/core';
+import { Button, withStyles } from '@material-ui/core';
 import { HighlightOffOutlined, SearchOutlined } from '@material-ui/icons';
 
 const styles = theme => ({

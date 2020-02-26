@@ -1,11 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Button, Link } from '@material-ui/core';
 import { Link as RouterLink } from "react-router-dom";
 
-function EditProfile(props) {
+export default function EditProfile(props) {
     return (
-      <Button variant="outlined">
+      <Button variant="outlined" size="small">
         <Link
           color="inherit"
           variant="h6"
@@ -24,9 +23,3 @@ function EditProfile(props) {
       </Button>
     );
 };
-
-EditProfile.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
-
-export default EditProfile;

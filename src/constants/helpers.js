@@ -1,4 +1,4 @@
-export function singleFilterQuery(resources, option, words) {
+function singleFilterQuery(resources, option, words) {
     const filterWords = words.toLowerCase();
     let filteredContent = [];
     switch(option) {
@@ -37,7 +37,7 @@ export function singleFilterQuery(resources, option, words) {
     return filteredContent;
 }
 
-export function multipleFilterQuery(resources, option, conjunction, words) {
+function multipleFilterQuery(resources, option, conjunction, words) {
     const filterWords = words.toLowerCase().split(/[ ,]+/).filter(Boolean);
     let filteredContent = [];
 
@@ -106,7 +106,7 @@ export function multipleFilterQuery(resources, option, conjunction, words) {
     return filteredContent;
 }
 
-export function sortQuery(type, resources, option) {
+function sortQuery(type, resources, option) {
     let sortedResources;
     if (option === 'date') {
         if (type === 'messages') {
@@ -125,3 +125,5 @@ export function sortQuery(type, resources, option) {
     }
     return sortedResources;
 }
+
+export { singleFilterQuery, multipleFilterQuery, sortQuery }

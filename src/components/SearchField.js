@@ -7,13 +7,7 @@ const styles = theme => ({
         border: `2px solid ${theme.palette.secondary.main}`,
         borderRadius: '5px',
         paddingLeft: theme.spacing(1),
-    },
-    searchButton: {
-        color: theme.palette.common.white,
-        backgroundColor: theme.palette.secondary.main,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2)
-    },
+    }
 });
 
 function SearchField(props) {
@@ -27,7 +21,10 @@ function SearchField(props) {
             onChange={handleSearch}
             endAdornment={
                 <InputAdornment>
-                    <Button className={classes.searchButton} onClick={handleSearchClick}>
+                    <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleSearchClick}>
                         Search
                     </Button>
                 </InputAdornment>

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Checkbox, FormControlLabel, FormHelperText, FormLabel, Snackbar, TextField, Typography, makeStyles } from "@material-ui/core";
+import React, { useState } from 'react';
+import { Button, Checkbox, FormControlLabel, FormHelperText, FormLabel,
+  TextField, Typography, makeStyles } from "@material-ui/core";
 import { withAuthorization } from '../components/session';
 
 const useStyles = makeStyles(theme => ({
