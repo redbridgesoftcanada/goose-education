@@ -1,6 +1,6 @@
 import React, { Fragment, useReducer } from 'react';
 import { Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, withStyles } from '@material-ui/core';
-import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, LanguageOutlined } from '@material-ui/icons';
+import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, Facebook, Instagram, RoomOutlined, LanguageOutlined } from '@material-ui/icons';
 import { useRouteMatch } from "react-router-dom";
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import parse from 'html-react-parser';
@@ -38,7 +38,36 @@ const styles = theme => ({
       maxWidth: '100%',
       height: 'auto',
     },
+    link: {
+        cursor: 'pointer',
+        '&:hover': {
+            color: theme.palette.secondary.main,
+        },
+    }
 });
+
+function generateLinks(classes, link) {
+    const isFacebook = link.includes('facebook');
+    const isInstagram = link.includes('instagram');
+    const isMaps = link.includes('map');
+
+    return (
+        <Grid container className={classes.link} spacing={1} onClick={() => window.open(link, "_blank")}>
+            <Grid item>
+                {isFacebook ? <Facebook fontSize='small'/> 
+                :
+                isInstagram ? <Instagram fontSize='small'/>
+                :
+                isMaps ? <RoomOutlined fontSize='small'/>
+                :
+                <LanguageOutlined fontSize='small'/>}
+            </Grid>
+            <Grid item>
+                <Typography variant='body2'>{link}</Typography>
+            </Grid>
+        </Grid>
+    );
+}
 
 function toggleReducer(state, action) {
     const { type, payload } = action;
@@ -215,27 +244,8 @@ function Article(props) {
             />
             <DeleteConfirmation deleteType='article' open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/>
 
-            {article.link1 &&
-                <Grid container spacing={1}>
-                    <Grid item>
-                        <LanguageOutlined fontSize='small'/>
-                    </Grid>
-                    <Grid item>
-                        <Typography variant='body2'>{article.link1}</Typography>
-                    </Grid>
-                </Grid>
-            }
-
-            {article.link2 &&
-                <Grid container spacing={1}>
-                    <Grid item>
-                        <LanguageOutlined fontSize='small'/>
-                    </Grid>
-                    <Grid item>
-                        <Typography variant='body2'>{article.link2}</Typography>
-                    </Grid>
-                </Grid>
-            } 
+            {article.link1 && generateLinks(classes, article.link1)}
+            {article.link2 && generateLinks(classes, article.link2)} 
 
             <Divider light/>
 

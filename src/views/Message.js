@@ -1,6 +1,6 @@
 import React, { Fragment, useReducer } from 'react';
-import { Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, withStyles } from '@material-ui/core';
-import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined } from '@material-ui/icons';
+import { Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, withStyles, Link } from '@material-ui/core';
+import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, DescriptionOutlined, LanguageOutlined, Facebook, Instagram, RoomOutlined } from '@material-ui/icons';
 import { format } from 'date-fns';
 import ReactQuill from 'react-quill';
 import parse from 'html-react-parser';
@@ -36,7 +36,36 @@ const styles = theme => ({
       maxWidth: '100%',
       height: 'auto',
     },
+    link: {
+        cursor: 'pointer',
+        '&:hover': {
+            color: theme.palette.secondary.main,
+        },
+    }
 });
+
+function generateLinks(classes, link) {
+    const isFacebook = link.includes('facebook');
+    const isInstagram = link.includes('instagram');
+    const isMaps = link.includes('map');
+
+    return (
+        <Grid container className={classes.link} spacing={1} onClick={() => window.open(link, "_blank")}>
+            <Grid item>
+                {isFacebook ? <Facebook fontSize='small'/> 
+                :
+                isInstagram ? <Instagram fontSize='small'/>
+                :
+                isMaps ? <RoomOutlined fontSize='small'/>
+                :
+                <LanguageOutlined fontSize='small'/>}
+            </Grid>
+            <Grid item>
+                <Typography variant='body2'>{link}</Typography>
+            </Grid>
+        </Grid>
+    );
+}
 
 function toggleReducer(state, action) {
     const { type, payload } = action;
@@ -68,7 +97,7 @@ function toggleReducer(state, action) {
 }
 
 function Message(props) {
-    const { authUser, classes, firebase, history, match, selectedMessage } = props;
+    const { authUser, classes, firebase, history, selectedMessage } = props;
 
     const INITIAL_STATE = {
         comment: '',
@@ -96,18 +125,20 @@ function Message(props) {
 
     const onSubmit = event => {
         firebase.message(selectedMessage.id).update({ 
-            "comments": firebase.updateArray().arrayUnion({
+            'comments': firebase.updateArray().arrayUnion({
                 authorDisplayName: authUser.displayName,
                 authorID: authUser.uid,
                 description: comment,
                 createdAt: Date.now(),
                 updatedAt: Date.now()
-            }) 
-        })
-        .then(() => { 
+        })}).then(() => { 
             handleComment('');
-            history.push('/services') 
-        })
+            history.push({
+                pathname: '/services',
+                state: {
+                  title: 'Service Centre',
+                  selected: 0
+        }})})
         // .catch(error => dispatch({ type: 'error', payload: error }))
         event.preventDefault();
     }
@@ -138,6 +169,16 @@ function Message(props) {
                         <Grid item>
                             <Typography variant='body2' className={classes.pr1}>{selectedMessage.views}</Typography>
                         </Grid>
+                        {selectedMessage.attachments &&
+                        <>
+                            <Grid item >
+                                <DescriptionOutlined/>
+                            </Grid>
+                            <Grid item>
+                                <Typography variant='body2' className={classes.pr1}>File(s) Attached</Typography>
+                            </Grid>
+                        </>
+                        }
                     </Grid>
                 </Box>
 
@@ -173,6 +214,7 @@ function Message(props) {
                             open={anchorOpen}
                             onClose={closePostActions}
                         >
+                            {selectedMessage.attachments && <MenuItem onClick={()=> window.open(selectedMessage.attachments, "_blank")}>Download attachment(s)</MenuItem>}
                             <MenuItem onClick={handleEdit}>Edit message</MenuItem>
                             <MenuItem onClick={handleConfirmation}>Delete message</MenuItem>
                         </Menu>
@@ -192,7 +234,12 @@ function Message(props) {
             />
             <DeleteConfirmation deleteType='message' open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/>
 
+            {selectedMessage.link1 && generateLinks(classes, selectedMessage.link1)}
+            {selectedMessage.link2 && generateLinks(classes, selectedMessage.link2)} 
+
             <Divider light/>
+
+            {/* COMMENTS */}
             <Typography variant='body1' align='left' className={classes.mt3}>
                 {selectedMessage ? selectedMessage.comments.length : ''} Comments
             </Typography>
@@ -208,14 +255,14 @@ function Message(props) {
                             </Typography>
                         </div>
                         <br/>
-                        <Typography variant='body2' align='left'>{parse(comment.description)}</Typography>
+                        <Typography component='span' variant='body2' align='left'>{parse(comment.description)}</Typography>
                     </Fragment>
                 )
             })
             : <Typography>There are currently no comments.</Typography> }
             <br/>
             <div>
-                <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+                <form className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
                     <ReactQuill 
                     {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
                     value={comment} 
