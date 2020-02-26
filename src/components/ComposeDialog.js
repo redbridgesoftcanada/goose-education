@@ -143,7 +143,16 @@ function ComposeDialogBase(props) {
   
   return (
     <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='md'>
-      <DialogTitle>{ composePath.includes('/networking') ? 'Create Post' : 'Create Counselling Request' }</DialogTitle>
+      <DialogTitle>
+        {composePath.includes('/networking') ? 
+          !isEdit ? 'Create Post' : 'Edit Post'
+        : 
+        composePath.includes('/services') ? 
+          !isEdit ? 'Create Counselling Request' : 'Edit Counselling Request'
+        :
+        ''
+        }
+      </DialogTitle>
       <DialogContent>
         <ValidatorForm onSubmit={onSubmit}>
           <FormLabel component="legend">Title</FormLabel>
