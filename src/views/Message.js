@@ -1,9 +1,10 @@
 import React, { Fragment, useReducer } from 'react';
-import { Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, withStyles, Link } from '@material-ui/core';
+import { Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, DescriptionOutlined, LanguageOutlined, Facebook, Instagram, RoomOutlined } from '@material-ui/icons';
+import { ValidatorForm } from 'react-material-ui-form-validator';
 import { format } from 'date-fns';
-import ReactQuill from 'react-quill';
 import parse from 'html-react-parser';
+import { EditorValidator } from '../constants/customValidators';
 import { withFirebase } from '../components/firebase';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
@@ -262,13 +263,16 @@ function Message(props) {
             : <Typography>There are currently no comments.</Typography> }
             <br/>
             <div>
-                <form className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
-                    <ReactQuill 
-                    {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
-                    value={comment} 
-                    onChange={handleComment} />
+                <ValidatorForm className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
+                    <EditorValidator 
+                        {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
+                        defaultValue={comment}
+                        value={comment} 
+                        onChange={handleComment}
+                        validators={['isQuillEmpty']}
+                        errorMessages={['Cannot submit an empty post.']}/>
                     <Button disabled={!authUser} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-                </form>
+                </ValidatorForm>
             </div>
         </Container>
     )

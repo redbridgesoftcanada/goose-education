@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, Input, MenuItem, TextField, Select } from '@material-ui/core';
+import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, Input, MenuItem, TextField } from '@material-ui/core';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { FileValidator, EditorValidator, SelectValidator } from '../constants/customValidators';
 import { withAuthorization } from '../components/session';

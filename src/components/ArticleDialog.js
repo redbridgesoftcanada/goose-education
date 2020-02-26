@@ -1,7 +1,8 @@
 import React, { Fragment, useState } from 'react';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Fab, Grid, IconButton, Menu, MenuItem, withStyles } from '@material-ui/core';
+import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Grid, IconButton, Menu, MenuItem, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined } from '@material-ui/icons';
-import ReactQuill from 'react-quill';
+import { ValidatorForm } from 'react-material-ui-form-validator';
+import { EditorValidator } from '../constants/customValidators';
 import parse from 'html-react-parser';
 import { format } from 'date-fns';
 import Typography from '../components/onePirate/Typography';
@@ -191,13 +192,16 @@ function ArticleDialog(props) {
         }
         <br/>
         <div>
-          <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
-            <ReactQuill 
-            {...(!authUser ? { readOnly: true, placeholder:'Please Register or Login to Comment.' } : {} )}
-            value={comment} 
-            onChange={value => setComment(value)} />
+          <ValidatorForm className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+            <EditorValidator 
+              {...(!authUser ? { readOnly: true, placeholder:'Please Register or Login to Comment.' } : {} )}
+              // defaultValue={comment}
+              value={comment} 
+              onChange={value => setComment(value)}
+              validators={['isQuillEmpty']}
+              errorMessages={['Cannot submit an empty post.']}/>
             <Button disabled={!authUser} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-          </form>
+          </ValidatorForm>
         </div>
       </DialogContent>
     </Dialog>

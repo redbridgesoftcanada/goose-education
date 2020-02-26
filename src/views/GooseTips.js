@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Grid, LinearProgress, withStyles } from '@material-ui/core';
-
+import { ValidatorForm } from 'react-material-ui-form-validator';
 import Typography from '../components/onePirate/Typography';
 import { AuthUserContext } from '../components/session';
 import { withFirebase } from '../components/firebase';
@@ -158,6 +158,13 @@ function GooseTipsBase(props) {
     const paginatedTips = (totalPages > 1) ? gooseTips.slice(indexOfFirstTip, indexOfLastTip) : gooseTips;
 
     useEffect(() => {
+        ValidatorForm.addValidationRule('isQuillEmpty', value => {
+            if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
+            return false;
+            }
+            return true;
+        });
+
         dispatch({ type: 'FETCH_INIT' });
         const findAllTips = () => {
             const tipsQuery = firebase.tips().get();

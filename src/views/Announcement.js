@@ -2,7 +2,8 @@ import React, { Fragment, useState } from 'react';
 import { Box, Button, Container, Divider, Fab, Grid, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, PrintOutlined } from '@material-ui/icons';
 import { format } from 'date-fns';
-import ReactQuill from 'react-quill';
+import { ValidatorForm } from 'react-material-ui-form-validator';
+import { EditorValidator } from '../constants/customValidators';
 import parse from 'html-react-parser';
 import Typography from '../components/onePirate/Typography';
 import { withFirebase } from '../components/firebase';
@@ -37,6 +38,7 @@ const styles = theme => ({
         height: 'auto',
       },
       description: {
+        textAlign: 'left',
         marginTop: theme.spacing(2),
         paddingBottom: theme.spacing(5),
       },
@@ -68,12 +70,16 @@ function Announcement(props) {
                 description: comment,
                 createdAt: Date.now(),
                 updatedAt: Date.now()
-            }) 
-        })
+        })})
         .then(() => { 
             setComment('');
-            history.push('/services') 
-        })
+            history.push({
+                pathname: '/services', 
+                state: {
+                  title: 'Service Centre',
+                  selected: 0
+                }
+        })});
         // .catch(error => dispatch({ type: 'error', payload: error }))
         event.preventDefault();
     }
@@ -117,7 +123,7 @@ function Announcement(props) {
                     </Grid>
                 </div>
             </Box>
-            <Typography variant='body2' align='left' className={classes.description}>
+            <Typography component='div' variant='body2' align='left' className={classes.description}>
                 {selectedAnnounce ? selectedAnnounce.description : ''}
             </Typography>
             <Fab size="small" color="secondary" className={classes.print} onClick={() => printDiv('printableArea')}>
@@ -140,19 +146,22 @@ function Announcement(props) {
                             </Typography>
                         </div>
                         <br/>
-                        <Typography variant='body2' align='left'>{parse(comment.description)}</Typography>
+                        <Typography component='span' variant='body2' align='left'>{parse(comment.description)}</Typography>
                     </Fragment>
                 )
             })}
             <br/>
             <div>
-                <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
-                    <ReactQuill 
-                    {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
-                    value={comment} 
-                    onChange={value => setComment(value)} />
-                    <Button disabled={!authUser} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-                </form>
+                <ValidatorForm className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+                    <EditorValidator 
+                        {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
+                        defaultValue={comment}
+                        value={comment} 
+                        onChange={value => setComment(value)}
+                        validators={['isQuillEmpty']}
+                        errorMessages={['Cannot submit an empty post.']}/>
+                    <Button variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+                </ValidatorForm>
             </div>
         </Container>
     )

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Grid, IconButton, Typography, withStyles } from '@material-ui/core';
+import { ValidatorForm } from 'react-material-ui-form-validator';
 import AddIcon from '@material-ui/icons/Add';
 import { Redirect } from "react-router-dom";
-
+import { AuthUserContext } from '../components/session';
 import ArticleDialog from '../components/ArticleDialog';
 
 const styles = theme => ({
@@ -77,6 +78,15 @@ function ProductValues(props) {
         }
     });
 
+    useEffect(() => {
+        ValidatorForm.addValidationRule('isQuillEmpty', value => {
+          if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
+            return false;
+          }
+          return true;
+        });
+    }, []);
+
     return (
         <section className={classes.root}>
             <div className={classes.header}>
@@ -112,7 +122,15 @@ function ProductValues(props) {
                     })}
                 </Grid>
             </Container>
-            <ArticleDialog articleOpen={articleOpen} onClose={handleArticleClose} article={article}/>
+            <AuthUserContext.Consumer>
+            { authUser => authUser &&
+                <ArticleDialog 
+                authUser={authUser}
+                articleOpen={articleOpen} 
+                onClose={handleArticleClose} 
+                article={article}/>
+            }
+            </AuthUserContext.Consumer>
         </section>
     );
 }
