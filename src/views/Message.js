@@ -1,13 +1,15 @@
 import React, { Fragment, useReducer } from 'react';
 import { Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, withStyles } from '@material-ui/core';
-import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, DescriptionOutlined, LanguageOutlined, Facebook, Instagram, RoomOutlined } from '@material-ui/icons';
+import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, MoreHorizOutlined, DescriptionOutlined, LanguageOutlined, Facebook, Instagram, RoomOutlined } from '@material-ui/icons';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { format } from 'date-fns';
 import parse from 'html-react-parser';
+import { v4 as uuidv4 } from 'uuid';
 import { EditorValidator } from '../constants/customValidators';
 import { withFirebase } from '../components/firebase';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
+import CommentDialog from '../components/CommentDialog';
 
 const styles = theme => ({
     mt3: {
@@ -115,7 +117,30 @@ function Message(props) {
     const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });
     const handleConfirmation = () => dispatch({ type:'CONFIRM_ACTIONS' });
     const handleEdit = () => dispatch({ type: 'NEW_EDIT' });
-    const handleDelete = () => firebase.deleteMessage(selectedMessage.id).then(() => history.push('/services'));
+    const handleMessageDelete = () => firebase.deleteMessage(selectedMessage.id)
+        .then(() => history.push({
+            pathname: '/services', 
+            state: {
+                title: 'Service Centre',
+                selected: 1
+            }
+    }));
+
+    const handleCommentDelete = id => {
+        const messagesRef = firebase.message(selectedMessage.id);
+
+        firebase.transaction(t => {
+        return t.get(messagesRef).then(doc => {
+            const commentsArr = doc.data().comments;
+
+            const filteredCommentsArr = commentsArr.filter(comment => {
+            return comment.id !== id
+            });
+
+            t.update(messagesRef, { comments: filteredCommentsArr });
+        })})
+        .then(() => handleConfirmation())
+    }
 
     let isMessageOwner;
     if (!selectedMessage) {
@@ -127,6 +152,7 @@ function Message(props) {
     const onSubmit = event => {
         firebase.message(selectedMessage.id).update({ 
             'comments': firebase.updateArray().arrayUnion({
+                id: uuidv4(),
                 authorDisplayName: authUser.displayName,
                 authorID: authUser.uid,
                 description: comment,
@@ -138,7 +164,7 @@ function Message(props) {
                 pathname: '/services',
                 state: {
                   title: 'Service Centre',
-                  selected: 0
+                  selected: 1
         }})})
         // .catch(error => dispatch({ type: 'error', payload: error }))
         event.preventDefault();
@@ -233,7 +259,7 @@ function Message(props) {
                 composeOpen={dialogOpen} 
                 onClose={handleEdit} 
             />
-            <DeleteConfirmation deleteType='message' open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/>
+            <DeleteConfirmation deleteType='message' open={confirmOpen} handleDelete={handleMessageDelete} onClose={handleConfirmation}/>
 
             {selectedMessage.link1 && generateLinks(classes, selectedMessage.link1)}
             {selectedMessage.link2 && generateLinks(classes, selectedMessage.link2)} 
@@ -245,6 +271,7 @@ function Message(props) {
                 {selectedMessage ? selectedMessage.comments.length : ''} Comments
             </Typography>
             {selectedMessage && selectedMessage.comments.length ? selectedMessage.comments.map((comment, i) => {
+                let isCommentOwner = authUser.uid === comment.authorID;
                 return (
                     <Fragment key={i}>
                         <div className={classes.left}>
@@ -256,7 +283,34 @@ function Message(props) {
                             </Typography>
                         </div>
                         <br/>
-                        <Typography component='span' variant='body2' align='left'>{parse(comment.description)}</Typography>
+                        <Grid container spacing={1} justify='space-between'>
+                            <Grid item xs={11}>
+                                <Typography component='span' variant='body2' align='left'>{parse(comment.description)}</Typography>
+                            </Grid>
+
+                             {/* EDIT & DELETE FEATURE FOR COMMENT OWNER */}
+                             {isCommentOwner &&
+                            <>
+                                <Grid item>
+                                    <IconButton onClick={openPostActions}>
+                                        <MoreHorizOutlined/>
+                                    </IconButton>
+                                    <Menu
+                                        keepMounted
+                                        anchorEl={anchorEl}
+                                        open={anchorOpen}
+                                        onClose={closePostActions}
+                                    >
+                                        <MenuItem onClick={() => handleEdit(comment.description)}>Edit comment</MenuItem>
+                                        <MenuItem onClick={handleConfirmation}>Delete comment</MenuItem>
+                                    </Menu>
+                                </Grid>
+
+                                <CommentDialog firebase={firebase} selectedResource={selectedMessage} prevComment={comment} open={dialogOpen} onClose={handleEdit}/>
+                                <DeleteConfirmation deleteType='comment' open={confirmOpen} handleDelete={() => handleCommentDelete(comment.id)} onClose={handleConfirmation}/>
+                            </>
+                            }
+                            </Grid>
                     </Fragment>
                 )
             })

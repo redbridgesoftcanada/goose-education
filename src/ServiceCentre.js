@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { LinearProgress, Paper, Tabs, Tab, makeStyles} from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
-
+import { ValidatorForm } from 'react-material-ui-form-validator';
 import withRoot from './withRoot';
 import { withFirebase } from './components/firebase';
 import { AuthUserContext } from './components/session';
@@ -81,6 +81,13 @@ function ServiceCentre(props) {
   const { isLoading, selectedTab, pageTitle, selectedAnnounce, selectedMessage, messagesDB, announcementsDB } = state;
   
   useEffect(() => {
+    ValidatorForm.addValidationRule('isQuillEmpty', value => {
+      if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
+      return false;
+      }
+      return true;
+    });
+    
     if (props.location.state && props.location.state.selected) {
       dispatch({ type: 'SELECTED_TAB', payload: props.location.state.selected })
     }

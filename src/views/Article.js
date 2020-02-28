@@ -1,14 +1,16 @@
 import React, { Fragment, useReducer } from 'react';
 import { Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, withStyles } from '@material-ui/core';
-import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, Facebook, Instagram, RoomOutlined, LanguageOutlined } from '@material-ui/icons';
-import { useRouteMatch } from "react-router-dom";
+import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, MoreHorizOutlined, Facebook, Instagram, RoomOutlined, LanguageOutlined } from '@material-ui/icons';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import parse from 'html-react-parser';
 import { format } from 'date-fns';
+import { v4 as uuidv4 } from 'uuid';
+
 import { withFirebase } from '../components/firebase';
 import { EditorValidator } from '../constants/customValidators';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
+import CommentDialog from '../components/CommentDialog';
 
 const styles = theme => ({
     mt3: {
@@ -101,23 +103,42 @@ function toggleReducer(state, action) {
 function Article(props) {
     const { authUser, classes, firebase, history, article } = props;
 
+    const redirectPath = {
+        pathname: '/networking', 
+        state: { title: 'Networking', selected: 0 }
+    }
+
     const INITIAL_STATE = {
         comment: '',
         anchorEl: null,
+        articleAnchor: null,
         confirmOpen: false,
         dialogOpen: false
     }
+
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
     const { comment, anchorEl, confirmOpen, dialogOpen } = state;
     const anchorOpen = Boolean(anchorEl);
     
-    const match = useRouteMatch();
-    const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
+    const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget });
     const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS', payload:null });
     const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });
     const handleConfirmation = () => dispatch({ type:'CONFIRM_ACTIONS' });
     const handleEdit = () => dispatch({ type: 'NEW_EDIT' });
-    const handleDelete = () => firebase.deleteArticle(article.id).then(() => history.push('/networking'));
+    const handleArticleDelete = () => firebase.deleteArticle(article.id).then(() => history.push(redirectPath));
+
+    const handleCommentDelete = id => {
+        const articlesRef = firebase.article(article.id);
+
+        firebase.transaction(t => {
+        return t.get(articlesRef)
+        .then(doc => {
+            const commentsArr = doc.data().comments;
+            const filteredCommentsArr = commentsArr.filter(comment => { return comment.id !== id });
+            t.update(articlesRef, { comments: filteredCommentsArr });
+        })})
+        .then(() => handleConfirmation())
+    }
 
     let isArticleOwner;
     if (!article) {
@@ -129,6 +150,7 @@ function Article(props) {
     const onSubmit = event => {
       firebase.article(article.id).update({ 
         "comments": firebase.updateArray().arrayUnion({
+            id: uuidv4(),
             authorDisplayName: authUser.displayName,
             authorID: authUser.uid,
             description: comment,
@@ -137,8 +159,7 @@ function Article(props) {
         }) 
       }).then(() => { 
         handleComment('');
-        history.push('/networking');
-      });
+        history.push(redirectPath)});
       // .catch(error => dispatch({ type: 'error', payload: error }))
       event.preventDefault();
     }
@@ -228,21 +249,21 @@ function Article(props) {
                             <MenuItem onClick={handleEdit}>Edit article</MenuItem>
                             <MenuItem onClick={handleConfirmation}>Delete article</MenuItem>
                         </Menu>
+
+                        {/* EDIT & DELETE FEATURE FOR ARTICLE OWNER */}
+                        <ComposeDialog
+                            isEdit={true}
+                            article={article}
+                            authUser={authUser} 
+                            composeType='article'
+                            composeOpen={dialogOpen} 
+                            onClose={handleEdit} 
+                        />
+                        <DeleteConfirmation deleteType='article' open={confirmOpen} handleDelete={handleArticleDelete} onClose={handleConfirmation}/>
                     </>
                     }
                 </Grid>
             </Grid>
-
-            {/* EDIT & DELETE FEATURE FOR ARTICLE OWNER */}
-            <ComposeDialog
-                isEdit={true}
-                article={article}
-                authUser={authUser} 
-                composeType='article'
-                composeOpen={dialogOpen} 
-                onClose={handleEdit} 
-            />
-            <DeleteConfirmation deleteType='article' open={confirmOpen} handleDelete={handleDelete} onClose={handleConfirmation}/>
 
             {article.link1 && generateLinks(classes, article.link1)}
             {article.link2 && generateLinks(classes, article.link2)} 
@@ -256,6 +277,7 @@ function Article(props) {
             
             {article.comments.length ? 
                 article.comments.map((comment, i) => {
+                    let isCommentOwner = authUser.uid === comment.authorID;
                     return (
                         <Fragment key={i}>
                             <div className={classes.left}>
@@ -267,7 +289,34 @@ function Article(props) {
                                 </Typography>
                             </div>
                             <br/>
-                            <Typography component='span' variant='body2' align='left'>{parse(comment.description)}</Typography>
+                            <Grid container spacing={1} justify='space-between'>
+                                <Grid item xs={11}>
+                                    <Typography component='span' variant='body2' align='left'>{parse(comment.description)}</Typography>
+                                </Grid>
+
+                             {/* EDIT & DELETE FEATURE FOR COMMENT OWNER */}
+                             {isCommentOwner &&
+                            <>
+                                <Grid item>
+                                    <IconButton onClick={openPostActions}>
+                                        <MoreHorizOutlined/>
+                                    </IconButton>
+                                    <Menu
+                                        keepMounted
+                                        anchorEl={anchorEl}
+                                        open={anchorOpen}
+                                        onClose={closePostActions}
+                                    >
+                                        <MenuItem onClick={() => handleEdit(comment.description)}>Edit comment</MenuItem>
+                                        <MenuItem onClick={handleConfirmation}>Delete comment</MenuItem>
+                                    </Menu>
+                                </Grid>
+
+                                <CommentDialog firebase={firebase} selectedResource={article} prevComment={comment} open={dialogOpen} onClose={handleEdit}/>
+                                <DeleteConfirmation deleteType='comment' open={confirmOpen} handleDelete={() => handleCommentDelete(comment.id)} onClose={handleConfirmation}/>
+                            </>
+                            }
+                            </Grid>
                         </Fragment>
                 )})
                 : 
