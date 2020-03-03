@@ -4,15 +4,27 @@ import { ValidatorForm } from 'react-material-ui-form-validator';
 import { EditorValidator } from '../constants/customValidators';
 
 export default function CommentDialog(props) {
-  const { firebase, selectedResource, prevComment, open, onClose } = props;
+  const { formType, firebase, selectedResource, prevComment, open, onClose } = props;
 
   const [comment, setComment] = useState(prevComment.description);
   
   const onSubmit = event => {
-    const announcementsRef = firebase.announcement(selectedResource.id);
+
+    let collectionRef;
+    switch(formType) {
+      case 'announcement':
+        collectionRef = firebase.announcement(selectedResource.id);
+        break;
+      case 'message':
+        collectionRef = firebase.message(selectedResource.id);
+        break;
+      case 'article':
+        collectionRef = firebase.article(selectedResource.id);
+        break;
+    }
 
     firebase.transaction(t => {
-      return t.get(announcementsRef).then(doc => {
+      return t.get(collectionRef).then(doc => {
         const commentsArr = doc.data().comments;
 
         const filteredCommentsArr = commentsArr.filter(comment => {
@@ -27,7 +39,7 @@ export default function CommentDialog(props) {
         selectedComment.updatedAt = Date.now();
 
         filteredCommentsArr.push(selectedComment);
-        t.update(announcementsRef, { comments: filteredCommentsArr });
+        t.update(collectionRef, { comments: filteredCommentsArr });
     })})
     .then(() => { 
         setComment('');

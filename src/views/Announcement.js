@@ -234,7 +234,7 @@ function Announcement(props) {
                                     </Menu>
                                 </Grid>
 
-                                <CommentDialog firebase={firebase} selectedResource={selectedAnnounce} prevComment={comment} open={dialogOpen} onClose={handleEdit}/>
+                                <CommentDialog formType='announcement' firebase={firebase} selectedResource={selectedAnnounce} prevComment={comment} open={dialogOpen} onClose={handleEdit}/>
                                 <DeleteConfirmation deleteType='comment' open={confirmOpen} handleDelete={() => handleCommentDelete(comment.id)} onClose={handleConfirmation}/>
                             </>
                             }
