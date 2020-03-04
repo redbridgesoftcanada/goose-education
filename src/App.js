@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route } from "react-router-dom";
-
 import './App.css';
 
 // Page Components
@@ -23,7 +22,19 @@ import Search from './Search';
 import { withAuthentication } from './components/session';
 import { withFetching } from './components/database';
 
+import { ValidatorForm } from 'react-material-ui-form-validator';
+
 function App() {
+
+  useEffect(() => {
+    ValidatorForm.addValidationRule('isQuillEmpty', value => {
+        if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
+        return false;
+        }
+        return true;
+    });
+  }, []);
+
   return (
     <div className="App">
       <ScrollToTop>

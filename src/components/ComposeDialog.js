@@ -145,13 +145,6 @@ function ComposeDialogBase(props) {
     const prevContent = props.article;
     prevContent && configureEditForm(composeType, isEdit, prevContent);
 
-    ValidatorForm.addValidationRule('isQuillEmpty', value => {
-      if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-        return false;
-      }
-      return true;
-    });
-
     ValidatorForm.addValidationRule('isRequiredUpload', value => {
       if (!value || value.length === 0) {
         return false;

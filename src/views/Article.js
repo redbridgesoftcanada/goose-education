@@ -118,7 +118,6 @@ function toggleReducer(state, action) {
 function Article(props) {
     const { authUser, classes, firebase, history, article } = props;
 
-    
     const INITIAL_STATE = {
         comment: '',
         commentAnchor: null,
@@ -306,7 +305,7 @@ function Article(props) {
                 <EditorValidator 
                 value={comment} 
                 onChange={handleComment}
-                validators={['isNotHTML']}
+                validators={['isQuillEmpty']}
                 errorMessages={['Cannot submit an empty comment.']}
                 {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}/>
                 <Button disabled={!authUser} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>

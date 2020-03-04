@@ -80,14 +80,7 @@ function ServiceCentre(props) {
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
   const { isLoading, selectedTab, pageTitle, selectedAnnounce, selectedMessage, messagesDB, announcementsDB } = state;
   
-  useEffect(() => {
-    ValidatorForm.addValidationRule('isQuillEmpty', value => {
-      if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-      return false;
-      }
-      return true;
-    });
-    
+  useEffect(() => {    
     if (props.location.state && props.location.state.selected) {
       dispatch({ type: 'SELECTED_TAB', payload: props.location.state.selected })
     }

@@ -85,15 +85,6 @@ function ProductValues(props) {
         selectedArticle: null,
         selectedArticleDialogOpen: false
     });
-    
-    useEffect(() => {
-        ValidatorForm.addValidationRule('isQuillEmpty', value => {
-          if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-            return false;
-          }
-          return true;
-        });
-    }, []);
 
     return (
         <section className={classes.root}>

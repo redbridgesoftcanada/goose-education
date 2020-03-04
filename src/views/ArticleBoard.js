@@ -1,11 +1,8 @@
 import React, { useReducer, useEffect } from 'react';
-import { Container, Grid, Link, withStyles } from '@material-ui/core';
-import { Switch, Route, Link as RouterLink, useRouteMatch, useLocation } from "react-router-dom";
+import { Container, Grid, Link, Typography, withStyles } from '@material-ui/core';
+import { Switch, Route, Link as RouterLink, useRouteMatch } from "react-router-dom";
 import parse from 'html-react-parser';
-import { ValidatorForm } from 'react-material-ui-form-validator';
-
 import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
-import Typography from '../components/onePirate/Typography';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';
@@ -14,8 +11,8 @@ import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
 import SortPopover from '../components/SortPopover';
 import SearchField from '../components/SearchField';
-import Article from '../views/Article';
 import Pagination from '../components/Pagination';
+import Article from '../views/Article';
 
 const styles = theme => ({
     root: {
@@ -219,13 +216,6 @@ function ArticleBoard({classes, history, articlesDB}) {
 
     useEffect(() => {
         dispatch({ type: 'LOAD_ARTICLES', payload: articlesDB });
-
-        ValidatorForm.addValidationRule('isNotHTML', value => {
-            if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-                return false;
-            } 
-            return true;
-        });
     }, [articlesDB]);
 
     return (
@@ -252,6 +242,7 @@ function ArticleBoard({classes, history, articlesDB}) {
                             isEdit={false}
                             authUser={authUser} 
                             composeType='article'
+
                             composeOpen={composeOpen} 
                             onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
                         </>

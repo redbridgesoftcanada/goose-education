@@ -2,7 +2,6 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, LocalOfferOutlined, ScheduleOutlined } from '@material-ui/icons';
-import { ValidatorForm } from 'react-material-ui-form-validator';
 import withRoot from './withRoot';
 import { AuthUserContext } from './components/session';
 import ArticleDialog from './components/ArticleDialog';
@@ -85,13 +84,6 @@ function Search(props) {
   const paginatedResources = (totalPages === 1) ? searchedResources : searchedResources.slice(indexOfFirstResource, indexOfLastResource);
   
   useEffect(() => {
-    ValidatorForm.addValidationRule('isQuillEmpty', value => {
-      if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-        return false;
-      }
-      return true;
-    });
-
     const resourcesDB = props.location.state.resources;
     const searchWords = props.location.search.toLowerCase().split('=')[1];
     const formattedSearchWords = searchWords.replace(/[^a-zA-Z ]/g, ",").split(/[ ,]+/).filter(Boolean);
