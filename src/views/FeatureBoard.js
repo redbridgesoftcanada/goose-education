@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { ButtonBase, Container, withStyles } from '@material-ui/core';
+import { ButtonBase, Container, Typography, withStyles } from '@material-ui/core';
 import { Redirect } from "react-router-dom";
-
-import Typography from '../components/onePirate/Typography';
 
 const images = [
   {
@@ -131,44 +128,35 @@ const styles = theme => ({
 
 function FeatureBoard(props) {
   const { classes } = props;
+  const [ redirectPath, setRedirectPath ] = useState({});
 
-  const [ redirect, setRedirect ] = useState({});
-  const handleClick = (event) => {
+  const handleClick = event => {
     switch(event.currentTarget.id) {
       case 'School Information':
-        setRedirect({
+        setRedirectPath({
             pathname: '/schools', 
-            state: {
-              title: 'School Information',
-              selected: 0
-            }
+            state: { title: 'School Information', selected: 0 }
           });
         break;
+
       case 'Study Abroad': 
-        setRedirect({
+        setRedirectPath({
           pathname: '/goose', 
-          state: {
-            title: 'Goose Study Abroad',
-            selected: 0
-          }
+          state: { title: 'Goose Study Abroad', selected: 0 }
         });
         break;
+
       case 'Homestay':
-        setRedirect({
+        setRedirectPath({
           pathname: '/studyabroad', 
-          state: {
-            title: 'Study Abroad',
-            selected: 0
-          }
+          state: { title: 'Study Abroad', selected: 0 }
         });
         break;
+
       case 'Airport Ride':
-        setRedirect({
+        setRedirectPath({
           pathname: '/studyabroad', 
-          state: {
-            title: 'Study Abroad',
-            selected: 1
-          }
+          state: { title: 'Study Abroad', selected: 1 }
         });
         break;
     }
@@ -177,35 +165,31 @@ function FeatureBoard(props) {
   return (
     <Container className={classes.root}>
       <div className={classes.row}>
-        {
-        images.map(image => (
+        {images.map(image => (
           <ButtonBase
             key={image.id}
             className={classes.imageWrapper}
-            style={{
-              width: image.width,
-            }}
+            style={{ width: image.width }}
           >
             <div
               className={classes.imageSrc}
-              style={{
-                backgroundImage: `url(${image.url})`,
-              }}
+              style={{ backgroundImage: `url(${image.url})` }}
             />
             <div className={classes.imageBackdrop} />
             <div className={classes.imageButton} id={image.title} onClick={handleClick}>
-              {(Object.entries(redirect).length) ? 
-              <Redirect push to={redirect}/> : 
-              <Typography
-                component="span"
-                variant="h6"
-                color="inherit"
-                className={classes.imageTitle}
-              >
-                {image.title}
-                <div className={classes.imageMarked} />
-              </Typography>
-}
+              {(Object.entries(redirectPath).length) ? 
+                <Redirect push to={redirectPath}/> 
+                : 
+                <Typography
+                  component="span"
+                  variant="h6"
+                  color="inherit"
+                  className={classes.imageTitle}
+                >
+                  {image.title}
+                  <div className={classes.imageMarked} />
+                </Typography>
+              }
               <Typography
                 component="span"
                 variant="caption"
@@ -222,9 +206,5 @@ function FeatureBoard(props) {
     </Container>
   );
 }
-
-FeatureBoard.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(FeatureBoard);

@@ -18,11 +18,11 @@ function Index() {
     <>
       <NavBar />
       <PageBanner title={title} caption={caption} backgroundImage={background} layoutType='pageBanner'/>
-      <FeatureBoard />
       <DatabaseContext.Consumer>
         {context => 
           <>
             <FeatureCarousel featuredSchools={context.featuredSchools}/>
+            <FeatureBoard />
             <ArticleThumbnails featuredArticles={context.featuredArticles} />
             <SplitThumbnails previewSchools={context.featuredSchools} previewTips={context.featuredTips}/>
           </>
