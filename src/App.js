@@ -21,6 +21,7 @@ import Search from './Search';
 
 // React Context Components
 import { withAuthentication } from './components/session';
+import { withFetching } from './components/database';
 
 function App() {
   return (
@@ -46,4 +47,4 @@ function App() {
   );
 }
 
-export default withAuthentication(App);
+export default withAuthentication(withFetching(App));
