@@ -1,13 +1,12 @@
-import React, { useEffect, useReducer } from 'react';
-import PropTypes from 'prop-types';
-import { Paper, Tabs, Tab, makeStyles, LinearProgress, Typography } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Paper, Tabs, Tab, makeStyles, Typography } from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
+// higher order components: style, data fetching, user authorization
 import withRoot from './withRoot';
-import TabPanel from './components/TabPanel';
-import { withFirebase } from './components/firebase';
 import { AuthUserContext } from './components/session';
 
+import TabPanel from './components/TabPanel';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import Poster from './views/Poster';
@@ -16,13 +15,6 @@ import HowToUse from './views/HowToUse';
 import Footer from './views/Footer';
 import SchoolInformation from './views/SchoolInformation';
 import SchoolApplication from './views/SchoolApplication';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-      flexGrow: 1,
-      backgroundColor: theme.palette.background.paper,
-    },
-}));
 
 const background = 'https://images.unsplash.com/photo-1544108182-8810058c3a7d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80';
 const posterBackground = 'https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80';
@@ -41,114 +33,67 @@ const posterBody2 = {
   other: ''
 }
 
-let INITIAL_STATE = {
-  isLoading: false,
-  selectedTab: 0,
-  listOfSchools: [],
-};
-
-function toggleReducer(state, action) {
-  let { type, payload } = action;
-
-  switch(type) {
-    case 'FETCH_INIT':
-      return {
-        ...state,
-        isLoading: true
-      }
-      
-    case 'FETCH_SUCCESS':
-      return {
-        ...state,
-        isLoading: false,
-        listOfSchools: payload
-      }
-
-    case 'SELECTED_TAB':
-      return {
-        ...state,
-        selectedTab: payload
-      }
-    
-    case 'SELECTED_SCHOOL':
-      let selectedSchool = state.listOfSchools.find(school => school.id.toString() === payload.id);
-      return {
-        ...state,
-        selectedSchool
-      }
-  }
-}
+const useStyles = makeStyles(theme => ({
+  root: {
+      flexGrow: 1,
+      backgroundColor: theme.palette.background.paper,
+    },
+}));
 
 function Schools(props) {
-  const { firebase, history } = props;
   const classes = useStyles();
-  let match = useRouteMatch();
+  const match = useRouteMatch();
+  const { history, listOfSchools } = props;
+  const { title, tab } = props.location.state;
 
-  const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { isLoading, selectedTab, selectedSchool, listOfSchools } = state;
+  const INITIAL_STATE = { tab, school: null }
+  const [ selected, setSelected ] = useState(INITIAL_STATE);
 
-  useEffect(() => {
-    dispatch({ type: 'FETCH_INIT' });
-    const findAllSchools = () => {
-      const schoolsQuery = firebase.schools().get();
-      schoolsQuery.then(snapshot => {
-        if (snapshot.empty) {
-          console.log('No matching documents.');
-          return;
-        }  
-    
-        const allSchools = [];
-        snapshot.forEach(doc => {
-          allSchools.push(doc.data());
-        });
-
-        dispatch({ type: 'FETCH_SUCCESS', payload: allSchools });
-
-      })
-      .catch(err => {
-        console.log('Error getting documents', err);
-      });
-    }
-
-  findAllSchools();
-  }, []);
+  // E V E N T  L I S T E N E R S
+  const handleTabChange = newTab => setSelected(prevState => ({ ...prevState, tab: newTab }));
+  
+  const handleSelectedSchool = event => {
+    const selectedSchool = listOfSchools.find(school => school.id.toString() === event.currentTarget.id);
+    setSelected(prevState => ({ ...prevState, school: selectedSchool }));
+  }
 
   return (
     <>
       <NavBar/>
-      <PageBanner title={props.location.state.title} backgroundImage={background} layoutType='headerBanner'/>
+      <PageBanner title={title} backgroundImage={background} layoutType='headerBanner'/>
       <Paper className={classes.root}>
           <Tabs
               textColor="secondary"
               variant="fullWidth"
               centered
-              value={selectedTab}
-              onChange={(event, newValue) => dispatch({ type: 'SELECTED_TAB', payload: newValue })}
+              value={selected.tab}
+              onChange={(event, newValue) => handleTabChange(newValue)}
           >
               <Tab label="School Information" />
               <Tab label="School Application" />
           </Tabs>
-          <TabPanel value={selectedTab} index={0}>
+          <TabPanel value={selected.tab} index={0}>
             <Switch>
               <Route path={`${match.path}/:schoolID`}>
-                <SchoolInformation selectedSchool={selectedSchool} />
+                <SchoolInformation selectedSchool={selected.school} />
               </Route>
               <Route path={match.path}>
                 <Poster body={posterBody} backgroundImage={posterBackground} layoutType='school_information'/>
-                { isLoading ? <LinearProgress color='secondary'/> 
-                :
                 <ListOfSchools
                   history={history}
                   listOfSchools={listOfSchools} 
-                  handleSchoolClick={event => dispatch({ type: 'SELECTED_SCHOOL', payload: event.target })}/>
-                }
+                  handleSelectedSchool={handleSelectedSchool}/>
               </Route>
             </Switch>
           </TabPanel>
-          <TabPanel value={selectedTab} index={1}>
-          <AuthUserContext.Consumer>
-            { authUser => authUser ? <SchoolApplication authUser={authUser} /> : <Typography variant="h5">Please Register or Login to Apply</Typography> }
-          </AuthUserContext.Consumer>
+          <TabPanel value={selected.tab} index={1}>
+            <AuthUserContext.Consumer>
+              {authUser => authUser ? 
+                <SchoolApplication authUser={authUser} /> 
+                : 
+                <Typography variant="h5">Please Register or Login to Apply</Typography> 
+              }
+            </AuthUserContext.Consumer>
           </TabPanel>
       </Paper>
       <HowToUse/>
@@ -157,11 +102,5 @@ function Schools(props) {
     </>
   )
 }
-  
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  // value: PropTypes.any.isRequired,
-};
 
-export default withRoot(withFirebase(Schools));
+export default withRoot(Schools);

@@ -32,7 +32,7 @@ function SchoolInformation(props) {
                 pathname: '/schools', 
                 state: {
                   title: 'School Information',
-                  selected: 0
+                  tab: 0
                 }
               }}
             >

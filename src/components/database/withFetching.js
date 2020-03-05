@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DatabaseContext from './context';
-import { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllArticles, findAllTips } from '../../constants/helpers';
+import { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips } from '../../constants/helpers';
 
 function withFetching(Component) {
   function WithFetchingComponent(props) {
@@ -11,20 +11,21 @@ function withFetching(Component) {
       featuredArticles: [],
       featuredSchools: [],
       featuredTips: [],
+      listOfSchools: [],
       taggedArticles: [],
       gooseTips: [],
     }
     const [ state, setState ] = useState(INITIAL_STATE);
-    console.log('new state ', state.taggedArticles)
+    // console.log(state);
 
     useEffect(() => {
       findFeaturedSchools(firebase, setState);
       findFeaturedArticles(firebase, setState);
       findFeaturedTips(firebase, setState);
+      findAllSchools(firebase, setState);
       findAllArticles(tags, firebase, setState);
       findAllTips(firebase, setState);
     }, []);
-
 
     return (
     <DatabaseContext.Provider value={state}>

@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Container, Grid, Link, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
-import Typography from '../components/onePirate/Typography';
+import { Container, Grid, Link, Typography, withStyles } from '@material-ui/core';
 import SearchField from '../components/SearchField';
 import Pagination from '../components/Pagination';
 
@@ -73,7 +71,7 @@ const styles = theme => ({
 });
 
 function ListOfSchools(props) {
-    const { classes, history, handleSchoolClick, listOfSchools } = props;
+    const { classes, history, handleSelectedSchool, listOfSchools } = props;
     const match = useRouteMatch();
     
     const [ searchQuery, setSearchQuery ] = useState('');
@@ -115,7 +113,7 @@ function ListOfSchools(props) {
                                         underline="none"
                                         className={classes.schoolTitle}
                                         component={RouterLink} 
-                                        onClick={handleSchoolClick}
+                                        onClick={handleSelectedSchool}
                                         to=
                                         {{
                                             pathname: `${match.path}/${school.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
@@ -136,7 +134,7 @@ function ListOfSchools(props) {
                                             variant="body2"
                                             underline="none"
                                             component={RouterLink} 
-                                            onClick={handleSchoolClick}
+                                            onClick={handleSelectedSchool}
                                             to=
                                             {{
                                                 pathname: `${match.path}/${school.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
@@ -164,9 +162,5 @@ function ListOfSchools(props) {
         </section>
     );
 }
-
-ListOfSchools.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(ListOfSchools);

@@ -50,6 +50,23 @@ function findFeaturedTips(firebase, setState) {
     });
 }
 
+function findAllSchools(firebase, setState) {
+    const schoolsQuery = firebase.schools().get();
+    schoolsQuery.then(snapshot => {
+      if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+      }  
+  
+      const allSchools = [];
+      snapshot.forEach(doc => { allSchools.push(doc.data()) });
+      setState(prevState => ({ ...prevState, listOfSchools: allSchools }));
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    });
+}
+
 function findAllArticles(tags, firebase, setState) {
     const articlesQuery = firebase.articles().get();
     articlesQuery.then(snapshot => {
@@ -226,4 +243,4 @@ function sortQuery(type, resources, option) {
     return sortedResources;
 }
 
-export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllArticles, findAllTips, singleFilterQuery, multipleFilterQuery, sortQuery }
+export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, singleFilterQuery, multipleFilterQuery, sortQuery }
