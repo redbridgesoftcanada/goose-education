@@ -114,6 +114,47 @@ function findAllTips(firebase, setState) {
     });
 }
 
+function findAllMessages(firebase, setState) {
+    const messagesQuery = firebase.messages().get();
+    messagesQuery.then(snapshot => {
+      if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+      }  
+
+        const allMessages = [];
+        snapshot.forEach(doc => {
+            let message = doc.data();
+            let messageId = doc.id;
+            message = {...message, id: messageId}
+            allMessages.push(message)
+        });
+        setState(prevState => ({...prevState, listOfMessages: allMessages}))
+    })
+    .catch(err => { console.log('Error getting documents', err) });
+}
+
+function findAllAnnouncements(firebase, setState) {
+    const announcementsQuery = firebase.announcements().get();
+    announcementsQuery.then(snapshot => {
+        if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+        }  
+
+        const allAnnnouncements = [];
+        snapshot.forEach(doc => {
+            let announcement = doc.data();
+            let announcementId = doc.id;
+            announcement = {...announcement, id: announcementId}
+            allAnnnouncements.push(announcement)
+        });
+        setState(prevState => ({...prevState, listOfAnnouncements: allAnnnouncements}));
+    })
+    .catch(err => { console.log('Error getting documents', err) });
+}
+
+
 // F U N C T I O N A L I T I E S
 function singleFilterQuery(resources, option, words) {
     const filterWords = words.toLowerCase();
@@ -243,4 +284,4 @@ function sortQuery(type, resources, option) {
     return sortedResources;
 }
 
-export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, singleFilterQuery, multipleFilterQuery, sortQuery }
+export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, singleFilterQuery, multipleFilterQuery, sortQuery }

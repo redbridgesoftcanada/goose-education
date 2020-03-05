@@ -114,7 +114,7 @@ function toggleReducer(state, action) {
     }
 }
 
-function AnnouncementBoard({classes, handleClick, announcementsDB}) {
+function AnnouncementBoard({classes, handleClick, listOfAnnouncements}) {
     const INITIAL_STATE = {
         announcements: [],
         composeOpen: false,
@@ -135,15 +135,15 @@ function AnnouncementBoard({classes, handleClick, announcementsDB}) {
     const { announcements, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery, currentPage, announcesPerPage } = state;
     const match = useRouteMatch();
 
-    const totalAnnouncements = announcements.length;
+    const totalAnnouncements = listOfAnnouncements.length;
     const totalPages = Math.ceil(totalAnnouncements / announcesPerPage);
     const indexOfLastAnnouncement = (currentPage * announcesPerPage) + 1;
     const indexOfFirstAnnouncement = indexOfLastAnnouncement - announcesPerPage;
     const paginatedAnnouncements = (totalPages > 1) ? announcements.slice(indexOfFirstAnnouncement, indexOfLastAnnouncement) : announcements;
 
     useEffect(() => {
-        dispatch({ type: 'LOAD_ANNOUNCEMENTS', payload: announcementsDB })
-    }, [announcementsDB]);
+        dispatch({ type: 'LOAD_ANNOUNCEMENTS', payload: listOfAnnouncements })
+    }, [listOfAnnouncements]);
 
     return (
         <Container>
@@ -152,7 +152,7 @@ function AnnouncementBoard({classes, handleClick, announcementsDB}) {
                 <Filter  
                 isFilter={isFiltered} 
                 handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
-                handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: announcementsDB})}/>
+                handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: listOfAnnouncements})}/>
                 <Sort 
                 selectedAnchor={selectedAnchor}
                 handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>

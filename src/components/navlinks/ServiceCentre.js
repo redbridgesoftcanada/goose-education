@@ -32,7 +32,7 @@ function ServiceCenter(props) {
                 pathname: '/services', 
                 state: {
                   title: 'Service Centre',
-                  selected: 0
+                  tab: 0
                 }
               }}
             >
@@ -52,7 +52,7 @@ function ServiceCenter(props) {
                 pathname: '/services', 
                 state: {
                   title: 'Service Centre',
-                  selected: 1
+                  tab: 1
                 }
               }}
             >

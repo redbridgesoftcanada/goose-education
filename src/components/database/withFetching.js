@@ -21,7 +21,7 @@ function withFetching(Component) {
       listOfAnnouncements: []
     }
     const [ state, setState ] = useState(INITIAL_STATE);
-    console.log(state);
+    // console.log(state);
 
     useEffect(() => {
       switch(location.pathname) {

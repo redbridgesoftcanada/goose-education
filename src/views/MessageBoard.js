@@ -116,7 +116,7 @@ function toggleReducer(state, action) {
     }
 }
 
-function MessageBoard({classes, handleClick, messagesDB}) {
+function MessageBoard({classes, handleClick, listOfMessages}) {
     const INITIAL_STATE = {
         messages: [],
         composeOpen: false,
@@ -143,8 +143,8 @@ function MessageBoard({classes, handleClick, messagesDB}) {
     const paginatedMessages = (totalPages > 1) ? messages.slice(indexOfFirstMessage, indexOfLastMessage) : messages;
 
     useEffect(() => {
-        dispatch({ type: 'LOAD_MESSAGES', payload: messagesDB })
-    }, [messagesDB])
+        dispatch({ type: 'LOAD_MESSAGES', payload: listOfMessages })
+    }, [listOfMessages])
 
     return (
         <Container>
@@ -166,7 +166,7 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                 <Filter 
                  isFilter={isFiltered} 
                  handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
-                 handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: messagesDB})}/>
+                 handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: listOfMessages})}/>
                 <Sort 
                 selectedAnchor={selectedAnchor}
                 handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>

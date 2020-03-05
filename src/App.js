@@ -45,7 +45,13 @@ function App() {
           <Route path="/login" render={() => <Login/>}/>
           <Route path="/register" render={() => <Register/>}/>
           <Route path="/privacy" render={() => <Privacy/>}/>
-          <Route path="/services" render={props => <ServiceCentre {...props} />}/>
+          <Route path="/services" 
+            render={props => 
+              <DatabaseContext.Consumer>
+                {context => <ServiceCentre {...props} listOfMessages={context.listOfMessages} listOfAnnouncements={context.listOfAnnouncements}/> }
+              </DatabaseContext.Consumer>
+            }
+          />
           <Route path="/studyabroad" render={props => <StudyAbroad {...props} />}/>
           <Route path="/schools" 
             render={props => 
