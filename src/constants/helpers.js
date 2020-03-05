@@ -50,6 +50,36 @@ function findFeaturedTips(firebase, setState) {
     });
 }
 
+function findAllArticles(tags, firebase, setState) {
+    const articlesQuery = firebase.articles().get();
+    articlesQuery.then(snapshot => {
+      if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+      }  
+  
+      const allArticles = [];
+      snapshot.forEach(doc => {
+        allArticles.push(doc.data());
+      });
+
+      const taggedArticles = [];
+      tags.forEach(tag => {
+        let matchArticleTag = [];
+        if (tag === 'All') {
+          taggedArticles.push(allArticles);
+        } else {
+          matchArticleTag = allArticles.filter(article => article.tag === tag);
+          taggedArticles.push(matchArticleTag);
+        }
+      });
+      setState(prevState => ({ ...prevState, taggedArticles }))
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    });
+}
+
 function findAllTips(firebase, setState) {
     const tipsQuery = firebase.tips().get();
     tipsQuery.then(snapshot => {
@@ -196,4 +226,4 @@ function sortQuery(type, resources, option) {
     return sortedResources;
 }
 
-export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllTips, singleFilterQuery, multipleFilterQuery, sortQuery }
+export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllArticles, findAllTips, singleFilterQuery, multipleFilterQuery, sortQuery }
