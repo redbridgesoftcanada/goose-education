@@ -1,3 +1,4 @@
+// D A T A  F E T C H I N G
 function findFeaturedSchools(firebase, setState) {
     const schoolsQuery = firebase.schools().where('isFeatured', '==', true).get();
     schoolsQuery.then(snapshot => {
@@ -9,43 +10,64 @@ function findFeaturedSchools(firebase, setState) {
       let featuredSchools = [];
       snapshot.forEach(doc => featuredSchools.push(doc.data()));
       setState(prevState => ({ ...prevState, featuredSchools }))
-    }).catch(err => {
+    })
+    .catch(err => {
       console.log('Error getting documents', err);
     });
 }
 
 function findFeaturedArticles(firebase, setState) {
-const articlesQuery = firebase.articles().where('isFeatured', '==', true).get();
-articlesQuery.then(snapshot => {
-    if (snapshot.empty) {
-    console.log('No matching documents.');
-    return;
-    }  
+    const articlesQuery = firebase.articles().where('isFeatured', '==', true).get();
+    articlesQuery.then(snapshot => {
+        if (snapshot.empty) {
+            console.log('No matching documents.');
+            return;
+        }  
 
-    let featuredArticles = [];
-    snapshot.forEach(doc => featuredArticles.push(doc.data()));
-    setState(prevState => ({ ...prevState, featuredArticles }))
-}).catch(err => {
-    console.log('Error getting documents', err);
-});
+        let featuredArticles = [];
+        snapshot.forEach(doc => featuredArticles.push(doc.data()));
+        setState(prevState => ({ ...prevState, featuredArticles }))
+    })
+    .catch(err => {
+        console.log('Error getting documents', err);
+    });
 }
 
 function findFeaturedTips(firebase, setState) {
-const tipsQuery = firebase.tips().where('isFeatured', '==', true).get();
-tipsQuery.then(snapshot => {
-    if (snapshot.empty) {
-    console.log('No matching documents.');
-    return;
-    }  
+    const tipsQuery = firebase.tips().where('isFeatured', '==', true).get();
+    tipsQuery.then(snapshot => {
+        if (snapshot.empty) {
+            console.log('No matching documents.');
+            return;
+        }  
 
-    let featuredTips = [];
-    snapshot.forEach(doc => featuredTips.push(doc.data()));
-    setState(prevState => ({ ...prevState, featuredTips }))
-}).catch(err => {
-    console.log('Error getting documents', err);
-});
+        let featuredTips = [];
+        snapshot.forEach(doc => featuredTips.push(doc.data()));
+        setState(prevState => ({ ...prevState, featuredTips }))
+    })
+    .catch(err => {
+        console.log('Error getting documents', err);
+    });
 }
 
+function findAllTips(firebase, setState) {
+    const tipsQuery = firebase.tips().get();
+    tipsQuery.then(snapshot => {
+      if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+      }  
+  
+      let gooseTips = [];
+      snapshot.forEach(doc => {gooseTips.push(doc.data())});
+      setState(prevState => ({ ...prevState, gooseTips }))
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    });
+}
+
+// F U N C T I O N A L I T I E S
 function singleFilterQuery(resources, option, words) {
     const filterWords = words.toLowerCase();
     let filteredContent = [];
@@ -174,4 +196,4 @@ function sortQuery(type, resources, option) {
     return sortedResources;
 }
 
-export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, singleFilterQuery, multipleFilterQuery, sortQuery }
+export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllTips, singleFilterQuery, multipleFilterQuery, sortQuery }

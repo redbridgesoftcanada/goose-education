@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DatabaseContext from './context';
-import { findFeaturedSchools, findFeaturedArticles, findFeaturedTips } from '../../constants/helpers';
+import { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllTips } from '../../constants/helpers';
 
 function withFetching(Component) {
   function WithFetchingComponent(props) {
@@ -10,6 +10,7 @@ function withFetching(Component) {
       featuredArticles: [],
       featuredSchools: [],
       featuredTips: [],
+      gooseTips: [],
     }
     const [ state, setState ] = useState(INITIAL_STATE);
 
@@ -17,6 +18,7 @@ function withFetching(Component) {
       findFeaturedSchools(firebase, setState);
       findFeaturedArticles(firebase, setState);
       findFeaturedTips(firebase, setState);
+      findAllTips(firebase, setState);
     }, []);
 
 
