@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import AuthUserContext from './context';
 import { withFirebase } from '../firebase';
 
-const withAuthentication = Component => {
-    const WithAuthentication = (props) => {
+function withAuthentication(Component) {
+    function WithAuthenticationComponent(props) {
         const [ authUser, setAuthUser ] = useState(null);
 
         useEffect(() => {
@@ -18,7 +18,7 @@ const withAuthentication = Component => {
             </AuthUserContext.Provider>
         )
     }
-    return withFirebase(WithAuthentication);
+    return withFirebase(WithAuthenticationComponent);
 }
 
 export default withAuthentication;
