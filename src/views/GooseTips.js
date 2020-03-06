@@ -209,6 +209,7 @@ function GooseTips(props) {
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
     const { gooseTips, isError, error, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, anchorOpen, selectedAnchor, tipOpen, selectedTip, searchQuery, currentPage, tipsPerPage } = state;
+    const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
     const redirectPath = {
         pathname:'/search', 
         search: `?query=${searchQuery}`, 
@@ -264,14 +265,9 @@ function GooseTips(props) {
                     handleSearchClick={() => history.push(redirectPath)}/>
 
                 <FilterDialog
-                    isError={isError} 
-                    error={error}
-                    filterOption={filterOption} 
-                    filterConjunction={filterConjunction} 
-                    filterQuery={filterQuery}
+                    filterProps={filterProps}
                     handleSearchQuery={createFilterQuery}
                     handleSearchClick={handleFilterQuery} 
-                    filterOpen={filterOpen} 
                     onClose={toggleFilterDialog} 
                 />
                 <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={closeSort}/>

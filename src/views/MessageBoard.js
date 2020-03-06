@@ -133,7 +133,8 @@ function MessageBoard({classes, handleClick, listOfMessages}) {
         error: null
     }
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { messages, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, currentPage, messagesPerPage } = state;
+    const { messages, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, currentPage, messagesPerPage, error, isError } = state;
+    const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
     const match = useRouteMatch();
 
     const totalMessages = messages.length;
@@ -172,12 +173,9 @@ function MessageBoard({classes, handleClick, listOfMessages}) {
                 handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
             </div>
             <FilterDialog  
-                isError={state.isError}
-                error={state.error}
-                filterOption={filterOption} filterConjunction={filterConjunction} filterQuery={filterQuery}
+                filterProps={filterProps}
                 handleSearchQuery={event => dispatch({type:'FILTER_QUERY', payload: event.target})}
                 handleSearchClick={() => dispatch({type:'FILTER_MESSAGES'})} 
-                filterOpen={filterOpen} 
                 onClose={() => dispatch({ type: 'CLOSE_FILTER' })}  
             />
             <SortPopover 

@@ -132,7 +132,8 @@ function AnnouncementBoard({classes, handleClick, listOfAnnouncements}) {
     }
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { announcements, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery, currentPage, announcesPerPage } = state;
+    const { announcements, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery, currentPage, announcesPerPage, error, isError } = state;
+    const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
     const match = useRouteMatch();
 
     const totalAnnouncements = listOfAnnouncements.length;
@@ -158,12 +159,9 @@ function AnnouncementBoard({classes, handleClick, listOfAnnouncements}) {
                 handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
             </div>
             <FilterDialog  
-                isError={state.isError}
-                error={state.error}
-                filterOption={filterOption} filterConjunction={filterConjunction} filterQuery={filterQuery}
+                filterProps={filterProps}
                 handleSearchQuery={event => dispatch({type:'FILTER_QUERY', payload: event.target})}
                 handleSearchClick={() => dispatch({type:'FILTER_ANNOUNCEMENTS'})} 
-                filterOpen={filterOpen} 
                 onClose={() => dispatch({ type: 'CLOSE_FILTER' })}/>
             <SortPopover 
             anchorEl={anchorOpen} 
