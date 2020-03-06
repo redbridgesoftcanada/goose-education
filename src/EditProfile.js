@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Grid, Tabs, Tab, makeStyles } from '@material-ui/core';
-import withRoot from './withRoot';
 
 import TabPanel from './components/TabPanel';
 import NavBar from './views/NavBar';
@@ -9,7 +7,9 @@ import EditProfileForm from './views/EditProfileForm';
 import PasswordChangeForm from './views/PasswordChangeForm';
 import Footer from './views/Footer';
 
+import withRoot from './withRoot';
 import { AuthUserContext, withAuthorization } from './components/session';
+import { DatabaseContext } from './components/database';
 
 
 const useStyles = makeStyles(theme => ({
@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function EditProfileBase(props) {
+function EditProfileBase() {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -46,7 +46,13 @@ function EditProfileBase(props) {
       <Grid item xs={10}>
         <TabPanel value={selectedTab} index={0}>
           <AuthUserContext.Consumer>
-            {authUser => <EditProfileForm authUser={authUser} user={props.location.state.user}/> }
+            {authUser => 
+              <DatabaseContext.Consumer>
+                {context => 
+                  <EditProfileForm authUser={authUser} profile={context.profile}/>
+                }
+              </DatabaseContext.Consumer>
+            }
           </AuthUserContext.Consumer>
         </TabPanel>
 
@@ -62,12 +68,6 @@ function EditProfileBase(props) {
     </>
   );
 }
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
 
 const editProfile = withRoot(EditProfileBase);
 const condition = authUser => !!authUser;

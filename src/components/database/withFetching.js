@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import DatabaseContext from './context';
-import { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements } from '../../constants/helpers';
+import * as helpers from '../../constants/helpers';
+
+const tags = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
 function withFetching(Component) {
   function WithFetchingComponent(props) {
+    
     const location = useLocation();
-
     const firebase = props.firebase;
-    const tags = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
+
+    let userId;
+    if (firebase.auth.currentUser) {
+      userId = firebase.auth.currentUser.uid;
+    }
 
     const INITIAL_STATE = {
       featuredArticles: [],
@@ -18,35 +24,40 @@ function withFetching(Component) {
       taggedArticles: [],
       gooseTips: [],
       listOfMessages: [],
-      listOfAnnouncements: []
+      listOfAnnouncements: [],
+      profile: null,
+      schoolApplication: null,
     }
     const [ state, setState ] = useState(INITIAL_STATE);
-    // console.log(state);
 
     useEffect(() => {
       switch(location.pathname) {
         case '/':
-          findFeaturedSchools(firebase, setState);
-          findFeaturedArticles(firebase, setState);
-          findFeaturedTips(firebase, setState);
+          helpers.findFeaturedSchools(firebase, setState);
+          helpers.findFeaturedArticles(firebase, setState);
+          helpers.findFeaturedTips(firebase, setState);
           break;
         
         case '/goose':
-          findAllTips(firebase, setState);
+          helpers.findAllTips(firebase, setState);
           break;
         
         case '/networking':
-          findAllArticles(tags, firebase, setState);
+          helpers.findAllArticles(tags, firebase, setState);
           break;
         
         case '/schools':
-          findAllSchools(firebase, setState);
+          helpers.findAllSchools(firebase, setState);
           break;
         
         case '/services':
-          findAllAnnouncements(firebase, setState);
-          findAllMessages(firebase, setState);
+          helpers.findAllAnnouncements(firebase, setState);
+          helpers.findAllMessages(firebase, setState);
           break;
+        
+        case '/profile':
+          helpers.findUserById(userId, firebase, setState);
+          helpers.findSchoolApplicationById(userId, firebase, setState);
       }
     }, [location.pathname]);
 

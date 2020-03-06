@@ -154,8 +154,19 @@ function findAllAnnouncements(firebase, setState) {
     .catch(err => { console.log('Error getting documents', err) });
 }
 
+async function findUserById(id, firebase, setState) {
+    const profileQuery = await firebase.user(id).get();
+    const profile = profileQuery.data();
+    setState(prevState => ({ ...prevState, profile }));
+}
 
-// F U N C T I O N A L I T I E S
+async function findSchoolApplicationById(id, firebase, setState) {
+    const applicationQuery = await firebase.schoolApplication(id).get();
+    const schoolApplication = applicationQuery.data();
+    setState(prevState => ({ ...prevState, schoolApplication }));
+}
+
+// F E A T U R E S
 function singleFilterQuery(resources, option, words) {
     const filterWords = words.toLowerCase();
     let filteredContent = [];
@@ -284,4 +295,4 @@ function sortQuery(type, resources, option) {
     return sortedResources;
 }
 
-export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, singleFilterQuery, multipleFilterQuery, sortQuery }
+export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findUserById, findSchoolApplicationById, singleFilterQuery, multipleFilterQuery, sortQuery }

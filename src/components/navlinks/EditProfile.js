@@ -10,13 +10,7 @@ export default function EditProfile(props) {
           variant="h6"
           underline="none"
           component={RouterLink}
-          to=
-            {{
-              pathname: '/profile/edit', 
-              state: {
-                user: props.user
-              }
-            }}
+          to='/profile/edit'
         >
           {'Edit'}
         </Link>
