@@ -18,6 +18,7 @@ const styles = theme => ({
         opacity: 0.9,
         paddingBottom: theme.spacing(5),
       },
+
       left: {
         float: 'left',
         display: 'flex',
@@ -99,6 +100,8 @@ function toggleReducer(state, action) {
                 editDialogOpen: false
             }
         }
+
+        default:
     }
 }
 
@@ -119,6 +122,7 @@ function Announcement(props) {
     const commentAnchorOpen = Boolean(commentAnchor);
     const editAnchorOpen = Boolean(editAnchor);
 
+    // E V E N T  L I S T E N E R S 
     const redirectPath = () => history.push({ pathname: '/services', state: { title: 'Service Centre', selected: 0 }});
     const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
     const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS' });
@@ -126,6 +130,8 @@ function Announcement(props) {
     const handleDeleteConfirmation = event => (event.currentTarget.id) ? dispatch({ type:'CONFIRM_DELETE', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
     const handleEdit = event => (event.currentTarget.id) ? dispatch({ type: 'EDIT_CONTENT', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
     const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
+
+    const commentsProps = { formType: 'announcement', classes, firebase, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, openPostActions, closePostActions, handleEdit, handleDeleteConfirmation, resetAllActions, selectedResource: selectedAnnounce }
 
     const onSubmit = event => {
         firebase.announcement(selectedAnnounce.id).update({ 
@@ -196,7 +202,7 @@ function Announcement(props) {
                 selectedAnnounce.comments.map((comment, i) => {
                     let isCommentOwner = authUser.uid === comment.authorID;
                     return (
-                        <Comments i={i} classes={classes} comment={comment} isCommentOwner={isCommentOwner} firebase={firebase} formType={'announcement'} openPostActions={openPostActions} closePostActions={closePostActions} commentAnchor={commentAnchor} commentAnchorOpen={commentAnchorOpen} commentDialogOpen={commentDialogOpen} commentConfirmOpen={commentConfirmOpen} selectedResource={selectedAnnounce} handleEdit={handleEdit} handleDeleteConfirmation={handleDeleteConfirmation} resetAllActions={resetAllActions} /> 
+                        <Comments key={i} comment={comment} isCommentOwner={isCommentOwner} {...commentsProps} /> 
                 )})
             :
                 <Typography>There are currently no comments.</Typography> 

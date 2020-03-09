@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { EditorValidator } from '../constants/customValidators';
@@ -48,15 +48,6 @@ export default function CommentDialog(props) {
     // .catch(error => dispatch({ type: 'error', payload: error }))
     event.preventDefault();
   }
-
-  useEffect(() => {
-    ValidatorForm.addValidationRule('isQuillEmpty', value => {
-      if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-        return false;
-      }
-      return true;
-    });
-  }, []);
 
     return (
         <Dialog open={open} onClose={onClose}>

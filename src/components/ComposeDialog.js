@@ -109,7 +109,7 @@ function ComposeDialogBase(props) {
             authorID: authUser.uid,
             authorDisplayName: authUser.displayName,
             comments: [],
-            ...isEdit && { createdAt: Date.now() },
+            ...!isEdit && { createdAt: Date.now() },
             updatedAt: Date.now(),
             views: 0,
             [uploadKey]: downloadURL, 
@@ -127,7 +127,7 @@ function ComposeDialogBase(props) {
         authorID: authUser.uid,
         authorDisplayName: authUser.displayName,
         comments: [],
-        ...isEdit && { createdAt: Date.now() },
+        ...!isEdit && { createdAt: Date.now() },
         updatedAt: Date.now(),
         views: 0,
         [uploadKey]: uploads, 
@@ -144,13 +144,6 @@ function ComposeDialogBase(props) {
     const { composeType, isEdit } = props;
     const prevContent = props.article;
     prevContent && configureEditForm(composeType, isEdit, prevContent);
-
-    ValidatorForm.addValidationRule('isQuillEmpty', value => {
-      if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-        return false;
-      }
-      return true;
-    });
 
     ValidatorForm.addValidationRule('isRequiredUpload', value => {
       if (!value || value.length === 0) {

@@ -1,11 +1,8 @@
-import React, { useReducer, useEffect } from 'react';
-import { Container, Grid, Link, withStyles } from '@material-ui/core';
-import { Switch, Route, Link as RouterLink, useRouteMatch, useLocation } from "react-router-dom";
+import React, { useEffect, useReducer } from 'react';
+import { Container, Grid, Link, Typography, withStyles } from '@material-ui/core';
+import { Switch, Route, Link as RouterLink, useRouteMatch } from "react-router-dom";
+import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
 import parse from 'html-react-parser';
-import { ValidatorForm } from 'react-material-ui-form-validator';
-
-import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
-import Typography from '../components/onePirate/Typography';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';
@@ -14,8 +11,8 @@ import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
 import SortPopover from '../components/SortPopover';
 import SearchField from '../components/SearchField';
-import Article from '../views/Article';
 import Pagination from '../components/Pagination';
+import Article from '../views/Article';
 
 const styles = theme => ({
     root: {
@@ -81,19 +78,40 @@ function toggleReducer(state, action) {
   
     switch(type) {
         case 'LOAD_ARTICLES': 
-            return { ...state, articles: payload }
+            return { ...state, filteredArticles: payload }
 
-        case 'OPEN_COMPOSE':
-            return { ...state, composeOpen: true }
+        case 'TOGGLE_COMPOSE':
+            return { ...state, composeOpen: !state.composeOpen }
 
-        case 'CLOSE_COMPOSE':
-            return { ...state, composeOpen: false }
+        case 'TOGGLE_FILTER':
+            return { ...state, filterOpen: !state.filterOpen }
 
-        case 'OPEN_FILTER':
-            return { ...state, filterOpen: true }
+        case 'OPEN_SORT':
+            return { ...state, anchorOpen: payload }
         
-        case 'CLOSE_FILTER':
-            return { ...state, filterOpen: false }
+        case 'SELECTED_SORT':
+            const selectedSort = payload.id;
+            const sortedArticles = sortQuery('articles', state.filteredArticles, selectedSort);
+            
+            return { 
+                ...state, 
+                anchorOpen: null,
+                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
+                filteredArticles: sortedArticles
+            }
+        
+        case 'RESET_FILTER':
+            return { 
+                ...state,
+                filteredArticles: payload,
+                isFiltered: false,
+                filterOpen: false,
+                filterOption: 'Title',
+                filterConjunction: 'And',
+                filterQuery: '',
+                isError: false,
+                error: null,                
+            }
 
         case 'FILTER_QUERY':
             const filterType = payload.name;
@@ -105,15 +123,15 @@ function toggleReducer(state, action) {
                 error: null,
             }
 
-        case 'FILTER_ARTICLES':
-            const { articles, filterOption, filterConjunction, filterQuery } = state;
+        case 'SEARCH_ARTICLES':
+            const { filterOption, filterConjunction, filterQuery } = state;
             let filteredContent = [];
 
             if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
-                filteredContent = multipleFilterQuery(articles, filterOption, filterConjunction, filterQuery);
+                filteredContent = multipleFilterQuery(payload, filterOption, filterConjunction, filterQuery);
 
             } else if (Boolean(filterQuery)) {
-                filteredContent = singleFilterQuery(articles, filterOption, filterQuery);
+                filteredContent = singleFilterQuery(payload, filterOption, filterQuery);
 
             } else {
                 return {
@@ -126,7 +144,7 @@ function toggleReducer(state, action) {
             if (filteredContent.length) {
                 return {
                     ...state,
-                    articles: filteredContent,
+                    filteredArticles: filteredContent,
                     isFiltered: true,
                     filterOpen: false
                 }
@@ -138,43 +156,13 @@ function toggleReducer(state, action) {
                 }
             }
         
-        case 'RESET_FILTER':
-            return { 
-                ...state,
-                articles: payload,
-                isFiltered: false,
-                filterOpen: false,
-                filterOption: 'Title',
-                filterConjunction: 'And',
-                filterQuery: '',
-                isError: false,
-                error: null,                
-            }
-
-        case 'OPEN_SORT':
-            return { ...state, anchorOpen: payload }
-        
-        case 'CLOSE_SORT':
-            const selectedSort = payload.id;
-            const sortedArticles = sortQuery('articles', state.articles, selectedSort);
-            
-            return { 
-                ...state, 
-                anchorOpen: null,
-                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
-                articles: sortedArticles
-            }
-        
-        case 'OPEN_ARTICLE':
-            const selectedArticle = payload.database.find(article => article.id.toString() === payload.selected.id);
+        case 'SELECTED_ARTICLE':
+            const selectedArticle = payload.listOfArticles.find(article => article.id.toString() === payload.selected.id);
             return { 
                 ...state, 
                 articleOpen: true, 
                 selectedArticle
             }
-        
-        case 'CLOSE_ARTICLE':
-            return { ...state, articleOpen: false, selectedArticle: null }
         
         case 'SEARCH_QUERY':
             const searchQuery = payload.value;
@@ -185,149 +173,151 @@ function toggleReducer(state, action) {
             return { ...state, currentPage }
                     
         default:
-            break;
     }
 }
 
-function ArticleBoard({classes, history, articlesDB}) {
+function ArticleBoard(props) {
+    const { classes, history, listOfArticles } = props;
+    const match = useRouteMatch();
+
     const INITIAL_STATE = {
-        articles: [],
-        articleOpen: false,
+        filteredArticles: [],   
         selectedArticle: null,
-        composeOpen: false,
-        anchorOpen: null,
+        articleOpen: false,
+        composeOpen: false,   
+        anchorOpen: null,     
         selectedAnchor: '',
-        isFiltered: false,
+        isFiltered: false,    
         filterOpen: false,
         filterOption: 'Title',
         filterConjunction: 'And',
         filterQuery: '',
-        currentPage: 0,
+        currentPage: 0,       
         articlesPerPage: 10,
         isError: false,
         error: null
     }
-    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { articles, articleOpen, selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, searchQuery, currentPage, articlesPerPage } = state;
-    const match = useRouteMatch();
 
-    const totalArticles = articles.length;
-    const totalPages = Math.ceil(totalArticles / articlesPerPage);
-    const indexOfLastArticle = (currentPage * articlesPerPage) + 1;
-    const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
-    const paginatedArticles = (totalPages > 1) ? articles.slice(indexOfFirstArticle, indexOfLastArticle) : articles;
+    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+    const { filteredArticles, articleOpen, selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, searchQuery, currentPage, articlesPerPage, error, isError } = state;
+    const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
+
+    const totalPages = Math.ceil(filteredArticles.length/articlesPerPage);
+    const paginatedArticles = createPagination(filteredArticles, currentPage, articlesPerPage, totalPages);
+    
+    // E V E N T  L I S T E N E R S
+    const handlePageChange = newPage => dispatch({ type:'CHANGE_PAGE', payload: newPage });
+
+    const handleSelectedArticle = event => dispatch({ type: 'SELECTED_ARTICLE', payload: { selected: event.currentTarget, listOfArticles }});
+    
+    const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
+
+    const openSortPopover = event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget });
+    const handleSelectedSort = event => dispatch({ type: 'SELECTED_SORT', payload: event.currentTarget});
+
+    const handleSearchQuery = event => dispatch({ type: 'SEARCH_QUERY', payload: event.target });
+    const handleSearch = () => dispatch({ type:'SEARCH_ARTICLES', payload: listOfArticles });
+
+    const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER' });
+    const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target });
+    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: listOfArticles });
 
     useEffect(() => {
-        dispatch({ type: 'LOAD_ARTICLES', payload: articlesDB });
-
-        ValidatorForm.addValidationRule('isNotHTML', value => {
-            if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-                return false;
-            } 
-            return true;
-        });
-    }, [articlesDB]);
+        dispatch({ type:'LOAD_ARTICLES', payload: listOfArticles });
+    }, [listOfArticles])
 
     return (
         <section className={classes.root}>
             <Container>
-            <Switch>
-              <Route path={`${match.path}/:articleID`}>
-                <AuthUserContext.Consumer>
-                    {authUser => 
-                        <Article 
-                            article={selectedArticle}
-                            authUser={authUser} 
-                            history={history}
-                            articleOpen={articleOpen} 
-                        /> }
-                </AuthUserContext.Consumer>
-              </Route>
-              <Route path={match.path}>
-                <AuthUserContext.Consumer>
-                        { authUser => authUser &&
-                        <>
-                            <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
-                            <ComposeDialog
-                            isEdit={false}
-                            authUser={authUser} 
-                            composeType='article'
-                            composeOpen={composeOpen} 
-                            onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
-                        </>
+                <Switch>
+                <Route path={`${match.path}/:articleID`}>
+                    <AuthUserContext.Consumer>
+                        {authUser => 
+                            <Article 
+                                article={selectedArticle}
+                                authUser={authUser} 
+                                history={history}
+                                articleOpen={articleOpen} 
+                            /> 
                         }
-                </AuthUserContext.Consumer>
-                <Filter 
-                    isFilter={isFiltered} 
-                    handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
-                    handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: articlesDB})}/>
-                <Sort 
-                    selectedAnchor={selectedAnchor}
-                    handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
-                <SearchField 
-                    handleSearch={event => dispatch({type: 'SEARCH_QUERY', payload: event.target})}
-                    handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, resources: articles} })}/>
+                    </AuthUserContext.Consumer>
+                </Route>
+                <Route path={match.path}>
+                    <AuthUserContext.Consumer>
+                        {authUser => authUser &&
+                            <>
+                                <Compose handleComposeClick={toggleComposeDialog}/> 
+                                <ComposeDialog
+                                    isEdit={false}
+                                    authUser={authUser} 
+                                    composeType='article'
+                                    composeOpen={composeOpen} 
+                                    onClose={toggleComposeDialog} />
+                            </>
+                        }
+                    </AuthUserContext.Consumer>
+                    <Filter 
+                        isFilter={isFiltered} 
+                        handleFilterClick={toggleFilterDialog} 
+                        handleFilterReset={resetFilter}/>
 
-                <FilterDialog
-                    isError={state.isError}
-                    error={state.error}
-                    filterOption={filterOption} filterConjunction={filterConjunction} filterQuery={filterQuery}
-                    handleSearchQuery={event => dispatch({type:'FILTER_QUERY', payload: event.target})}
-                    handleSearchClick={() => dispatch({type:'FILTER_ARTICLES'})} 
-                    filterOpen={filterOpen} 
-                    onClose={() => dispatch({ type: 'CLOSE_FILTER' })} 
-                />
-                <SortPopover 
-                anchorEl={anchorOpen} 
-                open={Boolean(anchorOpen)} 
-                onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
+                    <Sort 
+                        selectedAnchor={selectedAnchor}
+                        handleSortClick={openSortPopover}/>
 
-                <Grid container>
-                    {paginatedArticles.map(article => {
-                        return (
-                            <Grid key={article.id} item xs={12} md={3} className={classes.background}>
-                                <div className={classes.item} id={article.id} onClick={event => dispatch({ type: 'OPEN_ARTICLE', payload: { selected: event.currentTarget, database: articlesDB }})}>
-                                <Link
+                    <SearchField 
+                        handleSearch={handleSearchQuery}
+                        handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, resources: listOfArticles} })}/>
+
+                    <FilterDialog
+                        {...filterProps}
+                        handleSearchQuery={handleFilterQuery}
+                        handleSearchClick={handleSearch} 
+                        onClose={toggleFilterDialog} />
+
+                    <SortPopover 
+                        anchorEl={anchorOpen} 
+                        open={Boolean(anchorOpen)} 
+                        onClose={handleSelectedSort}/>
+
+                    <Grid container>
+                        {paginatedArticles.map(article => {
+                            const redirectPath = { pathname: `${match.path}/${article.id}`, state: { title: 'Networking' } }
+                            return (
+                                <Grid key={article.id} item xs={12} md={3} className={classes.background}>
+                                    <div className={classes.item} id={article.id} onClick={handleSelectedArticle}>
+                                    <Link
                                         color="inherit"
                                         underline="none"
                                         component={RouterLink} 
-                                        to=
-                                        {{
-                                            pathname: `${match.path}/${article.id}`, 
-                                            state: {
-                                                title: 'Networking',
-                                            }
-                                        }}
+                                        to={redirectPath}
                                     >
-
-                                    <img
-                                        className={classes.image}
-                                        src={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)}
-                                        alt='article-thumbnail'
-                                    />
-                                    <div className={classes.body}>
-                                        <Typography variant='body1' className={classes.articleTitle} >
-                                            {article.title}
-                                        </Typography>
-                                        <Typography component='div' noWrap variant='body2' className={classes.articleDescription}>
-                                            {parse(article.description)}
-                                        </Typography>
-                                    </div>
+                                        <img
+                                            className={classes.image}
+                                            src={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)}
+                                            alt='article-thumbnail'
+                                        />
+                                        <div className={classes.body}>
+                                            <Typography variant='body1' className={classes.articleTitle} >
+                                                {article.title}
+                                            </Typography>
+                                            <Typography component='div' noWrap variant='body2' className={classes.articleDescription}>
+                                                {parse(article.description)}
+                                            </Typography>
+                                        </div>
                                     </Link>
-                                </div>
-                            </Grid>
-                        );
-                    })}
-                </Grid>
-                <Pagination 
-                    totalPages={totalPages}
-                    currentPage={currentPage} 
-                    resourcesPerPage={articlesPerPage}
-                    handlePageChange={(event, newPage) => dispatch({type:'CHANGE_PAGE', payload: newPage})}
-                />
-              </Route>
-              </Switch>
-                
+                                    </div>
+                                </Grid>
+                        )})}
+                    </Grid>
+                    <Pagination 
+                        totalPages={totalPages}
+                        currentPage={currentPage} 
+                        resourcesPerPage={articlesPerPage}
+                        handlePageChange={(event, newPage) => handlePageChange(newPage)}
+                    />
+                    </Route>
+                </Switch>
             </Container>
         </section>
     );

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { Container, Grid, IconButton, Typography, withStyles } from '@material-ui/core';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import AddIcon from '@material-ui/icons/Add';
@@ -58,34 +57,34 @@ const styles = theme => ({
 function ProductValues(props) {
     const { classes, featuredArticles } = props;
     
-    const [state, setState] = useState({
-        articleOpen: false,
-        article: null,
-    });
+    const INITIAL_STATE = {
+        redirectPath: {},
+        selectedArticleDialogOpen: false,
+        selectedArticle: null,
+    }
+    
+    const [ state, setState ] = useState(INITIAL_STATE);
+    const { redirectPath, selectedArticleDialogOpen, selectedArticle } = state;
 
-    const { articleOpen, article } = state;
-    
-    // // COMPONENTS > Article Dialog Modal 
-    const handleArticleClick = event => setState({...state, articleOpen: true, article: featuredArticles.find(article => article.id.toString() === event.currentTarget.id)});
-    const handleArticleClose = () => setState({...state, articleOpen: false, article: null});
-    
-    const [pathname, setPathname] = useState({});
-    
-    const handleClick = () => setPathname({
-        pathname: '/networking', 
-        state: {
-            title: 'Networking',
-        }
-    });
-
-    useEffect(() => {
-        ValidatorForm.addValidationRule('isQuillEmpty', value => {
-          if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-            return false;
-          }
-          return true;
+    const handleIconClick = () => {
+        setState({ 
+            ...state,
+            redirectPath: { pathname: '/networking', state: { title: 'Networking' } } 
         });
-    }, []);
+    }
+    const handleArticleClick = event => {
+        const selectedArticle = featuredArticles.find(article => article.id.toString() === event.currentTarget.id);
+        setState({ 
+            ...state, 
+            selectedArticle,
+            selectedArticleDialogOpen: true
+        });
+    }
+    const handleArticleClose = () => setState({ 
+        ...state, 
+        selectedArticle: null,
+        selectedArticleDialogOpen: false
+    });
 
     return (
         <section className={classes.root}>
@@ -93,11 +92,10 @@ function ProductValues(props) {
                 <Typography variant="h4" className={classes.title}>
                     Networking
                 </Typography>
-                {
-                (Object.entries(pathname).length) ? 
-                    <Redirect push to={pathname}/>
+                {(Object.entries(redirectPath).length) ? 
+                    <Redirect push to={redirectPath}/>
                     :
-                    <IconButton id='School Information' onClick={handleClick} className={classes.button}>
+                    <IconButton id='School Information' onClick={handleIconClick} className={classes.button}>
                         <AddIcon />
                     </IconButton>
                 }
@@ -110,33 +108,29 @@ function ProductValues(props) {
                     {featuredArticles.map(article => {
                         return (
                             <Grid item key={article.id} xs={12} md={3}>
-                            <div className={classes.thumbnail} id={article.id} onClick={handleArticleClick}>
-                                <img
-                                    className={classes.image}
-                                    src={require(`../assets/img/${article.image}`)}
-                                    alt="article-thumbnail"
-                                />
-                            </div>
-                        </Grid>
+                                <div className={classes.thumbnail} id={article.id} onClick={handleArticleClick}>
+                                    <img
+                                        className={classes.image}
+                                        src={require(`../assets/img/${article.image}`)}
+                                        alt="article-thumbnail"
+                                    />
+                                </div>
+                            </Grid>
                         )
                     })}
                 </Grid>
             </Container>
             <AuthUserContext.Consumer>
-            { authUser => authUser &&
-                <ArticleDialog 
-                authUser={authUser}
-                articleOpen={articleOpen} 
-                onClose={handleArticleClose} 
-                article={article}/>
-            }
+                {authUser => authUser &&
+                    <ArticleDialog 
+                    authUser={authUser}
+                    articleOpen={selectedArticleDialogOpen} 
+                    onClose={handleArticleClose} 
+                    article={selectedArticle}/>
+                }
             </AuthUserContext.Consumer>
         </section>
     );
 }
-
-ProductValues.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(ProductValues);

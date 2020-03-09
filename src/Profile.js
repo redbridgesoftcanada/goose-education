@@ -6,6 +6,7 @@ import UserProfile from './views/UserProfile';
 import UserApplicationHistory from './views/UserApplicationHistory';
 import Footer from './views/Footer';
 import { AuthUserContext, withAuthorization } from './components/session';
+import { DatabaseContext } from './components/database';
 
 function ProfileBase() {
   return (
@@ -13,11 +14,15 @@ function ProfileBase() {
       <NavBar />
       <AuthUserContext.Consumer>
         {authUser =>
-          <>
-            <UserProfile authUser={authUser} />
-            <br/>
-            <UserApplicationHistory authUser={authUser} />
-          </>
+          <DatabaseContext.Consumer>
+            {context => 
+              <>
+                <UserProfile authUser={authUser} profile={context.profile}/>
+                <br/>
+                <UserApplicationHistory authUser={authUser} application={context.application}/>
+              </>
+            }
+          </DatabaseContext.Consumer>
         }
       </AuthUserContext.Consumer>
 

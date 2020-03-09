@@ -7,7 +7,7 @@ import CommentDialog from '../components/CommentDialog';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 
 export default function Comments(props) {
-  const { i, classes, comment, isCommentOwner, firebase, formType, openPostActions, closePostActions, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, selectedResource, handleEdit, handleDeleteConfirmation, resetAllActions } = props;
+  const { classes, comment, isCommentOwner, firebase, formType, openPostActions, closePostActions, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, selectedResource, handleEdit, handleDeleteConfirmation, resetAllActions } = props;
 
   const handleCommentDelete = id => {
     let collectionRef;
@@ -37,7 +37,7 @@ export default function Comments(props) {
   }
 
   return (
-    <Fragment key={i}>
+    <Fragment>
       <div className={classes.left}>
         <Typography variant='body2' align='left' color='secondary'>{comment.authorDisplayName}</Typography>
       </div>

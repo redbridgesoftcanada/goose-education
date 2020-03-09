@@ -22,10 +22,10 @@ const profileForm = ['first_name', 'last_name', 'username', 'email', 'phone_numb
 
 const EditProfileFormBase = (props) => {
   const classes = useStyles();
-  const { authUser, firebase, user } = props;
+  const { authUser, firebase, profile } = props;
 
   const INITIAL_STATE = {
-    ...user,
+    ...profile,
     error: null
   };
 

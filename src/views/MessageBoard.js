@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format } from 'date-fns';
-import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
+import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';
@@ -27,19 +27,19 @@ function toggleReducer(state, action) {
   
     switch(type) {
         case 'LOAD_MESSAGES': 
-            return { ...state, messages: payload }
+            return { ...state, filteredMessages: payload }
 
-        case 'OPEN_COMPOSE':
-            return { ...state, composeOpen: true }
-
-        case 'CLOSE_COMPOSE':
-            return { ...state, composeOpen: false }
-
-        case 'OPEN_FILTER':
-            return { ...state, filterOpen: true }
+        case 'OPEN_SORT':
+            return { ...state, anchorOpen: payload }
         
-        case 'CLOSE_FILTER':
-            return { ...state, filterOpen: false }
+        case 'CHANGE_PAGE':
+            return { ...state, currentPage: payload }
+
+        case 'TOGGLE_COMPOSE':
+            return { ...state, composeOpen: !state.composeOpen }
+
+        case 'TOGGLE_FILTER':
+            return { ...state, filterOpen: !state.filterOpen }
 
         case 'FILTER_QUERY':
             const filterType = payload.name;
@@ -50,16 +50,16 @@ function toggleReducer(state, action) {
                 isError: false,
                 error: null,
             }
-
+            
         case 'FILTER_MESSAGES':
-            const { messages, filterOption, filterConjunction, filterQuery } = state;
+            const { filteredMessages, filterOption, filterConjunction, filterQuery } = state;
             let filteredContent = [];
 
             if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
-                filteredContent = multipleFilterQuery(messages, filterOption, filterConjunction, filterQuery);
+                filteredContent = multipleFilterQuery(filteredMessages, filterOption, filterConjunction, filterQuery);
 
             } else if (Boolean(filterQuery)) {
-                filteredContent = singleFilterQuery(messages, filterOption, filterQuery);
+                filteredContent = singleFilterQuery(filteredMessages, filterOption, filterQuery);
 
             } else {
                 return {
@@ -72,7 +72,7 @@ function toggleReducer(state, action) {
             if (filteredContent.length) {
                 return {
                     ...state,
-                    messages: filteredContent,
+                    filteredMessages: filteredContent,
                     isFiltered: true,
                     filterOpen: false
                 }
@@ -87,7 +87,7 @@ function toggleReducer(state, action) {
         case 'RESET_FILTER':
             return { 
                 ...state,
-                messages: payload,
+                filteredMessages: payload,
                 isFiltered: false,
                 filterOpen: false,
                 filterOption: 'Title',
@@ -96,29 +96,24 @@ function toggleReducer(state, action) {
                 isError: false,
                 error: null,                
             }
-
-        case 'OPEN_SORT':
-            return { ...state, anchorOpen: payload }
         
-        case 'CLOSE_SORT':
+        case 'SELECTED_SORT':
             const selectedSort = payload.id;
-            const sortedMessages = sortQuery('messages', state.messages, selectedSort);
+            const sortedMessages = sortQuery('messages', state.filteredMessages, selectedSort);
             return { 
                 ...state, 
                 anchorOpen: null,
                 selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
-                messages: sortedMessages
+                filteredMessages: sortedMessages
             }
-
-        case 'CHANGE_PAGE':
-            const currentPage = payload;
-            return { ...state, currentPage }
     }
 }
 
-function MessageBoard({classes, handleClick, messagesDB}) {
+function MessageBoard(props) {
+    const { classes, listOfMessages, setMessage } = props;
+
     const INITIAL_STATE = {
-        messages: [],
+        filteredMessages: [],
         composeOpen: false,
         anchorOpen: null,
         selectedAnchor: '',
@@ -132,19 +127,32 @@ function MessageBoard({classes, handleClick, messagesDB}) {
         isError: false,
         error: null
     }
+    
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { messages, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, currentPage, messagesPerPage } = state;
+    const { filteredMessages, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, currentPage, messagesPerPage, error, isError } = state;
+    const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
     const match = useRouteMatch();
 
-    const totalMessages = messages.length;
-    const totalPages = Math.ceil(totalMessages / messagesPerPage);
-    const indexOfLastMessage = (currentPage * messagesPerPage) + 1;
-    const indexOfFirstMessage = indexOfLastMessage - messagesPerPage;
-    const paginatedMessages = (totalPages > 1) ? messages.slice(indexOfFirstMessage, indexOfLastMessage) : messages;
+    // P A G I N A T I O N
+    const totalPages = Math.ceil(filteredMessages.length / messagesPerPage);
+    const paginatedMessages = createPagination(filteredMessages, currentPage, messagesPerPage, totalPages);
+
+    // E V E N T  L I S T E N E R S
+    const handlePageChange = newPage => dispatch({ type:'CHANGE_PAGE', payload: newPage });
+
+    const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
+
+    const openSortPopover = event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget });
+    const handleSelectedSort = event => dispatch({ type: 'SELECTED_SORT', payload: event.currentTarget});
+
+    const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER' });
+    const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target });
+    const handleFilterSearch = () => dispatch({ type:'FILTER_MESSAGES', payload: listOfMessages });
+    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: listOfMessages });
 
     useEffect(() => {
-        dispatch({ type: 'LOAD_MESSAGES', payload: messagesDB })
-    }, [messagesDB])
+        dispatch({ type: 'LOAD_MESSAGES', payload: listOfMessages })
+    }, [listOfMessages])
 
     return (
         <Container>
@@ -153,37 +161,36 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                 <AuthUserContext.Consumer>
                     { authUser => authUser && 
                     <>
-                        <Compose handleComposeClick={() => dispatch({ type: 'OPEN_COMPOSE' })}/> 
+                        <Compose handleComposeClick={toggleComposeDialog}/> 
                         <ComposeDialog
                         isEdit={false}
                         authUser={authUser} 
                         composeType='message'
                         composeOpen={composeOpen} 
-                        onClose={() => dispatch({ type: 'CLOSE_COMPOSE' })} />
+                        onClose={toggleComposeDialog} />
                     </>
                     }
                 </AuthUserContext.Consumer>
                 <Filter 
-                 isFilter={isFiltered} 
-                 handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
-                 handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: messagesDB})}/>
+                    isFilter={isFiltered} 
+                    handleFilterClick={toggleFilterDialog} 
+                    handleFilterReset={resetFilter}/>
                 <Sort 
-                selectedAnchor={selectedAnchor}
-                handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
+                    selectedAnchor={selectedAnchor}
+                    handleSortClick={openSortPopover}/>
             </div>
+
             <FilterDialog  
-                isError={state.isError}
-                error={state.error}
-                filterOption={filterOption} filterConjunction={filterConjunction} filterQuery={filterQuery}
-                handleSearchQuery={event => dispatch({type:'FILTER_QUERY', payload: event.target})}
-                handleSearchClick={() => dispatch({type:'FILTER_MESSAGES'})} 
-                filterOpen={filterOpen} 
-                onClose={() => dispatch({ type: 'CLOSE_FILTER' })}  
-            />
+                {...filterProps}
+                handleSearchQuery={handleFilterQuery}
+                handleSearchClick={handleFilterSearch} 
+                onClose={toggleFilterDialog} />
+
             <SortPopover 
-            anchorEl={anchorOpen} 
-            open={Boolean(anchorOpen)} 
-            onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
+                anchorEl={anchorOpen} 
+                open={Boolean(anchorOpen)} 
+                onClose={handleSelectedSort} />
+            
             <Table>
                 <TableHead>
                     <TableRow>
@@ -194,21 +201,15 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                 </TableHead>
                 <TableBody>
                     {paginatedMessages.map(message => {
+                        const redirectPath = { pathname: `${match.path}/message/${message.id}`, state: { title: 'Service Centre', selected: 1 } }
                         return (
-                            <TableRow hover key={message.id} id={message.id} onClick={handleClick}>
+                            <TableRow hover key={message.id} id={message.id} onClick={setMessage}>
                                 <TableCell align='center'>
                                     <Link
                                         color="inherit"
                                         underline="none"
                                         component={RouterLink} 
-                                        to=
-                                        {{
-                                            pathname: `${match.path}/message/${message.id}`, 
-                                            state: {
-                                                title: 'Service Centre',
-                                                selected: 1,
-                                            }
-                                        }}
+                                        to={redirectPath}
                                     >
                                         {message.title}
                                     </Link>
@@ -221,10 +222,10 @@ function MessageBoard({classes, handleClick, messagesDB}) {
                 </TableBody>
             </Table>
             <Pagination 
-            totalPages={totalPages}
-            currentPage={currentPage} 
-            resourcesPerPage={messagesPerPage}
-            handlePageChange={(event, newPage) => dispatch({type:'CHANGE_PAGE', payload: newPage})}
+                totalPages={totalPages}
+                currentPage={currentPage} 
+                resourcesPerPage={messagesPerPage}
+                handlePageChange={(event, newPage) => handlePageChange(newPage)}
             />
         </Container>
     )

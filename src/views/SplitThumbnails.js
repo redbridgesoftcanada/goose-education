@@ -67,43 +67,33 @@ const styles = theme => ({
     }
 });
 
-function SplitThumbnails({classes, previewSchools, previewTips}) {
-    const INITIAL_STATE = {};
-    const [ route, setRoute ] = useState(INITIAL_STATE);
-    
+function SplitThumbnails(props) {
+    const {classes, previewSchools, previewTips} = props;
+
+    const [ redirectPath, setRedirectPath ] = useState({});
+
     const handleClick = event => {
         switch(event.currentTarget.id) {        
             case 'school_information':
-                setRoute({
+                setRedirectPath({
                     pathname: '/schools', 
-                    state: {
-                        title: 'School Information',
-                        selected: 0
-                    }
+                    state: { title: 'School Information', selected: 0 }
                 });
                 break;
         
             case 'goose_tips':
-                setRoute({
+                setRedirectPath({
                     pathname: '/goose', 
-                    state: {
-                        title: 'Goose Tips',
-                        selected: 1
-                    }
+                    state: { title: 'Goose Tips', selected: 1 }
                 });
                 break;
             
             default:
                 let selectedSchool = previewSchools.find(school => school.id.toString() === event.currentTarget.id);
-                setRoute({
+                setRedirectPath({
                     pathname: `/schools/${selectedSchool.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
-                    state: {
-                        title: 'School Information',
-                        selected: 0,
-                        selectedSchool
-                    },
+                    state: { title: 'School Information', selected: 0, selectedSchool }
                 });
-                break;
         }
     }
 
@@ -115,8 +105,8 @@ function SplitThumbnails({classes, previewSchools, previewTips}) {
                         <Typography variant="h4" className={classes.title}>
                             School Information
                         </Typography>
-                        { (Object.entries(route).length) ? 
-                            <Redirect push to={route}/>
+                        { (Object.entries(redirectPath).length) ? 
+                            <Redirect push to={redirectPath}/>
                             :
                             <IconButton id='school_information' className={classes.button} onClick={handleClick}>
                                 <AddIcon />
@@ -134,8 +124,8 @@ function SplitThumbnails({classes, previewSchools, previewTips}) {
                                         alt="School Logo"
                                     />
                                     <div id={school.id} className={classes.description} onClick={handleClick}>
-                                    { (Object.entries(route).length) ? 
-                                        <Redirect push to={route}/>
+                                    { (Object.entries(redirectPath).length) ? 
+                                        <Redirect push to={redirectPath}/>
                                         :
                                         <>
                                             <Typography variant="subtitle1">
@@ -160,8 +150,8 @@ function SplitThumbnails({classes, previewSchools, previewTips}) {
                         <Typography variant="h4" className={classes.titleWhite}>
                             Goose Tips
                         </Typography>
-                        { (Object.entries(route).length) ? 
-                            <Redirect push to={route}/>
+                        { (Object.entries(redirectPath).length) ? 
+                            <Redirect push to={redirectPath}/>
                             :
                             <IconButton id='goose_tips' className={classes.buttonWhite} onClick={handleClick}>
                                 <AddIcon />
@@ -178,8 +168,8 @@ function SplitThumbnails({classes, previewSchools, previewTips}) {
                             <div id='goose_tips' className={classes.description} onClick={handleClick}>
                                 {previewTips.map(tip => {
                                     return (
-                                        (Object.entries(route).length) ? 
-                                            <Redirect key={tip.id} push to={route}/>
+                                        (Object.entries(redirectPath).length) ? 
+                                            <Redirect key={tip.id} push to={redirectPath}/>
                                             :
                                             <div key={tip.id}>
                                                 <Typography variant="subtitle1">

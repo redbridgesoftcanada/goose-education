@@ -4,7 +4,7 @@ import AuthUserContext from './context';
 import { withFirebase } from '../firebase';
 
 const withAuthorization = condition => Component => {
-    const WithAuthorizationBase = props => {        
+    function WithAuthorizationComponent(props) {        
         
         useEffect(() => {
             props.firebase.auth.onAuthStateChanged(authUser => {
@@ -20,7 +20,7 @@ const withAuthorization = condition => Component => {
             </AuthUserContext.Consumer>
         );
     }
-    return withRouter(withFirebase(WithAuthorizationBase));
+    return withRouter(withFirebase(WithAuthorizationComponent));
 }
 
 export default withAuthorization;
