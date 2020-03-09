@@ -26,19 +26,19 @@ function ServiceCentre(props) {
   const match = useRouteMatch();
   const { listOfAnnouncements, listOfMessages } = props;
   const { title, tab } = props.location.state;
-
+  
   const INITIAL_STATE = { tab, announce: null, message: null }
   const [ selected, setSelected ] = useState(INITIAL_STATE);
 
   // E V E N T  L I S T E N E R S
   const handleTabChange = newTab => setSelected(prevState => ({ ...prevState, tab: newTab }));
   
-  const handleSelectedAnnounce = event => {
+  const setSelectedAnnounce = event => {
     const selectedAnnounce = listOfAnnouncements.find(announce => announce.id.toString() === event.currentTarget.id);
     setSelected(prevState => ({ ...prevState, announce: selectedAnnounce }));
   }
 
-  const handleSelectedMessage = event => {
+  const setSelectedMessage = event => {
     const selectedMessage = listOfMessages.find(message => message.id.toString() === event.currentTarget.id);
     setSelected(prevState => ({ ...prevState, message: selectedMessage }));
   }
@@ -64,7 +64,7 @@ function ServiceCentre(props) {
             </AuthUserContext.Consumer>
             </Route>
             <Route path={match.path}>
-              <AnnouncementBoard listOfAnnouncements={listOfAnnouncements} handleClick={handleSelectedAnnounce}/>
+              <AnnouncementBoard listOfAnnouncements={listOfAnnouncements} setAnnounce={setSelectedAnnounce}/>
             </Route>
           </Switch>
         </TabPanel>
@@ -77,7 +77,7 @@ function ServiceCentre(props) {
               </AuthUserContext.Consumer>
             </Route>
             <Route path={match.path}>
-              <MessageBoard listOfMessages={listOfMessages} handleClick={handleSelectedMessage}/>
+              <MessageBoard listOfMessages={listOfMessages} setMessage={setSelectedMessage}/>
             </Route>
           </Switch>
         </TabPanel>

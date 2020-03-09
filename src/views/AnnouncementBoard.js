@@ -3,7 +3,7 @@ import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, with
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format } from 'date-fns';
 
-import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
+import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
 import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
@@ -25,19 +25,19 @@ function toggleReducer(state, action) {
   
     switch(type) {
         case 'LOAD_ANNOUNCEMENTS': 
-            return { ...state, announcements: payload }
+            return { ...state, filteredAnnounces: payload }
 
-        case 'OPEN_COMPOSE':
-            return { ...state, composeOpen: true }
+        case 'CHANGE_PAGE':
+            return { ...state, currentPage: payload }
 
-        case 'CLOSE_COMPOSE':
-            return { ...state, composeOpen: false }
+        case 'OPEN_SORT':
+            return { ...state, anchorOpen: payload }
+            
+        case 'TOGGLE_COMPOSE':
+            return { ...state, composeOpen: !state.composeOpen }
 
-        case 'OPEN_FILTER':
-            return { ...state, filterOpen: true }
-        
-        case 'CLOSE_FILTER':
-            return { ...state, filterOpen: false }
+        case 'TOGGLE_FILTER':
+            return { ...state, filterOpen: !state.filterOpen }
 
         case 'FILTER_QUERY':
             const filterType = payload.name;
@@ -50,14 +50,14 @@ function toggleReducer(state, action) {
             }
 
         case 'FILTER_ANNOUNCEMENTS':
-            const { announcements, filterOption, filterConjunction, filterQuery } = state;
+            const { filteredAnnounces, filterOption, filterConjunction, filterQuery } = state;
             let filteredContent = [];
 
             if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
-                filteredContent = multipleFilterQuery(announcements, filterOption, filterConjunction, filterQuery);
+                filteredContent = multipleFilterQuery(filteredAnnounces, filterOption, filterConjunction, filterQuery);
 
             } else if (Boolean(filterQuery)) {
-                filteredContent = singleFilterQuery(announcements, filterOption, filterQuery);
+                filteredContent = singleFilterQuery(filteredAnnounces, filterOption, filterQuery);
 
             } else {
                 return {
@@ -70,7 +70,7 @@ function toggleReducer(state, action) {
             if (filteredContent.length) {
                 return {
                     ...state,
-                    announcements: filteredContent,
+                    filteredAnnounces: filteredContent,
                     isFiltered: true,
                     filterOpen: false
                 }
@@ -85,7 +85,7 @@ function toggleReducer(state, action) {
         case 'RESET_FILTER':
             return { 
                 ...state,
-                announcements: payload,
+                filteredAnnounces: payload,
                 isFiltered: false,
                 filterOpen: false,
                 filterOption: 'Title',
@@ -94,29 +94,23 @@ function toggleReducer(state, action) {
                 isError: false,
                 error: null,                
             }
-    
-        case 'OPEN_SORT':
-            return { ...state, anchorOpen: payload }
         
-        case 'CLOSE_SORT':
+        case 'SELECTED_SORT':
             const selectedSort = payload.id;
-            const sortedAnnouncements = sortQuery('announcements', state.announcements, selectedSort);
+            const sortedAnnouncements = sortQuery('announcements', state.filteredAnnounces, selectedSort);
             return { 
                 ...state, 
                 anchorOpen: null,
                 selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
-                announcements: sortedAnnouncements
+                filteredAnnounces: sortedAnnouncements
             }
-
-        case 'CHANGE_PAGE':
-            const currentPage = payload;
-            return { ...state, currentPage }
     }
 }
 
-function AnnouncementBoard({classes, handleClick, listOfAnnouncements}) {
+function AnnouncementBoard(props) {
+    const { classes, setAnnounce, listOfAnnouncements } = props;
     const INITIAL_STATE = {
-        announcements: [],
+        filteredAnnounces: [],
         composeOpen: false,
         anchorOpen: null,
         selectedAnchor: '',
@@ -132,15 +126,26 @@ function AnnouncementBoard({classes, handleClick, listOfAnnouncements}) {
     }
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { announcements, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery, currentPage, announcesPerPage, error, isError } = state;
+    const { filteredAnnounces, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery, currentPage, announcesPerPage, error, isError } = state;
     const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
     const match = useRouteMatch();
 
-    const totalAnnouncements = listOfAnnouncements.length;
-    const totalPages = Math.ceil(totalAnnouncements / announcesPerPage);
-    const indexOfLastAnnouncement = (currentPage * announcesPerPage) + 1;
-    const indexOfFirstAnnouncement = indexOfLastAnnouncement - announcesPerPage;
-    const paginatedAnnouncements = (totalPages > 1) ? announcements.slice(indexOfFirstAnnouncement, indexOfLastAnnouncement) : announcements;
+    // P A G I N A T I O N
+    const totalPages = Math.ceil(filteredAnnounces.length/announcesPerPage);
+    const paginatedAnnounces = createPagination(filteredAnnounces, currentPage, announcesPerPage, totalPages);
+
+    // E V E N T  L I S T E N E R S
+    const handlePageChange = newPage => dispatch({ type:'CHANGE_PAGE', payload: newPage });
+
+    const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
+
+    const openSortPopover = event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget });
+    const handleSelectedSort = event => dispatch({ type: 'SELECTED_SORT', payload: event.currentTarget});
+
+    const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER' });
+    const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target });
+    const handleFilterSearch = () => dispatch({ type:'FILTER_ANNOUNCEMENTS', payload: listOfAnnouncements });
+    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: listOfAnnouncements });
 
     useEffect(() => {
         dispatch({ type: 'LOAD_ANNOUNCEMENTS', payload: listOfAnnouncements })
@@ -152,21 +157,21 @@ function AnnouncementBoard({classes, handleClick, listOfAnnouncements}) {
             <div className={classes.wrapper}>
                 <Filter  
                 isFilter={isFiltered} 
-                handleFilterClick={() => dispatch({type: 'OPEN_FILTER'})} 
-                handleFilterReset={() => dispatch({type: 'RESET_FILTER', payload: listOfAnnouncements})}/>
+                handleFilterClick={toggleFilterDialog} 
+                handleFilterReset={resetFilter}/>
                 <Sort 
                 selectedAnchor={selectedAnchor}
-                handleSortClick={event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget })}/>
+                handleSortClick={openSortPopover}/>
             </div>
             <FilterDialog  
                 filterProps={filterProps}
-                handleSearchQuery={event => dispatch({type:'FILTER_QUERY', payload: event.target})}
-                handleSearchClick={() => dispatch({type:'FILTER_ANNOUNCEMENTS'})} 
-                onClose={() => dispatch({ type: 'CLOSE_FILTER' })}/>
+                handleSearchQuery={handleFilterQuery}
+                handleSearchClick={handleFilterSearch} 
+                onClose={toggleFilterDialog}/>
             <SortPopover 
             anchorEl={anchorOpen} 
             open={Boolean(anchorOpen)} 
-            onClose={event => dispatch({ type: 'CLOSE_SORT', payload: event.currentTarget})}/>
+            onClose={handleSelectedSort}/>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -176,22 +181,16 @@ function AnnouncementBoard({classes, handleClick, listOfAnnouncements}) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {paginatedAnnouncements.map(announcement => {
+                    {paginatedAnnounces.map(announcement => {
+                        const redirectPath = { pathname: `${match.path}/announcement/${announcement.id}`, state: { title: 'Service Centre', selected: 0 } }
                         return (
-                            <TableRow hover key={announcement.id} id={announcement.id} onClick={handleClick}>
+                            <TableRow hover key={announcement.id} id={announcement.id} onClick={setAnnounce}>
                                 <TableCell align='center'>
                                     <Link
                                         color="inherit"
                                         underline="none"
                                         component={RouterLink} 
-                                        to=
-                                        {{
-                                            pathname: `${match.path}/announcement/${announcement.id}`, 
-                                            state: {
-                                                title: 'Service Centre',
-                                                selected: 0,
-                                            }
-                                        }}
+                                        to={redirectPath}
                                     >
                                         {announcement.title}
                                     </Link>
@@ -204,10 +203,10 @@ function AnnouncementBoard({classes, handleClick, listOfAnnouncements}) {
                 </TableBody>
             </Table>
             <Pagination 
-            totalPages={totalPages}
-            currentPage={currentPage} 
-            resourcesPerPage={announcesPerPage}
-            handlePageChange={(event, newPage) => dispatch({type:'CHANGE_PAGE', payload: newPage})}
+                totalPages={totalPages}
+                currentPage={currentPage} 
+                resourcesPerPage={announcesPerPage}
+                handlePageChange={(event, newPage) => handlePageChange(newPage)}
             />
         </Container>
     )

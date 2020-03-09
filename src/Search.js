@@ -7,7 +7,7 @@ import { AuthUserContext } from './components/session';
 import ArticleDialog from './components/ArticleDialog';
 import SearchBar from './components/SearchBar';
 import Pagination from './components/Pagination';
-import { singleFilterQuery, multipleFilterQuery } from './constants/helpers';
+import { createPagination, singleFilterQuery, multipleFilterQuery } from './constants/helpers';
 import NavBar from './views/NavBar';
 import Footer from './views/Footer';
 
@@ -60,6 +60,10 @@ function Search(props) {
   const [ state, setState ] = useState(INITIAL_STATE);
   const { searchedResources, searchCategory, searchOption, searchConjunction, dialogOpen, selectedResource, currentPage, resourcesPerPage } = state;
 
+  // E V E N T  L I S T E N E R S
+  const handleDialogClose = () => setState({...state, dialogOpen: false, selectedResource: null});
+  const handleSearchQuery = event => setState({...state, [event.target.name]: event.target.value});
+  const handlePageChange = (event, newPage) => setState({...state, currentPage: newPage});
   const handleResourceClick = selectedResource => {
     if (Object.keys(selectedResource).includes('author')) {
       setState({...state, dialogOpen: true, selectedResource });
@@ -71,17 +75,11 @@ function Search(props) {
           selected: 0,
           selectedSchool: selectedResource
         }
-      })}
+    })}
   }
-  const handleDialogClose = () => setState({...state, dialogOpen: false, selectedResource: null});
-  const handleSearchQuery = event => setState({...state, [event.target.name]: event.target.value});
-  const handlePageChange = (event, newPage) => setState({...state, currentPage: newPage});
 
-  const totalResources = searchedResources.length;
-  const totalPages = Math.ceil(totalResources / resourcesPerPage);
-  const indexOfLastResource = (currentPage * resourcesPerPage) + 1;
-  const indexOfFirstResource = indexOfLastResource - resourcesPerPage;
-  const paginatedResources = (totalPages === 1) ? searchedResources : searchedResources.slice(indexOfFirstResource, indexOfLastResource);
+  const totalPages = Math.ceil(searchedResources.length/resourcesPerPage);
+  const paginatedResources = createPagination(searchedResources, currentPage, resourcesPerPage, totalPages);
   
   useEffect(() => {
     const resourcesDB = props.location.state.resources;
@@ -111,28 +109,33 @@ function Search(props) {
                 <Grid item xs={3} md={3}>
                   <img
                     className={classes.image}
-                    src={require(`./assets/img/${resource.image}`)}
+                    src={(resource.image.includes('firebase')) ? resource.image : require(`./assets/img/${resource.image}`)}
                     // alt=''
-                />
+                  />
                 </Grid>
                 <Grid item xs={9} md={9} className={classes.body} onClick={() => handleResourceClick(resource)}>
                   <div>{resource.title}</div>
                   <Grid container spacing={2} >
-                    {(resource.author) && 
-                    <Grid item>
-                      <AccountCircleOutlined fontSize="small"/> 
-                      {resource.author}
-                    </Grid>}
-                    {(resource.tag) && 
-                    <Grid item>
-                      <LocalOfferOutlined fontSize="small"/> 
-                      {resource.author}
-                    </Grid>}
+                    {resource.authorDisplayName && 
+                      <Grid item>
+                        <AccountCircleOutlined fontSize="small"/> 
+                        {resource.authorDisplayName}
+                      </Grid>
+                    }
+
+                    {resource.tag && 
+                      <Grid item>
+                        <LocalOfferOutlined fontSize="small"/> 
+                        {resource.tag}
+                      </Grid>
+                    }
+
                     {(resource.updatedAt || resource.createdAt) && 
-                    <Grid item>
-                      <ScheduleOutlined fontSize="small"/> 
-                      {(resource && resource.updatedAt > resource.createdAt) ? format(resource.updatedAt, 'Pp') : format(resource.createdAt, 'Pp')}
-                    </Grid>}
+                      <Grid item>
+                        <ScheduleOutlined fontSize="small"/> 
+                        {(resource && resource.updatedAt > resource.createdAt) ? format(resource.updatedAt, 'Pp') : format(resource.createdAt, 'Pp')}
+                      </Grid>
+                    }
                   </Grid>
                   <div>{resource.description}</div>
                 </Grid>
