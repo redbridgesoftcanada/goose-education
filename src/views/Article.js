@@ -112,6 +112,8 @@ function toggleReducer(state, action) {
                 editDialogOpen: false
             }
         }
+
+        default:
     }
 }
 
@@ -142,18 +144,7 @@ function Article(props) {
     const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
     const handleArticleDelete = () => firebase.deleteArticle(article.id).then(() => redirectPath());
 
-    const handleCommentDelete = id => {
-        const articlesRef = firebase.article(article.id);
-
-        firebase.transaction(t => {
-        return t.get(articlesRef)
-        .then(doc => {
-            const commentsArr = doc.data().comments;
-            const filteredCommentsArr = commentsArr.filter(comment => { return comment.id !== id });
-            t.update(articlesRef, { comments: filteredCommentsArr });
-        })})
-        .then(() => handleDeleteConfirmation())
-    }
+    const commentsProps = { formType: 'article', classes, firebase, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, openPostActions, closePostActions, handleEdit, handleDeleteConfirmation, resetAllActions, selectedResource: article }
 
     let isArticleOwner;
     if (!article) {
@@ -295,7 +286,7 @@ function Article(props) {
                 article.comments.map((comment, i) => {
                     let isCommentOwner = authUser.uid === comment.authorID;
                     return (
-                        <Comments i={i} classes={classes} comment={comment} isCommentOwner={isCommentOwner} firebase={firebase} formType={'article'} openPostActions={openPostActions} closePostActions={closePostActions} commentAnchor={commentAnchor} commentAnchorOpen={commentAnchorOpen} commentDialogOpen={commentDialogOpen} commentConfirmOpen={commentConfirmOpen} selectedResource={article} handleEdit={handleEdit} handleDeleteConfirmation={handleDeleteConfirmation} resetAllActions={resetAllActions} /> 
+                        <Comments key={i} comment={comment} isCommentOwner={isCommentOwner} {...commentsProps} /> 
                 )})
                 : 
                 <Typography>There are currently no comments.</Typography> 

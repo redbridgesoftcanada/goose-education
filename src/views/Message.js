@@ -111,6 +111,8 @@ function toggleReducer(state, action) {
                 editDialogOpen: false
             }
         }
+
+        default:
     }
 }
 
@@ -141,20 +143,7 @@ function Message(props) {
     const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
     const handleMessageDelete = () => firebase.deleteMessage(selectedMessage.id).then(() => redirectPath());
 
-    const handleCommentDelete = id => {
-        const messagesRef = firebase.message(selectedMessage.id);
-
-        firebase.transaction(t => {
-        return t.get(messagesRef).then(doc => {
-            const commentsArr = doc.data().comments;
-
-            const filteredCommentsArr = commentsArr.filter(comment => {
-            return comment.id !== id
-            });
-
-            t.update(messagesRef, { comments: filteredCommentsArr });
-        })}).then(() => handleDeleteConfirmation())
-    }
+    const commentsProps = { formType: 'message', classes, firebase, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, openPostActions, closePostActions, handleEdit, handleDeleteConfirmation, resetAllActions, selectedResource: selectedMessage }
 
     let isMessageOwner;
     if (!selectedMessage) {
@@ -284,7 +273,7 @@ function Message(props) {
             {selectedMessage && selectedMessage.comments.length ? selectedMessage.comments.map((comment, i) => {
                 let isCommentOwner = authUser.uid === comment.authorID;
                 return (
-                    <Comments i={i} classes={classes} comment={comment} isCommentOwner={isCommentOwner} firebase={firebase} formType={'message'} openPostActions={openPostActions} closePostActions={closePostActions} commentAnchor={commentAnchor} commentAnchorOpen={commentAnchorOpen} commentDialogOpen={commentDialogOpen} commentConfirmOpen={commentConfirmOpen} selectedResource={selectedMessage} handleEdit={handleEdit} handleDeleteConfirmation={handleDeleteConfirmation} resetAllActions={resetAllActions} /> 
+                    <Comments key={i} comment={comment} isCommentOwner={isCommentOwner} {...commentsProps} /> 
             )})
             : <Typography>There are currently no comments.</Typography> }
             <br/>
