@@ -157,7 +157,7 @@ function toggleReducer(state, action) {
             }
         
         case 'SELECTED_ARTICLE':
-            const selectedArticle = payload.articles.find(article => article.id.toString() === payload.selected.id);
+            const selectedArticle = payload.listOfArticles.find(article => article.id.toString() === payload.selected.id);
             return { 
                 ...state, 
                 articleOpen: true, 
@@ -177,7 +177,7 @@ function toggleReducer(state, action) {
 }
 
 function ArticleBoard(props) {
-    const { classes, history, articles } = props;
+    const { classes, history, listOfArticles } = props;
     const match = useRouteMatch();
 
     const INITIAL_STATE = {
@@ -208,7 +208,7 @@ function ArticleBoard(props) {
     // E V E N T  L I S T E N E R S
     const handlePageChange = newPage => dispatch({ type:'CHANGE_PAGE', payload: newPage });
 
-    const handleSelectedArticle = event => dispatch({ type: 'SELECTED_ARTICLE', payload: { selected: event.currentTarget, articles }});
+    const handleSelectedArticle = event => dispatch({ type: 'SELECTED_ARTICLE', payload: { selected: event.currentTarget, listOfArticles }});
     
     const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
 
@@ -216,15 +216,15 @@ function ArticleBoard(props) {
     const handleSelectedSort = event => dispatch({ type: 'SELECTED_SORT', payload: event.currentTarget});
 
     const handleSearchQuery = event => dispatch({ type: 'SEARCH_QUERY', payload: event.target });
-    const handleSearch = () => dispatch({ type:'SEARCH_ARTICLES', payload: articles });
+    const handleSearch = () => dispatch({ type:'SEARCH_ARTICLES', payload: listOfArticles });
 
     const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER' });
     const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target });
-    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: articles });
+    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: listOfArticles });
 
     useEffect(() => {
-        dispatch({ type:'LOAD_ARTICLES', payload: articles });
-    }, [articles])
+        dispatch({ type:'LOAD_ARTICLES', payload: listOfArticles });
+    }, [listOfArticles])
 
     return (
         <section className={classes.root}>
@@ -267,7 +267,7 @@ function ArticleBoard(props) {
 
                     <SearchField 
                         handleSearch={handleSearchQuery}
-                        handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, resources: articles} })}/>
+                        handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, resources: listOfArticles} })}/>
 
                     <FilterDialog
                         {...filterProps}

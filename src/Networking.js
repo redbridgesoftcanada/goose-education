@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Grid, Paper, Tabs, Tab, makeStyles, LinearProgress } from '@material-ui/core';
+import { Card, CardContent, Grid, Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
 import withRoot from './withRoot';
 import { DatabaseContext } from './components/database';
 import Typography from './components/onePirate/Typography';
@@ -70,7 +70,7 @@ function createTabPanel(selectedTab, history, articles) {
   return (
     <TabPanel value={selectedTab} index={selectedTab} key={selectedTab}>
       {(tabArticles && tabArticles.length) ? 
-        <ArticleBoard articles={tabArticles} history={history} /> 
+        <ArticleBoard listOfArticles={tabArticles} history={history} /> 
         : 
         <Typography variant='subtitle1'>There are currently no articles on this topic.</Typography> }
     </TabPanel>
