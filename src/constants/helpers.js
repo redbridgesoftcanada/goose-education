@@ -167,6 +167,13 @@ async function findSchoolApplicationById(id, firebase, setState) {
 }
 
 // F E A T U R E S
+function createPagination(totalResources, currentPage, resourcesPerPage, totalPages) {
+    const indexOfLastResource = (currentPage * resourcesPerPage) + 1;
+    const indexOfFirstResource = indexOfLastResource - resourcesPerPage;
+    const paginatedResource = (totalPages > 1) ? totalResources.slice(indexOfFirstResource, indexOfLastResource) : totalResources;
+    return paginatedResource;
+}
+
 function singleFilterQuery(resources, option, words) {
     const filterWords = words.toLowerCase();
     let filteredContent = [];
@@ -295,4 +302,4 @@ function sortQuery(type, resources, option) {
     return sortedResources;
 }
 
-export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findUserById, findSchoolApplicationById, singleFilterQuery, multipleFilterQuery, sortQuery }
+export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery }
