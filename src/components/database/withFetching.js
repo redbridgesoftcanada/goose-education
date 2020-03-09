@@ -6,8 +6,8 @@ import * as helpers from '../../constants/helpers';
 const tags = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
 function withFetching(Component) {
-  function WithFetchingComponent(props) {
-    
+
+  function WithFetchingComponent(props) {  
     const location = useLocation();
     const firebase = props.firebase;
 
@@ -29,6 +29,7 @@ function withFetching(Component) {
       schoolApplication: null,
     }
     const [ state, setState ] = useState(INITIAL_STATE);
+    // console.count(state)
 
     useEffect(() => {
       switch(location.pathname) {
@@ -58,6 +59,9 @@ function withFetching(Component) {
         case '/profile':
           helpers.findUserById(userId, firebase, setState);
           helpers.findSchoolApplicationById(userId, firebase, setState);
+          break;
+
+        default:
       }
     }, [location.pathname]);
 

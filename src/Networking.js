@@ -30,20 +30,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const tags = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
-
-function createTabPanel(selectedTab, history, articles) {
-  const tabArticles = articles[selectedTab];
-  return (
-    <TabPanel value={selectedTab} index={selectedTab} key={selectedTab}>
-      {(tabArticles && tabArticles.length) ? 
-        <ArticleBoard articlesDB={tabArticles} history={history} /> 
-        : 
-        <Typography variant='subtitle1'>There are currently no articles on this topic.</Typography> }
-    </TabPanel>
-  )
-}
-
 function createPosterCards(classes) {
   return (
     <Grid container spacing={3} className={classes.card}>
@@ -79,6 +65,18 @@ function createPosterCards(classes) {
   )
 }
 
+function createTabPanel(selectedTab, history, articles) {
+  const tabArticles = articles[selectedTab];
+  return (
+    <TabPanel value={selectedTab} index={selectedTab} key={selectedTab}>
+      {(tabArticles && tabArticles.length) ? 
+        <ArticleBoard articles={tabArticles} history={history} /> 
+        : 
+        <Typography variant='subtitle1'>There are currently no articles on this topic.</Typography> }
+    </TabPanel>
+  )
+}
+
 function Networking(props) {
   const classes = useStyles();
 
@@ -90,6 +88,7 @@ function Networking(props) {
     caption: "On the Networking page, Vancouver's local landscapes, weather, hot places and restaurants, desserts, shops, sales, traffic, event, etc. Share your HOT info in Vancouver with lots of love.",
     other: createPosterCards(classes)
   }
+  const tags = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
   const { title, selected } = props.location.state;
   const [ selectedTab, setSelectedTab ] = useState(selected);
@@ -104,19 +103,17 @@ function Networking(props) {
       </Typography>
       <Paper className={classes.root}>
         <Tabs
-            value={selectedTab}
-            onChange={(event, value) => setSelectedTab(value)}
-            textColor="secondary"
-            centered
+          value={selectedTab}
+          onChange={(event, value) => setSelectedTab(value)}
+          textColor="secondary"
+          centered
         >
-          { tags.map(tab => {
+          {tags.map(tab => {
             return <Tab key={tab.toLowerCase()} label={tab}/> 
-          }) }
+          })}
         </Tabs>
         <DatabaseContext.Consumer>
-          {context => 
-            createTabPanel(selectedTab, props.history, context.taggedArticles)
-          }
+          {context => createTabPanel(selectedTab, props.history, context.taggedArticles)}
         </DatabaseContext.Consumer>
       </Paper>
       <Poster body={posterBody} backgroundImage={posterBackground} layoutType='vancouver_now'/>

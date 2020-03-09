@@ -196,7 +196,7 @@ function Announcement(props) {
                 selectedAnnounce.comments.map((comment, i) => {
                     let isCommentOwner = authUser.uid === comment.authorID;
                     return (
-                        <Comments i={i} classes={classes} comment={comment} isCommentOwner={isCommentOwner} firebase={firebase} formType={'announcement'} openPostActions={openPostActions} closePostActions={closePostActions} commentAnchor={commentAnchor} commentAnchorOpen={commentAnchorOpen} commentDialogOpen={commentDialogOpen} commentConfirmOpen={commentConfirmOpen} selectedResource={selectedAnnounce} handleEdit={handleEdit} handleDeleteConfirmation={handleDeleteConfirmation} resetAllActions={resetAllActions} /> 
+                        <Comments key={i} i={i} classes={classes} comment={comment} isCommentOwner={isCommentOwner} firebase={firebase} formType={'announcement'} openPostActions={openPostActions} closePostActions={closePostActions} commentAnchor={commentAnchor} commentAnchorOpen={commentAnchorOpen} commentDialogOpen={commentDialogOpen} commentConfirmOpen={commentConfirmOpen} selectedResource={selectedAnnounce} handleEdit={handleEdit} handleDeleteConfirmation={handleDeleteConfirmation} resetAllActions={resetAllActions} /> 
                 )})
             :
                 <Typography>There are currently no comments.</Typography> 
