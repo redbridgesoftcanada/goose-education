@@ -270,7 +270,7 @@ function ArticleBoard(props) {
                         handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, resources: articles} })}/>
 
                     <FilterDialog
-                        filterProps={filterProps}
+                        {...filterProps}
                         handleSearchQuery={handleFilterQuery}
                         handleSearchClick={handleSearch} 
                         onClose={toggleFilterDialog} />

@@ -265,7 +265,7 @@ function GooseTips(props) {
                     handleSearchClick={() => history.push(redirectPath)}/>
 
                 <FilterDialog
-                    filterProps={filterProps}
+                    {...filterProps}
                     handleSearchQuery={createFilterQuery}
                     handleSearchClick={handleFilterQuery} 
                     onClose={toggleFilterDialog} 

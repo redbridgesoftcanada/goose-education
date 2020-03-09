@@ -181,7 +181,7 @@ function MessageBoard(props) {
             </div>
 
             <FilterDialog  
-                filterProps={filterProps}
+                {...filterProps}
                 handleSearchQuery={handleFilterQuery}
                 handleSearchClick={handleFilterSearch} 
                 onClose={toggleFilterDialog} />

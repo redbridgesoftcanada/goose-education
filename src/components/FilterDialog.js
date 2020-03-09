@@ -33,8 +33,7 @@ const useStyles = makeStyles(theme => ({
 
 function FilterDialog(props) {
     const classes = useStyles(); 
-    const { handleSearchQuery, handleSearchClick, onClose } = props;
-    const { filterOpen, filterOption, filterConjunction, filterQuery, error, isError } = props.filterProps;
+    const { filterOpen, filterOption, filterConjunction, filterQuery, error, isError, handleSearchQuery, handleSearchClick, onClose } = props;
   
     return (
       <Dialog onClose={onClose} open={filterOpen}>
