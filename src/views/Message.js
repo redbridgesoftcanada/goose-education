@@ -1,4 +1,4 @@
-import React, { Fragment, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import { Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, DescriptionOutlined, LanguageOutlined, Facebook, Instagram, RoomOutlined } from '@material-ui/icons';
 import { ValidatorForm } from 'react-material-ui-form-validator';
@@ -9,7 +9,7 @@ import { EditorValidator } from '../constants/customValidators';
 import { withFirebase } from '../components/firebase';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
-import CommentDialog from '../components/CommentDialog';
+import Comments from '../components/Comments';
 
 const styles = theme => ({
     mt3: {
@@ -284,47 +284,8 @@ function Message(props) {
             {selectedMessage && selectedMessage.comments.length ? selectedMessage.comments.map((comment, i) => {
                 let isCommentOwner = authUser.uid === comment.authorID;
                 return (
-                    <Fragment key={i}>
-                        <div className={classes.left}>
-                            <Typography variant='body2' align='left' color='secondary'>{comment.authorDisplayName}</Typography>
-                        </div>
-                        <div className={classes.right}>
-                            <Typography variant='body2' align='left'>
-                                {(comment.updatedAt > comment.createdAt) ? format(comment.updatedAt, 'Pp') : format(comment.createdAt, 'Pp')}
-                            </Typography>
-                        </div>
-                        <br/>
-                        <Grid container spacing={1} justify='space-between'>
-                            <Grid item xs={11}>
-                                <Typography component='span' variant='body2' align='left'>{parse(comment.description)}</Typography>
-                            </Grid>
-
-                             {/* EDIT & DELETE FEATURE FOR COMMENT OWNER */}
-                             {isCommentOwner &&
-                            <>
-                                <Grid item>
-                                    <IconButton id='comment' onClick={openPostActions}>
-                                        <MoreVertOutlined/>
-                                    </IconButton>
-                                    <Menu
-                                        keepMounted
-                                        anchorEl={commentAnchor}
-                                        open={commentAnchorOpen}
-                                        onClose={closePostActions}
-                                    >
-                                        <MenuItem id='comment' onClick={handleEdit}>Edit comment</MenuItem>
-                                        <MenuItem id='comment' onClick={handleDeleteConfirmation}>Delete comment</MenuItem>
-                                    </Menu>
-                                </Grid>
-
-                                <CommentDialog formType='message' firebase={firebase} selectedResource={selectedMessage} prevComment={comment} open={commentDialogOpen} onClose={resetAllActions}/>
-                                <DeleteConfirmation deleteType='comment' open={commentConfirmOpen} handleDelete={() => handleCommentDelete(comment.id)} onClose={handleDeleteConfirmation}/>
-                            </>
-                            }
-                            </Grid>
-                    </Fragment>
-                )
-            })
+                    <Comments i={i} classes={classes} comment={comment} isCommentOwner={isCommentOwner} firebase={firebase} formType={'message'} openPostActions={openPostActions} closePostActions={closePostActions} commentAnchor={commentAnchor} commentAnchorOpen={commentAnchorOpen} commentDialogOpen={commentDialogOpen} commentConfirmOpen={commentConfirmOpen} selectedResource={selectedMessage} handleEdit={handleEdit} handleDeleteConfirmation={handleDeleteConfirmation} resetAllActions={resetAllActions} /> 
+            )})
             : <Typography>There are currently no comments.</Typography> }
             <br/>
             <div>
