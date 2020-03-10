@@ -89,10 +89,24 @@ function ComposeDialogBase(props) {
         pathname: '/services',
         state: {
           title: 'Service Centre',
-          selected: 0
+          tab: 1
+        }
+      }
+
+    } else if (composeType === 'announce') {
+      const { isEdit, isLoading, uploads, ...announceForm } = state;
+      uploadKey = 'attachments';
+      newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
+      formContent = {...announceForm};
+      redirectPath = {
+        pathname: '/services', 
+        state: {
+          title: 'Service Centre', 
+          tab: 0
         }
       }
     }
+
     // user uploads a file with the form (note. empty array overwrites to a File object)
     if (uploads.length !== 0) {
 
@@ -107,14 +121,15 @@ function ComposeDialogBase(props) {
           newDoc.set({
             id: newDoc.id,
             authorID: authUser.uid,
-            authorDisplayName: authUser.displayName,
+            authorDisplayName: authUser.roles['admin'] ? '슈퍼관리자' : authUser.displayName,
             comments: [],
             ...!isEdit && { createdAt: Date.now() },
             updatedAt: Date.now(),
             views: 0,
             [uploadKey]: downloadURL, 
             ...formContent
-          }, { merge: true }).then(() => {
+          }, { merge: true })
+          .then(() => {
             onClose();
             history.push(redirectPath)});
           // .catch(error => dispatch({ type: 'error', payload: error }))
@@ -125,14 +140,15 @@ function ComposeDialogBase(props) {
       newDoc.set({
         id: newDoc.id,
         authorID: authUser.uid,
-        authorDisplayName: authUser.displayName,
+        authorDisplayName: authUser.roles['admin'] ? '슈퍼관리자' : authUser.displayName,
         comments: [],
         ...!isEdit && { createdAt: Date.now() },
         updatedAt: Date.now(),
         views: 0,
         [uploadKey]: uploads, 
         ...formContent
-      }, { merge: true }).then(() => {
+      }, { merge: true })
+      .then(() => {
         onClose();
         history.push(redirectPath)});
       // .catch(error => dispatch({ type: 'error', payload: error }));
@@ -162,6 +178,9 @@ function ComposeDialogBase(props) {
         composeType === 'message' ? 
           !isEdit ? 'Create Counselling Request' : 'Edit Counselling Request'
         :
+        composeType === 'announce' ? 
+          !isEdit ? 'Create Announcement' : 'Edit Announcement'
+        :
         ''
         }
       </DialogTitle>
@@ -179,7 +198,7 @@ function ComposeDialogBase(props) {
             validators={['required']}
             errorMessages={['Cannot submit an empty title.']}/>
 
-          {composeType === 'article' &&
+          {composeType === 'article' || composeType === 'announce' &&
             <>
               <FormLabel component="legend">Tag</FormLabel>
               <SelectValidator
@@ -196,7 +215,11 @@ function ComposeDialogBase(props) {
                       return <MenuItem key={i} name={tag} value={tag}>{tag}</MenuItem>
                   })}
               </SelectValidator>
+            </>
+          }
 
+          {composeType === 'article' &&
+            <>
               <FormLabel component="legend">Instagram</FormLabel>
               <TextField 
                 type="url"

@@ -2,8 +2,10 @@ import React, { useReducer, useEffect } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format } from 'date-fns';
-
+import { AuthUserContext } from '../components/session';
 import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
+import Compose from '../components/ComposeButton';
+import ComposeDialog from '../components/ComposeDialog';
 import Filter from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
 import Sort from '../components/SortButton';
@@ -126,7 +128,7 @@ function AnnouncementBoard(props) {
     }
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { filteredAnnounces, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery, currentPage, announcesPerPage, error, isError } = state;
+    const { filteredAnnounces, composeOpen, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery, currentPage, announcesPerPage, error, isError } = state;
     const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
     const match = useRouteMatch();
 
@@ -155,10 +157,25 @@ function AnnouncementBoard(props) {
         <Container>
             <SocialMediaButtons title={title} description={description}/>
             <div className={classes.wrapper}>
+                 <AuthUserContext.Consumer>
+                    {authUser => authUser && authUser.roles['admin'] &&
+                        <>
+                            <Compose handleComposeClick={toggleComposeDialog}/> 
+                            <ComposeDialog
+                                isEdit={false}
+                                authUser={authUser} 
+                                composeType='announce'
+                                composeOpen={composeOpen} 
+                                onClose={toggleComposeDialog} />
+                        </>
+                    }
+                </AuthUserContext.Consumer>
+                
                 <Filter  
                 isFilter={isFiltered} 
                 handleFilterClick={toggleFilterDialog} 
                 handleFilterReset={resetFilter}/>
+                
                 <Sort 
                 selectedAnchor={selectedAnchor}
                 handleSortClick={openSortPopover}/>
