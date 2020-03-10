@@ -120,7 +120,6 @@ function RegisterFormBase({ firebase, history }) {
   const classes = useStyles();
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
   const { activeStep, allTermsAgreed, gooseTermsAndConditions, openTermsAndConditionsDialog, collectionPersonalInfo, gooseAlerts, username, email, passwordOne, passwordTwo, firstName, lastName, phoneNumber, mobileNumber, address, receiveEmails, receiveSMS, publicAccount, isError, error } = state;
-  const roles = {};
 
   // Firebase error objects have a message property by default, but only shown when there is an actual error using conditional rendering.
   // const isInvalid = passwordOne !== passwordTwo || passwordOne === "" || email === "" || username === "";
@@ -355,6 +354,7 @@ function RegisterFormBase({ firebase, history }) {
     firebase.doCreateUserWithEmailAndPassword(email, passwordOne)
     .then(authUser => {
       const user = authUser.user;
+      const roles = { admin: false };
 
       return firebase.user(user.uid).set({
         username, email, firstName, lastName, phoneNumber, mobileNumber, receiveEmails, receiveSMS, publicAccount, roles
