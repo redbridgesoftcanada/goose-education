@@ -8,11 +8,13 @@
             "authorDisplayName": "최고관리자",
             "authorID": 0,
             "tag": "Restaurant",
+            "instagramURL": "",
+            "link1": "",
+            "link2": "",
             "comments": [],
             "views": 38,
             "createdAt": 1579576698361,
             "updatedAt": 1579576698361,
-            "url": "",
             "isFeatured": true
         },
         {
@@ -23,11 +25,13 @@
             "authorDisplayName": "최고관리자",
             "authorID": 1,
             "tag": "Other",
+            "instagramURL": "",
+            "link1": "",
+            "link2": "",
             "comments": [],
             "views": 33,
             "createdAt": 1579576698361,
             "updatedAt": 1579576698361,
-            "url": "",
             "isFeatured": true
         },
         {
@@ -38,11 +42,13 @@
             "authorDisplayName": "최고관리자",
             "authorID": 2,
             "tag": "Restaurant",
+            "instagramURL": "",
+            "link1": "https: //www.facebook.com/thebbtshop/",
+            "link2": "",
             "comments": [],
             "views": 39,
             "createdAt": 1579576698361,
             "updatedAt": 1579576698361,
-            "url": "https: //www.facebook.com/thebbtshop/",
             "isFeatured": true
         },
         {
@@ -53,11 +59,13 @@
             "authorDisplayName": "최고관리자",
             "authorID": 3,
             "tag": "Restaurant",
+            "instagramURL": "",
+            "link1": "https: //www.xingfutang.ca/vancouver-menu.html",
+            "link2": "",
             "comments": [],
             "views": 57,
             "createdAt": 1579576698361,
             "updatedAt": 1579576698361,
-            "url": "https: //www.xingfutang.ca/vancouver-menu.html",
             "isFeatured": true
         }
     ]
