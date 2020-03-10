@@ -106,6 +106,8 @@ function toggleReducer(state, action) {
                 selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
                 filteredAnnounces: sortedAnnouncements
             }
+        
+        default:
     }
 }
 

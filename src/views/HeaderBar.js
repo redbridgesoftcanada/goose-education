@@ -1,5 +1,4 @@
 import React, { useReducer } from 'react';
-import PropTypes from 'prop-types';
 import { Button, IconButton, InputAdornment, TextField } from '@material-ui/core'
 import { Facebook, Instagram, Search } from '@material-ui/icons';
 
@@ -74,15 +73,17 @@ function HeaderBar(props) {
                     <AuthUserContext.Consumer>
                         {authUser => authUser ? 
                         <>
-                            <Button onClick={() => dispatch({ type: 'drawer' })}>{authUser.email}</Button>
+                            <Button onClick={() => dispatch({ type: 'drawer' })}>    
+                                {(authUser && authUser.roles['admin']) ? 'Admin' : authUser.displayName}
+                            </Button>
                             <SideDrawer 
-                            classes={classes} 
-                            authUser={authUser}
-                            isOpen={state.drawerOpen} 
-                            state={{...state}}
-                            handleMenuClick={event => dispatch({ type: 'menu', payload: event.currentTarget.id })} 
-                            handleMenuItemClick={event => dispatch({ type:'menu_item', payload: event.currentTarget.id })}
-                            onClose={() => dispatch({ type: 'drawer' })}/>
+                                classes={classes} 
+                                authUser={authUser}
+                                isOpen={state.drawerOpen} 
+                                state={{...state}}
+                                handleMenuClick={event => dispatch({ type: 'menu', payload: event.currentTarget.id })} 
+                                handleMenuItemClick={event => dispatch({ type:'menu_item', payload: event.currentTarget.id })}
+                                onClose={() => dispatch({ type: 'drawer' })}/>
                             <MyPage classes={classes}/>
                             <Logout classes={classes}/>
                         </>
@@ -97,10 +98,6 @@ function HeaderBar(props) {
             </Toolbar>
         </AppBar>
     );
-};
-
-HeaderBar.propTypes = {
-    classes: PropTypes.object.isRequired,
 };
 
 export default HeaderBar;

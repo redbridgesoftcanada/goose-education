@@ -104,6 +104,8 @@ export default function AppFooter() {
       case 'naver':
         window.open(naverUrl, '_blank');
       break;
+
+      default:
     }
   }
 

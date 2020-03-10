@@ -21,6 +21,7 @@ export default function CommentDialog(props) {
       case 'article':
         collectionRef = firebase.article(selectedResource.id);
         break;
+      default:
     }
 
     firebase.transaction(t => {

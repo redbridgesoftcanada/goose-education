@@ -134,6 +134,8 @@ function RegisterFormBase({ firebase, history }) {
 
       case 2: 
         return firstName === "" || lastName === ""; 
+      
+      default:
     }
   }
   

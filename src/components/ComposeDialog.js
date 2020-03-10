@@ -186,95 +186,97 @@ function ComposeDialogBase(props) {
       </DialogTitle>
       <DialogContent>
         <ValidatorForm onSubmit={onSubmit}>
-          <FormLabel component="legend">Title</FormLabel>
-          <TextValidator 
-            type="text" 
-            variant="outlined" 
-            fullWidth 
-            InputLabelProps={{shrink: true}}
-            name="title"
-            value={title}
-            onChange={handleFormFields}
-            validators={['required']}
-            errorMessages={['Cannot submit an empty title.']}/>
+          <>
+            <FormLabel component="legend">Title</FormLabel>
+            <TextValidator 
+              type="text" 
+              variant="outlined" 
+              fullWidth 
+              InputLabelProps={{shrink: true}}
+              name="title"
+              value={title}
+              onChange={handleFormFields}
+              validators={['required']}
+              errorMessages={['Cannot submit an empty title.']}/>
 
-          {composeType === 'article' || composeType === 'announce' &&
-            <>
-              <FormLabel component="legend">Tag</FormLabel>
-              <SelectValidator
-                variant="outlined"
-                displayEmpty
-                name='tag' 
-                defaultValue={tag}
-                value={tag}
-                onChange={handleFormFields}
-                validators={['required']}
-                errorMessages={['Please select a tag.']}>
-                  <MenuItem value="" disabled>Select One</MenuItem>
-                  {tags.map((tag, i) => {
-                      return <MenuItem key={i} name={tag} value={tag}>{tag}</MenuItem>
-                  })}
-              </SelectValidator>
-            </>
-          }
+            {composeType === 'article' || composeType === 'announce' &&
+              <>
+                <FormLabel component="legend">Tag</FormLabel>
+                <SelectValidator
+                  variant="outlined"
+                  displayEmpty
+                  name='tag' 
+                  defaultValue={tag}
+                  value={tag}
+                  onChange={handleFormFields}
+                  validators={['required']}
+                  errorMessages={['Please select a tag.']}>
+                    <MenuItem value="" disabled>Select One</MenuItem>
+                    {tags.map((tag, i) => {
+                        return <MenuItem key={i} name={tag} value={tag}>{tag}</MenuItem>
+                    })}
+                </SelectValidator>
+              </>
+            }
 
-          {composeType === 'article' &&
-            <>
-              <FormLabel component="legend">Instagram</FormLabel>
-              <TextField 
-                type="url"
-                variant="outlined" 
-                fullWidth 
-                InputLabelProps={{shrink: true}}
-                name="instagramURL"
-                value={instagramURL}
-                onChange={handleFormFields}/>
-            </>
-          }
+            {composeType === 'article' &&
+              <>
+                <FormLabel component="legend">Instagram</FormLabel>
+                <TextField 
+                  type="url"
+                  variant="outlined" 
+                  fullWidth 
+                  InputLabelProps={{shrink: true}}
+                  name="instagramURL"
+                  value={instagramURL}
+                  onChange={handleFormFields}/>
+              </>
+            }
 
-          <EditorValidator 
-            defaultValue={description}
-            value={description} 
-            onChange={handleRichText}
-            validators={['isQuillEmpty']}
-            errorMessages={['Cannot submit an empty post.']}/>
+            <EditorValidator 
+              defaultValue={description}
+              value={description} 
+              onChange={handleRichText}
+              validators={['isQuillEmpty']}
+              errorMessages={['Cannot submit an empty post.']}/>
 
-          <FormLabel component="legend">Link #1</FormLabel>
-          <TextField 
-            type="url" 
-            variant="outlined" 
-            fullWidth 
-            InputLabelProps={{shrink: true}}
-            name="link1"
-            value={link1}
-            onChange={handleFormFields}/>
+            <FormLabel component="legend">Link #1</FormLabel>
+            <TextField 
+              type="url" 
+              variant="outlined" 
+              fullWidth 
+              InputLabelProps={{shrink: true}}
+              name="link1"
+              value={link1}
+              onChange={handleFormFields}/>
 
-          <FormLabel component="legend">Link #2</FormLabel>
-          <TextField 
-            type="url" 
-            variant="outlined" 
-            fullWidth 
-            InputLabelProps={{shrink: true}}
-            name="link2"
-            value={link2}
-            onChange={handleFormFields}/>
+            <FormLabel component="legend">Link #2</FormLabel>
+            <TextField 
+              type="url" 
+              variant="outlined" 
+              fullWidth 
+              InputLabelProps={{shrink: true}}
+              name="link2"
+              value={link2}
+              onChange={handleFormFields}/>
 
-          <FormLabel component="legend">Uploads</FormLabel>
-          {composeType === 'article' ?
-            <FileValidator
-              disableUnderline
-              onChange={handleFileUpload}
-              name="file"
-              value={uploads}
-              validators={['isRequiredUpload']}
-              errorMessages={['Please upload an image.']} />
-            :
-            <Input type="file" disableUnderline onChange={handleFileUpload}/>
-          }
+            <FormLabel component="legend">Uploads</FormLabel>
+            {composeType === 'article' ?
+              <FileValidator
+                disableUnderline
+                onChange={handleFileUpload}
+                name="file"
+                value={uploads}
+                validators={['isRequiredUpload']}
+                errorMessages={['Please upload an image.']} />
+              :
+              <Input type="file" disableUnderline onChange={handleFileUpload}/>
+            }
 
-          <Button variant="contained" color="secondary" fullWidth type="submit">
-          { isLoading ? <CircularProgress /> : 'Submit' }
-          </Button>
+            <Button variant="contained" color="secondary" fullWidth type="submit">
+            { isLoading ? <CircularProgress /> : 'Submit' }
+            </Button>
+          </>
         </ValidatorForm>
       </DialogContent>
     </Dialog>

@@ -50,6 +50,8 @@ const useStyles = (props, options) => {
         },
       }))(props, options); 
       break;
+
+      default:
   }
   return styles;
 }

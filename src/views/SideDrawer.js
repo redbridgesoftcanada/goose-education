@@ -60,6 +60,7 @@ function createNestedMenuLinks(selectedPage) {
                   selected: (selectedPage === 'Homestay' ? 0 : 1)
                 }
             }
+            break;
         case 'Announcements':
         case 'Message Board':
             nestedPageLink = {
@@ -69,6 +70,7 @@ function createNestedMenuLinks(selectedPage) {
                   selected: (selectedPage === 'Announcements' ? 0 : 1)
                 }
             }
+            break;
         default:
             break;
     }

@@ -183,6 +183,8 @@ function toggleReducer(state, action) {
         case 'CHANGE_PAGE':
             const currentPage = payload;
             return { ...state, currentPage }
+
+        default:
     }
 }
 

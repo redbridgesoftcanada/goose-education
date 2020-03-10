@@ -1,11 +1,11 @@
 import React from 'react';
-import { Button, Dialog, DialogContent, DialogTitle, Typography, withStyles } from '@material-ui/core';
+import { Dialog, DialogContent, DialogTitle, Typography, withStyles } from '@material-ui/core';
 
 const styles = theme => ({
 });
 
 function TermsOfServiceDialog(props) {
-  const { classes, open, onClose } = props;
+  const { open, onClose } = props;
 
   return (
       <Dialog open={open} scroll={'paper'} onClose={onClose}>

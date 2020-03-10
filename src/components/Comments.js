@@ -15,12 +15,16 @@ export default function Comments(props) {
       case 'announcement':
         collectionRef = firebase.announcement(selectedResource.id);
         break;
+        
       case 'message':
         collectionRef = firebase.message(selectedResource.id);
         break;
+
       case 'article':
         collectionRef = firebase.article(selectedResource.id);
         break;
+
+      default:
     }
 
     firebase.transaction(t => {
