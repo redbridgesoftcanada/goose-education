@@ -3,16 +3,19 @@ import { withRouter } from 'react-router-dom';
 import AuthUserContext from './context';
 import { withFirebase } from '../firebase';
 
+// higher-order component handling redirects
+
 const withAuthorization = condition => Component => {
     function WithAuthorizationComponent(props) {        
         
         useEffect(() => {
-            props.firebase.auth.onAuthStateChanged(authUser => {
-                if (!condition(authUser)) {
-                    props.history.push('/');
+            props.firebase.onAuthUserListener(authUser => {
+                if (!condition(authUser)) {                     // next() callback function to firebase.onAuthUserListener (../firebase/firebase.js)
+                    props.history.pushState('/');
                 }
-            });
-        });
+            },
+            () => props.history.push('/'));                     // fallback() callback function   "   "   " 
+        }, []);
         
         return (
             <AuthUserContext.Consumer>

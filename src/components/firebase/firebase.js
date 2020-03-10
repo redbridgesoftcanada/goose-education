@@ -10,7 +10,7 @@ const devConfig = {
   projectId: process.env.REACT_APP_DEV_PROJECT_ID,
   storageBucket: process.env.REACT_APP_DEV_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_DEV_MESSAGING_SENDER_ID,
-};
+}
 
 const prodConfig = {
   apiKey: process.env.REACT_APP_PROD_API_KEY,
@@ -19,7 +19,7 @@ const prodConfig = {
   projectId: process.env.REACT_APP_PROD_PROJECT_ID,
   storageBucket: process.env.REACT_APP_PROD_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_PROD_MESSAGING_SENDER_ID,
-};
+}
 
 const firebaseConfig = process.env.NODE_ENV === 'production' ? prodConfig : devConfig;
 
@@ -31,6 +31,31 @@ class Firebase {
     this.db = app.firestore();
     this.storage = app.storage();
     this.fieldValue = app.firestore.FieldValue;
+  }
+
+  // A U T H  U S E R  M E R G E  W I T H  F I R E S T O R E  D O C U M E N T
+  onAuthUserListener = (next, fallback) => {
+    this.auth.onAuthStateChanged(authUser => {
+      if (authUser){
+        const userQuery = this.user(authUser.uid).get();
+        userQuery.then(snapshot => {
+          const user = snapshot.data();
+
+          authUser = {
+            uid: authUser.uid,
+            displayName: authUser.displayName || user.username,
+            email: authUser.email || user.email,
+            metadata: {...authUser.metadata},
+            roles: user.roles,
+          }
+
+          next(authUser);
+
+        });
+      } else {
+        fallback();
+      }
+    }) 
   }
 
   // A U T H E N T I C A T I O N  A P I
