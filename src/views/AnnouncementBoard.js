@@ -157,8 +157,8 @@ function AnnouncementBoard(props) {
         <Container>
             <SocialMediaButtons title={title} description={description}/>
             <div className={classes.wrapper}>
-                 <AuthUserContext.Consumer>
-                    {authUser => authUser && authUser.roles['admin'] &&
+                <AuthUserContext.Consumer>
+                    {authUser => (authUser && authUser.roles['admin']) &&
                         <>
                             <Compose handleComposeClick={toggleComposeDialog}/> 
                             <ComposeDialog
@@ -172,23 +172,25 @@ function AnnouncementBoard(props) {
                 </AuthUserContext.Consumer>
                 
                 <Filter  
-                isFilter={isFiltered} 
-                handleFilterClick={toggleFilterDialog} 
-                handleFilterReset={resetFilter}/>
+                    isFilter={isFiltered} 
+                    handleFilterClick={toggleFilterDialog} 
+                    handleFilterReset={resetFilter}/>
                 
+                <FilterDialog  
+                    {...filterProps}
+                    handleSearchQuery={handleFilterQuery}
+                    handleSearchClick={handleFilterSearch} 
+                    onClose={toggleFilterDialog}/>
+
                 <Sort 
-                selectedAnchor={selectedAnchor}
-                handleSortClick={openSortPopover}/>
+                    selectedAnchor={selectedAnchor}
+                    handleSortClick={openSortPopover}/>
+
+                <SortPopover
+                    anchorEl={anchorOpen} 
+                    open={Boolean(anchorOpen)} 
+                    onClose={handleSelectedSort}/>
             </div>
-            <FilterDialog  
-                {...filterProps}
-                handleSearchQuery={handleFilterQuery}
-                handleSearchClick={handleFilterSearch} 
-                onClose={toggleFilterDialog}/>
-            <SortPopover 
-            anchorEl={anchorOpen} 
-            open={Boolean(anchorOpen)} 
-            onClose={handleSelectedSort}/>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -198,10 +200,10 @@ function AnnouncementBoard(props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {paginatedAnnounces.map(announcement => {
-                        const redirectPath = { pathname: `${match.path}/announcement/${announcement.id}`, state: { title: 'Service Centre', selected: 0 } }
+                    {paginatedAnnounces.map(announce => {
+                        const redirectPath = { pathname: `${match.path}/announcement/${announce.id}`, state: { title: 'Service Centre', tab: 0 } }
                         return (
-                            <TableRow hover key={announcement.id} id={announcement.id} onClick={setAnnounce}>
+                            <TableRow hover key={announce.id} id={announce.id} onClick={setAnnounce}>
                                 <TableCell align='center'>
                                     <Link
                                         color="inherit"
@@ -209,11 +211,11 @@ function AnnouncementBoard(props) {
                                         component={RouterLink} 
                                         to={redirectPath}
                                     >
-                                        {announcement.title}
+                                        {announce.title}
                                     </Link>
                                 </TableCell>
-                                <TableCell align='center'>{announcement.author}</TableCell>
-                                <TableCell align='center'> {(announcement.updatedAt > announcement.createdAt) ? format(announcement.updatedAt, 'yyyy-MM-dd') : format(announcement.createdAt, 'yyyy-MM-dd')}</TableCell>
+                                <TableCell align='center'>{announce.authorDisplayName}</TableCell>
+                                <TableCell align='center'> {(announce.updatedAt > announce.createdAt) ? format(announce.updatedAt, 'yyyy-MM-dd') : format(announce.createdAt, 'yyyy-MM-dd')}</TableCell>
                             </TableRow>
                         );
                     })}

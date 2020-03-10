@@ -16,7 +16,7 @@ function toggleReducer(state, action) {
         const { image, ...prepopulateForm } = prevContent;
         return { ...prepopulateForm, isEdit, isLoading: false, uploads: [] }
       
-      } else if (composeType === 'message') {
+      } else if (composeType === 'message' || composeType === 'announce') {
         const { attachments, ...prepopulateForm } = prevContent;
         return { ...prepopulateForm, isEdit, isLoading: false, uploads: [] }
       }
