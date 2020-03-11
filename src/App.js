@@ -17,6 +17,7 @@ import ForgotPassword from './ForgotPassword';
 import Profile from './Profile';
 import EditProfile from './EditProfile';
 import Search from './Search';
+import Admin from './Admin';
 
 // React Context Components
 import { withAuthentication } from './components/session';
@@ -24,11 +25,11 @@ import { DatabaseContext, withFetching } from './components/database';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 
 function App() {
-  // custom validation to check if <ReactQuill> component is empty -or- is only HTML tags (accessible as 'isQuillEmpty' rule)
   useEffect(() => {
+    // custom validation to check if <ReactQuill> component is empty - or - is only HTML tags (accessible as 'isQuillEmpty' rule)
     ValidatorForm.addValidationRule('isQuillEmpty', value => {
         if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-        return false;
+          return false;
         }
         return true;
     });
@@ -38,6 +39,7 @@ function App() {
     <div className="App">
       <ScrollToTop>
         <Switch>
+          <Route path="/admin" render={props => <Admin {...props} />}/>
           <Route path="/search" render={props => <Search {...props} />}/>
           <Route path="/profile/edit" render={props => <EditProfile {...props} />}/>
           <Route path="/profile" render={() => <Profile/>}/>
