@@ -1,10 +1,9 @@
 import React, { useEffect, useReducer } from 'react';
 import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, Input, MenuItem, TextField } from '@material-ui/core';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import { TAGS } from '../constants/constants';
 import { FileValidator, EditorValidator, SelectValidator } from '../constants/customValidators';
 import { withAuthorization } from '../components/session';
-
-const tags = ['Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
 function toggleReducer(state, action) {
   const { type, payload } = action;
@@ -56,7 +55,7 @@ function ComposeDialogBase(props) {
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
   const { isEdit, isLoading, title, tag, description, instagramURL, link1, link2, uploads } = state;
   const { authUser, firebase, history, composeOpen, onClose, composeType } = props;
-
+  
   const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'EDIT_FORM', payload: { composeType, isEdit, prevContent }});
   const handleFormFields = event => dispatch({ payload:event.target });
   const handleRichText = value => dispatch({ type:'RICH_TEXT', payload:value });
@@ -199,7 +198,7 @@ function ComposeDialogBase(props) {
               validators={['required']}
               errorMessages={['Cannot submit an empty title.']}/>
 
-            {composeType === 'article' || composeType === 'announce' &&
+            {composeType === 'article' || composeType === 'announce' ?
               <>
                 <FormLabel component="legend">Tag</FormLabel>
                 <SelectValidator
@@ -212,11 +211,13 @@ function ComposeDialogBase(props) {
                   validators={['required']}
                   errorMessages={['Please select a tag.']}>
                     <MenuItem value="" disabled>Select One</MenuItem>
-                    {tags.map((tag, i) => {
+                    {TAGS.slice(1).map((tag, i) => {
                         return <MenuItem key={i} name={tag} value={tag}>{tag}</MenuItem>
                     })}
                 </SelectValidator>
               </>
+              :
+              ''
             }
 
             {composeType === 'article' &&

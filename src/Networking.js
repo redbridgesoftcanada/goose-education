@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Grid, Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
 import withRoot from './withRoot';
+import { TAGS } from './constants/constants';
 import { DatabaseContext } from './components/database';
 import Typography from './components/onePirate/Typography';
 import TabPanel from './components/TabPanel';
@@ -88,7 +89,6 @@ function Networking(props) {
     caption: "On the Networking page, Vancouver's local landscapes, weather, hot places and restaurants, desserts, shops, sales, traffic, event, etc. Share your HOT info in Vancouver with lots of love.",
     other: createPosterCards(classes)
   }
-  const tags = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
   const { title, selected } = props.location.state;
   const [ selectedTab, setSelectedTab ] = useState(selected);
@@ -108,7 +108,7 @@ function Networking(props) {
           textColor="secondary"
           centered
         >
-          {tags.map(tab => {
+          {TAGS.map(tab => {
             return <Tab key={tab.toLowerCase()} label={tab}/> 
           })}
         </Tabs>

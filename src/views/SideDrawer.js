@@ -2,10 +2,10 @@ import React, { Fragment } from 'react';
 import { Link as RouterLink } from "react-router-dom";
 import { Collapse, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core'
 import { AccountCircle, DeleteForever, ExitToApp, ExpandLess, ExpandMore } from '@material-ui/icons';
+import { PAGES } from '../constants/constants';
 import Logout from '../components/navlinks/Logout';
 
 const userMenuItems = ['My Page', 'Change Information', 'Delete Account'];
-const pageMenuItems = ['Study Abroad', 'Networking', 'School Information', 'Study Abroad Services', 'Service Centre'];
 
 function createNestedMenuItems(menuPage) {
     let nestedPageMenuItems = [];
@@ -83,6 +83,7 @@ export default function SideDrawer(props) {
         username: authUser.displayName,
         email: authUser.email
     };
+
     return (
         <Drawer anchor='right' open={isOpen} onClose={onClose}>
             <List>
@@ -103,7 +104,7 @@ export default function SideDrawer(props) {
                 ))}
                 <Divider/>
                 <ListSubheader>Navigation</ListSubheader>
-                {pageMenuItems.map ((item, i) => {
+                {PAGES.slice(1).map((item, i) => {
                     const formattedText = item.toLowerCase().replace(/ /g,"_");
                     const nestedPageMenuItems = createNestedMenuItems(formattedText);
                     return (

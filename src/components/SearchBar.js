@@ -2,10 +2,7 @@ import React from 'react';
 import { Button, Container, MenuItem, TextField } from '@material-ui/core';
 import { SearchOutlined } from '@material-ui/icons';
 import withRoot from '../withRoot';
-
-const searchCategories = ['All', 'Goose Study Abroad', 'Networking', 'School Information', 'Study Abroad Services', 'Service Centre'];
-const searchOptions = ['Title', 'Contents', 'Title + Contents', 'Author'];   // 'Author (코)', 'Member ID', 'Member ID (코)';
-const searchConjunctions = ["And", "Or"];
+import { PAGES, FILTER_OPTIONS, FILTER_CONJUNCTIONS } from '../constants/constants';
 
 function SearchBar(props) {
     const { classes, handleSearchQuery, searchProps } = props;
@@ -22,7 +19,7 @@ function SearchBar(props) {
             margin="dense"
             variant="outlined"
             >
-            {searchCategories.map((option, i) => (
+            {PAGES.map((option, i) => (
                 <MenuItem key={i} value={option}>
                 {option}
                 </MenuItem>
@@ -38,7 +35,7 @@ function SearchBar(props) {
             margin="dense"
             variant="outlined"
             >
-            {searchOptions.map((option, i) => (
+            {FILTER_OPTIONS.map((option, i) => (
                 <MenuItem key={i} value={option}>
                 {option}
                 </MenuItem>
@@ -54,7 +51,7 @@ function SearchBar(props) {
                 margin="dense"
                 variant="outlined"
             >
-                {searchConjunctions.map((option, i) => (
+                {FILTER_CONJUNCTIONS.map((option, i) => (
                     <MenuItem key={i} value={option}>
                     {option}
                     </MenuItem>

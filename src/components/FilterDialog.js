@@ -1,9 +1,7 @@
 import React from 'react';
 import { Button, Dialog, DialogTitle, MenuItem, TextField, makeStyles, Typography } from '@material-ui/core';
 import { CheckOutlined, CloseOutlined } from '@material-ui/icons';
-
-const filterOptions = ['Title', 'Contents', 'Title + Contents', 'Author'];   // 'Author (코)', 'Member ID', 'Member ID (코)';
-const filterConjunctions = ["And", "Or"];
+import { FILTER_OPTIONS, FILTER_CONJUNCTIONS } from '../constants/constants';
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -47,7 +45,7 @@ function FilterDialog(props) {
             onChange={handleSearchQuery}
             margin="normal"
             >
-            {filterOptions.map((option, i) => (
+            {FILTER_OPTIONS.map((option, i) => (
                 <MenuItem key={i} value={option}>
                 {option}
                 </MenuItem>
@@ -61,7 +59,7 @@ function FilterDialog(props) {
                 onChange={handleSearchQuery}
                 margin="normal"
             >
-                {filterConjunctions.map((option, i) => (
+                {FILTER_CONJUNCTIONS.map((option, i) => (
                     <MenuItem key={i} value={option}>
                     {option}
                     </MenuItem>

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import DatabaseContext from './context';
+import { TAGS } from '../../constants/constants';
 import * as helpers from '../../constants/helpers';
-
-const tags = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
 function withFetching(Component) {
 
@@ -44,7 +43,7 @@ function withFetching(Component) {
           break;
         
         case '/networking':
-          helpers.findAllArticles(tags, firebase, setState);
+          helpers.findAllArticles(TAGS, firebase, setState);
           break;
         
         case '/schools':
