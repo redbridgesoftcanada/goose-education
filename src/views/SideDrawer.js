@@ -2,10 +2,22 @@ import React, { Fragment } from 'react';
 import { Link as RouterLink } from "react-router-dom";
 import { Collapse, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core'
 import { AccountCircle, DeleteForever, ExitToApp, ExpandLess, ExpandMore } from '@material-ui/icons';
-import { PAGES } from '../constants/constants';
+import { NAV_PAGES } from '../constants/constants';
 import Logout from '../components/navlinks/Logout';
 
-const userMenuItems = ['My Page', 'Change Information', 'Delete Account'];
+function createRedirectPath(authUser, index) {
+    const isAdmin = authUser.roles['admin'];
+    
+    let path = '/'
+    if (index === 0 && isAdmin) {
+        path = '/admin'
+    } else if (index === 0 && !isAdmin) {
+        path = '/profile'
+    } else if (index === 1) {
+        path = '/profile/edit'
+    }
+    return path;
+}
 
 function createNestedMenuItems(menuPage) {
     let nestedPageMenuItems = [];
@@ -79,10 +91,13 @@ function createNestedMenuLinks(selectedPage) {
 
 export default function SideDrawer(props) {
     const { authUser, classes, isOpen, handleMenuClick, handleMenuItemClick, onClose, state } = props;
-    const user = {
-        username: authUser.displayName,
-        email: authUser.email
-    };
+
+    let userPages;
+    if (authUser.roles['admin']) {
+        userPages = ['Dashboard'];
+    } else {
+        userPages = ['My Page', 'Change Information', 'Delete Account'];
+    }
 
     return (
         <Drawer anchor='right' open={isOpen} onClose={onClose}>
@@ -90,21 +105,21 @@ export default function SideDrawer(props) {
                 <ListItem>
                     <Logout classes={classes}/>
                 </ListItem>
-                {userMenuItems.map((text, index) => (
+                {userPages.map((text, i) => (
                     <ListItem
-                    button
-                    component={RouterLink} 
-                    to={index === 0 ? '/profile' : index === 1 ? { pathname: '/profile/edit', state: { user }} : '/' } 
-                    key={text}>
-                        <ListItemIcon>
-                            {index === 0 ? <AccountCircle /> : index === 1 ? <ExitToApp /> : <DeleteForever /> }
-                        </ListItemIcon>
-                        <ListItemText primary={text} />
+                        button
+                        component={RouterLink} 
+                        to={createRedirectPath(authUser, i)} 
+                        key={text}>
+                            <ListItemIcon>
+                                {i === 0 ? <AccountCircle /> : i === 1 ? <ExitToApp /> : <DeleteForever /> }
+                            </ListItemIcon>
+                            <ListItemText primary={text} />
                     </ListItem>
                 ))}
                 <Divider/>
                 <ListSubheader>Navigation</ListSubheader>
-                {PAGES.slice(1).map((item, i) => {
+                {NAV_PAGES.slice(1).map((item, i) => {
                     const formattedText = item.toLowerCase().replace(/ /g,"_");
                     const nestedPageMenuItems = createNestedMenuItems(formattedText);
                     return (

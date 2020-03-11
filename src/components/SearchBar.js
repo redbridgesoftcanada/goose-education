@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Container, MenuItem, TextField } from '@material-ui/core';
 import { SearchOutlined } from '@material-ui/icons';
 import withRoot from '../withRoot';
-import { PAGES, FILTER_OPTIONS, FILTER_CONJUNCTIONS } from '../constants/constants';
+import { NAV_PAGES, FILTER_OPTIONS, FILTER_CONJUNCTIONS } from '../constants/constants';
 
 function SearchBar(props) {
     const { classes, handleSearchQuery, searchProps } = props;
@@ -19,7 +19,7 @@ function SearchBar(props) {
             margin="dense"
             variant="outlined"
             >
-            {PAGES.map((option, i) => (
+            {NAV_PAGES.map((option, i) => (
                 <MenuItem key={i} value={option}>
                 {option}
                 </MenuItem>

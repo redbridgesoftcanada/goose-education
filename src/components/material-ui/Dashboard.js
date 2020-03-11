@@ -5,7 +5,7 @@ import React, { useReducer } from 'react';
 import clsx from 'clsx';
 import { AppBar, Badge, Box, Divider, Drawer, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, makeStyles } from '@material-ui/core';
 import { ChevronLeft, Menu, Notifications, Dashboard, People, Layers, Assignment } from '@material-ui/icons';
-import { ADMIN_PAGES, PAGES } from '../../constants/constants';
+import { ADMIN_PAGES, NAV_PAGES } from '../../constants/constants';
 import DashboardOverview from '../DashboardOverview';
 
 function Copyright() {
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
         </List>
         <Divider />
         <List>
-          {PAGES.slice(1).map((page, i) => {
+          {NAV_PAGES.slice(1).map((page, i) => {
             return (
             <ListItem button key={i} id={page} onClick={toggleDisplayContent}>
               <ListItemIcon>
