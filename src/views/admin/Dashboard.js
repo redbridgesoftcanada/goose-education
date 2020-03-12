@@ -143,7 +143,7 @@ export default function AdminDashboard() {
         return <Users classes={classes} listOfUsers={context.listOfUsers}/>
       
       case 'Applications':
-        return <Applications classes={classes} listOfUsers={context.listOfApplications}/>
+        return <Applications classes={classes} listOfApplications={context.listOfApplications}/>
 
       default:
         return <Typography>Choose something else!</Typography>

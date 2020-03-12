@@ -2,7 +2,7 @@ const STATUSES = ['submitted', 'completed', 'tuition required', 'approved'];
 
 const TAGS = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
-const ADMIN_PAGES = ["Overview", "Users", "Reports"];
+const ADMIN_PAGES = ["Overview", "Users", "Applications"];
 
 const NAV_PAGES = ['All', 'Goose Study Abroad', 'Networking', 'School Information', 'Study Abroad Services', 'Service Centre'];
 
