@@ -26,6 +26,8 @@ function withFetching(Component) {
       listOfAnnouncements: [],
       listOfUsers: null,
       listOfApplications: null,
+      listOfHomestays: null,
+      listOfAirportRides: null,
       profile: null,
       schoolApplication: null,
     }
@@ -64,7 +66,10 @@ function withFetching(Component) {
         
         case '/admin':
           helpers.findAllUsers(firebase, setState);
-          helpers.findAllApplications(firebase, setState);
+          helpers.findAllSchools(firebase, setState);
+          helpers.findAllSchoolApplications(firebase, setState);
+          helpers.findAllHomestayApplications(firebase, setState);
+          helpers.findAllAirportRideApplications(firebase, setState);
 
         default:
       }

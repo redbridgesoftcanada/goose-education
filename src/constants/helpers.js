@@ -187,7 +187,7 @@ function findAllUsers(firebase, setState) {
     .catch(err => { console.log('Error getting documents', err) });
 }
 
-function findAllApplications(firebase, setState) {
+function findAllSchoolApplications(firebase, setState) {
     const applicationsQuery = firebase.schoolApplications().get();
     applicationsQuery.then(snapshot => {
         if (snapshot.empty) {
@@ -203,6 +203,46 @@ function findAllApplications(firebase, setState) {
             allApplications.push(application)
         });
         setState(prevState => ({...prevState, listOfApplications: allApplications}));
+    })
+    .catch(err => { console.log('Error getting documents', err) });
+}
+
+function findAllHomestayApplications(firebase, setState) {
+    const homestayQuery = firebase.homestayApplications().get();
+    homestayQuery.then(snapshot => {
+        if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+        }  
+
+        const allHomestays = [];
+        snapshot.forEach(doc => {
+            let application = doc.data();
+            let applicationId = doc.id;
+            application = {...application, id: applicationId}
+            allHomestays.push(application)
+        });
+        setState(prevState => ({...prevState, listOfHomestays: allHomestays}));
+    })
+    .catch(err => { console.log('Error getting documents', err) });
+}
+
+function findAllAirportRideApplications(firebase, setState) {
+    const airportRideQuery = firebase.airportRideApplications().get();
+    airportRideQuery.then(snapshot => {
+        if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+        }  
+
+        const allAirportRides = [];
+        snapshot.forEach(doc => {
+            let application = doc.data();
+            let applicationId = doc.id;
+            application = {...application, id: applicationId}
+            allAirportRides.push(application)
+        });
+        setState(prevState => ({...prevState, listOfAirportRides: allAirportRides}));
     })
     .catch(err => { console.log('Error getting documents', err) });
 }
@@ -339,4 +379,4 @@ function sortQuery(type, resources, option) {
     return sortedResources;
 }
 
-export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findUserById, findSchoolApplicationById, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllApplications, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery }
+export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findUserById, findSchoolApplicationById, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery }
