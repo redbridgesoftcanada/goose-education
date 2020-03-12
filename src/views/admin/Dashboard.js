@@ -5,8 +5,11 @@ import React, { useReducer } from 'react';
 import clsx from 'clsx';
 import { AppBar, Badge, Box, Divider, Drawer, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, makeStyles } from '@material-ui/core';
 import { ChevronLeft, Menu, Notifications, Dashboard, People, Layers, Assignment } from '@material-ui/icons';
+import { DatabaseContext } from '../../components/database';
 import { ADMIN_PAGES, NAV_PAGES } from '../../constants/constants';
-import DashboardOverview from '../DashboardOverview';
+import DashboardOverview from './DashboardOverview';
+import Users from './AdminUsers';
+import Applications from './AdminApplications';
 
 function Copyright() {
   return (
@@ -131,11 +134,17 @@ export default function AdminDashboard() {
   const toggleDrawer = () => dispatch({type: "TOGGLE_DRAWER"});
   const toggleDisplayContent = event => dispatch({type: "TOGGLE_CONTENT", payload: event.currentTarget.id});
 
-  const loadDisplayedContent = contentType => {
+  const loadDisplayedContent = (context, contentType) => {
     switch(contentType) {
       case 'Overview':
         return <DashboardOverview classes={classes} fixedHeightPaper={fixedHeightPaper}/>
       
+      case 'Users':
+        return <Users classes={classes} listOfUsers={context.listOfUsers}/>
+      
+      case 'Applications':
+        return <Applications classes={classes} listOfUsers={context.listOfApplications}/>
+
       default:
         return <Typography>Choose something else!</Typography>
     }
@@ -204,7 +213,9 @@ export default function AdminDashboard() {
 
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        {loadDisplayedContent(selectedContent)}
+        <DatabaseContext.Consumer>
+          {context => loadDisplayedContent(context, selectedContent)}
+        </DatabaseContext.Consumer>
         <Box pt={4}>
           <Copyright />
         </Box>

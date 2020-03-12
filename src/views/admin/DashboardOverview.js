@@ -1,8 +1,8 @@
 import React from 'react';
 import { Container, Grid, Paper } from '@material-ui/core';
-import Chart from './material-ui/Chart';
-import Deposits from './material-ui/Deposits';
-import Orders from './material-ui/Orders';
+import Chart from '../../components/material-ui/Chart';
+import Deposits from '../../components/material-ui/Deposits';
+import TableTemplate from '../../components/material-ui/TableTemplate';
 
 export default function DashboardOverview(props){
   const { classes, fixedHeightPaper } = props;
@@ -24,7 +24,7 @@ export default function DashboardOverview(props){
         {/* Recent Orders */}
         <Grid item xs={12}>
           <Paper className={classes.paper}>
-            <Orders />
+            {/* <TableTemplate /> */}
           </Paper>
         </Grid>
       </Grid>

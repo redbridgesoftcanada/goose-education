@@ -1,7 +1,7 @@
 import React from 'react';
 import withRoot from './withRoot';
 import { withAuthorization } from './components/session';
-import Dashboard from './components/material-ui/Dashboard';
+import Dashboard from './views/admin/Dashboard';
 
 function Admin() {
   return (
