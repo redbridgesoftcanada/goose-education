@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link, Table, TableBody, TableCell, TableHead, TableRow, makeStyles } from '@material-ui/core';
+import { Link, Table, TableBody, TableCell, TableHead, TableRow, Typography, makeStyles } from '@material-ui/core';
+import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
 import { format } from 'date-fns';
 import Title from './Title';
 
@@ -66,6 +67,37 @@ function createTableContent(type, data) {
           </TableBody>
         </>
       )
+    
+    case 'schools':
+      return (
+        <>
+          <TableHead>
+            <TableRow>
+              <TableCell>No</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Location</TableCell>
+              <TableCell>Featured</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((resource, i) => (
+              <TableRow key={i}>
+                <TableCell>{i + 1}</TableCell>
+                <TableCell>{resource.title}</TableCell>
+                <TableCell>{resource.type}</TableCell>
+                <TableCell>{resource.location}</TableCell>
+                <TableCell>{resource.isFeatured ? <CheckBox/> : <CheckBoxOutlineBlank/>}</TableCell>
+                <TableCell>Create, Edit, Delete, Change Featured</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </>
+      )
+
+      default:
+        return <Typography>(⁄ ⁄•⁄ω⁄•⁄ ⁄)</Typography>
   }
 }
 

@@ -4,12 +4,15 @@
 import React, { useReducer } from 'react';
 import clsx from 'clsx';
 import { AppBar, Badge, Box, Divider, Drawer, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, makeStyles } from '@material-ui/core';
-import { ChevronLeft, Menu, Notifications, Dashboard, People, Layers, Assignment } from '@material-ui/icons';
+import { ChevronLeft, Menu, Notifications, Dashboard, People, Layers, Assignment, AirplanemodeActive, Home, School, Settings } from '@material-ui/icons';
 import { DatabaseContext } from '../../components/database';
 import { ADMIN_PAGES, NAV_PAGES } from '../../constants/constants';
 import DashboardOverview from './DashboardOverview';
 import Users from './AdminUsers';
+import Schools from './AdminSchools';
 import Applications from './AdminApplications';
+import Homestays from './AdminHomestays';
+import AirportRides from './AdminAirportRides';
 
 function Copyright() {
   return (
@@ -134,19 +137,47 @@ export default function AdminDashboard() {
   const toggleDrawer = () => dispatch({type: "TOGGLE_DRAWER"});
   const toggleDisplayContent = event => dispatch({type: "TOGGLE_CONTENT", payload: event.currentTarget.id});
 
-  const loadDisplayedContent = (context, contentType) => {
-    switch(contentType) {
+  const loadMenuIcons = page => {
+    switch (page) {
+      case 'Overview':
+        return <Dashboard/>
+      case 'Users':
+        return <People/>
+      case 'Schools':
+        return <School/>
+      case 'Applications':
+        return <Layers/>
+      case 'Homestay':
+        return <Home/>
+      case 'Airport Rides':
+        return <AirplanemodeActive/>
+      default:
+        return <Settings/>
+    }
+  }
+  
+  const loadMenuContent = (context, contentType) => {
+    switch (contentType) {
       case 'Overview':
         return <DashboardOverview classes={classes} fixedHeightPaper={fixedHeightPaper}/>
       
       case 'Users':
         return <Users classes={classes} listOfUsers={context.listOfUsers}/>
       
+      case 'Schools':
+        return <Schools classes={classes} listOfSchools={context.listOfSchools}/>
+
       case 'Applications':
         return <Applications classes={classes} listOfApplications={context.listOfApplications}/>
 
+      case 'Homestay':
+        return <Homestays classes={classes} listOfHomestays={context.listOfHomestays}/>
+
+      case 'Airport Rides':
+        return <AirportRides classes={classes} listOfAirportRides={context.listOfAirportRides}/>
+
       default:
-        return <Typography>Choose something else!</Typography>
+        return <Typography>Nothing to be found!</Typography>
     }
   }
 
@@ -191,7 +222,7 @@ export default function AdminDashboard() {
             return (
             <ListItem button key={i} id={page} onClick={toggleDisplayContent}>
               <ListItemIcon>
-                {(page === 'Overview') ? <Dashboard/> : (page === 'Users') ? <People/> : <Layers/>}
+                {loadMenuIcons(page)}
               </ListItemIcon>
               <ListItemText primary={page} />
             </ListItem>
@@ -214,7 +245,7 @@ export default function AdminDashboard() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <DatabaseContext.Consumer>
-          {context => loadDisplayedContent(context, selectedContent)}
+          {context => loadMenuContent(context, selectedContent)}
         </DatabaseContext.Consumer>
         <Box pt={4}>
           <Copyright />
