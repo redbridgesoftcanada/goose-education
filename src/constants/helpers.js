@@ -1,4 +1,4 @@
-// D A T A  F E T C H I N G
+// D A T A  F E T C H I N G  ( S E L E C T )
 function findFeaturedSchools(firebase, setState) {
     const schoolsQuery = firebase.schools().where('isFeatured', '==', true).get();
     schoolsQuery.then(snapshot => {
@@ -50,6 +50,19 @@ function findFeaturedTips(firebase, setState) {
     });
 }
 
+async function findUserById(id, firebase, setState) {
+    const profileQuery = await firebase.user(id).get();
+    const profile = profileQuery.data();
+    setState(prevState => ({ ...prevState, profile }));
+}
+
+async function findSchoolApplicationById(id, firebase, setState) {
+    const applicationQuery = await firebase.schoolApplication(id).get();
+    const schoolApplication = applicationQuery.data();
+    setState(prevState => ({ ...prevState, schoolApplication }));
+}
+
+// D A T A  F E T C H I N G  ( A L L )
 function findAllSchools(firebase, setState) {
     const schoolsQuery = firebase.schools().get();
     schoolsQuery.then(snapshot => {
@@ -154,16 +167,44 @@ function findAllAnnouncements(firebase, setState) {
     .catch(err => { console.log('Error getting documents', err) });
 }
 
-async function findUserById(id, firebase, setState) {
-    const profileQuery = await firebase.user(id).get();
-    const profile = profileQuery.data();
-    setState(prevState => ({ ...prevState, profile }));
+function findAllUsers(firebase, setState) {
+    const usersQuery = firebase.users().get();
+    usersQuery.then(snapshot => {
+        if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+        }  
+
+        const allUsers = [];
+        snapshot.forEach(doc => {
+            let user = doc.data();
+            let userId = doc.id;
+            user = {...user, id: userId}
+            allUsers.push(user)
+        });
+        setState(prevState => ({...prevState, listOfUsers: allUsers}));
+    })
+    .catch(err => { console.log('Error getting documents', err) });
 }
 
-async function findSchoolApplicationById(id, firebase, setState) {
-    const applicationQuery = await firebase.schoolApplication(id).get();
-    const schoolApplication = applicationQuery.data();
-    setState(prevState => ({ ...prevState, schoolApplication }));
+function findAllApplications(firebase, setState) {
+    const applicationsQuery = firebase.schoolApplications().get();
+    applicationsQuery.then(snapshot => {
+        if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+        }  
+
+        const allApplications = [];
+        snapshot.forEach(doc => {
+            let application = doc.data();
+            let applicationId = doc.id;
+            application = {...application, id: applicationId}
+            allApplications.push(application)
+        });
+        setState(prevState => ({...prevState, listOfApplications: allApplications}));
+    })
+    .catch(err => { console.log('Error getting documents', err) });
 }
 
 // F E A T U R E S
@@ -298,4 +339,4 @@ function sortQuery(type, resources, option) {
     return sortedResources;
 }
 
-export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery }
+export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findUserById, findSchoolApplicationById, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllApplications, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery }

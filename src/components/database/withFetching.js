@@ -24,6 +24,8 @@ function withFetching(Component) {
       gooseTips: [],
       listOfMessages: [],
       listOfAnnouncements: [],
+      listOfUsers: null,
+      listOfApplications: null,
       profile: null,
       schoolApplication: null,
     }
@@ -59,6 +61,10 @@ function withFetching(Component) {
           helpers.findUserById(userId, firebase, setState);
           helpers.findSchoolApplicationById(userId, firebase, setState);
           break;
+        
+        case '/admin':
+          helpers.findAllUsers(firebase, setState);
+          helpers.findAllApplications(firebase, setState);
 
         default:
       }
