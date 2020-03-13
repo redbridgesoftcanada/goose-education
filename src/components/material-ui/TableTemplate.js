@@ -1,8 +1,10 @@
-import React from 'react';
-import { Link, Table, TableBody, TableCell, TableHead, TableRow, Typography, makeStyles } from '@material-ui/core';
-import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
-import { format } from 'date-fns';
-import Title from './Title';
+import React, { useReducer, Fragment } from "react";
+import { Button, Link, Menu, MenuItem, Snackbar, Table, TableBody, TableCell, TableHead, TableRow, Typography, makeStyles } from "@material-ui/core";
+import { CheckBox, CheckBoxOutlineBlank, Delete } from "@material-ui/icons";
+import { format } from "date-fns";
+import { withFirebase } from '../../components/firebase';
+import Title from "./Title";
+import DeleteConfirmation from '../DeleteConfirmation';
 
 const useStyles = makeStyles(theme => ({
   seeMore: {
@@ -14,9 +16,58 @@ function preventDefault(event) {
   event.preventDefault();
 }
 
-function createTableContent(type, data) {
+
+function toggleReducer(state, action) {
+  const { type, payload } = action;
+
   switch(type) {
-    case 'accounts': 
+    case 'MENU_OPEN':
+      return {...state, anchorEl: payload}
+    
+    case 'MENU_CLOSE':
+      const { firebase, selectedRole, uid } = payload;
+      const currentRole = payload.roles[0] ? payload.roles[0] : 'user';
+
+      if (currentRole !== selectedRole && selectedRole !== 'user') {
+        const userQuery = firebase.user(uid).update({
+          roles: {
+            [selectedRole]: true
+          }
+        });
+        
+        userQuery.then(() => {
+          return {...state, anchorEl: null}
+        }).catch(error => console.log(error))
+
+      } else if (currentRole !== selectedRole && selectedRole === 'user') {
+        const userQuery = firebase.user(uid).update({
+          roles: {}
+        });
+        
+        userQuery.then(() => {
+          return {...state, anchorEl: null}
+        }).catch(error => console.log(error))
+      }
+      break;
+    
+    case 'DELETE_CONFIRM':
+      return {...state, deleteConfirmOpen: !state.deleteConfirmOpen}
+    
+    case 'SNACKBAR_OPEN':
+      return {...state, snackbarOpen: !state.snackbarOpen, snackbarMessage: payload}
+  }
+}
+
+function createTableContent(state, dispatch, type, content, firebase) {
+  // const { anchorEl } = state;
+
+  const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: event.currentTarget});
+  const setMenuClose = (event, roles, uid) => dispatch({type: 'MENU_CLOSE', payload: {uid, roles, firebase, selectedRole: event.currentTarget.id}});
+  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
+
+
+  switch(type) {
+    case "accounts": 
       return (
         <>
           <TableHead>
@@ -29,20 +80,40 @@ function createTableContent(type, data) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((resource, i) => (
+            {content.map((user, i) => (
               <TableRow key={i}>
                 <TableCell>{i + 1}</TableCell>
-                <TableCell>{resource.firstName} {resource.lastName}</TableCell>
-                <TableCell>{resource.email}</TableCell>
-                <TableCell>{!resource.roles['admin'] ? 'User' : 'Admin'}</TableCell>
-                <TableCell>{!resource.roles['admin'] ? 'Change Role, Delete' : ''}</TableCell>
+                <TableCell>{user.firstName} {user.lastName}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>
+                  <Button disabled={user.roles['admin']} onClick={setMenuOpen}>
+                    {user.roles["admin"] ? "Admin" : user.roles["supervisor"] ? "Supervisor" : "User"}
+                  </Button>
+                  <Menu
+                    anchorEl={state.anchorEl}
+                    keepMounted
+                    open={Boolean(state.anchorEl)}
+                    onClose={setMenuClose}
+                  >
+                    <MenuItem id="supervisor" onClick={event => setMenuClose(event, user.roles, user.id)}>Supervisor</MenuItem>
+                    <MenuItem id="user" onClick={event => setMenuClose(event, user.roles, user.id)}>User</MenuItem>
+                  </Menu>
+
+                </TableCell>
+                <TableCell>
+                  {!user.roles["admin"] ? 
+                    <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={toggleDeleteConfirm}>Delete</Button>
+                    // <IconButton size="small" variant="contained" color="secondary"><Delete/></IconButton>
+                  : 
+                  "Please contact management about any changes to the admin user."}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </>
       )
     
-    case 'applications':
+    case "applications":
       return (
         <>
           <TableHead>
@@ -55,11 +126,11 @@ function createTableContent(type, data) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((resource, i) => (
+            {content.map((resource, i) => (
               <TableRow key={i}>
                 <TableCell>{i + 1}</TableCell>
                 <TableCell>{resource.firstName} {resource.lastName}</TableCell>
-                <TableCell>{format(resource.createdAt, 'Pp')}</TableCell>
+                <TableCell>{format(resource.createdAt, "Pp")}</TableCell>
                 <TableCell>{resource.status}</TableCell>
                 <TableCell>Download, Change Status, Delete</TableCell>
               </TableRow>
@@ -68,7 +139,7 @@ function createTableContent(type, data) {
         </>
       )
     
-    case 'schools':
+    case "schools":
       return (
         <>
           <TableHead>
@@ -82,7 +153,7 @@ function createTableContent(type, data) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((resource, i) => (
+            {content.map((resource, i) => (
               <TableRow key={i}>
                 <TableCell>{i + 1}</TableCell>
                 <TableCell>{resource.title}</TableCell>
@@ -101,22 +172,66 @@ function createTableContent(type, data) {
   }
 }
 
-export default function TableTemplate(props) {
-  const resourceType = props.type;
-  const listOfResources = props.listOfResources;
+function TableTemplate(props) {
+  const { type, listOfResources, firebase } = props;
   const classes = useStyles();
+
+  const INITIAL_STATE = {
+    anchorEl: null,
+    deleteConfirmOpen: false,
+    snackbarOpen: false,
+    snackbarMessage: null,
+  }
+
+  const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+
+  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
+  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
+  const deleteUser = () => {
+
+    // >> delete user in Firestore <<
+
+    // firebase.deleteUser(uid).then(function() {
+    //   // User deleted
+    //  dispatch({type: 'DELETE_CONFIRM'})
+    // }).catch(function(error) {
+    //   // An error happened.
+    // });
+    
+    setSnackbarMessage('User successfully deleted!')
+  }
+
   return (
-    <React.Fragment>
-      <Title>{resourceType}</Title>
+    <Fragment>
+      <Title>{type}</Title>
       <Table size="small">
-        {createTableContent(resourceType, listOfResources)}
+        {createTableContent(state, dispatch, type, listOfResources, firebase)}
       </Table>
+
+      <DeleteConfirmation deleteType='admin_user' open={state.deleteConfirmOpen} 
+      handleDelete={() => deleteUser()} 
+      onClose={toggleDeleteConfirm}
+      />
+
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={state.snackbarOpen}
+        autoHideDuration={1000}
+        onClose={() => setSnackbarMessage(null)}
+        message={state.snackbarMessage}
+      />
+
       <div className={classes.seeMore}>
-        {/* create 'load more' feature */}
+        {/* create "load more" feature */}
         <Link color="secondary" href="#" onClick={preventDefault}>
-          See more {resourceType}
+          See more {type}
         </Link>
       </div>
-    </React.Fragment>
+    </Fragment>
   );
 }
+
+export default withFirebase(TableTemplate);
