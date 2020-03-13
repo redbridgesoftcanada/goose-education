@@ -68,6 +68,7 @@ class Firebase {
   // U S E R S
   users = () => this.db.collection("users");
   user = uid => this.db.doc(`users/${uid}`);
+  deleteUser = uid => this.db.doc(`users/${uid}`).delete();
 
   // G O O S E  T I P S
   tips = () => this.db.collection("tips");
