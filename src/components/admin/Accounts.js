@@ -1,9 +1,10 @@
 import React, { Fragment } from "react";
 import { Button, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
+import { withFirebase } from "../../components/firebase";
 import DeleteConfirmation from '../DeleteConfirmation';
 
-export default function Accounts(props) {
+function Accounts(props) {
   const { state, dispatch, content, firebase } = props;
 
   const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {key: 'anchorUserRole', selected: event.currentTarget}});
@@ -73,3 +74,5 @@ export default function Accounts(props) {
   </>
   )
 }
+
+export default withFirebase(Accounts);

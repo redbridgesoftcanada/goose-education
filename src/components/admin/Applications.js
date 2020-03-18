@@ -1,9 +1,10 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { format } from "date-fns";
+import { withFirebase } from "../../components/firebase";
 // import DeleteConfirmation from '../DeleteConfirmation';
 
-export default function Applications(props) {
+function Applications(props) {
   const { state, dispatch, content, firebase } = props;
 
   const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: event.currentTarget});
@@ -46,3 +47,5 @@ export default function Applications(props) {
     </>
   )
 }
+
+export default withFirebase(Applications);

@@ -1,6 +1,5 @@
 import React, { useReducer, Fragment } from "react";
-import { Link, Snackbar, Table, Typography, makeStyles } from "@material-ui/core";
-import { withFirebase } from '../../components/firebase';
+import { Link, Snackbar, Typography, makeStyles } from "@material-ui/core";
 import Title from "./Title";
 import Accounts from '../admin/Accounts';
 import Schools from '../admin/Schools';
@@ -57,8 +56,8 @@ function toggleReducer(state, action) {
   }
 }
 
-function createContentTable(state, dispatch, type, content, firebase) {
-  const props = { state, dispatch, content, firebase };
+function createContentTable(state, dispatch, type, content) {
+  const props = { state, dispatch, content };
 
   switch(type) {
     case "accounts": 
@@ -76,7 +75,7 @@ function createContentTable(state, dispatch, type, content, firebase) {
 }
 
 function TableTemplate(props) {
-  const { type, listOfResources, firebase } = props;
+  const { type, listOfResources } = props;
   const classes = useStyles();
 
   const INITIAL_STATE = {
@@ -93,7 +92,7 @@ function TableTemplate(props) {
   return (
     <Fragment>
       <Title>{type}</Title>
-      {createContentTable(state, dispatch, type, listOfResources, firebase)}
+      {createContentTable(state, dispatch, type, listOfResources)}
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
@@ -115,4 +114,4 @@ function TableTemplate(props) {
   );
 }
 
-export default withFirebase(TableTemplate);
+export default TableTemplate;
