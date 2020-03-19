@@ -33,6 +33,14 @@ function App() {
         }
         return true;
     });
+
+    ValidatorForm.addValidationRule("isRequiredUpload", value => {
+      if (!value || value.length === 0) {
+        return false;
+      }
+      return true;
+    });
+    
   }, []);
 
   return (
