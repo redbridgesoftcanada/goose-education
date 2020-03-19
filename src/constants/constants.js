@@ -10,4 +10,6 @@ const FILTER_OPTIONS = ['Title', 'Contents', 'Title + Contents', 'Author'];   //
 
 const FILTER_CONJUNCTIONS = ["And", "Or"];
 
-export { STATUSES, TAGS, ADMIN_PAGES, NAV_PAGES, FILTER_OPTIONS, FILTER_CONJUNCTIONS };
+const SCHOOL_TYPES = ['ESL', 'Junior College', 'Private Institution', 'Technical & Vocational', 'University'];
+
+export { STATUSES, TAGS, ADMIN_PAGES, NAV_PAGES, FILTER_OPTIONS, FILTER_CONJUNCTIONS, SCHOOL_TYPES };
