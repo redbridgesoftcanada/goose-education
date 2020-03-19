@@ -101,7 +101,7 @@ function ListOfSchools(props) {
                                     <Grid item xs={3} md={3}>
                                     <img
                                         className={classes.image}
-                                        src={require(`../assets/img/${school.image}`)}
+                                        src={(school.image.includes('firebase')) ? school.image : require(`../assets/img/${school.image}`)}
                                         alt='school-logo'
                                     />
                                     </Grid>

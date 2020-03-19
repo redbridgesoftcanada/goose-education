@@ -58,7 +58,8 @@ function SchoolInformation(props) {
         <>
             <Container>
                 <img className={classes.image} alt='school logo'
-                    src={require(`../assets/img/${(Object.entries(selectedSchool).length && selectedSchool.image) ? selectedSchool.image: 'flogo.png'}`)}
+                    src={(selectedSchool.image.includes('firebase')) ? selectedSchool.image : require(`../assets/img/${selectedSchool.image}`)}
+                    // src={require(`../assets/img/${(Object.entries(selectedSchool).length && selectedSchool.image) ? selectedSchool.image: 'flogo.png'}`)}
                 />
                 <Table>
                     <TableHead>
