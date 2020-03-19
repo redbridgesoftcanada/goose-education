@@ -28,6 +28,10 @@ function toggleReducer(state, action) {
     case "RESET_STATE":
       const initialState = payload;
       return {...initialState}
+
+    case "EDIT_STATE":
+      const { image, ...prepopulateForm } = payload;
+      return {...prepopulateForm, activeStep: 0, isEdit: true, isLoading: false, image: ""}
     
     case "INIT_SAVE":
       return {...state, isLoading: true}
@@ -137,7 +141,7 @@ function getStepContent(step, state, dispatch) {
           <FormLabel component="legend">Institution Type</FormLabel>
           <SelectValidator
             variant="outlined"
-            // displayEmpty
+            displayEmpty
             name="type" 
             defaultValue={state.type}
             value={state.type}
@@ -245,6 +249,7 @@ function SchoolsComposeForm(props) {
   }
 
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+  console.log('state ', state)
   const classes = useStyles();
 
   const steps = ["General", "School Information", "School Guide"];
@@ -277,7 +282,7 @@ function SchoolsComposeForm(props) {
         }, { merge: true })
         .then(() => {
           dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
-          setSnackbarMessage("New school successfully created!");
+          !isEdit ? setSnackbarMessage("Created school successfully!") : setSnackbarMessage("Updated school successfully!");
           onDialogClose();
     })});
     event.preventDefault();
@@ -285,15 +290,13 @@ function SchoolsComposeForm(props) {
   }
 
   useEffect(() => {
-    setSnackbarMessage("New school successfully created!");
-    ValidatorForm.addValidationRule("isRequiredUpload", value => {
-      if (!value || value.length === 0) {
-        return false;
-      }
-      return true;
-    });
+    const prevContent = props.prevContent;
+    if (prevContent) {
+      dispatch({type:"EDIT_STATE", payload: prevContent});
+    } else {
+      dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
+    }
 
-    dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
   }, [dialogOpen]);
 
   return (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { CheckBox, CheckBoxOutlineBlank, Add, Delete, Edit } from "@material-ui/icons";
 import { withFirebase } from "../../components/firebase";
@@ -8,14 +8,28 @@ import DeleteConfirmation from '../DeleteConfirmation';
 function Schools(props) {
   const { state, dispatch, listOfSchools, firebase } = props;
 
-  const toggleComposeDialog = () => dispatch({type:'TOGGLE_DIALOG'});
+  const [ selectedSchool, setSelectedSchool ] = useState(null);
+
+  // D I S P A T C H  M E T H O D S
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
+  const toggleComposeDialog = () => dispatch({type: 'TOGGLE_COMPOSE_DIALOG'});
+  const toggleEditDialog = () => dispatch({type: 'TOGGLE_EDIT_DIALOG'});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
   
-  const deleteUser = uid => {
-    firebase.deleteUser(uid).then(function() {
+  const setEditSchool = id => {
+    setSelectedSchool(listOfSchools.find(school => school.id === id));
+    toggleEditDialog();
+  }
+  
+  const setDeleteSchool = id => {
+    setSelectedSchool(listOfSchools.find(school => school.id === id));
+    toggleDeleteConfirm();
+  }
+
+  const deleteSchool = () => {
+    firebase.deleteSchool(selectedSchool.id).then(function() {
      dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('User successfully deleted!');
+     setSnackbarMessage('School deleted successfully!');
     }).catch(function(error) {
       console.log(error)
     });
@@ -23,8 +37,17 @@ function Schools(props) {
 
   return (
     <>
-      <Button size="small" variant="contained" color="secondary" startIcon={<Add/>} id="create" onClick={toggleComposeDialog}>Create</Button>
-      <AdminComposeDialog open={state.composeDialogOpen} onClose={toggleComposeDialog} setSnackbarMessage={setSnackbarMessage}/>
+      {/* C R E A T E */}
+      <Button size="small" variant="contained" color="secondary" startIcon={<Add/>} onClick={toggleComposeDialog}>Create</Button>
+      <AdminComposeDialog formType="school" isEdit={false} open={state.composeDialogOpen} onClose={toggleComposeDialog} setSnackbarMessage={setSnackbarMessage}/>
+
+      {/* E D I T */}
+      <AdminComposeDialog prevContent={selectedSchool} formType="school" isEdit={true} open={state.editDialogOpen} onClose={toggleEditDialog} setSnackbarMessage={setSnackbarMessage}/>
+
+      {/* D E L E T E */}
+      <DeleteConfirmation deleteType='admin_school' open={state.deleteConfirmOpen} 
+      handleDelete={deleteSchool} 
+      onClose={toggleDeleteConfirm}/>
 
       <Table size="small">
         <TableHead>
@@ -46,8 +69,8 @@ function Schools(props) {
               <TableCell>{school.location}</TableCell>
               <TableCell>{school.isFeatured ? <CheckBox/> : <CheckBoxOutlineBlank/>}</TableCell>
               <TableCell>
-                <Button size="small" variant="contained" color="secondary" startIcon={<Edit/>}onClick={toggleComposeDialog}>Edit</Button>
-                <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={toggleDeleteConfirm}>Delete</Button>
+                <Button size="small" variant="contained" color="secondary" startIcon={<Edit/>} onClick={() => setEditSchool(school.id)}>Edit</Button>
+                <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={() => setDeleteSchool(school.id)}>Delete</Button>
               </TableCell>
             </TableRow>
           ))}

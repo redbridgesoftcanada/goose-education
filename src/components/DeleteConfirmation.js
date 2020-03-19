@@ -21,6 +21,11 @@ export default function DeleteConfirmation(props) {
             content = 'Deleted users cannot be recovered.';
             break;
         
+        case 'admin_school':
+            title = 'Delete this school?';
+            content = 'Deleted schools cannot be recovered.';
+            break;
+        
         default:
             title = 'Delete this comment?';
             content = 'Deleted comments cannot be recovered.';

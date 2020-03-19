@@ -82,6 +82,7 @@ class Firebase {
   // S C H O O L S 
   schools = () => this.db.collection("schools");
   school = schoolId => this.db.doc(`schools/${schoolId}`);
+  deleteSchool = schoolId => this.db.doc(`schools/${schoolId}`).delete();
 
   // A P P L I C A T I O N S
   schoolApplications = () => this.db.collection("schoolApplications");

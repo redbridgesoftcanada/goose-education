@@ -16,7 +16,6 @@ function preventDefault(event) {
   event.preventDefault();
 }
 
-
 function toggleReducer(state, action) {
   const { type, payload } = action;
 
@@ -45,9 +44,11 @@ function toggleReducer(state, action) {
       return {...state, [anchorKey]: null}
     }
 
-    case 'TOGGLE_DIALOG':
-      // const dialogKey = (payload.id === 'announce') ? 'editDialogOpen' : 'commentDialogOpen';
-      return {...state, composeDialogOpen: !state.composeDialogOpen}
+    case 'TOGGLE_COMPOSE_DIALOG':
+      return {...state, composeDialogOpen: !state.composeDialogOpen}  
+    
+    case 'TOGGLE_EDIT_DIALOG':
+      return {...state, editDialogOpen: !state.editDialogOpen}
     
     case 'DELETE_CONFIRM':
       return {...state, deleteConfirmOpen: !state.deleteConfirmOpen}
@@ -88,7 +89,7 @@ function TableTemplate(props) {
     snackbarOpen: false,
     snackbarMessage: null,
     composeDialogOpen: false,
-    editDialogOpen: false
+    editDialogOpen: false,
   }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
