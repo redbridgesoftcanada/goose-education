@@ -5,7 +5,7 @@ import { withFirebase } from "../../components/firebase";
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function Accounts(props) {
-  const { state, dispatch, content, firebase } = props;
+  const { state, dispatch, listOfUsers, firebase } = props;
 
   const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {key: 'anchorUserRole', selected: event.currentTarget}});
   const setMenuClose = (event, uid) => dispatch({type: 'MENU_CLOSE', payload: {key: 'anchorUserRole', uid, firebase, selectedRole: event.currentTarget.id}});
@@ -33,7 +33,7 @@ function Accounts(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {content.map((user, i) => (
+          {listOfUsers.map((user, i) => (
             <Fragment key={i}>
               <TableRow>
                 <TableCell>{i + 1}</TableCell>

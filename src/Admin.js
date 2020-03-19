@@ -1,11 +1,11 @@
 import React from 'react';
 import withRoot from './withRoot';
 import { withAuthorization } from './components/session';
-import Dashboard from './views/admin/Dashboard';
+import AdminDashboard from './views/AdminDashboard';
 
 function Admin() {
   return (
-    <Dashboard />
+    <AdminDashboard />
   );
 }
 
