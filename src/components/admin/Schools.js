@@ -57,6 +57,7 @@ function Schools(props) {
             <TableCell>Type</TableCell>
             <TableCell>Location</TableCell>
             <TableCell>Featured</TableCell>
+            <TableCell>Recommended</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -68,6 +69,7 @@ function Schools(props) {
               <TableCell>{school.type}</TableCell>
               <TableCell>{school.location}</TableCell>
               <TableCell>{school.isFeatured ? <CheckBox/> : <CheckBoxOutlineBlank/>}</TableCell>
+              <TableCell>{school.isRecommended ? <CheckBox/> : <CheckBoxOutlineBlank/>}</TableCell>
               <TableCell>
                 <Button size="small" variant="contained" color="secondary" startIcon={<Edit/>} onClick={() => setEditSchool(school.id)}>Edit</Button>
                 <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={() => setDeleteSchool(school.id)}>Delete</Button>
