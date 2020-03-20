@@ -26,7 +26,7 @@ function toggleReducer(state, action) {
       return {...state, [anchorKey]: selectedMenu}
     }
     
-    case 'MENU_CLOSE': {
+    case 'MENU_SELECTED': {
       const anchorKey = payload.key;
       switch (anchorKey) {
         case "anchorUserRole": {
@@ -48,8 +48,12 @@ function toggleReducer(state, action) {
           firebase.schoolApplication(authorId).update({status: selectedStatus});
           return {...state, anchorApplicationStatus: null}
         }
-
       }
+    }
+
+    case 'MENU_CLOSE': {
+      const anchorKey = payload;
+      return {...state, [anchorKey]: null}
     }
 
     case 'TOGGLE_COMPOSE_DIALOG':

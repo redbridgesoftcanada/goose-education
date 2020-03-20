@@ -7,8 +7,24 @@ import DeleteConfirmation from '../DeleteConfirmation';
 function Accounts(props) {
   const { state, dispatch, listOfUsers, firebase } = props;
 
-  const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {key: 'anchorUserRole', selected: event.currentTarget}});
-  const setMenuClose = (event, uid) => dispatch({type: 'MENU_CLOSE', payload: {key: 'anchorUserRole', uid, firebase, selectedRole: event.currentTarget.id}});
+  const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {
+    key: 'anchorUserRole', 
+    selected: event.currentTarget }
+  });
+
+  const setMenuClose = (event, uid) => {
+    if (uid) {
+      dispatch({type: 'MENU_SELECTED', payload: {
+        key: 'anchorUserRole', 
+        selectedRole: event.currentTarget.id,
+        uid, 
+        firebase }
+      });
+    } else {
+      dispatch({type:'MENU_CLOSE', payload: "anchorUserRole"});
+    }
+  }
+  
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
   const deleteUser = uid => {
@@ -44,7 +60,6 @@ function Accounts(props) {
                     {user.roles["admin"] ? "Admin" : user.roles["supervisor"] ? "Supervisor" : "User"}
                   </Button>
                   <Menu
-                    id="menu"
                     anchorEl={state.anchorUserRole}
                     keepMounted
                     open={Boolean(state.anchorUserRole)}
@@ -53,12 +68,10 @@ function Accounts(props) {
                     <MenuItem id="supervisor" onClick={event => setMenuClose(event, user.id)}>Supervisor</MenuItem>
                     <MenuItem id="user" onClick={event => setMenuClose(event, user.id)}>User</MenuItem>
                   </Menu>
-
                 </TableCell>
                 <TableCell>
                   {!user.roles["admin"] ? 
                     <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={toggleDeleteConfirm}>Delete</Button>
-                    // <IconButton size="small" variant="contained" color="secondary"><Delete/></IconButton>
                   : 
                   "Please contact management about any changes to the admin user."}
                 </TableCell>

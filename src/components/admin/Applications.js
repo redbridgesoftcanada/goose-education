@@ -8,8 +8,23 @@ import { STATUSES } from "../../constants/constants";
 function Applications(props) {
   const { state, dispatch, listOfApplications, firebase } = props;
 
-  const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {key: 'anchorApplicationStatus', selected: event.currentTarget}});
-  const setMenuClose = (event, authorId) => dispatch({type: 'MENU_CLOSE', payload: {key: 'anchorApplicationStatus', authorId, firebase, selectedStatus: event.currentTarget.id}});
+  const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {
+    key: 'anchorApplicationStatus', 
+    selected: event.currentTarget }
+  });
+  
+  const setMenuClose = (event, authorId) => {
+    if (authorId) {
+      dispatch({type: 'MENU_SELECTED', payload: {
+        key: 'anchorApplicationStatus', 
+        selectedStatus: event.currentTarget.id,
+        authorId, 
+        firebase }
+      });
+    } else {
+      dispatch({type: 'MENU_CLOSE', payload: 'anchorApplicationStatus'});
+    }
+  }
 
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
@@ -43,7 +58,6 @@ function Applications(props) {
             <TableCell>
               <Button onClick={setMenuOpen}>{application.status}</Button>
               <Menu
-                id="menu"
                 keepMounted
                 anchorEl={state.anchorApplicationStatus}
                 open={Boolean(state.anchorApplicationStatus)}
