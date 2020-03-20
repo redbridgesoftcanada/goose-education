@@ -87,6 +87,7 @@ class Firebase {
   // A P P L I C A T I O N S
   schoolApplications = () => this.db.collection("schoolApplications");
   schoolApplication = uid => this.db.doc(`schoolApplications/${uid}`);
+  deleteSchoolApplication = uid => this.db.doc(`schoolApplications/${uid}`).delete();
 
   homestayApplications = () => this.db.collection("homestayApplications");
   homestayApplication = uid => this.db.doc(`homestayApplications/${uid}`);

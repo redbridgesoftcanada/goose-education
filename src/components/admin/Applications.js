@@ -1,18 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
+import { Delete, CloudDownload } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import { STATUSES } from "../../constants/constants";
-// import DeleteConfirmation from '../DeleteConfirmation';
+import DeleteConfirmation from '../DeleteConfirmation';
 
 function Applications(props) {
   const { state, dispatch, listOfApplications, firebase } = props;
+
+  const [ selectedApplication, setSelectedApplication ] = useState(null);
+
+  // D I S P A T C H  M E T H O D S
+  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
+  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
   const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {
     key: 'anchorApplicationStatus', 
     selected: event.currentTarget }
   });
-  
+
   const setMenuClose = (event, authorId) => {
     if (authorId) {
       dispatch({type: 'MENU_SELECTED', payload: {
@@ -26,12 +33,15 @@ function Applications(props) {
     }
   }
 
-  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
-  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
-  const deleteUser = uid => {
-    firebase.deleteUser(uid).then(function() {
+  const setDeleteApplication = id => {
+    setSelectedApplication(listOfApplications.find(application => application.authorID === id));
+    toggleDeleteConfirm();
+  }
+
+  const deleteApplication = () => {
+    firebase.deleteSchoolApplication(selectedApplication.authorID).then(function() {
      dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('User successfully deleted!');
+     setSnackbarMessage('Application successfully deleted!');
     }).catch(function(error) {
       console.log(error)
     });
@@ -70,11 +80,18 @@ function Applications(props) {
                 })}
               </Menu>
             </TableCell>
-            <TableCell>Download, Delete</TableCell>
+            <TableCell>
+              <Button size="small" variant="contained" color="secondary" startIcon={<CloudDownload/>} onClick={()=>console.log('Clicked')}>Download</Button>
+              <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={() => setDeleteApplication(application.authorID)}>Delete</Button>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
       </Table>
+
+      <DeleteConfirmation deleteType='admin_application' open={state.deleteConfirmOpen} 
+      handleDelete={deleteApplication} 
+      onClose={toggleDeleteConfirm}/>
     </>
   )
 }

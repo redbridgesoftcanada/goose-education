@@ -25,7 +25,12 @@ export default function DeleteConfirmation(props) {
             title = 'Delete this school?';
             content = 'Deleted schools cannot be recovered.';
             break;
-        
+
+        case 'admin_application':
+            title = 'Delete this application?';
+            content = 'Deleted applications cannot be recovered.';
+            break;
+            
         default:
             title = 'Delete this comment?';
             content = 'Deleted comments cannot be recovered.';
