@@ -1,14 +1,16 @@
 import React from "react";
-import { Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
+import { Button, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
+import { STATUSES } from "../../constants/constants";
 // import DeleteConfirmation from '../DeleteConfirmation';
 
 function Applications(props) {
-  const { state, dispatch, content, firebase } = props;
+  const { state, dispatch, listOfApplications, firebase } = props;
 
-  const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: event.currentTarget});
-  const setMenuClose = (event, uid) => dispatch({type: 'MENU_CLOSE', payload: {uid, firebase, selectedRole: event.currentTarget.id}});
+  const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {key: 'anchorApplicationStatus', selected: event.currentTarget}});
+  const setMenuClose = (event, authorId) => dispatch({type: 'MENU_CLOSE', payload: {key: 'anchorApplicationStatus', authorId, firebase, selectedStatus: event.currentTarget.id}});
+
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
   const deleteUser = uid => {
@@ -33,13 +35,28 @@ function Applications(props) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {content.map((resource, i) => (
+        {listOfApplications.map((application, i) => (
           <TableRow key={i}>
             <TableCell>{i + 1}</TableCell>
-            <TableCell>{resource.firstName} {resource.lastName}</TableCell>
-            <TableCell>{format(resource.createdAt, "Pp")}</TableCell>
-            <TableCell>{resource.status}</TableCell>
-            <TableCell>Download, Change Status, Delete</TableCell>
+            <TableCell>{application.firstName} {application.lastName}</TableCell>
+            <TableCell>{format(application.createdAt, "Pp")}</TableCell>
+            <TableCell>
+              <Button onClick={setMenuOpen}>{application.status}</Button>
+              <Menu
+                id="menu"
+                keepMounted
+                anchorEl={state.anchorApplicationStatus}
+                open={Boolean(state.anchorApplicationStatus)}
+                onClose={event => setMenuClose(event, null)}
+              >
+                {STATUSES.map((status, i) => {
+                  return (
+                    <MenuItem key={i} id={status} onClick={event => setMenuClose(event, application.authorID)}>{status}</MenuItem>
+                  )
+                })}
+              </Menu>
+            </TableCell>
+            <TableCell>Download, Delete</TableCell>
           </TableRow>
         ))}
       </TableBody>

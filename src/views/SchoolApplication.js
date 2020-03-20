@@ -5,7 +5,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
 import { withAuthorization } from '../components/session';
-import * as APPLICATION from '../constants/constants';
+import { STATUSES } from '../constants/constants';
 
 const styles = theme => ({
     root: {
@@ -88,9 +88,10 @@ function SchoolApplicationBase(props) {
     const onSubmit = event => {
         const { isLoading, isError, agreeToPrivacy, ...applicationForm } = state;
         firebase.schoolApplication(authUser.uid).set({
+            authorID: authUser.uid,
             createdAt: Date.now(),
             updatedAt: Date.now(),
-            status: APPLICATION.STATUSES[0],
+            status: STATUSES[0],
             ...applicationForm
         }, { merge: true }) 
         .then(() => {

@@ -28,20 +28,28 @@ function toggleReducer(state, action) {
     
     case 'MENU_CLOSE': {
       const anchorKey = payload.key;
-      const { firebase, selectedRole, uid } = payload;
+      switch (anchorKey) {
+        case "anchorUserRole": {
+          const { firebase, selectedRole, uid } = payload;
+          if (selectedRole === 'supervisor') {
+            firebase.user(uid).update({
+              roles: { [selectedRole]: true }
+            });
+          } else if (selectedRole === 'user') {
+            firebase.user(uid).update({
+              roles: {}
+            });
+          }
+          return {...state, anchorUserRole: null}
+        }
+        
+        case "anchorApplicationStatus": {
+          const { firebase, selectedStatus, authorId } = payload;
+          firebase.schoolApplication(authorId).update({status: selectedStatus});
+          return {...state, anchorApplicationStatus: null}
+        }
 
-      if (selectedRole === 'supervisor') {
-        firebase.user(uid).update({
-          roles: { [selectedRole]: true }
-        });
-
-      } else if (selectedRole === 'user') {
-        firebase.user(uid).update({
-          roles: {}
-        });
       }
-
-      return {...state, [anchorKey]: null}
     }
 
     case 'TOGGLE_COMPOSE_DIALOG':
@@ -70,9 +78,9 @@ function createContentTable(state, dispatch, type, context) {
       props.listOfSchools = context.listOfSchools;
     return <Schools {...props}/>
 
-    // case "Applications":
-    //   props.listOfApplications = context.listOfApplications
-    //   return <Applications {...props}/>
+    case "Applications":
+      props.listOfApplications = context.listOfApplications
+      return <Applications {...props}/>
 
     default:
       return <Typography>(⁄ ⁄•⁄ω⁄•⁄ ⁄)</Typography>
@@ -85,6 +93,7 @@ function TableTemplate(props) {
   // S T A T E
   const INITIAL_STATE = {
     anchorUserRole: null,
+    anchorApplicationStatus: null,
     deleteConfirmOpen: false,
     snackbarOpen: false,
     snackbarMessage: null,

@@ -1,4 +1,4 @@
-const STATUSES = ['submitted', 'completed', 'tuition required', 'approved'];
+const STATUSES = ['Submitted', 'Pending Review', 'Tuition Required', 'Approved'];
 
 const TAGS = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
