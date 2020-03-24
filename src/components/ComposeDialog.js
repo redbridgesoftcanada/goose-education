@@ -105,7 +105,6 @@ function ComposeDialogBase(props) {
       }, function () {
         uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
           newDoc.set({
-            id: newDoc.id,
             authorID: authUser.uid,
             authorDisplayName: authUser.displayName,
             comments: [],
@@ -123,7 +122,6 @@ function ComposeDialogBase(props) {
     // user does not upload a file with the form
     } else {
       newDoc.set({
-        id: newDoc.id,
         authorID: authUser.uid,
         authorDisplayName: authUser.displayName,
         comments: [],
