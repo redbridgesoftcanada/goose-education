@@ -379,4 +379,17 @@ function sortQuery(type, resources, option) {
     return sortedResources;
 }
 
-export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findUserById, findSchoolApplicationById, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery }
+// O T H E R
+function convertToCamelCase(text) {
+    return text.replace(/_([a-z])/g, function(g) { 
+        return g[1].toUpperCase(); 
+    });
+}
+
+function convertToTitleCase(text) {
+    return text.replace(/(?:_| |\b)(\w)/g, function($1){
+        return $1.toUpperCase().replace('_',' ');
+    });
+}
+
+export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase }
