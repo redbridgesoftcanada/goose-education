@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Button, Menu, MenuItem, Tabs, Tab, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
+import { Button, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../firebase";
-import { STATUSES } from "../../constants/constants";
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function AirportRides(props) {
@@ -15,31 +14,13 @@ function AirportRides(props) {
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
-  const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {
-    key: 'anchorApplicationStatus', 
-    selected: event.currentTarget }
-  });
-
-  const setMenuClose = (event, authorId) => {
-    if (authorId) {
-      dispatch({type: 'MENU_SELECTED', payload: {
-        key: 'anchorApplicationStatus', 
-        selectedStatus: event.currentTarget.id,
-        authorId, 
-        firebase }
-      });
-    } else {
-      dispatch({type: 'MENU_CLOSE', payload: 'anchorApplicationStatus'});
-    }
-  }
-
   const setDeleteApplication = id => {
-    setSelectedApplication(listOfAirportRides.find(application => application.authorID === id));
+    setSelectedApplication(listOfAirportRides.find(application => application.id === id));
     toggleDeleteConfirm();
   }
 
   const deleteApplication = () => {
-    firebase.deleteSchoolApplication(selectedApplication.authorID).then(function() {
+    firebase.deleteAirportRideApplication(selectedApplication.id).then(function() {
      dispatch({type: 'DELETE_CONFIRM'});
      setSnackbarMessage('Application successfully deleted!');
     }).catch(function(error) {

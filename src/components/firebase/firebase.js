@@ -91,9 +91,11 @@ class Firebase {
 
   homestayApplications = () => this.db.collection("homestayApplications");
   homestayApplication = uid => this.db.doc(`homestayApplications/${uid}`);
+  deleteHomestayApplication = uid => this.db.doc(`homestayApplications/${uid}`).delete();
 
   airportRideApplications = () => this.db.collection("airportRideApplications");
   airportRideApplication = uid => this.db.doc(`airportRideApplications/${uid}`);
+  deleteAirportRideApplication = uid => this.db.doc(`airportRideApplications/${uid}`).delete();
 
   // A N N O U N C E M E N T S
   announcements = () => this.db.collection("announcements");
