@@ -5,6 +5,8 @@ import { DatabaseContext } from '../../components/database';
 import Accounts from '../admin/Accounts';
 import Schools from '../admin/Schools';
 import Applications from '../admin/Applications';
+import Homestays from '../admin/Homestays';
+import AirportRides from '../admin/AirportRides';
 
 const useStyles = makeStyles(theme => ({
   seeMore: {
@@ -83,8 +85,16 @@ function createContentTable(state, dispatch, type, context) {
     return <Schools {...props}/>
 
     case "Applications":
-      props.listOfApplications = context.listOfApplications
+      props.listOfApplications = context.listOfApplications;
       return <Applications {...props}/>
+    
+    case "Homestay":
+      props.listOfHomestays = context.listOfHomestays;
+      return <Homestays {...props}/>
+
+    case "Airport Rides":
+      props.listOfAirportRides = context.listOfAirportRides;
+      return <AirportRides {...props}/>
 
     default:
       return <Typography>(⁄ ⁄•⁄ω⁄•⁄ ⁄)</Typography>
