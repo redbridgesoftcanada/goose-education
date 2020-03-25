@@ -5,7 +5,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker, KeyboardTimePicker } from 
 import { format } from 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { withAuthorization } from '../components/session';
-import { convertToTitleCase } from '../constants/helpers';
+import { convertToCamelCase, convertToTitleCase } from '../constants/helpers';
 import { PERSONAL_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS } from '../constants/constants';
 
 const styles = theme => ({
@@ -29,13 +29,14 @@ function toggleReducer(state, action) {
             const { applicationType, applicationFormFields } = payload;
 
             const prepopulateInputs = {}
-            applicationFormFields.map(field => {
+            applicationFormFields.map(field => { 
+                const formFieldContent = convertToCamelCase(field);
                 if (field.includes('date')) {
-                    prepopulateInputs[field] = format(Date.now(), 'MM/dd/yyyy');
+                    prepopulateInputs[formFieldContent] = format(Date.now(), 'MM/dd/yyyy');
                 } else if (field.includes('time')) {
-                    prepopulateInputs[field] = Date.now();
+                    prepopulateInputs[formFieldContent] = Date.now();
                 } else {
-                    prepopulateInputs[field] = '';
+                    prepopulateInputs[formFieldContent] = '';
                 }
             });
             
@@ -82,6 +83,7 @@ function StudyAbroadServiceApplicationBase(props) {
         agreeToPrivacy: false
     };
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+    console.log(state)
 
     // L O A D  A P P L I C A T I O N  F O R M  F I E L D S
     const match = useRouteMatch();
@@ -121,14 +123,15 @@ function StudyAbroadServiceApplicationBase(props) {
         <Container>
             <form className={classes.root} autoComplete="off" onSubmit={onSubmit}>
                 {applicationFormFields.map((field, i) => {
-                    const title = convertToTitleCase(field);       
+                    const formFieldLabel = convertToTitleCase(field);  
+                    const formFieldContent = convertToCamelCase(field);     
                     if (field.includes('gender')) {
                         return (
                             <Fragment key={i}>
                                 <FormLabel component="legend" className={classes.legend}>Gender</FormLabel>
                                 <RadioGroup
-                                name={field}
-                                defaultValue={state[field]}
+                                name={formFieldContent}
+                                defaultValue={state[formFieldContent]}
                                 onChange={handleUserInput}>
                                     <FormControlLabel value="female" control={<Radio />} label="Female" />
                                     <FormControlLabel value="male" control={<Radio />} label="Male" />
@@ -140,14 +143,14 @@ function StudyAbroadServiceApplicationBase(props) {
                     } else if (field.includes('date')) {
                         return (
                             <MuiPickersUtilsProvider key={i} utils={DateFnsUtils}>
-                                <FormLabel component="legend" className={classes.legend}>{title}</FormLabel>
+                                <FormLabel component="legend" className={classes.legend}>{formFieldLabel}</FormLabel>
                                 <KeyboardDatePicker
                                 variant="inline"
                                 format="MM/dd/yyyy"
                                 margin="normal"
-                                name={field}
-                                value={state[field]}
-                                onChange={date => handleDatePicker(field, date)}
+                                name={formFieldContent}
+                                value={state[formFieldContent]}
+                                onChange={date => handleDatePicker(formFieldContent, date)}
                                 KeyboardButtonProps={{ 'aria-label': 'change date' }}
                                 />
                             </MuiPickersUtilsProvider>
@@ -155,24 +158,24 @@ function StudyAbroadServiceApplicationBase(props) {
                     } else if (field.includes('time')) {
                         return (
                             <MuiPickersUtilsProvider key={i} utils={DateFnsUtils}>
-                                <FormLabel component="legend" className={classes.legend}>{title}</FormLabel>
+                                <FormLabel component="legend" className={classes.legend}>{formFieldLabel}</FormLabel>
                                 <KeyboardTimePicker
                                 variant="inline"
                                 margin="normal"
-                                name={field}
-                                value={state[field]}
-                                onChange={date => handleTimePicker(field, date)}
+                                name={formFieldContent}
+                                value={state[formFieldContent]}
+                                onChange={date => handleTimePicker(formFieldContent, date)}
                                 KeyboardButtonProps={{ 'aria-label': 'change time' }}/>
                             </MuiPickersUtilsProvider>
                         );
                     } else {
                         return (
                             <Fragment key={i}>
-                                <FormLabel component="legend" className={classes.legend}>{title}</FormLabel>
+                                <FormLabel component="legend" className={classes.legend}>{formFieldLabel}</FormLabel>
                                 <OutlinedInput
                                 color="secondary"
-                                name={field}
-                                defaultValue={state[field]}
+                                name={formFieldContent}
+                                defaultValue={state[formFieldContent]}
                                 onChange={handleUserInput}/>
                             </Fragment>
                         );
