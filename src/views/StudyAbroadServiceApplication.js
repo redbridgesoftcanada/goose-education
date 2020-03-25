@@ -30,7 +30,7 @@ function toggleReducer(state, action) {
 
             const prepopulateInputs = {}
             applicationFormFields.map(field => {
-                if (field.includes('flight_date') || field.includes('start_date') || field.includes('end_date')) {
+                if (field.includes('date')) {
                     prepopulateInputs[field] = format(Date.now(), 'MM/dd/yyyy');
                 } else if (field.includes('time')) {
                     prepopulateInputs[field] = Date.now();
@@ -55,7 +55,7 @@ function toggleReducer(state, action) {
 
         case 'TIME_PICKER': {
             const formField = payload.field;
-            const formInput = format(payload.date, 'HH:mm');
+            const formInput = payload.date;
             return {...state, [formField]: formInput}
         }
 
@@ -137,12 +137,11 @@ function StudyAbroadServiceApplicationBase(props) {
                                 </RadioGroup> 
                             </Fragment>
                         );
-                    } else if (field.includes('flight_date') || field.includes('start_date') || field.includes('end_date')) {
+                    } else if (field.includes('date')) {
                         return (
                             <MuiPickersUtilsProvider key={i} utils={DateFnsUtils}>
                                 <FormLabel component="legend" className={classes.legend}>{title}</FormLabel>
                                 <KeyboardDatePicker
-                                disableToolbar
                                 variant="inline"
                                 format="MM/dd/yyyy"
                                 margin="normal"
@@ -174,8 +173,7 @@ function StudyAbroadServiceApplicationBase(props) {
                                 color="secondary"
                                 name={field}
                                 defaultValue={state[field]}
-                                onChange={handleUserInput}
-                                {...(field === 'birth_date' ? { placeholder: 'MM/DD/YYYY' } : { placeholder: '' })}/>
+                                onChange={handleUserInput}/>
                             </Fragment>
                         );
                     }
