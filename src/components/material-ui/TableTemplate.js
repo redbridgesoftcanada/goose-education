@@ -7,6 +7,7 @@ import Schools from '../admin/Schools';
 import Applications from '../admin/Applications';
 import Homestays from '../admin/Homestays';
 import AirportRides from '../admin/AirportRides';
+import GooseTips from '../admin/GooseTips';
 
 const useStyles = makeStyles(theme => ({
   seeMore: {
@@ -72,7 +73,7 @@ function toggleReducer(state, action) {
   }
 }
 
-function createContentTable(state, dispatch, type, context) {
+function createContentTable(state, dispatch, type, context, history) {
   const props = { state, dispatch };
 
   switch(type) {
@@ -96,13 +97,18 @@ function createContentTable(state, dispatch, type, context) {
       props.listOfAirportRides = context.listOfAirportRides;
       return <AirportRides {...props}/>
 
+    case "Goose Study Abroad":
+      props.gooseTips = context.gooseTips;
+      props.history = history;
+      return <GooseTips {...props}/>
+
     default:
       return <Typography>(⁄ ⁄•⁄ω⁄•⁄ ⁄)</Typography>
   }
 }
 
 function TableTemplate(props) {
-  const { type } = props;
+  const { type, history } = props;
 
   // S T A T E
   const INITIAL_STATE = {
@@ -126,7 +132,7 @@ function TableTemplate(props) {
     <Fragment>
       <Title>{type}</Title>
       <DatabaseContext.Consumer>
-        {context => createContentTable(state, dispatch, type, context)}
+        {context => createContentTable(state, dispatch, type, context, history)}
       </DatabaseContext.Consumer>
       <Snackbar
         anchorOrigin={{

@@ -137,7 +137,7 @@ function toggleReducer(state, action) {
   }
 }
 
-export default function AdminDashboard() {
+export default function AdminDashboard(props) {
   
   // S T A T E
   const INITIAL_STATE = {
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
           :
             <Grid item xs={12}>
               <Paper>
-                <TableTemplate type={selectedContent}/>
+                <TableTemplate history={props.history} type={selectedContent}/>
               </Paper>
             </Grid>
           }

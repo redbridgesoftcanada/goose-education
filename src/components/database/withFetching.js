@@ -70,8 +70,11 @@ function withFetching(Component) {
           helpers.findAllSchoolApplications(firebase, setState);
           helpers.findAllHomestayApplications(firebase, setState);
           helpers.findAllAirportRideApplications(firebase, setState);
+          helpers.findAllTips(firebase, setState);
+          break;
 
         default:
+          console.log('No path to fetch data!')
       }
     }, [location.pathname]);
 

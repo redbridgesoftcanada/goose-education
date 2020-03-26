@@ -3,9 +3,9 @@ import withRoot from './withRoot';
 import { withAuthorization } from './components/session';
 import AdminDashboard from './views/AdminDashboard';
 
-function Admin() {
+function Admin(props) {
   return (
-    <AdminDashboard />
+    <AdminDashboard {...props}/>
   );
 }
 
