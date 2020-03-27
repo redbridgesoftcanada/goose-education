@@ -124,8 +124,8 @@ function getStepContent(step, state, dispatch) {
       <>
         <FormHelperText>{description}</FormHelperText>
         <RadioGroup name={name} value={value} onChange={handleTextInput}>
-          <FormControlLabel value="true" control={<Radio/>} label="Yes" />
-          <FormControlLabel value="false" control={<Radio/>} label="No" />
+          <FormControlLabel value={true} control={<Radio/>} label="Yes" />
+          <FormControlLabel value={false} control={<Radio/>} label="No" />
         </RadioGroup>
       </>
     );
@@ -249,7 +249,6 @@ function SchoolsComposeForm(props) {
   }
 
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  console.log('state ', state)
   const classes = useStyles();
 
   const steps = ["General", "School Information", "School Guide"];
