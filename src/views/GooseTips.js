@@ -286,13 +286,13 @@ function GooseTips(props) {
 
                 { gooseTips.length ? 
                     <Grid container>
-                        { paginatedTips.map(tip => {
+                        {paginatedTips.map(tip => {
                             return (
                                 <Grid item xs={12} md={4} key={tip.id} className={classes.background}>
                                     <div id={tip.id} onClick={openTipDialog} className={classes.item}>
                                         <img
                                             className={classes.image}
-                                            src={require(`../assets/img/${tip.image}`)}
+                                            src={(tip.image.includes('firebase')) ? tip.image : require(`../assets/img/${tip.image}`)}
                                             alt="tip-thumbnail"
                                         />
                                         <div className={classes.body}>

@@ -95,6 +95,7 @@ function TipsComposeForm(props) {
         newDoc.set({
           id: newDoc.id,
           author: "최고관리자",
+          comments: [],
           ...!isEdit && { createdAt: Date.now(), views: 0 },
           updatedAt: Date.now(),
           image: downloadURL,
