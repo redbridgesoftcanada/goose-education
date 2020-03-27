@@ -30,7 +30,12 @@ export default function DeleteConfirmation(props) {
             title = 'Delete this application?';
             content = 'Deleted applications cannot be recovered.';
             break;
-            
+        
+        case 'admin_tip':
+            title = 'Delete this tip?';
+            content = 'Deleted tips cannot be recovered.';
+            break;    
+
         default:
             title = 'Delete this comment?';
             content = 'Deleted comments cannot be recovered.';

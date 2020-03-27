@@ -40,10 +40,10 @@ function GooseTips(props) {
     toggleDeleteConfirm();
   }
 
-  const deleteSchool = () => {
-    firebase.deleteSchool(selectedTip.id).then(function() {
+  const deleteTip = () => {
+    firebase.deleteTip(selectedTip.id).then(function() {
      dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('School deleted successfully!');
+     setSnackbarMessage('Tip deleted successfully!');
     }).catch(function(error) {
       console.log(error)
     });
@@ -59,8 +59,8 @@ function GooseTips(props) {
       <AdminComposeDialog formType="tip" isEdit={true} open={state.editDialogOpen} onClose={toggleEditDialog} setSnackbarMessage={setSnackbarMessage} prevContent={selectedTip}/>
 
       {/* D E L E T E */}
-      <DeleteConfirmation deleteType='admin_school' open={state.deleteConfirmOpen} 
-      handleDelete={deleteSchool} 
+      <DeleteConfirmation deleteType='admin_tip' open={state.deleteConfirmOpen} 
+      handleDelete={deleteTip} 
       onClose={toggleDeleteConfirm}/>
 
       <Table size="small">

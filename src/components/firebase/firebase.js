@@ -73,6 +73,7 @@ class Firebase {
   // G O O S E  T I P S
   tips = () => this.db.collection("tips");
   tip = tipId => this.db.doc(`tips/${tipId}`);
+  deleteTip = tipId => this.db.doc(`tips/${tipId}`).delete();
 
   // A R T I C L E S ( N e t w o r k i n g ) 
   articles = () => this.db.collection("articles");
