@@ -2,6 +2,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@material-ui/core';
 import SchoolsComposeForm from './SchoolsComposeForm';
 import TipsComposeForm from './TipsComposeForm';
+import ArticleComposeForm from './ArticlesComposeForm';
 
 export default function AdminComposeDialog(props) {
   const { open, onClose, setSnackbarMessage, formType, isEdit } = props;
@@ -21,6 +22,9 @@ export default function AdminComposeDialog(props) {
 
       case 'tip':
         return <TipsComposeForm {...dialogProps}/>
+      
+      case 'article':
+        return <ArticleComposeForm {...dialogProps}/>
     }
   }
 

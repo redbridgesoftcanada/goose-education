@@ -8,6 +8,7 @@ import Applications from '../admin/Applications';
 import Homestays from '../admin/Homestays';
 import AirportRides from '../admin/AirportRides';
 import GooseTips from '../admin/GooseTips';
+import Networking from '../admin/Networking';
 
 const useStyles = makeStyles(theme => ({
   seeMore: {
@@ -98,9 +99,13 @@ function createContentTable(state, dispatch, type, context, history) {
       return <AirportRides {...props}/>
 
     case "Goose Study Abroad":
-      props.gooseTips = context.gooseTips;
+      props.listOfTips = context.gooseTips;
       props.history = history;
       return <GooseTips {...props}/>
+
+    case "Networking":
+      props.listOfArticles = context.taggedArticles;
+      return <Networking {...props}/>
 
     default:
       return <Typography>(⁄ ⁄•⁄ω⁄•⁄ ⁄)</Typography>
