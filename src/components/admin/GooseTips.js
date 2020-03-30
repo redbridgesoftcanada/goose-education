@@ -7,7 +7,7 @@ import AdminComposeDialog from './AdminComposeDialog';
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function GooseTips(props) {
-  const { state, dispatch, gooseTips, firebase, history } = props;
+  const { state, dispatch, listOfTips, firebase, history } = props;
 
   const [ selectedTip, setSelectedTip ] = useState(null);
 
@@ -18,7 +18,7 @@ function GooseTips(props) {
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
   
   const handleRedirect = id => {
-    setSelectedTip(gooseTips.find(tip => tip.id === id));
+    setSelectedTip(listOfTips.find(tip => tip.id === id));
     const redirectPath = {
       pathname: '/goose', 
       state: {
@@ -31,12 +31,12 @@ function GooseTips(props) {
   }
 
   const setEditTip = id => {
-    setSelectedTip(gooseTips.find(school => school.id === id));
+    setSelectedTip(listOfTips.find(school => school.id === id));
     toggleEditDialog();
   }
   
   const setDeleteTip = id => {
-    setSelectedTip(gooseTips.find(school => school.id === id));
+    setSelectedTip(listOfTips.find(school => school.id === id));
     toggleDeleteConfirm();
   }
 
@@ -74,7 +74,7 @@ function GooseTips(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {gooseTips.map((tip, i) => (
+          {listOfTips.map((tip, i) => (
             <TableRow key={i}>
               <TableCell>{i + 1}</TableCell>
               <TableCell>{tip.title}</TableCell>

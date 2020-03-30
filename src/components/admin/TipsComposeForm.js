@@ -152,7 +152,7 @@ function TipsComposeForm(props) {
           validators={["isRequiredUpload"]}
           errorMessages={["Please upload an image."]} />
 
-        <FormHelperText>Display this institution on the home page.</FormHelperText>
+        <FormHelperText>Display this tip on the home page.</FormHelperText>
         <RadioGroup name="isFeatured" defaultValue={state.isFeatured} value={state.isFeatured} onChange={handleTextInput}>
           <FormControlLabel value={true} control={<Radio/>} label="Yes" />
           <FormControlLabel value={false} control={<Radio/>} label="No" />
