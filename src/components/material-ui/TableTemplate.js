@@ -8,7 +8,9 @@ import Applications from '../admin/Applications';
 import Homestays from '../admin/Homestays';
 import AirportRides from '../admin/AirportRides';
 import GooseTips from '../admin/GooseTips';
-import Networking from '../admin/Networking';
+import Articles from '../admin/Articles';
+import Announcements from '../admin/Announcements';
+import Messages from '../admin/Messages';
 
 const useStyles = makeStyles(theme => ({
   seeMore: {
@@ -98,17 +100,25 @@ function createContentTable(state, dispatch, type, context, history) {
       props.listOfAirportRides = context.listOfAirportRides;
       return <AirportRides {...props}/>
 
-    case "Goose Study Abroad":
+    case "Goose Tips":
       props.listOfTips = context.gooseTips;
       props.history = history;
       return <GooseTips {...props}/>
 
-    case "Networking":
+    case "Articles":
       props.listOfArticles = context.taggedArticles;
-      return <Networking {...props}/>
+      return <Articles {...props}/>
+    
+    case "Announcements":
+      props.listOfAnnouncements = context.listOfAnnouncements;
+      return <Announcements {...props}/>
+
+    case "Messages":
+      props.listOfMessages = context.listOfMessages;
+      return <Messages {...props}/>
 
     default:
-      return <Typography>(⁄ ⁄•⁄ω⁄•⁄ ⁄)</Typography>
+      return <Typography>Sorry! No corresponding content to display.</Typography>
   }
 }
 

@@ -72,6 +72,8 @@ function withFetching(Component) {
           helpers.findAllAirportRideApplications(firebase, setState);
           helpers.findAllTips(firebase, setState);
           helpers.findAllArticles(TAGS, firebase, setState);
+          helpers.findAllAnnouncements(firebase, setState);
+          helpers.findAllMessages(firebase, setState);
           break;
 
         default:

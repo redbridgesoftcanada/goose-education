@@ -4,8 +4,8 @@
 import React, { useReducer } from "react";
 import clsx from "clsx";
 import { AppBar, Badge, Box, Container, Divider, Drawer, Grid, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Paper, Toolbar, Typography, makeStyles } from "@material-ui/core";
-import { ChevronLeft, Menu, Notifications, Dashboard, People, Layers, Assignment, AirplanemodeActive, Home, School, Settings } from "@material-ui/icons";
-import { ADMIN_PAGES, NAV_PAGES } from "../constants/constants";
+import { ChevronLeft, Menu, Notifications, Dashboard, People, Layers, Assignment, AirplanemodeActive, Home, School, Settings, QuestionAnswer, NewReleases, Description, LiveHelp } from "@material-ui/icons";
+import { ADMIN_PAGES } from "../constants/constants";
 import Chart from "../components/material-ui/Chart";
 import Deposits from "../components/material-ui/Deposits";
 import TableTemplate from "../components/material-ui/TableTemplate";
@@ -117,6 +117,14 @@ function loadMenuIcons(page) {
       return <Home/>
     case "Airport Rides":
       return <AirplanemodeActive/>
+    case "Goose Tips":
+      return <LiveHelp/>
+    case "Articles":
+      return <Description/>
+    case "Announcements":
+      return <NewReleases/>
+    case "Messages":
+      return <QuestionAnswer/>
     default:
       return <Settings/>
   }
@@ -190,25 +198,12 @@ export default function AdminDashboard(props) {
           </IconButton>
         </div>
         <Divider />
-
         <List>
           {ADMIN_PAGES.map((page, i) => {
             return (
             <ListItem button key={i} id={page} onClick={toggleDisplayContent}>
               <ListItemIcon>
                 {loadMenuIcons(page)}
-              </ListItemIcon>
-              <ListItemText primary={page} />
-            </ListItem>
-          )})}
-        </List>
-        <Divider />
-        <List>
-          {NAV_PAGES.slice(1).map((page, i) => {
-            return (
-            <ListItem button key={i} id={page} onClick={toggleDisplayContent}>
-              <ListItemIcon>
-                <Assignment/>
               </ListItemIcon>
               <ListItemText primary={page} />
             </ListItem>
@@ -244,9 +239,9 @@ export default function AdminDashboard(props) {
             </>
           :
             <Grid item xs={12}>
-              <Paper>
+              {/* <Paper> */}
                 <TableTemplate history={props.history} type={selectedContent}/>
-              </Paper>
+              {/* </Paper> */}
             </Grid>
           }
 
