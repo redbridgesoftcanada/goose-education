@@ -38,6 +38,11 @@ const LoginFormBase = props => {
 
     const onSubmit = event => {
       firebase.doSignInWithEmailAndPassword(email, password)
+      .then(authUser => {
+        const user = authUser.user;
+        const lastSignInTime = Number(user.metadata.b);
+        return firebase.user(user.uid).set({lastSignInTime}, {merge: true});
+      })
       .then(() => {
         setState({...INITIAL_STATE});
         history.push('/');
