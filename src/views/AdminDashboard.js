@@ -3,12 +3,13 @@
 
 import React, { useReducer } from "react";
 import clsx from "clsx";
-import { AppBar, Badge, Box, Container, Divider, Drawer, Grid, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Paper, Toolbar, Typography, makeStyles } from "@material-ui/core";
-import { ChevronLeft, Menu, Notifications, Dashboard, People, Layers, Assignment, AirplanemodeActive, Home, School, Settings, QuestionAnswer, NewReleases, Description, LiveHelp } from "@material-ui/icons";
+import { AppBar, Badge, Box, Button, Container, Divider, Drawer, Grid, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Paper, Snackbar,  Toolbar, Typography, makeStyles } from "@material-ui/core";
+import { ChevronLeft, Menu as MenuIcon, Notifications, Dashboard, People, Layers, Assignment, AirplanemodeActive, Home, School, Settings, QuestionAnswer, NewReleases, Description, LiveHelp } from "@material-ui/icons";
 import { ADMIN_PAGES } from "../constants/constants";
 import Chart from "../components/material-ui/Chart";
 import Deposits from "../components/material-ui/Deposits";
 import TableTemplate from "../components/material-ui/TableTemplate";
+import AdminComposeDialog from '../components/admin/AdminComposeDialog';
 
 function Copyright() {
   return (
@@ -139,6 +140,25 @@ function toggleReducer(state, action) {
     
     case "TOGGLE_CONTENT":
       return { ...state, selectedContent: payload }
+
+    case 'TOGGLE_COMPOSE_DIALOG':
+      return {...state, composeDialogOpen: !state.composeDialogOpen}  
+
+    case "COMPOSE_ANCHOR":
+      return { ...state, composeMenuAnchor: payload }
+
+    case "COMPOSE_FORM":
+      const selectedMenu = payload.id;
+      if (selectedMenu) {
+        // set composeForm property for <AdminComposeDialog> component
+        return { ...state, composeFormType: selectedMenu, composeDialogOpen: true, composeMenuAnchor: null }  
+      } else {
+        // nothing chosen;
+        return { ...state, composeFormType: null, composeDialogOpen: false, composeMenuAnchor: null }
+      }
+
+    case 'SNACKBAR_OPEN':
+      return {...state, snackbarOpen: !state.snackbarOpen, snackbarMessage: payload}      
   
     default:
       console.log("No matching reducer type in Admin Dashboard.");
@@ -146,18 +166,26 @@ function toggleReducer(state, action) {
 }
 
 export default function AdminDashboard(props) {
-  
   // S T A T E
   const INITIAL_STATE = {
     drawerOpen: true,
     selectedContent: ADMIN_PAGES[0],
+    composeMenuAnchor: null,
+    composeFormType: null,
+    composeDialogOpen: false,
+    snackbarOpen: false,
+    snackbarMessage: null
   }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { drawerOpen, selectedContent } = state;
 
   // D I S P A T C H  M E T H O D S
   const toggleDrawer = () => dispatch({type: "TOGGLE_DRAWER"});
   const toggleDisplayContent = event => dispatch({type: "TOGGLE_CONTENT", payload: event.currentTarget.id});
+  const toggleComposeDialog = () => dispatch({type: 'TOGGLE_COMPOSE_DIALOG'});
+
+  const setComposeMenu = event => dispatch({type: "COMPOSE_ANCHOR", payload: event.currentTarget});
+  const setComposeForm = event => dispatch({type: "COMPOSE_FORM", payload: event.currentTarget});
+  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
 
   // S T Y L I N G 
   const classes = useStyles();
@@ -165,32 +193,65 @@ export default function AdminDashboard(props) {
 
   return (
     <div className={classes.root}>
-      <AppBar position="absolute" className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}>
+      <AppBar position="absolute" className={clsx(classes.appBar, state.drawerOpen && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
           <IconButton
             edge="start"
             color="inherit"
             onClick={toggleDrawer}
-            className={clsx(classes.menuButton, drawerOpen && classes.menuButtonHidden)}
+            className={clsx(classes.menuButton, state.drawerOpen && classes.menuButtonHidden)}
           >
-            <Menu />
+            <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             Goose Education
           </Typography>
+          
+          {/* C R E A T E */}
+          <Button variant="outlined" color="secondary" onClick={setComposeMenu}>Create</Button>
+          <Menu
+            keepMounted
+            anchorEl={state.composeMenuAnchor}
+            open={Boolean(state.composeMenuAnchor)}
+            onClose={setComposeForm}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+            disableScrollLock
+          >
+            <MenuItem id="school" onClick={setComposeForm}>New School</MenuItem>
+            <MenuItem id="tip" onClick={setComposeForm}>New Tip</MenuItem>
+            <MenuItem id="article" onClick={setComposeForm}>New Article</MenuItem>
+            <MenuItem id="announce" onClick={setComposeForm}>New Announcement</MenuItem>
+          </Menu>
+
+          <AdminComposeDialog formType={state.composeFormType} isEdit={false} open={state.composeDialogOpen} onClose={toggleComposeDialog} setSnackbarMessage={setSnackbarMessage}/>
+
+          {/* N O T I F I C A T I O N S */}
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
               <Notifications />
             </Badge>
           </IconButton>
+
+          <Snackbar
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            open={state.snackbarOpen}
+            autoHideDuration={1000}
+            onClose={() => setSnackbarMessage(null)}
+            message={state.snackbarMessage}/>
+
         </Toolbar>
       </AppBar>
       <Drawer
         variant="permanent"
         classes={{
-          paper: clsx(classes.drawerPaper, !drawerOpen && classes.drawerPaperClose),
+          paper: clsx(classes.drawerPaper, !state.drawerOpen && classes.drawerPaperClose),
         }}
-        open={drawerOpen}
+        open={state.drawerOpen}
       >
         <div className={classes.toolbarIcon}>
           <IconButton onClick={toggleDrawer}>
@@ -216,7 +277,7 @@ export default function AdminDashboard(props) {
           <Container maxWidth="lg" className={classes.container}>
             <Grid container spacing={3}>
             
-            {selectedContent === "Overview" ?
+            {state.selectedContent === "Overview" ?
             <>
               {/* Chart */}
               <Grid item xs={12} md={8} lg={9}>
@@ -230,18 +291,12 @@ export default function AdminDashboard(props) {
                   <Deposits />
                 </Paper>
               </Grid>
-              {/* Recent Orders */}
-              <Grid item xs={12}>
-                <Paper className={classes.paper}>
-                  {/* <TableTemplate /> */}
-                </Paper>
-              </Grid>
             </>
           :
             <Grid item xs={12}>
-              {/* <Paper> */}
-                <TableTemplate history={props.history} type={selectedContent}/>
-              {/* </Paper> */}
+              <Paper>
+                <TableTemplate history={props.history} type={state.selectedContent}/>
+              </Paper>
             </Grid>
           }
 
