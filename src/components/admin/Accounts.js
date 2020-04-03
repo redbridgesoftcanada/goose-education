@@ -1,12 +1,17 @@
-import React, { Fragment } from "react";
-import { Button, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { Delete } from "@material-ui/icons";
+import React, { Fragment, useState } from "react";
+import { Button, IconButton, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
+import { Clear } from "@material-ui/icons";
+import { format } from 'date-fns';
 import { withFirebase } from "../../components/firebase";
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function Accounts(props) {
   const { state, dispatch, listOfUsers, firebase } = props;
 
+  // S T A T E 
+  const [ selectedUser, setSelectedUser ] = useState(null);
+
+  // D I S P A T C H  M E T H O D S
   const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {
     key: 'anchorUserRole', 
     selected: event.currentTarget }
@@ -27,8 +32,14 @@ function Accounts(props) {
   
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
-  const deleteUser = uid => {
-    firebase.deleteUser(uid).then(function() {
+  
+  const setDeleteUser = uid => {
+    setSelectedUser(listOfUsers.find(user => user.id === uid));
+    toggleDeleteConfirm();
+  }
+  
+  const deleteUser = () => {
+    firebase.deleteUser(selectedUser.id).then(function() {
      dispatch({type: 'DELETE_CONFIRM'});
      setSnackbarMessage('User successfully deleted!');
     }).catch(function(error) {
@@ -38,23 +49,35 @@ function Accounts(props) {
 
   return (
     <>
+      {/* D E L E T E */}
+      <DeleteConfirmation deleteType='admin_user' open={state.deleteConfirmOpen} 
+      handleDelete={deleteUser} 
+      onClose={toggleDeleteConfirm}/>
+      
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>No</TableCell>
-            <TableCell>Name</TableCell>
+            <TableCell>First Name</TableCell>
+            <TableCell>Last Name</TableCell>
+            <TableCell>Username</TableCell>
             <TableCell>Email</TableCell>
+            <TableCell>Phone</TableCell>
+            <TableCell>Mobile</TableCell>
             <TableCell>Roles</TableCell>
-            <TableCell>Actions</TableCell>
+            <TableCell>Latest Activity</TableCell>
+            <TableCell>Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {listOfUsers.map((user, i) => (
             <Fragment key={i}>
-              <TableRow>
-                <TableCell>{i + 1}</TableCell>
-                <TableCell>{user.firstName} {user.lastName}</TableCell>
+              <TableRow hover>
+                <TableCell>{user.firstName}</TableCell>
+                <TableCell>{user.lastName}</TableCell>
+                <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
+                <TableCell>{user.phoneNumber}</TableCell>
+                <TableCell>{user.mobileNumber}</TableCell>
                 <TableCell>
                   <Button disabled={user.roles['admin']} onClick={setMenuOpen}>
                     {user.roles["admin"] ? "Admin" : user.roles["supervisor"] ? "Supervisor" : "User"}
@@ -69,17 +92,17 @@ function Accounts(props) {
                     <MenuItem id="user" onClick={event => setMenuClose(event, user.id)}>User</MenuItem>
                   </Menu>
                 </TableCell>
+                <TableCell>{format(user.lastSignInTime, 'Pp')}</TableCell>
                 <TableCell>
                   {!user.roles["admin"] ? 
-                    <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={toggleDeleteConfirm}>Delete</Button>
+                    // <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={() => setDeleteUser(user.id)}>Delete</Button>
+                    <IconButton color="secondary" onClick={() => setDeleteUser(user.id)}>
+                      <Clear/>
+                    </IconButton>
                   : 
                   "Please contact management about any changes to the admin user."}
                 </TableCell>
               </TableRow>
-
-              <DeleteConfirmation deleteType='admin_user' open={state.deleteConfirmOpen} 
-              handleDelete={() => deleteUser(user.id)} 
-              onClose={toggleDeleteConfirm}/>
             </Fragment>
           ))}
         </TableBody>
