@@ -1,9 +1,9 @@
 import React, { useEffect, useReducer } from "react";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { Button, CircularProgress, FormLabel, FormControlLabel, FormHelperText, MenuItem, OutlinedInput, Paper, RadioGroup, Radio, Stepper, Step, StepLabel, StepContent, makeStyles } from "@material-ui/core";
-import { FileValidator, EditorValidator, SelectValidator } from "../../constants/customValidators";
-import { SCHOOL_TYPES } from "../../constants/constants";
-import { withFirebase } from "../../components/firebase";
+import { FileValidator, EditorValidator, SelectValidator } from "../../../constants/customValidators";
+import { SCHOOL_TYPES } from "../../../constants/constants";
+import { withFirebase } from "../../firebase";
 
 const useStyles = makeStyles(theme => ({
   root: {

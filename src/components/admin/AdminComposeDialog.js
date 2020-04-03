@@ -1,9 +1,9 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@material-ui/core';
-import SchoolsComposeForm from './SchoolsComposeForm';
-import TipsComposeForm from './TipsComposeForm';
-import ArticleComposeForm from './ArticlesComposeForm';
-import UploadAttachmentForm from './UploadAttachmentForm';
+import SchoolsComposeForm from './forms/SchoolsComposeForm';
+import TipsComposeForm from './forms/TipsComposeForm';
+import ArticleComposeForm from './forms/ArticlesComposeForm';
+import UploadAttachmentForm from './forms/UploadAttachmentForm';
 
 export default function AdminComposeDialog(props) {
   const { open, onClose, setSnackbarMessage, formType, isEdit } = props;

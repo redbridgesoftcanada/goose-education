@@ -1,9 +1,9 @@
 import React, { useEffect, useReducer } from "react";
-import { Button, CircularProgress, FormLabel, Input, MenuItem, TextField, makeStyles } from "@material-ui/core";
+import { Button, CircularProgress, FormControlLabel, FormHelperText, FormLabel, MenuItem, RadioGroup, Radio, TextField, makeStyles } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { EditorValidator, SelectValidator } from "../../constants/customValidators";
-import { withFirebase } from "../../components/firebase";
-import { TAGS } from '../../constants/constants';
+import { EditorValidator, FileValidator, SelectValidator } from "../../../constants/customValidators";
+import { withFirebase } from "../../firebase";
+import { TAGS } from '../../../constants/constants';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,8 +30,8 @@ function toggleReducer(state, action) {
       return {...initialState}
 
     case "EDIT_STATE":
-      const { upload, ...prepopulateForm } = payload;
-      return {...prepopulateForm, isEdit: true, isLoading: false, upload: ""}
+      const { image, ...prepopulateForm } = payload;
+      return {...prepopulateForm, isEdit: true, isLoading: false, image: ""}
     
     case "INIT_SAVE":
       return {...state, isLoading: true}
@@ -51,23 +51,23 @@ function toggleReducer(state, action) {
     case "FILE_UPLOAD":
       const uploadFile = payload;
       if (!uploadFile) {
-        return {...state, upload: []}
+        return {...state, image: []}
       }
-      return {...state, upload: uploadFile}
+      return {...state, image: uploadFile}
     
     default:
       console.log("Not a valid dispatch type for Admin Articles Compose Form.")
   }
 }
 
-function UploadAttachmentForm(props) {
-  const { dialogOpen, onDialogClose, setSnackbarMessage, firebase, formType } = props;
+function ArticlesComposeForm(props) {
+  const { dialogOpen, onDialogClose, setSnackbarMessage, firebase } = props;
 
   const INITIAL_STATE = {
     isEdit: false,
     isLoading: false,
     isFeatured: false,
-    upload: "",
+    image: "",
     title: "",
     description: "",
     tag: "",
@@ -84,18 +84,12 @@ function UploadAttachmentForm(props) {
 
   const onSubmit = event => {
     dispatch({type: "INIT_SAVE"});
-    
-    const { isEdit, isLoading, upload, ...newContent } = state;
-    // configure Firestore collection/document/storage locations
-    let newDoc;
-    if (formType === 'announce') {
-      newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
-    } else if (formType === 'message') {
-      newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
-    }
-    const uploadRef = firebase.attachmentsRef(upload);
-    const uploadTask = uploadRef.put(upload);
-
+    // configure Firestore collection/document locations
+    const { isEdit, isLoading, image, ...newArticlesForm } = state;
+    const newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
+    // const formContent = {...newTipsForm}
+    const uploadRef = firebase.imagesRef(image);
+    const uploadTask = uploadRef.put(image);
 
     // user uploads a file with the form (note. empty array overwrites to a File object)
     uploadTask.on("state_changed", function (snapshot) {
@@ -108,17 +102,14 @@ function UploadAttachmentForm(props) {
           authorDisplayName: "최고관리자",
           authorID: 0,
           comments: [],
+          ...!isEdit && { createdAt: Date.now(), views: 0 },
           updatedAt: Date.now(),
-          attachments: downloadURL,
-          ...!isEdit && { 
-            createdAt: Date.now(), 
-            views: 0 
-          },
-          ...newContent
+          image: downloadURL,
+          ...newArticlesForm
         }, { merge: true })
         .then(() => {
           dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
-          !isEdit ? setSnackbarMessage("Created successfully!") : setSnackbarMessage("Updated successfully!");
+          !isEdit ? setSnackbarMessage("Created article successfully!") : setSnackbarMessage("Updated article successfully!");
           onDialogClose();
     })});
     event.preventDefault();
@@ -204,8 +195,20 @@ function UploadAttachmentForm(props) {
           value={state.link2}
           onChange={handleTextInput}/>
 
-        <FormLabel component="legend">Attachment</FormLabel>
-        <Input type="file" disableUnderline onChange={handleFileUpload}/>
+        <FormLabel component="legend">Image</FormLabel>
+        <FileValidator
+          disableUnderline
+          onChange={handleFileUpload}
+          name="file"
+          value={state.image}
+          validators={["isRequiredUpload"]}
+          errorMessages={["Please upload an image."]} />
+
+        <FormHelperText>Display as a featured article on the home page.</FormHelperText>
+        <RadioGroup name="isFeatured" defaultValue={state.isFeatured} value={state.isFeatured} onChange={handleTextInput}>
+          <FormControlLabel value={true} control={<Radio/>} label="Yes" />
+          <FormControlLabel value={false} control={<Radio/>} label="No" />
+        </RadioGroup>
       </div>
 
       <Button type="submit" color="secondary" autoFocus className={classes.button}>
@@ -216,4 +219,4 @@ function UploadAttachmentForm(props) {
   );
 }
 
-export default withFirebase(UploadAttachmentForm);
+export default withFirebase(ArticlesComposeForm);

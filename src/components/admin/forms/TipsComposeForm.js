@@ -1,8 +1,8 @@
 import React, { useEffect, useReducer } from "react";
 import { Button, CircularProgress, FormControlLabel, FormHelperText, FormLabel, RadioGroup, Radio, makeStyles } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { EditorValidator, FileValidator } from "../../constants/customValidators";
-import { withFirebase } from "../../components/firebase";
+import { EditorValidator, FileValidator } from "../../../constants/customValidators";
+import { withFirebase } from "../../firebase";
 
 const useStyles = makeStyles(theme => ({
   root: {
