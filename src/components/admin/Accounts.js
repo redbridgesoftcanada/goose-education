@@ -88,14 +88,14 @@ function Accounts(props) {
                     open={Boolean(state.anchorUserRole)}
                     onClose={event => setMenuClose(event, null)}
                   >
+                    <MenuItem id="admin" onClick={event => setMenuClose(event, user.id)}>Administrator</MenuItem>
                     <MenuItem id="supervisor" onClick={event => setMenuClose(event, user.id)}>Supervisor</MenuItem>
                     <MenuItem id="user" onClick={event => setMenuClose(event, user.id)}>User</MenuItem>
                   </Menu>
                 </TableCell>
-                <TableCell>{format(user.lastSignInTime, 'Pp')}</TableCell>
+                <TableCell>{user.lastSignInTime ? format(user.lastSignInTime, 'Pp') : ""}</TableCell>
                 <TableCell>
                   {!user.roles["admin"] ? 
-                    // <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={() => setDeleteUser(user.id)}>Delete</Button>
                     <IconButton color="secondary" onClick={() => setDeleteUser(user.id)}>
                       <Clear/>
                     </IconButton>

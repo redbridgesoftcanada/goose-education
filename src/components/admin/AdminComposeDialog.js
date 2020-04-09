@@ -8,6 +8,7 @@ import UploadAttachmentForm from './forms/UploadAttachmentForm';
 export default function AdminComposeDialog(props) {
   const { open, onClose, setSnackbarMessage, formType, isEdit } = props;
   const prevContent = isEdit ? props.prevContent : null;
+  const formTitle = isEdit ? `Edit ${formType}` : `Create New ${formType}`;
   const dialogProps = {
     dialogOpen: open,
     onDialogClose: onClose,
@@ -38,7 +39,7 @@ export default function AdminComposeDialog(props) {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth='lg'>
-      <DialogTitle>Create New {formType}</DialogTitle>
+      <DialogTitle>{formTitle}</DialogTitle>
       <DialogContent>
         {loadComposeForm(formType)}
       </DialogContent>

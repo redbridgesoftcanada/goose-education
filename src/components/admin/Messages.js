@@ -80,7 +80,7 @@ function Messages(props) {
               <TableCell>{format(announce.updatedAt, "Pp")}</TableCell>
               <TableCell>
                 <Button size="small" variant="contained" color="secondary" startIcon={<Launch/>} onClick={() => handleRedirect(announce.id)}>View</Button>
-                <Button size="small" variant="contained" color="secondary" startIcon={<Edit/>} onClick={() => setEditMessage(announce.id)}>Edit</Button>
+                {announce.authorDisplayName === "슈퍼관리자" && <Button size="small" variant="contained" color="secondary" startIcon={<Edit/>} onClick={() => setEditMessage(announce.id)}>Edit</Button>}
                 <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={() => setDeleteMessage(announce.id)}>Delete</Button>
               </TableCell>
             </TableRow>
