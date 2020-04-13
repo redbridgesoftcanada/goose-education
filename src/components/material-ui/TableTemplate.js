@@ -1,5 +1,5 @@
 import React, { useReducer, Fragment } from "react";
-import { Link, Snackbar, Typography, makeStyles } from "@material-ui/core";
+import { Link, Typography, makeStyles } from "@material-ui/core";
 import Title from "./Title";
 import { DatabaseContext } from '../../components/database';
 import Accounts from '../admin/Accounts';
@@ -62,17 +62,11 @@ function toggleReducer(state, action) {
       return {...state, [anchorKey]: null}
     }
 
-    case 'TOGGLE_COMPOSE_DIALOG':
-      return {...state, composeDialogOpen: !state.composeDialogOpen}  
-    
     case 'TOGGLE_EDIT_DIALOG':
       return {...state, editDialogOpen: !state.editDialogOpen}
     
     case 'DELETE_CONFIRM':
       return {...state, deleteConfirmOpen: !state.deleteConfirmOpen}
-    
-    case 'SNACKBAR_OPEN':
-      return {...state, snackbarOpen: !state.snackbarOpen, snackbarMessage: payload}
   }
 }
 
@@ -137,9 +131,6 @@ function TableTemplate(props) {
   }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
-  // D I S P A T C H  M E T H O D S
-  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
-
   // S T Y L I N G 
   const classes = useStyles();
 
@@ -149,16 +140,6 @@ function TableTemplate(props) {
       <DatabaseContext.Consumer>
         {context => createContentTable(state, dispatch, type, context, history)}
       </DatabaseContext.Consumer>
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        open={state.snackbarOpen}
-        autoHideDuration={1000}
-        onClose={() => setSnackbarMessage(null)}
-        message={state.snackbarMessage}
-      />
 
       <div className={classes.seeMore}>
         {/* create "load more" feature */}
