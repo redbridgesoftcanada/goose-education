@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer } from "react";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { Button, CircularProgress, FormLabel, FormControlLabel, FormHelperText, MenuItem, OutlinedInput, Paper, RadioGroup, Radio, Stepper, Step, StepLabel, StepContent, makeStyles } from "@material-ui/core";
+import { Button, CircularProgress, DialogContentText, Divider, FormLabel, FormControlLabel, FormHelperText, Grid, MenuItem, OutlinedInput, RadioGroup, Radio, makeStyles } from "@material-ui/core";
 import { FileValidator, EditorValidator, SelectValidator } from "../../../constants/customValidators";
 import { SCHOOL_TYPES } from "../../../constants/constants";
 import { withFirebase } from "../../firebase";
@@ -9,15 +9,13 @@ const useStyles = makeStyles(theme => ({
   root: {
     width: "100%",
   },
+  divider: {
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3)
+  },
   button: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
-  },
-  actionsContainer: {
-    marginBottom: theme.spacing(2),
-  },
-  resetContainer: {
-    padding: theme.spacing(3),
   },
 }));
 
@@ -35,19 +33,6 @@ function toggleReducer(state, action) {
     
     case "INIT_SAVE":
       return {...state, isLoading: true}
-
-    case "PREVIOUS_STEP": {
-      const prevActiveStep = state.activeStep;
-      return {...state, activeStep: prevActiveStep - 1}
-    }
-
-    case "NEXT_STEP": {
-      const prevActiveStep = state.activeStep;
-      return {...state, activeStep: prevActiveStep + 1}
-    }
-
-    case "RESET_STEP": 
-      return {...state, activeStep: 0}
 
     case "TEXT_INPUT": {
       const inputField = payload.name;
@@ -73,7 +58,7 @@ function toggleReducer(state, action) {
   }
 }
 
-function getStepContent(step, state, dispatch) {
+function generateFormContent(classes, state, dispatch) {
 
   const handleTextInput = event => dispatch({type: "TEXT_INPUT", payload: event.target});
   const handleRichTextInput = (name, value) => dispatch({type: "RICH_TEXT_INPUT", payload: {name, value}});
@@ -111,7 +96,7 @@ function getStepContent(step, state, dispatch) {
     return (
       <OutlinedInput
         type={type}
-        // fullWidth 
+        fullWidth 
         name={name}
         value={value}
         onChange={handleTextInput}
@@ -131,100 +116,101 @@ function getStepContent(step, state, dispatch) {
     );
   }
 
-  switch (step) {
-    case 0:
-      return (
-        <>
-          <FormLabel component="legend">Title</FormLabel>
-          {validateTextField("text", "title", state.title)}
+  return (
+    <>
+      <DialogContentText>General Information</DialogContentText>
 
-          <FormLabel component="legend">Institution Type</FormLabel>
-          <SelectValidator
-            variant="outlined"
-            displayEmpty
-            name="type" 
-            defaultValue={state.type}
-            value={state.type}
-            onChange={handleTextInput}
-            validators={["required"]}
-            errorMessages={["Please select a type."]}>
-              <MenuItem value="" disabled>Select One</MenuItem>
-              {SCHOOL_TYPES.map((type, i) => {
-                  return <MenuItem key={i} name={type} value={type}>{type}</MenuItem>
-              })}
-          </SelectValidator>
+      <FormLabel component="legend">Title</FormLabel>
+      {validateTextField("text", "title", state.title)}
 
-          <FormLabel component="legend">Date of Establishment</FormLabel>
-          {noValidateTextField("text", "dateOfEstablishment", state.dateOfEstablishment)}
+      <FormLabel component="legend">Institution Type</FormLabel>
+      <SelectValidator
+        variant="outlined"
+        displayEmpty
+        name="type" 
+        defaultValue={state.type}
+        value={state.type}
+        onChange={handleTextInput}
+        validators={["required"]}
+        errorMessages={["Please select a type."]}>
+          <MenuItem value="" disabled>Select One</MenuItem>
+          {SCHOOL_TYPES.map((type, i) => {
+              return <MenuItem key={i} name={type} value={type}>{type}</MenuItem>
+          })}
+      </SelectValidator>
 
-          <FormLabel component="legend">Location</FormLabel>
-          {noValidateTextField("text", "location", state.location)}
-          
-          <FormLabel component="legend">Institution Website</FormLabel>
-          {noValidateTextField("url", "url", state.url)}
+      <FormLabel component="legend">Date of Establishment</FormLabel>
+      {noValidateTextField("text", "dateOfEstablishment", state.dateOfEstablishment)}
 
-          <FormLabel component="legend">Image</FormLabel>
-          <FileValidator
-            disableUnderline
-            onChange={handleFileUpload}
-            name="file"
-            value={state.image}
-            validators={["isRequiredUpload"]}
-            errorMessages={["Please upload an image."]} />
-          
+      <FormLabel component="legend">Location</FormLabel>
+      {noValidateTextField("text", "location", state.location)}
+      
+      <FormLabel component="legend">Institution Website</FormLabel>
+      {noValidateTextField("url", "url", state.url)}
+
+      <FormLabel component="legend">Image</FormLabel>
+      <FileValidator
+        disableUnderline
+        onChange={handleFileUpload}
+        name="file"
+        value={state.image}
+        validators={["isRequiredUpload"]}
+        errorMessages={["Please upload an image."]} />
+      
+      <Grid container>
+        <Grid item xs={3}>
           <FormLabel component="legend">Goose Recommended</FormLabel>
           {noValidateRadioField("Display a 'recommended' badge for this institution.", "isRecommended", state.isRecommended)}
-
+        </Grid>
+        <Grid item xs={3}>
           <FormLabel component="legend">Featured</FormLabel>
           {noValidateRadioField("Display this institution on the home page.", "isFeatured", state.isFeatured)}
-        </>
-      );
+        </Grid>
+      </Grid>
+      
+      <Divider variant="middle" className={classes.divider}/>
 
-    case 1:
-      return (
-        <>
-          <FormLabel component="legend">Introduction</FormLabel>
-          {validateRichTextField("description", state.description)}
+      <DialogContentText>School Information</DialogContentText>
+      
+      <FormLabel component="legend">Introduction</FormLabel>
+      {validateRichTextField("description", state.description)}
 
-          <FormLabel component="legend">Features</FormLabel>
-          {validateRichTextField("features", state.features)}
+      <FormLabel component="legend">Features</FormLabel>
+      {validateRichTextField("features", state.features)}
 
-          <FormLabel component="legend">Programs</FormLabel>
-          {validateRichTextField("program", state.program)}
+      <FormLabel component="legend">Programs</FormLabel>
+      {validateRichTextField("program", state.program)}
 
-          <FormLabel component="legend">Expenses</FormLabel>
-          {validateRichTextField("expenses", state.expenses)}
+      <FormLabel component="legend">Expenses</FormLabel>
+      {validateRichTextField("expenses", state.expenses)}
 
-          <FormLabel component="legend">Number of Students</FormLabel>
-          {noValidateTextField("number", "numberOfStudents", state.numberOfStudents)}
+      <FormLabel component="legend">Number of Students</FormLabel>
+      {noValidateTextField("number", "numberOfStudents", state.numberOfStudents)}
 
-          <FormLabel component="legend">Opening Process</FormLabel>
-          {validateRichTextField("openingProcess", state.openingProcess)}
+      <Divider variant="middle" className={classes.divider}/>
 
-          <FormLabel component="legend">Accommodations</FormLabel>
-          {validateRichTextField("accommodation", state.accommodation)}
-        </>
-      );
+      <DialogContentText>School Guide</DialogContentText>
 
-    case 2:
-      return (
-        <>
-          <FormLabel component="legend">Embedded Google Maps</FormLabel>
-          {noValidateTextField("url", "googleUrl", state.googleUrl)}
+      <FormLabel component="legend">Opening Process</FormLabel>
+      {validateRichTextField("openingProcess", state.openingProcess)}
 
-          <FormLabel component="legend">YouTube</FormLabel>
-          {noValidateTextField("url", "youtubeUrl", state.youtubeUrl)}
-        </>
-      );
+      <FormLabel component="legend">Accommodations</FormLabel>
+      {validateRichTextField("accommodation", state.accommodation)}
 
-    default:
-      return "Unknown step";
-  }
+      <FormLabel component="legend">Embedded Google Maps</FormLabel>
+      {noValidateTextField("url", "googleUrl", state.googleUrl)}
+
+      <FormLabel component="legend">Embedded YouTube</FormLabel>
+      {noValidateTextField("url", "youtubeUrl", state.youtubeUrl)}
+    </>
+  );
 }
 
 function SchoolsComposeForm(props) {
+  const classes = useStyles();
   const { dialogOpen, onDialogClose, setSnackbarMessage, firebase } = props;
 
+  // S T A T E
   const INITIAL_STATE = {
     activeStep: 0,
     isEdit: false,
@@ -247,15 +233,19 @@ function SchoolsComposeForm(props) {
     googleUrl: "",
     youtubeUrl: [],
   }
-
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const classes = useStyles();
+  
+  useEffect(() => {
+    const prevContent = props.prevContent;
+    if (prevContent) {
+      dispatch({type:"EDIT_STATE", payload: prevContent});
+    } else {
+      dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
+    }
 
-  const steps = ["General", "School Information", "School Guide"];
-  const handleNext = () => dispatch({type: "NEXT_STEP"});
-  const handleBack = () => dispatch({type: "PREVIOUS_STEP"});
-  const handleReset = () => dispatch({type: "RESET_STEP"});
+  }, [dialogOpen]);
 
+  // D I S P A T C H  M E T H O D S
   const onSubmit = event => {
     dispatch({type: "INIT_SAVE"});
     
@@ -288,49 +278,14 @@ function SchoolsComposeForm(props) {
     });
   }
 
-  useEffect(() => {
-    const prevContent = props.prevContent;
-    if (prevContent) {
-      dispatch({type:"EDIT_STATE", payload: prevContent});
-    } else {
-      dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
-    }
-
-  }, [dialogOpen]);
-
   return (
     <ValidatorForm onSubmit={onSubmit}>
-      <Stepper activeStep={state.activeStep} orientation="vertical">
-        {steps.map((label, i) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-            <StepContent>
-                {getStepContent(i, state, dispatch)}
-                <div className={classes.actionsContainer}>
-                  <Button onClick={handleBack} className={classes.button}>
-                    Back
-                  </Button>
-                  <Button onClick={handleNext} variant="contained" color="primary" className={classes.button}>
-                    {state.activeStep === steps.length - 1 ? "Finish" : "Next"}
-                  </Button>
-                </div>
-            </StepContent>
-          </Step>
-        ))}
-      </Stepper>
-      {state.activeStep === steps.length && (
-        <Paper square elevation={0} className={classes.resetContainer}>
-          <Button onClick={handleBack} className={classes.button}>
-            Back
-          </Button>
-          <Button onClick={handleReset} className={classes.button}>
-            Reset
-          </Button>
-          <Button type="submit" color="secondary" autoFocus className={classes.button}>
-            {state.isLoading ? <CircularProgress /> : "Save"}
-          </Button>
-        </Paper>
-      )}
+      {generateFormContent(classes, state, dispatch)}
+      <div>
+        <Button type="submit" color="secondary" autoFocus className={classes.button}>
+          {state.isLoading ? <CircularProgress /> : "Save"}
+        </Button>
+      </div>
     </ValidatorForm>
   );
 }
