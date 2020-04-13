@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { Delete, CloudDownload } from "@material-ui/icons";
+import { Button, IconButton, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
+import { Clear, CloudDownload } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import { STATUSES } from "../../constants/constants";
@@ -9,6 +9,7 @@ import DeleteConfirmation from '../DeleteConfirmation';
 function Applications(props) {
   const { state, dispatch, listOfApplications, firebase } = props;
 
+  // S T A T E
   const [ selectedApplication, setSelectedApplication ] = useState(null);
 
   // D I S P A T C H  M E T H O D S
@@ -49,21 +50,33 @@ function Applications(props) {
 
   return (
     <>
+      {/* D E L E T E */}
+      <DeleteConfirmation deleteType='admin_application' open={state.deleteConfirmOpen} 
+      handleDelete={deleteApplication} 
+      onClose={toggleDeleteConfirm}/>
+
       <Table size="small">
       <TableHead>
         <TableRow>
-          <TableCell>No</TableCell>
-          <TableCell>Name</TableCell>
-          <TableCell>Date</TableCell>
+          <TableCell>First Name</TableCell>
+          <TableCell>Last Name</TableCell>
+          <TableCell>School Name</TableCell>
+          <TableCell>Program</TableCell>
+          <TableCell>Start Date</TableCell>
+          <TableCell>Date Submitted</TableCell>
           <TableCell>Status</TableCell>
-          <TableCell>Actions</TableCell>
+          <TableCell>Delete</TableCell>
+          <TableCell>Download</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {listOfApplications.map((application, i) => (
           <TableRow key={i}>
-            <TableCell>{i + 1}</TableCell>
-            <TableCell>{application.firstName} {application.lastName}</TableCell>
+            <TableCell>{application.firstName}</TableCell>
+            <TableCell>{application.lastName}</TableCell>
+            <TableCell>{application.schoolName}</TableCell>
+            <TableCell>{application.programName}</TableCell>
+            <TableCell>{application.startDate}</TableCell>
             <TableCell>{format(application.createdAt, "Pp")}</TableCell>
             <TableCell>
               <Button onClick={setMenuOpen}>{application.status}</Button>
@@ -81,17 +94,19 @@ function Applications(props) {
               </Menu>
             </TableCell>
             <TableCell>
-              <Button size="small" variant="contained" color="secondary" startIcon={<CloudDownload/>} onClick={()=>console.log('Clicked')}>Download</Button>
-              <Button size="small" variant="contained" color="secondary" startIcon={<Delete/>} onClick={() => setDeleteApplication(application.authorID)}>Delete</Button>
+              <IconButton color="secondary" onClick={() => setDeleteApplication(application.authorID)}>
+                <Clear/>
+              </IconButton>
+            </TableCell>
+            <TableCell>
+              <IconButton color="secondary" onClick={()=>console.log('Clicked')}>
+                <CloudDownload/>
+              </IconButton>
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
       </Table>
-
-      <DeleteConfirmation deleteType='admin_application' open={state.deleteConfirmOpen} 
-      handleDelete={deleteApplication} 
-      onClose={toggleDeleteConfirm}/>
     </>
   )
 }
