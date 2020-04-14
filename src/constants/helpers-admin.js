@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextValidator } from "react-material-ui-form-validator";
-import { EditorValidator, FileValidator } from "./customValidators";
-import { OutlinedInput, FormControlLabel, FormHelperText, Radio, RadioGroup } from "@material-ui/core";
+import { EditorValidator, FileValidator, SelectValidator } from "./customValidators";
+import { OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio, RadioGroup, Select } from "@material-ui/core";
 
 // N O  V A L I D A T I O N
 function textField(name, value, eventHandler, isMultiline) {
@@ -20,7 +20,7 @@ function textField(name, value, eventHandler, isMultiline) {
 function radioField(name, value, options, eventHandler, helperText) {
   // note. options needs to be an array of objects: {value, label}
   
-  if (name === "type") {  // options = [SCHOOL_TYPES] (string) from SchoolsComposeForm
+  if (name === "type") {  // options = [SCHOOL_TYPES] (string) from SchoolsComposeForm;
     options = options.map(type => ({value:type, label:type}));
   }
 
@@ -33,6 +33,24 @@ function radioField(name, value, options, eventHandler, helperText) {
         ))}
       </RadioGroup>
     </>
+  )
+}
+
+function selectField(name, value, options, eventHandler) {
+  // note. options needs to be an array (not of objects);
+
+  return (
+    <Select
+      variant="outlined"
+      displayEmpty
+      name={name}
+      value={value}
+      onChange={eventHandler}>
+        <MenuItem value="" disabled>Select One</MenuItem>
+        {options.map((option, i) => {
+            return <MenuItem key={i} name={option} value={option}>{option}</MenuItem>
+        })}
+    </Select>
   )
 }
 
@@ -75,4 +93,22 @@ function fileValidator(name, value, eventHandler) {
   )
 }
 
-export { textField, radioField, textValidator, richTextValidator, fileValidator }
+function selectValidator(name, value, options, eventHandler) {
+  return (
+    <SelectValidator
+      variant="outlined"
+      displayEmpty
+      name={name}
+      value={value}
+      onChange={eventHandler}
+      validators={['required']}
+      errorMessages={['Please select a tag.']}>
+        <MenuItem value="" disabled>Select One</MenuItem>
+        {options.map((option, i) => {
+            return <MenuItem key={i} name={option.name} value={option.value}>{option.value}</MenuItem>
+        })}
+    </SelectValidator>
+  )
+}
+
+export { textField, radioField, selectField, textValidator, richTextValidator, fileValidator, selectValidator }

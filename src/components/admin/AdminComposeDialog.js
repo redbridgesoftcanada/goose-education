@@ -1,9 +1,8 @@
-import React from 'react';
-import { Dialog, DialogContent, DialogTitle } from '@material-ui/core';
-import SchoolsComposeForm from './forms/SchoolsComposeForm';
-import TipsComposeForm from './forms/TipsComposeForm';
-import ArticleComposeForm from './forms/ArticlesComposeForm';
-import UploadAttachmentForm from './forms/UploadAttachmentForm';
+import React from "react";
+import { Dialog, DialogContent, DialogTitle } from "@material-ui/core";
+import SchoolsComposeForm from "./forms/SchoolsComposeForm";
+import UploadImageForm from "./forms/UploadImageForm";
+import UploadAttachmentForm from "./forms/UploadAttachmentForm";
 
 export default function AdminComposeDialog(props) {
   const { open, onClose, setSnackbarMessage, formType, isEdit } = props;
@@ -19,17 +18,15 @@ export default function AdminComposeDialog(props) {
 
   const loadComposeForm = formType => { 
     switch(formType) {
-      case 'school':
+      case "school":
         return <SchoolsComposeForm {...dialogProps}/>
 
-      case 'tip':
-        return <TipsComposeForm {...dialogProps}/>
+      case "tip":
+      case "article":
+        return <UploadImageForm {...dialogProps}/>
       
-      case 'article':
-        return <ArticleComposeForm {...dialogProps}/>
-      
-      case 'announce':
-      case 'message':
+      case "announce":
+      case "message":
         return <UploadAttachmentForm {...dialogProps}/>
       
       default:
@@ -38,7 +35,7 @@ export default function AdminComposeDialog(props) {
   }
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth='lg'>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
       <DialogTitle>{formTitle}</DialogTitle>
       <DialogContent>
         {loadComposeForm(formType)}

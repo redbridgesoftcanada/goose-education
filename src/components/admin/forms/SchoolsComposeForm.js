@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer } from "react";
 import { ValidatorForm } from "react-material-ui-form-validator";
-import { Button, CircularProgress, DialogContentText, Divider, FormHelperText, FormLabel, Grid, makeStyles } from "@material-ui/core";
+import { Button, CircularProgress, DialogContentText, Divider, FormHelperText, FormLabel, Grid, Input, makeStyles } from "@material-ui/core";
 import { withFirebase } from "../../firebase";
 import * as COMPONENTS from "../../../constants/helpers-admin";
 import { SCHOOL_TYPES } from "../../../constants/constants";
@@ -91,7 +91,7 @@ function generateFormContent(classes, state, dispatch) {
         <img alt={`${state.title} logo`} src={(state.image.includes('firebase')) ? state.image : require(`../../../assets/img/${state.image}`)} className={classes.large} />
       }
       <div>
-        {COMPONENTS.fileValidator("file", state.image, handleFileUpload)}
+        <Input type="file" disableUnderline onChange={handleFileUpload}/>
       </div>
       
       <Grid container>
