@@ -1,9 +1,9 @@
 import React, { useEffect, useReducer } from "react";
-import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { Button, CircularProgress, DialogContentText, Divider, FormLabel, FormControlLabel, FormHelperText, Grid, MenuItem, OutlinedInput, RadioGroup, Radio, makeStyles } from "@material-ui/core";
-import { FileValidator, EditorValidator, SelectValidator } from "../../../constants/customValidators";
-import { SCHOOL_TYPES } from "../../../constants/constants";
+import { ValidatorForm } from "react-material-ui-form-validator";
+import { Button, CircularProgress, DialogContentText, Divider, FormHelperText, FormLabel, Grid, makeStyles } from "@material-ui/core";
 import { withFirebase } from "../../firebase";
+import * as COMPONENTS from "../../../constants/helpers-admin";
+import { SCHOOL_TYPES } from "../../../constants/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,6 +17,10 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
+  large: {
+    width: theme.spacing(18),
+    height: theme.spacing(18),
+  },
 }));
 
 function toggleReducer(state, action) {
@@ -28,8 +32,8 @@ function toggleReducer(state, action) {
       return {...initialState}
 
     case "EDIT_STATE":
-      const { image, ...prepopulateForm } = payload;
-      return {...prepopulateForm, activeStep: 0, isEdit: true, isLoading: false, image: ""}
+      const prepopulateForm = payload;
+      return {...prepopulateForm, isEdit: true, isLoading: false}
     
     case "INIT_SAVE":
       return {...state, isLoading: true}
@@ -61,147 +65,82 @@ function toggleReducer(state, action) {
 function generateFormContent(classes, state, dispatch) {
 
   const handleTextInput = event => dispatch({type: "TEXT_INPUT", payload: event.target});
-  const handleRichTextInput = (name, value) => dispatch({type: "RICH_TEXT_INPUT", payload: {name, value}});
   const handleFileUpload = event => dispatch({type: "FILE_UPLOAD", payload: event.target.files[0]});
-
-  // Form Input Field Components
-  const validateRichTextField = (name, value) => {
-    return (
-      <EditorValidator 
-        defaultValue={value}
-        value={value} 
-        onChange={value => handleRichTextInput(name, value)}
-        validators={["isQuillEmpty"]}
-        errorMessages={["Cannot submit an empty post."]}/>
-    )
-  }
-
-  const validateTextField = (type, name, value) => {
-    return (
-      <TextValidator 
-        type={type} 
-        variant="outlined" 
-        fullWidth 
-        InputLabelProps={{shrink: true}}
-        name={name}
-        value={value}
-        onChange={handleTextInput}
-        validators={["required"]}
-        errorMessages={[`Cannot submit an empty ${name}.`]}
-      />
-    )
-  }
-
-  const noValidateTextField = (type, name, value) => {
-    return (
-      <OutlinedInput
-        type={type}
-        fullWidth 
-        name={name}
-        value={value}
-        onChange={handleTextInput}
-      />
-    )
-  }
-
-  const noValidateRadioField = (description, name, value) => {
-    return (
-      <>
-        <FormHelperText>{description}</FormHelperText>
-        <RadioGroup name={name} value={value} onChange={handleTextInput}>
-          <FormControlLabel value={true} control={<Radio/>} label="Yes" />
-          <FormControlLabel value={false} control={<Radio/>} label="No" />
-        </RadioGroup>
-      </>
-    );
-  }
 
   return (
     <>
-      <DialogContentText>General Information</DialogContentText>
+      <DialogContentText variant="subtitle1">General Information</DialogContentText>
 
       <FormLabel component="legend">Title</FormLabel>
-      {validateTextField("text", "title", state.title)}
+      {COMPONENTS.textField("title", state.title, handleTextInput, false)}
 
       <FormLabel component="legend">Institution Type</FormLabel>
-      <SelectValidator
-        variant="outlined"
-        displayEmpty
-        name="type" 
-        defaultValue={state.type}
-        value={state.type}
-        onChange={handleTextInput}
-        validators={["required"]}
-        errorMessages={["Please select a type."]}>
-          <MenuItem value="" disabled>Select One</MenuItem>
-          {SCHOOL_TYPES.map((type, i) => {
-              return <MenuItem key={i} name={type} value={type}>{type}</MenuItem>
-          })}
-      </SelectValidator>
+      {COMPONENTS.radioField("type", state.type, SCHOOL_TYPES, handleTextInput, "")}
 
       <FormLabel component="legend">Date of Establishment</FormLabel>
-      {noValidateTextField("text", "dateOfEstablishment", state.dateOfEstablishment)}
+      {COMPONENTS.textField("dateOfEstablishment", state.dateOfEstablishment, handleTextInput, false)}
 
       <FormLabel component="legend">Location</FormLabel>
-      {noValidateTextField("text", "location", state.location)}
+      {COMPONENTS.textField("location", state.location, handleTextInput, false)}
       
       <FormLabel component="legend">Institution Website</FormLabel>
-      {noValidateTextField("url", "url", state.url)}
+      {COMPONENTS.textField("url", state.url, handleTextInput, false)}
 
       <FormLabel component="legend">Image</FormLabel>
-      <FileValidator
-        disableUnderline
-        onChange={handleFileUpload}
-        name="file"
-        value={state.image}
-        validators={["isRequiredUpload"]}
-        errorMessages={["Please upload an image."]} />
+      {state.image &&
+        <img alt={`${state.title} logo`} src={(state.image.includes('firebase')) ? state.image : require(`../../../assets/img/${state.image}`)} className={classes.large} />
+      }
+      <div>
+        {COMPONENTS.fileValidator("file", state.image, handleFileUpload)}
+      </div>
       
       <Grid container>
         <Grid item xs={3}>
           <FormLabel component="legend">Goose Recommended</FormLabel>
-          {noValidateRadioField("Display a 'recommended' badge for this institution.", "isRecommended", state.isRecommended)}
+          {COMPONENTS.radioField("recommendation", state.recommendation, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, "Display a 'recommended' badge for this institution.")}
         </Grid>
         <Grid item xs={3}>
           <FormLabel component="legend">Featured</FormLabel>
-          {noValidateRadioField("Display this institution on the home page.", "isFeatured", state.isFeatured)}
+          {COMPONENTS.radioField("isFeatured", state.isFeatured, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, "Display this institution on the home page.")}
         </Grid>
       </Grid>
       
       <Divider variant="middle" className={classes.divider}/>
 
-      <DialogContentText>School Information</DialogContentText>
+      <DialogContentText variant="subtitle1">School Information</DialogContentText>
       
       <FormLabel component="legend">Introduction</FormLabel>
-      {validateRichTextField("description", state.description)}
+      {COMPONENTS.textField("description", state.description, handleTextInput, true)}
 
       <FormLabel component="legend">Features</FormLabel>
-      {validateRichTextField("features", state.features)}
+      {COMPONENTS.textField("features", state.features, handleTextInput, true)}
 
       <FormLabel component="legend">Programs</FormLabel>
-      {validateRichTextField("program", state.program)}
+      {COMPONENTS.textField("program", state.program, handleTextInput, true)}
 
       <FormLabel component="legend">Expenses</FormLabel>
-      {validateRichTextField("expenses", state.expenses)}
+      {COMPONENTS.textField("expenses", state.expenses, handleTextInput, true)}
 
       <FormLabel component="legend">Number of Students</FormLabel>
-      {noValidateTextField("number", "numberOfStudents", state.numberOfStudents)}
+      {COMPONENTS.textField("numberOfStudents", state.numberOfStudents, handleTextInput, false)}
 
       <Divider variant="middle" className={classes.divider}/>
 
-      <DialogContentText>School Guide</DialogContentText>
+      <DialogContentText variant="subtitle1">School Guide</DialogContentText>
 
       <FormLabel component="legend">Opening Process</FormLabel>
-      {validateRichTextField("openingProcess", state.openingProcess)}
+      {COMPONENTS.textField("openingProcess", state.openingProcess, handleTextInput, true)}
 
       <FormLabel component="legend">Accommodations</FormLabel>
-      {validateRichTextField("accommodation", state.accommodation)}
+      {COMPONENTS.textField("accommodation", state.accommodation, handleTextInput, true)}
 
       <FormLabel component="legend">Embedded Google Maps</FormLabel>
-      {noValidateTextField("url", "googleUrl", state.googleUrl)}
+      <FormHelperText>Open Google Maps Address → Share → Embed a map</FormHelperText>
+      {COMPONENTS.textField("googleUrl", state.googleUrl, handleTextInput, false)}
 
       <FormLabel component="legend">Embedded YouTube</FormLabel>
-      {noValidateTextField("url", "youtubeUrl", state.youtubeUrl)}
+      <FormHelperText>Open YouTube Video → Share → Embed</FormHelperText>
+      {COMPONENTS.textField("youtubeUrl", state.youtubeUrl, handleTextInput, false)}
     </>
   );
 }
@@ -212,7 +151,6 @@ function SchoolsComposeForm(props) {
 
   // S T A T E
   const INITIAL_STATE = {
-    activeStep: 0,
     isEdit: false,
     isLoading: false,
     image: "",
@@ -221,7 +159,7 @@ function SchoolsComposeForm(props) {
     location: "",
     url: "",
     dateOfEstablishment: "",
-    isRecommended: false,
+    recommendation: false,
     isFeatured: false,
     description: "",
     features: "",
@@ -242,7 +180,6 @@ function SchoolsComposeForm(props) {
     } else {
       dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
     }
-
   }, [dialogOpen]);
 
   // D I S P A T C H  M E T H O D S
@@ -250,7 +187,7 @@ function SchoolsComposeForm(props) {
     dispatch({type: "INIT_SAVE"});
     
     // configure Firestore collection/document locations
-    const { activeStep, isEdit, isLoading, image, ...newSchoolForm } = state;
+    const { isEdit, isLoading, image, ...newSchoolForm } = state;
     const newDoc = isEdit ? firebase.school(state.id) : firebase.schools().doc();
     // const formContent = {...newSchoolForm}
     const uploadRef = firebase.imagesRef(image);
@@ -282,6 +219,9 @@ function SchoolsComposeForm(props) {
     <ValidatorForm onSubmit={onSubmit}>
       {generateFormContent(classes, state, dispatch)}
       <div>
+        <Button onClick={onDialogClose} className={classes.button}>
+          Cancel
+        </Button>
         <Button type="submit" color="secondary" autoFocus className={classes.button}>
           {state.isLoading ? <CircularProgress /> : "Save"}
         </Button>
