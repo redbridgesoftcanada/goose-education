@@ -71,14 +71,15 @@ function textValidator(name, value, eventHandler) {
 }
 
 function richTextValidator(name, value, eventHandler) {
-  return (
-    <EditorValidator
-      defaultValue={value}
-      value={value} 
-      onChange={value => eventHandler(name, value)}
-      validators={["isQuillEmpty"]}
-      errorMessages={["Cannot submit an empty post."]}/>
-  )
+  if (value) {
+    return (
+      <EditorValidator
+        defaultValue={value}
+        onChange={value => eventHandler(name, value)}
+        validators={["isQuillEmpty"]}
+        errorMessages={["Cannot submit an empty post."]}/>
+    )
+  }
 }
 
 function fileValidator(name, value, eventHandler) {
