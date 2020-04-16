@@ -165,7 +165,7 @@ function toggleReducer(state, action) {
   }
 }
 
-export default function AdminDashboard(props) {
+export default function AdminDashboard() {
   // S T A T E
   const INITIAL_STATE = {
     drawerOpen: true,
@@ -295,7 +295,7 @@ export default function AdminDashboard(props) {
           :
             <Grid item xs={12}>
               <Paper>
-                <TableTemplate history={props.history} type={state.selectedContent}/>
+                <TableTemplate type={state.selectedContent}/>
               </Paper>
             </Grid>
           }

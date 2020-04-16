@@ -70,7 +70,7 @@ function toggleReducer(state, action) {
   }
 }
 
-function createContentTable(state, dispatch, type, context, history) {
+function createContentTable(state, dispatch, type, context) {
   const props = { state, dispatch };
 
   switch(type) {
@@ -96,7 +96,6 @@ function createContentTable(state, dispatch, type, context, history) {
 
     case "Goose Tips":
       props.listOfTips = context.gooseTips;
-      props.history = history;
       return <GooseTips {...props}/>
 
     case "Articles":
@@ -117,7 +116,7 @@ function createContentTable(state, dispatch, type, context, history) {
 }
 
 function TableTemplate(props) {
-  const { type, history } = props;
+  const { type } = props;
 
   // S T A T E
   const INITIAL_STATE = {
@@ -138,7 +137,7 @@ function TableTemplate(props) {
     <Fragment>
       <Title>{type}</Title>
       <DatabaseContext.Consumer>
-        {context => createContentTable(state, dispatch, type, context, history)}
+        {context => createContentTable(state, dispatch, type, context)}
       </DatabaseContext.Consumer>
 
       <div className={classes.seeMore}>

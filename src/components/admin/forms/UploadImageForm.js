@@ -1,7 +1,6 @@
 import React, { useEffect, useReducer } from "react";
-import { Button, CircularProgress, FormLabel, Input, MenuItem, TextField, makeStyles } from "@material-ui/core";
-import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { EditorValidator, SelectValidator } from "../../../constants/customValidators";
+import { Button, CircularProgress, FormLabel, Input, makeStyles } from "@material-ui/core";
+import { ValidatorForm } from "react-material-ui-form-validator";
 import { withFirebase } from "../../firebase";
 import { TAGS } from "../../../constants/constants";
 import * as COMPONENTS from "../../../constants/helpers-admin";
@@ -141,7 +140,7 @@ function UploadImageForm(props) {
     <ValidatorForm onSubmit={onSubmit}>
       <div>
         <FormLabel component="legend">Title</FormLabel>
-        {COMPONENTS.textField("title", state.title, handleTextInput, false)}}
+        {COMPONENTS.textField("title", state.title, handleTextInput, false)}
 
         {formType === "article" &&
           <>
@@ -149,7 +148,7 @@ function UploadImageForm(props) {
             {COMPONENTS.selectField("tag", state.tag, TAGS, handleTextInput)}
 
             <FormLabel component="legend">Instagram</FormLabel>
-            {COMPONENTS.textField("instagramURL", state.instagramURL, handleTextInput, false)}}
+            {COMPONENTS.textField("instagramURL", state.instagramURL, handleTextInput, false)}
           </>
         }
 
@@ -159,10 +158,10 @@ function UploadImageForm(props) {
         {formType === "article" && 
           <>
             <FormLabel component="legend">Link #1</FormLabel>
-            {COMPONENTS.textField("link1", state.link1, handleTextInput, false)}}
+            {COMPONENTS.textField("link1", state.link1, handleTextInput, false)}
 
             <FormLabel component="legend">Link #2</FormLabel>
-            {COMPONENTS.textField("link2", state.link2, handleTextInput, false)}}
+            {COMPONENTS.textField("link2", state.link2, handleTextInput, false)}
           </>
         }
         
