@@ -1,5 +1,5 @@
 import React, { useReducer, Fragment } from "react";
-import { Link, Typography, makeStyles } from "@material-ui/core";
+import { CircularProgress, Link, Typography, makeStyles } from "@material-ui/core";
 import Title from "./Title";
 import { DatabaseContext } from '../../components/database';
 import Accounts from '../admin/Accounts';
@@ -18,14 +18,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function preventDefault(event) {
-  event.preventDefault();
-}
-
 function toggleReducer(state, action) {
   const { type, payload } = action;
 
   switch(type) {
+    case 'TOGGLE_LOADING':
+      return {...state, isLoading: !state.isLoading}
+    
     case 'MENU_OPEN': {
       const anchorKey = payload.key;
       const selectedMenu = payload.selected;
@@ -70,44 +69,44 @@ function toggleReducer(state, action) {
   }
 }
 
-function createContentTable(state, dispatch, type, context) {
-  const props = { state, dispatch };
+function generateContentTable(state, dispatch, type, context) {
+  const props = { state, dispatch, paginatedQuery: context.paginatedQuery };
 
   switch(type) {
     case "Users":
-      props.listOfUsers = context.listOfUsers;
+      props.listOfUsers = context.state.listOfUsers;
       return <Accounts {...props}/>
     
     case "Schools":
-      props.listOfSchools = context.listOfSchools;
+      props.listOfSchools = context.state.listOfSchools;
     return <Schools {...props}/>
 
     case "Applications":
-      props.listOfApplications = context.listOfApplications;
+      props.listOfApplications = context.state.listOfApplications;
       return <Applications {...props}/>
     
     case "Homestay":
-      props.listOfHomestays = context.listOfHomestays;
+      props.listOfHomestays = context.state.listOfHomestays;
       return <Homestays {...props}/>
 
     case "Airport Rides":
-      props.listOfAirportRides = context.listOfAirportRides;
+      props.listOfAirportRides = context.state.listOfAirportRides;
       return <AirportRides {...props}/>
 
     case "Goose Tips":
-      props.listOfTips = context.gooseTips;
+      props.listOfTips = context.state.gooseTips;
       return <GooseTips {...props}/>
 
     case "Articles":
-      props.listOfArticles = context.taggedArticles;
+      props.listOfArticles = context.state.taggedArticles;
       return <Articles {...props}/>
     
     case "Announcements":
-      props.listOfAnnouncements = context.listOfAnnouncements;
+      props.listOfAnnouncements = context.state.listOfAnnouncements;
       return <Announcements {...props}/>
 
     case "Messages":
-      props.listOfMessages = context.listOfMessages;
+      props.listOfMessages = context.state.listOfMessages;
       return <Messages {...props}/>
 
     default:
@@ -115,11 +114,34 @@ function createContentTable(state, dispatch, type, context) {
   }
 }
 
+function generatePagination(classes, state, dispatch, type, paginatedQuery) {
+  const loadMoreHandler = type => {
+    dispatch({type:"TOGGLE_LOADING"});
+    paginatedQuery(type);
+    dispatch({type:"TOGGLE_LOADING"});
+  }
+
+  return (
+    <div className={classes.seeMore}>
+      {state.isLoading ? 
+      <CircularProgress/>
+      :
+      
+      <Link color="secondary" href="#" onClick={() => loadMoreHandler(type)}>
+        See more {type}
+      </Link>
+      }
+    </div>
+  )
+}
+
 function TableTemplate(props) {
+  const classes = useStyles();
   const { type } = props;
 
   // S T A T E
   const INITIAL_STATE = {
+    isLoading: false,
     anchorUserRole: null,
     anchorApplicationStatus: null,
     deleteConfirmOpen: false,
@@ -130,22 +152,17 @@ function TableTemplate(props) {
   }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
-  // S T Y L I N G 
-  const classes = useStyles();
-
   return (
     <Fragment>
       <Title>{type}</Title>
       <DatabaseContext.Consumer>
-        {context => createContentTable(state, dispatch, type, context)}
+        {context => 
+          <>
+            {generateContentTable(state, dispatch, type, context)}
+            {generatePagination(classes, state, dispatch, type, context.paginatedQuery)}
+          </>
+        }
       </DatabaseContext.Consumer>
-
-      <div className={classes.seeMore}>
-        {/* create "load more" feature */}
-        <Link color="secondary" href="#" onClick={preventDefault}>
-          See more {type}
-        </Link>
-      </div>
     </Fragment>
   );
 }

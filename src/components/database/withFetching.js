@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import DatabaseContext from './context';
 import { TAGS } from '../../constants/constants';
-import * as helpers from '../../constants/helpers';
+import * as HELPERS from '../../constants/helpers';
 
 function withFetching(Component) {
 
@@ -24,7 +24,7 @@ function withFetching(Component) {
       gooseTips: [],
       listOfMessages: [],
       listOfAnnouncements: [],
-      listOfUsers: null,
+      listOfUsers: [],
       listOfApplications: null,
       listOfHomestays: null,
       listOfAirportRides: null,
@@ -34,46 +34,52 @@ function withFetching(Component) {
     const [ state, setState ] = useState(INITIAL_STATE);
     // console.count(state)
 
+    const queryLimit = 1;
+    const paginatedQuery = () => {
+      return HELPERS.paginatedQuery(state, firebase, setState, queryLimit);
+    }
+
     useEffect(() => {
       switch(location.pathname) {
         case '/':
-          helpers.findFeaturedSchools(firebase, setState);
-          helpers.findFeaturedArticles(firebase, setState);
-          helpers.findFeaturedTips(firebase, setState);
+          HELPERS.findFeaturedSchools(firebase, setState);
+          HELPERS.findFeaturedArticles(firebase, setState);
+          HELPERS.findFeaturedTips(firebase, setState);
           break;
         
         case '/goose':
-          helpers.findAllTips(firebase, setState);
+          HELPERS.findAllTips(firebase, setState);
           break;
         
         case '/networking':
-          helpers.findAllArticles(TAGS, firebase, setState);
+          HELPERS.findAllArticles(TAGS, firebase, setState);
           break;
         
         case '/schools':
-          helpers.findAllSchools(firebase, setState);
+          HELPERS.findAllSchools(firebase, setState);
           break;
         
         case '/services':
-          helpers.findAllAnnouncements(firebase, setState);
-          helpers.findAllMessages(firebase, setState);
+          HELPERS.findAllAnnouncements(firebase, setState);
+          HELPERS.findAllMessages(firebase, setState);
           break;
         
         case '/profile':
-          helpers.findUserById(userId, firebase, setState);
-          helpers.findSchoolApplicationById(userId, firebase, setState);
+          HELPERS.findUserById(userId, firebase, setState);
+          HELPERS.findSchoolApplicationById(userId, firebase, setState);
           break;
         
         case '/admin':
-          helpers.findAllUsers(firebase, setState);
-          helpers.findAllSchools(firebase, setState);
-          helpers.findAllSchoolApplications(firebase, setState);
-          helpers.findAllHomestayApplications(firebase, setState);
-          helpers.findAllAirportRideApplications(firebase, setState);
-          helpers.findAllTips(firebase, setState);
-          helpers.findAllArticles(TAGS, firebase, setState);
-          helpers.findAllAnnouncements(firebase, setState);
-          helpers.findAllMessages(firebase, setState);
+          HELPERS.paginatedQuery(state, firebase, setState, queryLimit);
+          // HELPERS.findAllUsers(firebase, setState);
+          HELPERS.findAllSchools(firebase, setState);
+          HELPERS.findAllSchoolApplications(firebase, setState);
+          HELPERS.findAllHomestayApplications(firebase, setState);
+          HELPERS.findAllAirportRideApplications(firebase, setState);
+          HELPERS.findAllTips(firebase, setState);
+          HELPERS.findAllArticles(TAGS, firebase, setState);
+          HELPERS.findAllAnnouncements(firebase, setState);
+          HELPERS.findAllMessages(firebase, setState);
           break;
 
         default:
@@ -82,7 +88,7 @@ function withFetching(Component) {
     }, [location.pathname]);
 
     return (
-    <DatabaseContext.Provider value={state}>
+    <DatabaseContext.Provider value={{state, paginatedQuery}}>
       <Component {...props} />
     </DatabaseContext.Provider>
     )

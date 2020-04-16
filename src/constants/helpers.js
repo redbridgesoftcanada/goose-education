@@ -1,3 +1,51 @@
+// D A T A  F E T C H I N G  ( P A G I N A T I O N )
+// note. Firestore pagination works as a set of unrelated sequential queries
+// NOT "remember that previous query I asked for before, now send me the next 20 results."
+
+let lastDocRef, nextQueryRef;
+function paginatedQuery(state, firebase, setState, limit) {
+    
+    const firstQueryRef = firebase.users().orderBy("email").limit(limit);
+
+    const paginate = firstQueryRef.get().then(snapshot => {
+        if (snapshot.empty) {
+            console.log('No matching documents.');
+            return;
+        }
+        
+        if (!state.listOfUsers.length) {
+            lastDocRef = snapshot.docs[0];
+            // reference the last document of the firstQueryRefQuery, including that document, and return the limit number of documents
+            nextQueryRef = firstQueryRef.startAt(lastDocRef.data().email);
+        }
+        else {
+            // reference the last document of the firstQueryRefQuery, excluding that document, and return the limit number of documents
+            nextQueryRef = firstQueryRef.startAfter(lastDocRef.data().email);
+        }
+
+        return nextQueryRef.get().then(snapshot => {
+            if (snapshot.empty) {
+                console.log('No matching documents.');
+                return;
+            }
+            
+            lastDocRef = snapshot.docs[snapshot.docs.length - 1];   // update lastDocRef with the nextDocRef
+
+            const usersArr = snapshot.docs.map(doc => {
+                let user = doc.data();
+                let id = doc.id;
+                return {...user, id}
+            });
+
+            const currentUsersState = state.listOfUsers;
+            currentUsersState.push(...usersArr);
+            setState(prevState => ({...prevState, listOfUsers: currentUsersState}));
+        })
+        .catch(err => { console.log('Error getting documents', err) });
+    });
+    return paginate;
+}
+
 // D A T A  F E T C H I N G  ( S E L E C T )
 function findFeaturedSchools(firebase, setState) {
     const schoolsQuery = firebase.schools().where('isFeatured', '==', true).get();
@@ -392,4 +440,4 @@ function convertToTitleCase(text) {
     });
 }
 
-export { findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase }
+export { paginatedQuery, findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase }
