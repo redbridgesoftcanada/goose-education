@@ -35,8 +35,8 @@ function withFetching(Component) {
     // console.count(state)
 
     const queryLimit = 1;
-    const paginatedQuery = () => {
-      return HELPERS.paginatedQuery(state, firebase, setState, queryLimit);
+    const paginatedQuery = type => {
+      return HELPERS.paginatedQuery(state, firebase, setState, queryLimit, type);
     }
 
     useEffect(() => {
@@ -70,9 +70,14 @@ function withFetching(Component) {
           break;
         
         case '/admin':
-          HELPERS.paginatedQuery(state, firebase, setState, queryLimit);
+          async function loadInitialData() {
+            await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Users");
+            await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Schools");
+          }
+          loadInitialData();
+
           // HELPERS.findAllUsers(firebase, setState);
-          HELPERS.findAllSchools(firebase, setState);
+          // HELPERS.findAllSchools(firebase, setState);
           HELPERS.findAllSchoolApplications(firebase, setState);
           HELPERS.findAllHomestayApplications(firebase, setState);
           HELPERS.findAllAirportRideApplications(firebase, setState);

@@ -1,11 +1,79 @@
 // D A T A  F E T C H I N G  ( P A G I N A T I O N )
 // note. Firestore pagination works as a set of unrelated sequential queries
-// NOT "remember that previous query I asked for before, now send me the next 20 results."
 
-let lastDocRef, nextQueryRef;
-function paginatedQuery(state, firebase, setState, limit) {
+let queryType, lastDocRef, nextQueryRef;
+
+// C a l l b a c k  F u n c t i o n s  ----------------------------------
+function configFirstPaginate(firebase, state) {
+    let firstQueryRef, currentState, currentStateKey;
+    switch(queryType) {
+        case "Users":
+            firstQueryRef = firebase.users().orderBy("email");
+            currentState = state.listOfUsers;
+            currentStateKey = 'listOfUsers';
+            break;
+
+        case "Schools":
+            firstQueryRef = firebase.schools().orderBy("title");
+            currentState = state.listOfSchools;
+            currentStateKey = 'listOfSchools';
+            break;
+        
+        default:
+            console.log("Missing queryType for paginate config functions, returning empty");
+            return;
+            
+    }
+    return {firstQueryRef, currentState, currentStateKey};
+}
+
+function configLastDocData() {
+    switch(queryType) {
+        case "Users":
+            return lastDocRef.data().email;
+        
+        case "Schools":
+            console.log(lastDocRef);
+            return lastDocRef.data().title;
+        
+        default:
+            console.log("Missing queryType for paginate config functions, returning empty");
+            return;
+    }
+}
+
+function amendPaginateData(snapshot, currentState) {
+    switch (queryType) {
+        case "Users":
+            const usersArr = snapshot.docs.map(doc => {
+                let user = doc.data();
+                let id = doc.id;
+                return {...user, id}
+            });
+            currentState.push(...usersArr);
+            return currentState;
+        
+        case "Schools":
+            const schoolsArr = snapshot.docs.map(doc => {
+                return doc.data();
+            });
+            currentState.push(...schoolsArr);
+            return currentState;
+
+        default:
+            console.log("Missing queryType for paginate config functions, returning empty");
+            return;
+    }
+}
+// --------------------------------------------------------------------
+
+function paginatedQuery(state, firebase, setState, queryLimit, type) {
     
-    const firstQueryRef = firebase.users().orderBy("email").limit(limit);
+    queryType = type; // (global variable) identifies Firestore collection for the data query
+
+    const firstPaginate = configFirstPaginate(firebase, state);
+    const firstQueryRef = firstPaginate.firstQueryRef.limit(queryLimit);
+    const { currentState, currentStateKey } = firstPaginate;
 
     const paginate = firstQueryRef.get().then(snapshot => {
         if (snapshot.empty) {
@@ -13,14 +81,20 @@ function paginatedQuery(state, firebase, setState, limit) {
             return;
         }
         
-        if (!state.listOfUsers.length) {
+        if (!currentState.length) {
+            // first initialization of data
+
+            // (global variable) store a reference to the first document of the collection from the initial query
             lastDocRef = snapshot.docs[0];
-            // reference the last document of the firstQueryRefQuery, including that document, and return the limit number of documents
-            nextQueryRef = firstQueryRef.startAt(lastDocRef.data().email);
+            const lastDocData = configLastDocData();
+            // (global variable) reference the last document, including that document, and return the limit number of documents
+            nextQueryRef = firstQueryRef.startAt(lastDocData);
         }
         else {
-            // reference the last document of the firstQueryRefQuery, excluding that document, and return the limit number of documents
-            nextQueryRef = firstQueryRef.startAfter(lastDocRef.data().email);
+            // (global variable) reference to the last document of the previous query
+            const lastDocData = configLastDocData();
+            // (global variable) reference the last document, excluding that document, and return the limit number of documents
+            nextQueryRef = firstQueryRef.startAfter(lastDocData);
         }
 
         return nextQueryRef.get().then(snapshot => {
@@ -29,17 +103,12 @@ function paginatedQuery(state, firebase, setState, limit) {
                 return;
             }
             
-            lastDocRef = snapshot.docs[snapshot.docs.length - 1];   // update lastDocRef with the nextDocRef
+            // (global variable) update last document reference from this most recent query
+            lastDocRef = snapshot.docs[snapshot.docs.length - 1];
 
-            const usersArr = snapshot.docs.map(doc => {
-                let user = doc.data();
-                let id = doc.id;
-                return {...user, id}
-            });
+            const updatePaginateData = amendPaginateData(snapshot, currentState);
 
-            const currentUsersState = state.listOfUsers;
-            currentUsersState.push(...usersArr);
-            setState(prevState => ({...prevState, listOfUsers: currentUsersState}));
+            setState(prevState => ({...prevState, [currentStateKey]: updatePaginateData}));
         })
         .catch(err => { console.log('Error getting documents', err) });
     });
