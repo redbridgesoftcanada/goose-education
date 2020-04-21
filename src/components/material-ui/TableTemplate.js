@@ -70,7 +70,7 @@ function toggleReducer(state, action) {
 }
 
 function generateContentTable(state, dispatch, type, context) {
-  const props = { state, dispatch, paginatedQuery: context.paginatedQuery };
+  const props = { state, dispatch };
 
   switch(type) {
     case "Users":
@@ -98,7 +98,7 @@ function generateContentTable(state, dispatch, type, context) {
       return <GooseTips {...props}/>
 
     case "Articles":
-      props.listOfArticles = context.state.taggedArticles;
+      props.listOfArticles = context.state.listOfArticles;
       return <Articles {...props}/>
     
     case "Announcements":
@@ -114,19 +114,21 @@ function generateContentTable(state, dispatch, type, context) {
   }
 }
 
-function generatePagination(classes, state, dispatch, type, paginatedQuery) {
+function generatePagination(classes, state, dispatch, type, context) {
   const loadMoreHandler = type => {
     dispatch({type:"TOGGLE_LOADING"});
-    paginatedQuery(type);
+    context.paginatedQuery(type);
     dispatch({type:"TOGGLE_LOADING"});
   }
 
   return (
     <div className={classes.seeMore}>
       {state.isLoading ? 
-      <CircularProgress/>
+      <CircularProgress color="secondary"/>
       :
-      
+      context.state.isLastDoc[type] ? 
+      <Typography>End</Typography>
+      :
       <Link color="secondary" href="#" onClick={() => loadMoreHandler(type)}>
         See more {type}
       </Link>
@@ -159,7 +161,7 @@ function TableTemplate(props) {
         {context => 
           <>
             {generateContentTable(state, dispatch, type, context)}
-            {generatePagination(classes, state, dispatch, type, context.paginatedQuery)}
+            {generatePagination(classes, state, dispatch, type, context)}
           </>
         }
       </DatabaseContext.Consumer>

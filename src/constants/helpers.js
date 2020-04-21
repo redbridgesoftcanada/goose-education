@@ -1,7 +1,8 @@
 // D A T A  F E T C H I N G  ( P A G I N A T I O N )
 // note. Firestore pagination works as a set of unrelated sequential queries
 
-let queryType, lastDocRef, nextQueryRef;
+let lastDocRef = {};
+let queryType, nextQueryRef;
 
 // C a l l b a c k  F u n c t i o n s  ----------------------------------
 function configFirstPaginate(firebase, state) {
@@ -18,7 +19,49 @@ function configFirstPaginate(firebase, state) {
             currentState = state.listOfSchools;
             currentStateKey = 'listOfSchools';
             break;
+
+        case "Applications":
+            firstQueryRef = firebase.schoolApplications().orderBy("firstName");
+            currentState = state.listOfApplications;
+            currentStateKey = 'listOfApplications';
+            break;
+
+        case "Homestays":
+            firstQueryRef = firebase.homestayApplications().orderBy("firstName");
+            currentState = state.listOfHomestays;
+            currentStateKey = 'listOfHomestays';
+            break;            
+
+        case "Airport Rides":
+            firstQueryRef = firebase.airportRideApplications().orderBy("firstName");
+            currentState = state.listOfAirportRides;
+            currentStateKey = 'listOfAirportRides';
+            break;
+            
+        case "Goose Tips":
+            firstQueryRef = firebase.tips().orderBy("title");
+            currentState = state.gooseTips;
+            currentStateKey = 'gooseTips';
+            break;
         
+        case "Articles":
+            firstQueryRef = firebase.articles().orderBy("tag");
+            currentState = state.listOfArticles;
+            currentStateKey = 'listOfArticles';
+            break;
+
+        case "Announcements":
+            firstQueryRef = firebase.announcements().orderBy("createdAt", "desc");
+            currentState = state.listOfAnnouncements;
+            currentStateKey = 'listOfAnnouncements';
+            break;
+
+        case "Messages":
+            firstQueryRef = firebase.messages().orderBy("createdAt", "desc");
+            currentState = state.listOfMessages;
+            currentStateKey = 'listOfMessages';
+            break;    
+
         default:
             console.log("Missing queryType for paginate config functions, returning empty");
             return;
@@ -27,17 +70,29 @@ function configFirstPaginate(firebase, state) {
     return {firstQueryRef, currentState, currentStateKey};
 }
 
-function configLastDocData() {
+function configLastDocData(currentStateKey) {
     switch(queryType) {
         case "Users":
-            return lastDocRef.data().email;
+            return lastDocRef[currentStateKey].data().email;
         
         case "Schools":
-            console.log(lastDocRef);
-            return lastDocRef.data().title;
+        case "Goose Tips":
+            return lastDocRef[currentStateKey].data().title;
+
+        case "Applications":
+        case "Homestays":
+        case "Airport Rides":
+            return lastDocRef[currentStateKey].data().firstName;
         
+        case "Articles":
+            return lastDocRef[currentStateKey].data().tag;
+
+        case "Announcements":
+        case "Messages":
+            return lastDocRef[currentStateKey].data().createdAt;
+
         default:
-            console.log("Missing queryType for paginate config functions, returning empty");
+            console.log("Missing queryType for config last document data");
             return;
     }
 }
@@ -45,20 +100,29 @@ function configLastDocData() {
 function amendPaginateData(snapshot, currentState) {
     switch (queryType) {
         case "Users":
-            const usersArr = snapshot.docs.map(doc => {
-                let user = doc.data();
+        case "Applications":
+        case "Homestays":
+        case "Airport Rides":
+        case "Announcements":
+        case "Messages": {
+            const newDataArr = snapshot.docs.map(doc => {
+                let data = doc.data();
                 let id = doc.id;
-                return {...user, id}
+                return {...data, id}
             });
-            currentState.push(...usersArr);
+            currentState.push(...newDataArr);
             return currentState;
+        }
         
         case "Schools":
-            const schoolsArr = snapshot.docs.map(doc => {
+        case "Goose Tips":
+        case "Articles": {
+            const newDataArr = snapshot.docs.map(doc => {
                 return doc.data();
             });
-            currentState.push(...schoolsArr);
+            currentState.push(...newDataArr);
             return currentState;
+        }
 
         default:
             console.log("Missing queryType for paginate config functions, returning empty");
@@ -66,10 +130,9 @@ function amendPaginateData(snapshot, currentState) {
     }
 }
 // --------------------------------------------------------------------
-
 function paginatedQuery(state, firebase, setState, queryLimit, type) {
     
-    queryType = type; // (global variable) identifies Firestore collection for the data query
+    queryType = type; // (global variable) identifies Firestore collection for the data query.
 
     const firstPaginate = configFirstPaginate(firebase, state);
     const firstQueryRef = firstPaginate.firstQueryRef.limit(queryLimit);
@@ -77,40 +140,31 @@ function paginatedQuery(state, firebase, setState, queryLimit, type) {
 
     const paginate = firstQueryRef.get().then(snapshot => {
         if (snapshot.empty) {
-            console.log('No matching documents.');
+            console.log('No matching documents in first paginate query.');
             return;
         }
-        
-        if (!currentState.length) {
-            // first initialization of data
 
-            // (global variable) store a reference to the first document of the collection from the initial query
-            lastDocRef = snapshot.docs[0];
-            const lastDocData = configLastDocData();
-            // (global variable) reference the last document, including that document, and return the limit number of documents
-            nextQueryRef = firstQueryRef.startAt(lastDocData);
+        if (!currentState.length) {
+            lastDocRef[currentStateKey] = snapshot.docs[0]; // (global variable) store a reference to the first document from the initial query (= first document in collection).
+            const lastDocData = configLastDocData(currentStateKey);
+            nextQueryRef = firstQueryRef.startAt(lastDocData);  // (global variable) reference the last document, including that document, and return the limit number of documents.
         }
         else {
-            // (global variable) reference to the last document of the previous query
-            const lastDocData = configLastDocData();
-            // (global variable) reference the last document, excluding that document, and return the limit number of documents
-            nextQueryRef = firstQueryRef.startAfter(lastDocData);
+            const lastDocData = configLastDocData(currentStateKey);
+            nextQueryRef = firstQueryRef.startAfter(lastDocData);   // (global variable) reference the last document, excluding that document, and return the limit number of documents.
         }
 
         return nextQueryRef.get().then(snapshot => {
             if (snapshot.empty) {
-                console.log('No matching documents.');
+                console.log('No matching documents in next paginate query.');
                 return;
             }
             
-            // (global variable) update last document reference from this most recent query
-            lastDocRef = snapshot.docs[snapshot.docs.length - 1];
-
+            lastDocRef[currentStateKey] = snapshot.docs[snapshot.docs.length - 1];  // (global variable) update last document reference from this most recent query
+            
             const updatePaginateData = amendPaginateData(snapshot, currentState);
-
             setState(prevState => ({...prevState, [currentStateKey]: updatePaginateData}));
-        })
-        .catch(err => { console.log('Error getting documents', err) });
+        });
     });
     return paginate;
 }

@@ -19,20 +19,20 @@ function withFetching(Component) {
       featuredArticles: [],
       featuredSchools: [],
       featuredTips: [],
-      listOfSchools: [],
       taggedArticles: [],
       gooseTips: [],
+      listOfUsers: [],
+      listOfSchools: [],
+      listOfApplications: [],
+      listOfHomestays: [],
+      listOfAirportRides: [],
+      listOfArticles: [],
       listOfMessages: [],
       listOfAnnouncements: [],
-      listOfUsers: [],
-      listOfApplications: null,
-      listOfHomestays: null,
-      listOfAirportRides: null,
       profile: null,
       schoolApplication: null,
     }
     const [ state, setState ] = useState(INITIAL_STATE);
-    // console.count(state)
 
     const queryLimit = 1;
     const paginatedQuery = type => {
@@ -71,20 +71,22 @@ function withFetching(Component) {
         
         case '/admin':
           async function loadInitialData() {
-            await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Users");
-            await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Schools");
+            try {
+              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Users");
+              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Schools");
+              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Applications");
+              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Homestays");
+              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Airport Rides");
+              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Goose Tips");
+              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Articles");
+              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Announcements");
+              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Messages");
+
+            } catch(error) {
+              console.log("Unable to fetch data", error)
+            }
           }
           loadInitialData();
-
-          // HELPERS.findAllUsers(firebase, setState);
-          // HELPERS.findAllSchools(firebase, setState);
-          HELPERS.findAllSchoolApplications(firebase, setState);
-          HELPERS.findAllHomestayApplications(firebase, setState);
-          HELPERS.findAllAirportRideApplications(firebase, setState);
-          HELPERS.findAllTips(firebase, setState);
-          HELPERS.findAllArticles(TAGS, firebase, setState);
-          HELPERS.findAllAnnouncements(firebase, setState);
-          HELPERS.findAllMessages(firebase, setState);
           break;
 
         default:
