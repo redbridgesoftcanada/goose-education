@@ -2,7 +2,7 @@ const STATUSES = ['Submitted', 'Pending Review', 'Tuition Required', 'Approved']
 
 const TAGS = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
 
-const ADMIN_PAGES = ["Overview", "Users", "Schools", "Applications", "Homestay", "Airport Rides", "Goose Tips", "Articles", "Announcements", "Messages"];
+const ADMIN_PAGES = ["Overview", "Users", "Schools", "Applications", "Homestays", "Airport Rides", "Goose Tips", "Articles", "Announcements", "Messages"];
 
 const NAV_PAGES = ['All', 'Goose Study Abroad', 'Networking', 'School Information', 'Study Abroad Services', 'Service Centre'];
 

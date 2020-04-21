@@ -114,7 +114,7 @@ function loadMenuIcons(page) {
       return <School/>
     case "Applications":
       return <Layers/>
-    case "Homestay":
+    case "Homestays":
       return <Home/>
     case "Airport Rides":
       return <AirplanemodeActive/>

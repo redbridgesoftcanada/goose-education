@@ -85,7 +85,7 @@ function generateContentTable(state, dispatch, type, context) {
       props.listOfApplications = context.state.listOfApplications;
       return <Applications {...props}/>
     
-    case "Homestay":
+    case "Homestays":
       props.listOfHomestays = context.state.listOfHomestays;
       return <Homestays {...props}/>
 
