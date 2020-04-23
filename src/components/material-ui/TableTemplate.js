@@ -126,11 +126,11 @@ function generatePagination(classes, state, dispatch, type, context) {
       {state.isLoading ? 
       <CircularProgress color="secondary"/>
       :
-      context.state.isLastDoc[type] ? 
-      <Typography>End</Typography>
+      context.state.isQueryEmpty[type] ? 
+      <Typography>All {type} Data Loaded.</Typography>
       :
       <Link color="secondary" href="#" onClick={() => loadMoreHandler(type)}>
-        See more {type}
+        Load More
       </Link>
       }
     </div>

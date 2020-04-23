@@ -130,43 +130,49 @@ function amendPaginateData(snapshot, currentState) {
     }
 }
 // --------------------------------------------------------------------
-function paginatedQuery(state, firebase, setState, queryLimit, type) {
-    
-    queryType = type; // (global variable) identifies Firestore collection for the data query.
+function paginatedQuery(state, firebase, setState, type) {
+    try {
+        queryType = type; // (global variable) identifies Firestore collection for the data query.
 
-    const firstPaginate = configFirstPaginate(firebase, state);
-    const firstQueryRef = firstPaginate.firstQueryRef.limit(queryLimit);
-    const { currentState, currentStateKey } = firstPaginate;
+        const firstPaginate = configFirstPaginate(firebase, state);
+        const firstQueryRef = firstPaginate.firstQueryRef.limit(state.queryLimit);
+        const { currentState, currentStateKey } = firstPaginate;
 
-    const paginate = firstQueryRef.get().then(snapshot => {
-        if (snapshot.empty) {
-            console.log('No matching documents in first paginate query.');
-            return;
-        }
-
-        if (!currentState.length) {
-            lastDocRef[currentStateKey] = snapshot.docs[0]; // (global variable) store a reference to the first document from the initial query (= first document in collection).
-            const lastDocData = configLastDocData(currentStateKey);
-            nextQueryRef = firstQueryRef.startAt(lastDocData);  // (global variable) reference the last document, including that document, and return the limit number of documents.
-        }
-        else {
-            const lastDocData = configLastDocData(currentStateKey);
-            nextQueryRef = firstQueryRef.startAfter(lastDocData);   // (global variable) reference the last document, excluding that document, and return the limit number of documents.
-        }
-
-        return nextQueryRef.get().then(snapshot => {
+        const paginate = firstQueryRef.get().then(snapshot => {
             if (snapshot.empty) {
-                console.log('No matching documents in next paginate query.');
+                console.log('No matching documents in first paginate query.');
                 return;
             }
-            
-            lastDocRef[currentStateKey] = snapshot.docs[snapshot.docs.length - 1];  // (global variable) update last document reference from this most recent query
-            
-            const updatePaginateData = amendPaginateData(snapshot, currentState);
-            setState(prevState => ({...prevState, [currentStateKey]: updatePaginateData}));
+
+            if (!currentState.length) {
+                lastDocRef[currentStateKey] = snapshot.docs[0]; // (global variable) store a reference to the first document from the initial query (= first document in collection).
+                const lastDocData = configLastDocData(currentStateKey);
+                nextQueryRef = firstQueryRef.startAt(lastDocData);  // (global variable) reference the last document, including that document, and return the limit number of documents.
+            }
+            else {
+                const lastDocData = configLastDocData(currentStateKey);
+                nextQueryRef = firstQueryRef.startAfter(lastDocData);   // (global variable) reference the last document, excluding that document, and return the limit number of documents.
+            }
+
+            return nextQueryRef.get().then(snapshot => {
+                if (snapshot.empty) {
+                    console.log(`No matching documents in next paginate query, setting state.isQueryEmpty[${type}] === true.`);
+                    const currentState = state.isQueryEmpty;
+                    currentState[type] = true;
+                    setState(prevState => ({...prevState, isQueryEmpty: currentState}));
+                    return;
+                }
+                
+                lastDocRef[currentStateKey] = snapshot.docs[snapshot.docs.length - 1];  // (global variable) update last document reference from this most recent query
+                
+                const updatePaginateData = amendPaginateData(snapshot, currentState);
+                setState(prevState => ({...prevState, [currentStateKey]: updatePaginateData}));
+            });
         });
-    });
-    return paginate;
+        return paginate;
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 // D A T A  F E T C H I N G  ( S E L E C T )

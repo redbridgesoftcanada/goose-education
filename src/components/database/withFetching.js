@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import DatabaseContext from './context';
-import { TAGS } from '../../constants/constants';
+import { ADMIN_PAGES, TAGS } from '../../constants/constants';
 import * as HELPERS from '../../constants/helpers';
 
 function withFetching(Component) {
@@ -16,6 +16,10 @@ function withFetching(Component) {
     }
 
     const INITIAL_STATE = {
+      // pagination ----------
+      queryLimit: 1,
+      isQueryEmpty: {},
+      // ---------------------
       featuredArticles: [],
       featuredSchools: [],
       featuredTips: [],
@@ -34,9 +38,8 @@ function withFetching(Component) {
     }
     const [ state, setState ] = useState(INITIAL_STATE);
 
-    const queryLimit = 1;
     const paginatedQuery = type => {
-      return HELPERS.paginatedQuery(state, firebase, setState, queryLimit, type);
+      return HELPERS.paginatedQuery(state, firebase, setState, type);
     }
 
     useEffect(() => {
@@ -72,16 +75,9 @@ function withFetching(Component) {
         case '/admin':
           async function loadInitialData() {
             try {
-              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Users");
-              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Schools");
-              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Applications");
-              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Homestays");
-              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Airport Rides");
-              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Goose Tips");
-              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Articles");
-              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Announcements");
-              await HELPERS.paginatedQuery(state, firebase, setState, queryLimit, "Messages");
-
+              for (let i = 0; i <= ADMIN_PAGES.slice(1).length; i++) {
+                await paginatedQuery(ADMIN_PAGES[i]);
+              }
             } catch(error) {
               console.log("Unable to fetch data", error)
             }
