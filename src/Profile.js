@@ -17,9 +17,9 @@ function ProfileBase() {
           <DatabaseContext.Consumer>
             {context => 
               <>
-                <UserProfile authUser={authUser} profile={context.profile}/>
+                <UserProfile authUser={authUser} profile={context.state.profile}/>
                 <br/>
-                <UserApplicationHistory authUser={authUser} application={context.application}/>
+                <UserApplicationHistory authUser={authUser} application={context.state.application}/>
               </>
             }
           </DatabaseContext.Consumer>

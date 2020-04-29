@@ -21,10 +21,10 @@ function Index() {
       <DatabaseContext.Consumer>
         {context => 
           <>
-            <FeatureCarousel featuredSchools={context.featuredSchools}/>
+            <FeatureCarousel featuredSchools={context.state.featuredSchools}/>
             <FeatureBoard />
-            <ArticleThumbnails featuredArticles={context.featuredArticles} />
-            <SplitThumbnails previewSchools={context.featuredSchools} previewTips={context.featuredTips}/>
+            <ArticleThumbnails featuredArticles={context.state.featuredArticles} />
+            <SplitThumbnails previewSchools={context.state.featuredSchools} previewTips={context.state.featuredTips}/>
           </>
         }
       </DatabaseContext.Consumer>

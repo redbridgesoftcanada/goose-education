@@ -113,7 +113,7 @@ function Networking(props) {
           })}
         </Tabs>
         <DatabaseContext.Consumer>
-          {context => createTabPanel(selectedTab, props.history, context.taggedArticles)}
+          {context => createTabPanel(selectedTab, props.history, context.state.taggedArticles)}
         </DatabaseContext.Consumer>
       </Paper>
       <Poster body={posterBody} backgroundImage={posterBackground} layoutType='vancouver_now'/>

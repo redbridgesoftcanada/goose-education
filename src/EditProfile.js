@@ -49,7 +49,7 @@ function EditProfileBase() {
             {authUser => 
               <DatabaseContext.Consumer>
                 {context => 
-                  <EditProfileForm authUser={authUser} profile={context.profile}/>
+                  <EditProfileForm authUser={authUser} profile={context.state.profile}/>
                 }
               </DatabaseContext.Consumer>
             }

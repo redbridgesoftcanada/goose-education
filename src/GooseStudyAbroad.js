@@ -60,7 +60,7 @@ function GooseEdu(props) {
             </TabPanel>
             <TabPanel value={value} index={1}>
               <DatabaseContext.Consumer>
-                {context => <GooseTips {...props} gooseTips={context.gooseTips}/>}
+                {context => <GooseTips {...props} gooseTips={context.state.gooseTips}/>}
               </DatabaseContext.Consumer>
             </TabPanel>
         </Paper>

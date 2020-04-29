@@ -63,9 +63,9 @@ function App() {
             {context =>
               <>
                 <Route path="/services" render={props =>
-                  <ServiceCentre {...props} listOfMessages={context.listOfMessages} listOfAnnouncements={context.listOfAnnouncements}/> }/>
+                  <ServiceCentre {...props} listOfMessages={context.state.listOfMessages} listOfAnnouncements={context.state.listOfAnnouncements}/> }/>
                 <Route path="/schools" render={props => 
-                  <Schools {...props} listOfSchools={context.listOfSchools}/> }/>
+                  <Schools {...props} listOfSchools={context.state.listOfSchools}/> }/>
               </>
             }
           </DatabaseContext.Consumer>
