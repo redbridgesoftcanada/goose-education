@@ -130,6 +130,8 @@ function amendPaginateData(snapshot, currentState) {
     }
 }
 // --------------------------------------------------------------------
+
+// P A G I N A T I O N
 function paginatedQuery(state, firebase, setState, type) {
     try {
         queryType = type; // (global variable) identifies Firestore collection for the data query.
@@ -173,6 +175,23 @@ function paginatedQuery(state, firebase, setState, type) {
     } catch (error) {
         console.log(error)
     }
+}
+
+function findGraphics(firebase, setState, location) {
+    const graphicsQuery = firebase.graphics().where("location", "==", location).get();
+    graphicsQuery.then(snapshot => {
+        if (snapshot.empty) {
+            console.log('No matching documents.');
+            return;
+        }
+
+        const graphicsKey = `${location.replace('/', '')}Graphics`;
+        const graphics = {};
+        snapshot.forEach(doc => {
+            graphics[doc.id] = doc.data();
+        });
+        setState(prevState => ({...prevState, [graphicsKey]: graphics}));
+    })
 }
 
 // D A T A  F E T C H I N G  ( S E L E C T )
@@ -569,4 +588,4 @@ function convertToTitleCase(text) {
     });
 }
 
-export { paginatedQuery, findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase }
+export { paginatedQuery, findGraphics, findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase }

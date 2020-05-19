@@ -45,6 +45,7 @@ function withFetching(Component) {
     useEffect(() => {
       switch(location.pathname) {
         case '/':
+          HELPERS.findGraphics(firebase, setState, '/home');
           HELPERS.findFeaturedSchools(firebase, setState);
           HELPERS.findFeaturedArticles(firebase, setState);
           HELPERS.findFeaturedTips(firebase, setState);
