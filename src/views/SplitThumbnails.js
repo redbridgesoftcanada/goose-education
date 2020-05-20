@@ -68,7 +68,7 @@ const styles = theme => ({
 });
 
 function SplitThumbnails(props) {
-    const {classes, previewSchools, previewTips} = props;
+    const {classes, previewSchools, previewTips, whiteWrapperText, redWrapperText} = props;
 
     const [ redirectPath, setRedirectPath ] = useState({});
 
@@ -77,7 +77,7 @@ function SplitThumbnails(props) {
             case 'school_information':
                 setRedirectPath({
                     pathname: '/schools', 
-                    state: { title: 'School Information', selected: 0 }
+                    state: { title: 'School Information', tab: 0 }
                 });
                 break;
         
@@ -103,7 +103,7 @@ function SplitThumbnails(props) {
                 <Grid item xs={12} md={6}>
                     <div className={classes.header}>
                         <Typography variant="h4" className={classes.title}>
-                            School Information
+                            {whiteWrapperText.title}
                         </Typography>
                         { (Object.entries(redirectPath).length) ? 
                             <Redirect push to={redirectPath}/>
@@ -148,7 +148,7 @@ function SplitThumbnails(props) {
                 <Grid item xs={12} md={6} className={classes.background}>
                 <div className={classes.header}>
                         <Typography variant="h4" className={classes.titleWhite}>
-                            Goose Tips
+                            {redWrapperText.title}
                         </Typography>
                         { (Object.entries(redirectPath).length) ? 
                             <Redirect push to={redirectPath}/>

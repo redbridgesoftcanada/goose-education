@@ -54,7 +54,7 @@ const styles = theme => ({
 });
 
 function ProductValues(props) {
-    const { classes, featuredArticles } = props;
+    const { classes, featuredArticles, wrapperText } = props;
     
     const INITIAL_STATE = {
         redirectPath: {},
@@ -68,7 +68,7 @@ function ProductValues(props) {
     const handleIconClick = () => {
         setState({ 
             ...state,
-            redirectPath: { pathname: '/networking', state: { title: 'Networking' } } 
+            redirectPath: { pathname: '/networking', state: { title: 'Networking', selected: 0 } } 
         });
     }
     const handleArticleClick = event => {
@@ -89,18 +89,18 @@ function ProductValues(props) {
         <section className={classes.root}>
             <div className={classes.header}>
                 <Typography variant="h4" className={classes.title}>
-                    Networking
+                    {wrapperText.title}
                 </Typography>
                 {(Object.entries(redirectPath).length) ? 
                     <Redirect push to={redirectPath}/>
                     :
-                    <IconButton id='School Information' onClick={handleIconClick} className={classes.button}>
+                    <IconButton onClick={handleIconClick} className={classes.button}>
                         <AddIcon />
                     </IconButton>
                 }
             </div>
             <Typography variant="body2" className={classes.description}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                {wrapperText.caption}
             </Typography>
             <Container className={classes.container}>
                 <Grid container spacing={2}>
