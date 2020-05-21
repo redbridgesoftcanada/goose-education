@@ -1,7 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Container, Grid, withStyles } from '@material-ui/core';
-
 import Typography from '../components/onePirate/Typography';
 
 const styles = theme => ({
@@ -45,74 +43,33 @@ const styles = theme => ({
 });
 
 function GoosePlatform(props) {
-    const { classes } = props;
+    const { classes, graphics } = props;
+
+    const filteredGraphics = Object.values(graphics).filter(graphic => typeof graphic !== 'string');
+    filteredGraphics.sort((a, b) => {
+        if (a.title < b.title) return -1;
+        if (a.title > b.title) return 1;
+        return 0;
+    });
 
     return (
         <Container className={classes.root} component="section">
             <Grid container>
-                <Grid item xs={6} md={3} className={classes.frontWrapper}>
-                    <div className={classes.frontCard}>
-                        <Typography variant="h6" marked="center">
-                            Step 01
-                        </Typography>
-                        <Typography variant="h6">
-                            School Choice
-                        </Typography>
-                        <Typography variant="body2">
-                            Cat ipsum dolor sit amet, you have cat to be kitten me right meow or shove bum in owner's face like camera lens go into a room to decide you didn't want to be in there anyway.
-                        </Typography>
-                    </div>
-                </Grid>
-                <Grid item xs={6} md={3} className={classes.backWrapper}>
-                    <div className={classes.behind}>
-                        <div className={classes.backCard}>
-                            <Typography variant="h6" marked="center" className={classes.backCardContent}>
-                                Step 02
-                            </Typography>
-                            <Typography variant="h6" className={classes.backCardContent}>
-                                Homestay
-                            </Typography>
-                            <Typography variant="body2">
-                                Cat ipsum dolor sit amet, you have cat to be kitten me right meow or shove bum in owner's face like camera lens go into a room to decide you didn't want to be in there anyway.
-                            </Typography>
-                        </div>
-                    </div>
-                </Grid>
-                <Grid item xs={6} md={3} className={classes.frontWrapper}>
-                    <div className={classes.frontCard}>
-                        <Typography variant="h6" marked="center">
-                            Step 03
-                        </Typography>
-                        <Typography variant="h6">
-                            Airport Ride
-                        </Typography>
-                        <Typography variant="body2">
-                            Cat ipsum dolor sit amet, you have cat to be kitten me right meow or shove bum in owner's face like camera lens go into a room to decide you didn't want to be in there anyway.
-                        </Typography>
-                    </div>
-                </Grid>
-                <Grid item xs={6} md={3} className={classes.backWrapper}>
-                    <div className={classes.behind}>
-                        <div className={classes.backCard}>
-                            <Typography variant="h6" marked="center" className={classes.backCardContent}>
-                                Step 04
-                            </Typography>
-                            <Typography variant="h6" className={classes.backCardContent}>
-                                Networking
-                            </Typography>
-                            <Typography variant="body2">
-                                Cat ipsum dolor sit amet, you have cat to be kitten me right meow or shove bum in owner's face like camera lens go into a room to decide you didn't want to be in there anyway.
-                            </Typography>
-                        </div>
-                    </div>
-                </Grid>
+                {filteredGraphics.map((graphic, i) => {
+                    return (
+                        <Grid item xs={6} md={3} className={(i % 2 === 0) ? classes.frontWrapper : classes.backWrapper} key={i}>
+                            <div {...(i % 2 !== 0) && {className: classes.behind} }>
+                                <div className={(i % 2 === 0) ? classes.frontCard : classes.backCard}>
+                                    <Typography variant="h6" marked="center" {...(i % 2 !== 0) && {className:classes.backCardContent}}>{graphic.title}</Typography>
+                                    <Typography variant="h6" {...(i % 2 !== 0) && {className:classes.backCardContent}}>{graphic.subtitle}</Typography>
+                                    <Typography variant="body2">{graphic.caption}</Typography>
+                                </div>
+                            </div>
+                        </Grid>
+                )})}
             </Grid>
         </Container>
     );
 }
-
-GoosePlatform.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(GoosePlatform);

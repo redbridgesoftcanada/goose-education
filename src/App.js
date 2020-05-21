@@ -55,10 +55,14 @@ function App() {
           <Route path="/login" render={() => <Login/>}/>
           <Route path="/register" render={() => <Register/>}/>
           <Route path="/privacy" render={() => <Privacy/>}/>
-          <Route path="/studyabroad" render={props => <StudyAbroad {...props} />}/>
+          <Route path="/studyabroad" render={props => <StudyAbroad {...props}/>}/>
           <Route path="/networking" render={props => <Networking {...props} />}/>
-          <Route path="/goose" render={props => <Goose {...props} />}/>
           <Route exact path="/" render={() => <Home /> }/>
+          
+          <DatabaseContext.Consumer>
+            {context => context.state.gooseGraphics && <Route path="/goose" render={props => <Goose {...props} pageBanner={context.state.gooseGraphics.goosePageBanner}/>}/> }
+          </DatabaseContext.Consumer>
+          
           <DatabaseContext.Consumer>
             {context =>
               <>

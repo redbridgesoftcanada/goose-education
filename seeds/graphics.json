@@ -78,35 +78,39 @@
 
     "gooseFeatureBoard": {
       "location": "/goose",
+      "title": "Distinction",
+      "subtitle": "Goose Education Key Features",
+      "caption": "",
+      "image": "",
       "GFB1": {
         "title": "Notification Service",
         "subtitle": "",
         "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "image": "../assets/img/mm01_01.png"
+        "image": ""
       },
       "GFB2": {
         "title": "Various Payment Methods",
         "subtitle": "",
         "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "image": "../assets/img/mm01_02.png"
+        "image": ""
       },
       "GFB3": {
         "title": "Accurate Latest News",
         "subtitle": "",
         "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "image": "../assets/img/mm01_03.png"
+        "image": ""
       },
       "GFB4": {
         "title": "Study Abroad For Yourself",
         "subtitle": "",
         "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "image": "../assets/img/mm01_04.png"
+        "image": ""
       },
       "GFB5": {
         "title": "Networking",
         "subtitle": "",
         "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "image": "../assets/img/mm01_05.png"
+        "image": ""
       }
     },
 

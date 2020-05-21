@@ -52,6 +52,7 @@ function withFetching(Component) {
           break;
         
         case '/goose':
+          HELPERS.findGraphics(firebase, setState, '/goose');
           HELPERS.findAllTips(firebase, setState);
           break;
         
