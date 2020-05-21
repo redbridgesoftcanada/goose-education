@@ -57,6 +57,7 @@ function withFetching(Component) {
           break;
         
         case '/networking':
+          HELPERS.findGraphics(firebase, setState, '/networking');
           HELPERS.findAllArticles(TAGS, firebase, setState);
           break;
         

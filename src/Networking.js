@@ -31,38 +31,26 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function createPosterCards(classes) {
+function createPosterCards(classes, cards) {
+  const filteredCards = Object.values(cards).filter(card => typeof card !== 'string');
+
   return (
     <Grid container spacing={3} className={classes.card}>
-        <Grid item xs={false} md={3}/>
-        <Grid item xs={12} md={3}>
-          <Card>
-              <CardContent>
-                <Typography color="secondary">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </Typography>
-                <span className={classes.bullet}>•</span>
-                <Typography variant="body2" component="p">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                </Typography>
-              </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-              <CardContent>
-                <Typography color="secondary">
-                    Cat ipsum dolor sit amet
-                </Typography>
-                <span className={classes.bullet}>•</span>
-                <Typography variant="body2" component="p">
-                    Cat ipsum dolor sit amet, hunt anything that moves catty ipsum, yet pelt around the house and up and down stairs chasing phantoms but plan steps for world domination.
-                </Typography>
-              </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={false} md={3}/>
-      </Grid>
+      <Grid item xs={false} md={3}/>
+      {filteredCards.map((card, i) => {
+        return (
+          <Grid item xs={12} md={3} key={i}>
+            <Card>
+                <CardContent>
+                  <Typography color="secondary">{card.subtitle}</Typography>
+                  <span className={classes.bullet}>•</span>
+                  <Typography variant="body2" component="p">{card.caption}</Typography>
+                </CardContent>
+            </Card>
+          </Grid>
+      )})}
+      <Grid item xs={false} md={3}/>
+    </Grid>
   )
 }
 
@@ -81,26 +69,22 @@ function createTabPanel(selectedTab, history, articles) {
 function Networking(props) {
   const classes = useStyles();
 
-  const background = 'https://images.unsplash.com/photo-1564573732309-36969653e65c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1929&q=80';
-  const posterBackground = 'https://images.unsplash.com/photo-1543357115-92e515b2c9b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80';
+  const [ selectedTab, setSelectedTab ] = useState(props.location.state.selected);
+  const { pageBanner, poster, posterCards, wrapper } = props;
+  
   const posterBody = {
-    title: 'Vancouver Now',
-    subtitle: 'Share vibrant local information!',
-    caption: "On the Networking page, Vancouver's local landscapes, weather, hot places and restaurants, desserts, shops, sales, traffic, event, etc. Share your HOT info in Vancouver with lots of love.",
-    other: createPosterCards(classes)
+    title: poster.title,
+    subtitle: poster.subtitle,
+    caption: poster.caption,
+    other: createPosterCards(classes, posterCards)
   }
-
-  const { title, selected } = props.location.state;
-  const [ selectedTab, setSelectedTab ] = useState(selected);
 
   return (
     <>
       <NavBar />
-      <PageBanner title={title} backgroundImage={background} layoutType='headerBanner'/>
-      <Typography variant="h3" marked="center" className={classes.title}>{title}</Typography>
-      <Typography variant="body1" marked="center" className={classes.description}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      </Typography>
+      <PageBanner title={pageBanner.title} backgroundImage={pageBanner.image} layoutType='headerBanner'/>
+      <Typography variant="h3" marked="center" className={classes.title}>{wrapper.title}</Typography>
+      <Typography variant="body1" marked="center" className={classes.description}>{wrapper.caption}</Typography>
       <Paper className={classes.root}>
         <Tabs
           value={selectedTab}
@@ -116,7 +100,7 @@ function Networking(props) {
           {context => createTabPanel(selectedTab, props.history, context.state.taggedArticles)}
         </DatabaseContext.Consumer>
       </Paper>
-      <Poster body={posterBody} backgroundImage={posterBackground} layoutType='vancouver_now'/>
+      <Poster body={posterBody} backgroundImage={poster.image} layoutType='vancouver_now'/>
       <Footer />
     </>
   );
