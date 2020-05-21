@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Button, Link } from '@material-ui/core'
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -14,16 +13,11 @@ function Register(props) {
           underline="none"
           className={classes.rightLink}
           component={RouterLink}
-          to='/register'
-        >
-          {'Register'}
+          to='/register'>
+            Register
         </Link>
       </Button>
     );
-};
-
-Register.propTypes = {
-    classes: PropTypes.object.isRequired,
 };
 
 export default Register;

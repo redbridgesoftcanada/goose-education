@@ -13,9 +13,8 @@ function Networking(props) {
           underline="none"
           className={classes.rightLink}
           component={RouterLink} 
-          to={{ pathname: '/networking', state: { selected: 0 } }} 
-        >
-          {'Networking'}
+          to={{ pathname: '/networking', state: { selected: 0 } }}>
+            Networking
         </Link>
       </Button>
     );
