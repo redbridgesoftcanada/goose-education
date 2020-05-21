@@ -60,7 +60,7 @@ function configFirstPaginate(firebase, state) {
             firstQueryRef = firebase.messages().orderBy("createdAt", "desc");
             currentState = state.listOfMessages;
             currentStateKey = 'listOfMessages';
-            break;    
+            break;
 
         default:
             console.log("Missing queryType for paginate config functions, returning empty");
@@ -147,13 +147,17 @@ function paginatedQuery(state, firebase, setState, type) {
             }
 
             if (!currentState.length) {
-                lastDocRef[currentStateKey] = snapshot.docs[0]; // (global variable) store a reference to the first document from the initial query (= first document in collection).
+                // (global variable) store a reference to the first document from the initial query (= first document in collection).
+                lastDocRef[currentStateKey] = snapshot.docs[0]; 
                 const lastDocData = configLastDocData(currentStateKey);
-                nextQueryRef = firstQueryRef.startAt(lastDocData);  // (global variable) reference the last document, including that document, and return the limit number of documents.
+                
+                // (global variable) reference the last document, including that document, and return the limit number of documents.
+                nextQueryRef = firstQueryRef.startAt(lastDocData);  
             }
             else {
                 const lastDocData = configLastDocData(currentStateKey);
-                nextQueryRef = firstQueryRef.startAfter(lastDocData);   // (global variable) reference the last document, excluding that document, and return the limit number of documents.
+                // (global variable) reference the last document, excluding that document, and return the limit number of documents.
+                nextQueryRef = firstQueryRef.startAfter(lastDocData);   
             }
 
             return nextQueryRef.get().then(snapshot => {
@@ -165,7 +169,8 @@ function paginatedQuery(state, firebase, setState, type) {
                     return;
                 }
                 
-                lastDocRef[currentStateKey] = snapshot.docs[snapshot.docs.length - 1];  // (global variable) update last document reference from this most recent query
+                // (global variable) update last document reference from this most recent query
+                lastDocRef[currentStateKey] = snapshot.docs[snapshot.docs.length - 1];  
                 
                 const updatePaginateData = amendPaginateData(snapshot, currentState);
                 setState(prevState => ({...prevState, [currentStateKey]: updatePaginateData}));
@@ -177,6 +182,7 @@ function paginatedQuery(state, firebase, setState, type) {
     }
 }
 
+// D A T A  F E T C H I N G  ( S E L E C T )
 function findGraphics(firebase, setState, location) {
     const graphicsQuery = firebase.graphics().where("location", "==", location).get();
     graphicsQuery.then(snapshot => {
@@ -194,7 +200,6 @@ function findGraphics(firebase, setState, location) {
     })
 }
 
-// D A T A  F E T C H I N G  ( S E L E C T )
 function findFeaturedSchools(firebase, setState) {
     const schoolsQuery = firebase.schools().where('isFeatured', '==', true).get();
     schoolsQuery.then(snapshot => {
@@ -246,19 +251,38 @@ function findFeaturedTips(firebase, setState) {
     });
 }
 
-async function findUserById(id, firebase, setState) {
-    const profileQuery = await firebase.user(id).get();
+function findUserById(id, firebase, setState) {
+    const profileQuery = firebase.user(id).get();
     const profile = profileQuery.data();
     setState(prevState => ({ ...prevState, profile }));
 }
 
-async function findSchoolApplicationById(id, firebase, setState) {
-    const applicationQuery = await firebase.schoolApplication(id).get();
+function findSchoolApplicationById(id, firebase, setState) {
+    const applicationQuery = firebase.schoolApplication(id).get();
     const schoolApplication = applicationQuery.data();
     setState(prevState => ({ ...prevState, schoolApplication }));
 }
 
 // D A T A  F E T C H I N G  ( A L L )
+function findAllGraphics(firebase, setState) {
+    const graphicsQuery = firebase.graphics().get();
+    graphicsQuery.then(snapshot => {
+        if (snapshot.empty) {
+            console.log('No matching documents.');
+            return;
+        } 
+        
+        const allGraphics = snapshot.docs.map(doc => {
+            let data = doc.data();
+            let id = doc.id;
+            return {...data, id}
+        });
+        
+        setState(prevState => ({ ...prevState, adminGraphics: allGraphics }));
+
+    }).catch(err => console.log('Error getting documents', err));
+}
+
 function findAllSchools(firebase, setState) {
     const schoolsQuery = firebase.schools().get();
     schoolsQuery.then(snapshot => {
@@ -588,4 +612,4 @@ function convertToTitleCase(text) {
     });
 }
 
-export { paginatedQuery, findGraphics, findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase }
+export { paginatedQuery, findGraphics, findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllGraphics, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase }

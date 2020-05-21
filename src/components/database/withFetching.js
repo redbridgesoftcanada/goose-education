@@ -33,6 +33,7 @@ function withFetching(Component) {
       listOfArticles: [],
       listOfMessages: [],
       listOfAnnouncements: [],
+      adminGraphics: [],
       profile: null,
       schoolApplication: null,
     }
@@ -84,7 +85,11 @@ function withFetching(Component) {
           async function loadInitialData() {
             try {
               for (let i = 0; i <= ADMIN_PAGES.slice(1).length; i++) {
-                await paginatedQuery(ADMIN_PAGES[i]);
+                if (ADMIN_PAGES[i] === "Settings") {
+                  HELPERS.findAllGraphics(firebase, setState)
+                } else {
+                  await paginatedQuery(ADMIN_PAGES[i]);
+                }
               }
             } catch(error) {
               console.log("Unable to fetch data", error)
