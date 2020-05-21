@@ -56,20 +56,22 @@ function App() {
           <Route path="/register" render={() => <Register/>}/>
           <Route path="/privacy" render={() => <Privacy/>}/>
           <Route path="/studyabroad" render={props => <StudyAbroad {...props}/>}/>
-          <Route path="/networking" render={props => <Networking {...props} />}/>
           <Route exact path="/" render={() => <Home /> }/>
-          
-          <DatabaseContext.Consumer>
-            {context => context.state.gooseGraphics && <Route path="/goose" render={props => <Goose {...props} pageBanner={context.state.gooseGraphics.goosePageBanner}/>}/> }
-          </DatabaseContext.Consumer>
-          
+
           <DatabaseContext.Consumer>
             {context =>
               <>
-                <Route path="/services" render={props =>
+                {context.state.gooseGraphics && <Route path="/goose" render={props => <Goose {...props} pageBanner={context.state.gooseGraphics.goosePageBanner}/>}/> }
+                {context.state.networkingGraphics && <Route path="/networking" render={props => 
+                  <Networking {...props} 
+                    pageBanner={context.state.networkingGraphics.networkingPageBanner} 
+                    poster={context.state.networkingGraphics.networkingPoster}
+                    posterCards={context.state.networkingGraphics.networkingCards} 
+                    wrapper={context.state.networkingGraphics.networkingWrapper}/>}/> }
+                
+                <Route path="/services" render={props => 
                   <ServiceCentre {...props} listOfMessages={context.state.listOfMessages} listOfAnnouncements={context.state.listOfAnnouncements}/> }/>
-                <Route path="/schools" render={props => 
-                  <Schools {...props} listOfSchools={context.state.listOfSchools}/> }/>
+                <Route path="/schools" render={props => <Schools {...props} listOfSchools={context.state.listOfSchools}/> }/>
               </>
             }
           </DatabaseContext.Consumer>
