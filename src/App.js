@@ -69,9 +69,16 @@ function App() {
                     posterCards={context.state.networkingGraphics.networkingCards} 
                     wrapper={context.state.networkingGraphics.networkingWrapper}/>}/> }
                 
+                {context.state.schoolsGraphics && <Route path="/schools" render={props => 
+                  <Schools {...props} 
+                    listOfSchools={context.state.listOfSchools} 
+                    pageBanner={context.state.schoolsGraphics.schoolInfoPageBanner}
+                    banner={context.state.schoolsGraphics.schoolInfoBanner}
+                    posterTop={context.state.schoolsGraphics.schoolInfoPosterTop}
+                    posterBottom={context.state.schoolsGraphics.schoolInfoPosterBottom}/>}/>}
+                    
                 <Route path="/services" render={props => 
                   <ServiceCentre {...props} listOfMessages={context.state.listOfMessages} listOfAnnouncements={context.state.listOfAnnouncements}/> }/>
-                <Route path="/schools" render={props => <Schools {...props} listOfSchools={context.state.listOfSchools}/> }/>
               </>
             }
           </DatabaseContext.Consumer>

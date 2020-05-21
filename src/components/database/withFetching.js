@@ -62,6 +62,7 @@ function withFetching(Component) {
           break;
         
         case '/schools':
+          HELPERS.findGraphics(firebase, setState, '/schools');
           HELPERS.findAllSchools(firebase, setState);
           break;
         

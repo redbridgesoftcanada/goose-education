@@ -27,14 +27,7 @@ function SchoolInformation(props) {
               underline="none"
               className={classes.rightLink}
               component={RouterLink}
-              to=
-              {{
-                pathname: '/schools', 
-                state: {
-                  title: 'School Information',
-                  tab: 0
-                }
-              }}
+              to={{ pathname: '/schools', state: { tab: 0 }}}
             >
               {'School Information'}
             </Link>
@@ -47,14 +40,7 @@ function SchoolInformation(props) {
               underline="none"
               className={classes.rightLink}
               component={RouterLink}
-              to=
-              {{
-                pathname: '/schools', 
-                state: {
-                  title: 'School Information',
-                  selected: 1
-                }
-              }}
+              to={{ pathname: '/schools', state: { selected: 1 } }}
             >
               {'School Application'}
             </Link>
@@ -62,10 +48,6 @@ function SchoolInformation(props) {
         </StyledMenu>
       </>
     );
-};
-
-SchoolInformation.propTypes = {
-    classes: PropTypes.object.isRequired,
 };
 
 export default SchoolInformation;
