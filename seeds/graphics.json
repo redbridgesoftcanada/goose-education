@@ -215,7 +215,7 @@
     },
 
     "studyAbroadPageBanner": {
-      "location": "/services",
+      "location": "/studyabroad",
       "title": "Study Abroad",
       "subtitle": "",
       "caption": "",
@@ -223,7 +223,7 @@
     },
 
     "studyAbroadPoster": {
-      "location": "/services",
+      "location": "/studyabroad",
       "title": "Study Abroad Services",
       "subtitle": "",
       "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -231,7 +231,7 @@
     },
     
     "homestayBanner": {
-      "location": "/services",
+      "location": "/studyabroad",
       "title": "Homestay",
       "subtitle": "",
       "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -239,7 +239,7 @@
     },
 
     "homestayBannerProcess": {
-      "location": "/services",
+      "location": "/studyabroad",
       "HBP1": {
         "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
         "subtitle": "",
@@ -267,7 +267,7 @@
     },
 
     "airportRideBanner": {
-      "location": "/services",
+      "location": "/studyabroad",
       "title": "Airport Ride",
       "subtitle": "",
       "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
