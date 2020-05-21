@@ -76,7 +76,7 @@ function App() {
                     posterTop={context.state.schoolsGraphics.schoolInfoPosterTop}
                     posterBottom={context.state.schoolsGraphics.schoolInfoPosterBottom}/>}/>}
 
-                {context.state.servicesGraphics && <Route path="/studyabroad" render={props => 
+                {context.state.studyabroadGraphics && <Route path="/studyabroad" render={props => 
                   <StudyAbroad {...props}
                     pageBanner={context.state.studyabroadGraphics.studyAbroadPageBanner} 
                     poster={context.state.studyabroadGraphics.studyAbroadPoster}
@@ -84,8 +84,11 @@ function App() {
                     homestayProcessBanner={context.state.studyabroadGraphics.homestayBannerProcess}
                     airportRideBanner={context.state.studyabroadGraphics.airportRideBanner}/>}/>}
                 
-                <Route path="/services" render={props => 
-                  <ServiceCentre {...props} listOfMessages={context.state.listOfMessages} listOfAnnouncements={context.state.listOfAnnouncements}/> }/>
+                {context.state.servicesGraphics && <Route path="/services" render={props => 
+                  <ServiceCentre {...props} 
+                    listOfMessages={context.state.listOfMessages} 
+                    listOfAnnouncements={context.state.listOfAnnouncements}
+                    pageBanner={context.state.servicesGraphics.serviceCentrePageBanner}/>}/>}
               </>
             }
           </DatabaseContext.Consumer>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Button, Link } from '@material-ui/core';
 import { Link as RouterLink } from "react-router-dom";
 
@@ -27,16 +26,8 @@ function StudyAbroad(props) {
               underline="none"
               className={classes.rightLink}
               component={RouterLink} 
-              to=
-              {{
-                pathname: '/goose', 
-                state: {
-                  title: 'Goose Study Abroad',
-                  selected: 0
-                }
-              }}
-              >
-              {'Goose Study Abroad'}
+              to={{ pathname: '/goose', state: { selected: 0} }}>
+                Goose Study Abroad
             </Link>
           </StyledMenuItem>
           <StyledMenuItem onClick={handleClose}>
@@ -46,25 +37,13 @@ function StudyAbroad(props) {
               underline="none"
               className={classes.rightLink}
               component={RouterLink} 
-              to=
-              {{
-                pathname: '/goose', 
-                state: {
-                  title: 'Goose Study Abroad',
-                  selected: 1,
-                }
-              }}
-              >
-              {'Goose Tips'}
+              to={{ pathname: '/goose', state: { selected: 1 } }}>
+                Goose Tips
             </Link>
           </StyledMenuItem>
         </StyledMenu>
       </>
     );
-};
-
-StudyAbroad.propTypes = {
-    classes: PropTypes.object.isRequired,
 };
 
 export default StudyAbroad;
