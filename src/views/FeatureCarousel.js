@@ -28,7 +28,7 @@ function FeatureCarousel(props) {
             case 'School Information':
                 setRedirectPath({
                     pathname: '/schools', 
-                    state: { title: 'School Information', selected: 0 }
+                    state: { title: 'School Information', tab: 0 }
                 });
                 break;
             
@@ -36,7 +36,7 @@ function FeatureCarousel(props) {
                 const selectedSchool = featuredSchools.find(school => school.id.toString() === event.currentTarget.id);
                 setRedirectPath({
                     pathname: `/schools/${selectedSchool.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
-                    state: { title: 'School Information', selected: 0, selectedSchool }
+                    state: { title: 'School Information', tab: 0, selectedSchool }
                 });
         }
     };

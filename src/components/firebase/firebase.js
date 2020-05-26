@@ -112,6 +112,9 @@ class Firebase {
   imagesRef = file => this.storage.ref('images').child(file.name);
   attachmentsRef = file => this.storage.ref('attachments').child(file.name);
 
+  // S T A T I C  A S S E T S
+  graphics = () => this.db.collection("graphics");
+
   // H E L P E R S
   transaction = doc => this.db.runTransaction(doc);   // a set of read and write operations on one or more documents
   updateArray = () => this.fieldValue;  // to merge & update an array in an existing document (e.g. comments)

@@ -11,6 +11,7 @@ import GooseTips from '../admin/GooseTips';
 import Articles from '../admin/Articles';
 import Announcements from '../admin/Announcements';
 import Messages from '../admin/Messages';
+import Settings from '../admin/Settings';
 
 const useStyles = makeStyles(theme => ({
   seeMore: {
@@ -109,6 +110,10 @@ function generateContentTable(state, dispatch, type, context) {
       props.listOfMessages = context.state.listOfMessages;
       return <Messages {...props}/>
 
+    case "Settings":
+      props.listOfGraphics = context.state.adminGraphics;
+      return <Settings {...props}/>
+
     default:
       return <Typography>Sorry! No corresponding content to display.</Typography>
   }
@@ -161,7 +166,7 @@ function TableTemplate(props) {
         {context => 
           <>
             {generateContentTable(state, dispatch, type, context)}
-            {generatePagination(classes, state, dispatch, type, context)}
+            {type !== "Settings" && generatePagination(classes, state, dispatch, type, context)}
           </>
         }
       </DatabaseContext.Consumer>

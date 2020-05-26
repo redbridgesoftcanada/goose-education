@@ -12,8 +12,6 @@ import MessageBoard from './views/MessageBoard';
 import Message from './views/Message';
 import Footer from './views/Footer';
 
-const background = 'https://images.unsplash.com/photo-1566694271474-27e7b2de5c16?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1351&q=80';
-
 const useStyles = makeStyles(theme => ({
     root: {
       flexGrow: 1,
@@ -24,11 +22,14 @@ const useStyles = makeStyles(theme => ({
 function ServiceCentre(props) {
   const classes = useStyles();
   const match = useRouteMatch();
-  const { listOfAnnouncements, listOfMessages } = props;
-  const { title, tab } = props.location.state;
   
-  const INITIAL_STATE = { tab, announce: null, message: null }
+  const INITIAL_STATE = { 
+    tab: props.location.state.tab, 
+    announce: null, 
+    message: null 
+  }
   const [ selected, setSelected ] = useState(INITIAL_STATE);
+  const { listOfAnnouncements, listOfMessages, pageBanner } = props;
 
   // E V E N T  L I S T E N E R S
   const handleTabChange = newTab => setSelected(prevState => ({ ...prevState, tab: newTab }));
@@ -46,22 +47,21 @@ function ServiceCentre(props) {
   return (
     <>
       <NavBar/>
-      <PageBanner title={title} backgroundImage={background} layoutType='headerBanner'/>
+      <PageBanner title={pageBanner.title} backgroundImage={pageBanner.image} layoutType='headerBanner'/>
       <Paper className={classes.root}>
         <Tabs textColor="secondary" variant="fullWidth" centered
           value={selected.tab}
-          onChange={(event, newValue) => handleTabChange(newValue)}
-        >
-            <Tab label="Announcements" />
-            <Tab label="Message Board" />
+          onChange={(event, newValue) => handleTabChange(newValue)}>
+            <Tab label="Announcements"/>
+            <Tab label="Message Board"/>
         </Tabs>
 
         <TabPanel value={selected.tab} index={0}>
           <Switch>
             <Route path={`${match.path}/announcement/:announcementID`}>
-            <AuthUserContext.Consumer>
-              {authUser => <Announcement history={props.history} authUser={authUser} selectedAnnounce={selected.announce} /> }
-            </AuthUserContext.Consumer>
+              <AuthUserContext.Consumer>
+                {authUser => <Announcement history={props.history} authUser={authUser} selectedAnnounce={selected.announce} /> }
+              </AuthUserContext.Consumer>
             </Route>
             <Route path={match.path}>
               <AnnouncementBoard listOfAnnouncements={listOfAnnouncements} setAnnounce={setSelectedAnnounce}/>

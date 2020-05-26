@@ -55,17 +55,40 @@ function App() {
           <Route path="/login" render={() => <Login/>}/>
           <Route path="/register" render={() => <Register/>}/>
           <Route path="/privacy" render={() => <Privacy/>}/>
-          <Route path="/studyabroad" render={props => <StudyAbroad {...props} />}/>
-          <Route path="/networking" render={props => <Networking {...props} />}/>
-          <Route path="/goose" render={props => <Goose {...props} />}/>
           <Route exact path="/" render={() => <Home /> }/>
+
           <DatabaseContext.Consumer>
             {context =>
               <>
-                <Route path="/services" render={props =>
-                  <ServiceCentre {...props} listOfMessages={context.state.listOfMessages} listOfAnnouncements={context.state.listOfAnnouncements}/> }/>
-                <Route path="/schools" render={props => 
-                  <Schools {...props} listOfSchools={context.state.listOfSchools}/> }/>
+                {context.state.gooseGraphics && <Route path="/goose" render={props => <Goose {...props} pageBanner={context.state.gooseGraphics.goosePageBanner}/>}/> }
+                {context.state.networkingGraphics && <Route path="/networking" render={props => 
+                  <Networking {...props} 
+                    pageBanner={context.state.networkingGraphics.networkingPageBanner} 
+                    poster={context.state.networkingGraphics.networkingPoster}
+                    posterCards={context.state.networkingGraphics.networkingCards} 
+                    wrapper={context.state.networkingGraphics.networkingWrapper}/>}/> }
+                
+                {context.state.schoolsGraphics && <Route path="/schools" render={props => 
+                  <Schools {...props} 
+                    listOfSchools={context.state.listOfSchools} 
+                    pageBanner={context.state.schoolsGraphics.schoolInfoPageBanner}
+                    banner={context.state.schoolsGraphics.schoolInfoBanner}
+                    posterTop={context.state.schoolsGraphics.schoolInfoPosterTop}
+                    posterBottom={context.state.schoolsGraphics.schoolInfoPosterBottom}/>}/>}
+
+                {context.state.studyabroadGraphics && <Route path="/studyabroad" render={props => 
+                  <StudyAbroad {...props}
+                    pageBanner={context.state.studyabroadGraphics.studyAbroadPageBanner} 
+                    poster={context.state.studyabroadGraphics.studyAbroadPoster}
+                    homestayBanner={context.state.studyabroadGraphics.homestayBanner}
+                    homestayProcessBanner={context.state.studyabroadGraphics.homestayBannerProcess}
+                    airportRideBanner={context.state.studyabroadGraphics.airportRideBanner}/>}/>}
+                
+                {context.state.servicesGraphics && <Route path="/services" render={props => 
+                  <ServiceCentre {...props} 
+                    listOfMessages={context.state.listOfMessages} 
+                    listOfAnnouncements={context.state.listOfAnnouncements}
+                    pageBanner={context.state.servicesGraphics.serviceCentrePageBanner}/>}/>}
               </>
             }
           </DatabaseContext.Consumer>

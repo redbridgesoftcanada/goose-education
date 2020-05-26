@@ -11,15 +11,6 @@ import GoosePlatform from './views/GoosePlatform';
 import GooseTips from './views/GooseTips';
 import Footer from './views/Footer';
 
-const background = 'https://images.unsplash.com/photo-1484704324500-528d0ae4dc7d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80';
-const posterBackground = 'https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80';
-const posterBody = {
-  title: 'Goose Edu',
-  subtitle: 'Enjoy a safer and more convenient way to study abroad with our unique and authentic information!',
-  caption: 'Goose Study Abroad is an online platform for those preparing for general study abroad and language study in Canada. We provide a variety of information for free so that you can plan your own study according to your purpose and goals.',
-  other: ''
-}
-
 const useStyles = makeStyles(theme => ({
     root: {
       flexGrow: 1,
@@ -41,7 +32,7 @@ function GooseEdu(props) {
   return (
       <>
         <NavBar/>
-        <PageBanner title={props.location.state.title} backgroundImage={background} layoutType='headerBanner'/>
+        <PageBanner title={props.pageBanner.title} backgroundImage={props.pageBanner.image} layoutType='headerBanner'/>
         <Paper className={classes.root}>
             <Tabs
                 value={value}
@@ -53,18 +44,22 @@ function GooseEdu(props) {
                 <Tab label="Goose Education" />
                 <Tab label="Goose Tips" />
             </Tabs>
-            <TabPanel value={value} index={0}>
-                <Poster body={posterBody} backgroundImage={posterBackground} layoutType='goose_edu'/>
-                <GooseCoreFeatures/>
-                <GoosePlatform/>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-              <DatabaseContext.Consumer>
-                {context => <GooseTips {...props} gooseTips={context.state.gooseTips}/>}
+            <DatabaseContext.Consumer>
+              {context => context.state.gooseGraphics &&
+                <>
+                  <TabPanel value={value} index={0}>
+                    <Poster body={context.state.gooseGraphics.goosePoster} backgroundImage={context.state.gooseGraphics.goosePoster.image} layoutType='goose_edu'/>
+                    <GooseCoreFeatures graphics={context.state.gooseGraphics.gooseFeatureBoard}/>
+                    <GoosePlatform graphics={context.state.gooseGraphics.gooseCards}/>
+                  </TabPanel>
+                  <TabPanel value={value} index={1}>
+                    <GooseTips {...props} gooseTips={context.state.gooseTips}/>
+                  </TabPanel>
+                </>
+              }
               </DatabaseContext.Consumer>
-            </TabPanel>
-        </Paper>
-        <Footer/>
+          </Paper>
+          <Footer/>
       </>
   )
 };

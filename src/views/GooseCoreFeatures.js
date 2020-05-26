@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Container, Grid, Typography, withStyles } from '@material-ui/core';
 
 const styles = theme => ({
@@ -33,15 +32,15 @@ const styles = theme => ({
 });
 
 function ProductValues(props) {
-    const { classes } = props;
+    const { classes, graphics } = props;
 
     return (
         <section className={classes.root}>
             <Typography variant="h4">
-                Distinction
+                {graphics.title}
             </Typography>
             <Typography variant="body1">
-                Goose Education Key Features
+                {graphics.subtitle}
             </Typography>
             <Container className={classes.container}>
                 <Grid container spacing={3}>
@@ -52,12 +51,8 @@ function ProductValues(props) {
                             src={require("../assets/img/mm01_01.png")}
                             alt="notification icon"
                         />
-                        <Typography variant="h6">
-                            Notification Service
-                        </Typography>
-                        <Typography variant="body2">
-                            Cat ipsum dolor sit amet, chase imaginary bugs, but i am the best. This human feeds me, i should be a god stick butt in face.
-                        </Typography>
+                        <Typography variant="h6">{graphics.GFB1.title}</Typography>
+                        <Typography variant="body2">{graphics.GFB1.caption}</Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <img
@@ -65,30 +60,22 @@ function ProductValues(props) {
                             src={require("../assets/img/mm01_02.png")}
                             alt="credit card icon"
                         />
-                        <Typography variant="h6">
-                            Various Payment Methods
-                        </Typography>
-                        <Typography variant="body2">
-                            Cat ipsum dolor sit amet, chase imaginary bugs, but i am the best. This human feeds me, i should be a god stick butt in face.
-                        </Typography>
+                        <Typography variant="h6">{graphics.GFB2.title}</Typography>
+                        <Typography variant="body2">{graphics.GFB2.caption}</Typography>
                     </Grid>
                     <Grid item xs={12} md={2}></Grid>
                 </Grid>
             </Container>
             <Container className={classes.container}>
-            <Grid container spacing={3}>
+                <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                         <img
                             className={classes.image}
                             src={require("../assets/img/mm01_03.png")}
                             alt="calendar icon"
                         />
-                        <Typography variant="h6">
-                            Accurate Latest News
-                        </Typography>
-                        <Typography variant="body2">
-                            Cat ipsum dolor sit amet, chase imaginary bugs, but i am the best. This human feeds me, i should be a god stick butt in face.
-                        </Typography>
+                        <Typography variant="h6">{graphics.GFB3.title}</Typography>
+                        <Typography variant="body2">{graphics.GFB3.caption}</Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <img
@@ -96,12 +83,8 @@ function ProductValues(props) {
                             src={require("../assets/img/mm01_04.png")}
                             alt="computer icon"
                         />
-                        <Typography variant="h6">
-                            Study Abroad for Yourself
-                        </Typography>
-                        <Typography variant="body2">
-                            Cat ipsum dolor sit amet, chase imaginary bugs, but i am the best. This human feeds me, i should be a god stick butt in face.
-                        </Typography>
+                        <Typography variant="h6">{graphics.GFB4.title}</Typography>
+                        <Typography variant="body2">{graphics.GFB4.caption}</Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <img
@@ -109,21 +92,13 @@ function ProductValues(props) {
                             src={require("../assets/img/mm01_05.png")}
                             alt="networking icon"
                         />
-                        <Typography variant="h6">
-                            Networking
-                        </Typography>
-                        <Typography variant="body2">
-                            Cat ipsum dolor sit amet, chase imaginary bugs, but i am the best. This human feeds me, i should be a god stick butt in face.
-                        </Typography>
+                        <Typography variant="h6">{graphics.GFB5.title}</Typography>
+                        <Typography variant="body2">{graphics.GFB5.caption}</Typography>
                     </Grid>
                 </Grid>
             </Container>
         </section>
     );
 }
-
-ProductValues.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(ProductValues);

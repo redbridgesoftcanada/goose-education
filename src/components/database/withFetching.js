@@ -33,6 +33,7 @@ function withFetching(Component) {
       listOfArticles: [],
       listOfMessages: [],
       listOfAnnouncements: [],
+      adminGraphics: [],
       profile: null,
       schoolApplication: null,
     }
@@ -45,24 +46,32 @@ function withFetching(Component) {
     useEffect(() => {
       switch(location.pathname) {
         case '/':
+          HELPERS.findGraphics(firebase, setState, '/home');
           HELPERS.findFeaturedSchools(firebase, setState);
           HELPERS.findFeaturedArticles(firebase, setState);
           HELPERS.findFeaturedTips(firebase, setState);
           break;
         
         case '/goose':
+          HELPERS.findGraphics(firebase, setState, '/goose');
           HELPERS.findAllTips(firebase, setState);
           break;
         
         case '/networking':
+          HELPERS.findGraphics(firebase, setState, '/networking');
           HELPERS.findAllArticles(TAGS, firebase, setState);
           break;
         
         case '/schools':
+          HELPERS.findGraphics(firebase, setState, '/schools');
           HELPERS.findAllSchools(firebase, setState);
           break;
-        
+
+        case '/studyabroad':
+          HELPERS.findGraphics(firebase, setState, '/studyabroad');
+
         case '/services':
+          HELPERS.findGraphics(firebase, setState, '/services');
           HELPERS.findAllAnnouncements(firebase, setState);
           HELPERS.findAllMessages(firebase, setState);
           break;
@@ -76,7 +85,11 @@ function withFetching(Component) {
           async function loadInitialData() {
             try {
               for (let i = 0; i <= ADMIN_PAGES.slice(1).length; i++) {
-                await paginatedQuery(ADMIN_PAGES[i]);
+                if (ADMIN_PAGES[i] === "Settings") {
+                  HELPERS.findAllGraphics(firebase, setState)
+                } else {
+                  await paginatedQuery(ADMIN_PAGES[i]);
+                }
               }
             } catch(error) {
               console.log("Unable to fetch data", error)

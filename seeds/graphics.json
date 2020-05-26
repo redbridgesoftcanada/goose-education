@@ -1,0 +1,285 @@
+{
+  "graphics": {
+    "homePoster": {
+      "location": "/home",
+      "title": "Find Your Own Path, Make Your Dreams Come True",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      "caption": "",
+      "image": "https://images.unsplash.com/photo-1532174990295-ced4e9211e1b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1351&q=80"
+    },
+
+    "homeFeatureBoard": {
+      "location": "/home",
+      "HFB1": {
+        "title": "School Information",
+        "subtitle": "",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": "https://images.unsplash.com/photo-1534081333815-ae5019106622?auto=format&fit=crop&w=400&q=80"
+      },
+      "HFB2": {
+        "title": "Study Abroad",
+        "subtitle": "",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": "https://images.unsplash.com/photo-1531299204812-e6d44d9a185c?auto=format&fit=crop&w=400&q=80"
+      },
+      "HFB3": {
+        "title": "Homestay",
+        "subtitle": "",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80"
+      },
+      "HFB4": {
+        "title": "Airport Ride",
+        "subtitle": "",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": "https://images.unsplash.com/photo-1453747063559-36695c8771bd?auto=format&fit=crop&w=400&q=80"
+      }
+    },
+
+    "homeBlackWrapper": {
+      "location": "/home",
+      "title": "Networking",
+      "subtitle": "",
+      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "image": ""
+    },
+
+    "homeWhiteWrapper": {
+      "location": "/home",
+      "title": "School Information",
+      "subtitle": "",
+      "caption": "",
+      "image": ""
+    },
+
+    "homeRedWrapper": {
+      "location": "/home",
+      "title": "Goose Tips",
+      "subtitle": "",
+      "caption": "",
+      "image": ""
+    },
+
+    "goosePageBanner": {
+      "location": "/goose",
+      "title": "Goose Study Abroad",
+      "subtitle": "",
+      "caption": "",
+      "image": "https://images.unsplash.com/photo-1484704324500-528d0ae4dc7d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"
+    },
+
+    "goosePoster": {
+      "location": "/goose",
+      "title": "Goose Edu",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "image": "https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"      
+    },
+
+    "gooseFeatureBoard": {
+      "location": "/goose",
+      "title": "Distinction",
+      "subtitle": "Goose Education Key Features",
+      "caption": "",
+      "image": "",
+      "GFB1": {
+        "title": "Notification Service",
+        "subtitle": "",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      },
+      "GFB2": {
+        "title": "Various Payment Methods",
+        "subtitle": "",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      },
+      "GFB3": {
+        "title": "Accurate Latest News",
+        "subtitle": "",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      },
+      "GFB4": {
+        "title": "Study Abroad For Yourself",
+        "subtitle": "",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      },
+      "GFB5": {
+        "title": "Networking",
+        "subtitle": "",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      }
+    },
+
+    "gooseCards": {
+      "location": "/goose",
+      "GC1": {
+        "title": "Step 01",
+        "subtitle": "School Choice",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      },
+      "GC2": {
+        "title": "Step 02",
+        "subtitle": "Homestay",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      },
+      "GC3": {
+        "title": "Step 03",
+        "subtitle": "Airport Ride",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      },
+      "GC4": {
+        "title": "Step 04",
+        "subtitle": "Networking",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      }
+    },
+
+    "networkingPageBanner": {
+      "location": "/networking",
+      "title": "Networking",
+      "subtitle": "",
+      "caption": "",
+      "image": "https://images.unsplash.com/photo-1564573732309-36969653e65c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1929&q=80"      
+    },
+
+    "networkingWrapper": {
+      "location": "/networking",
+      "title": "Networking",
+      "subtitle": "",
+      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "image": ""      
+    },
+
+    "networkingPoster": {
+      "location": "/networking",
+      "title": "Vancouver Now",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "image": "https://images.unsplash.com/photo-1543357115-92e515b2c9b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+    },
+
+    "networkingCards": {
+      "location": "/networking",
+      "NC1": {
+        "title": "",
+        "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      },
+      "NC2": {
+        "title": "",
+        "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "image": ""
+      }
+    },
+
+    "schoolInfoPageBanner": {
+      "location": "/schools",
+      "title": "School Information",
+      "subtitle": "",
+      "caption": "",
+      "image": "https://images.unsplash.com/photo-1544108182-8810058c3a7d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"      
+    },
+
+    "schoolInfoPosterTop": {
+      "location": "/schools",
+      "title": "School Information",
+      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "image": "https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"      
+    },
+
+    "schoolInfoBanner": {
+      "location": "/schools",
+      "title": "How To Use",
+      "subtitle": "",
+      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "image": ""      
+    },
+
+    "schoolInfoPosterBottom": {
+      "location": "/schools",
+      "title": "Canada : Vancouver",
+      "subtitle": "",
+      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "image": "https://images.unsplash.com/photo-1560813962-ff3d8fcf59ba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1267&q=80"           
+    },
+
+    "studyAbroadPageBanner": {
+      "location": "/studyabroad",
+      "title": "Study Abroad",
+      "subtitle": "",
+      "caption": "",
+      "image": "https://images.unsplash.com/photo-1461709444300-a6217cec3dff?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80"      
+    },
+
+    "studyAbroadPoster": {
+      "location": "/studyabroad",
+      "title": "Study Abroad Services",
+      "subtitle": "",
+      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "image": "https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"      
+    },
+    
+    "homestayBanner": {
+      "location": "/studyabroad",
+      "title": "Homestay",
+      "subtitle": "",
+      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "image": ""
+    },
+
+    "homestayBannerProcess": {
+      "location": "/studyabroad",
+      "HBP1": {
+        "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "subtitle": "",
+        "caption": "",
+        "image": ""
+      },
+      "HBP2": {
+        "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "subtitle": "",
+        "caption": "",
+        "image": ""
+      },
+      "HBP3": {
+        "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "subtitle": "",
+        "caption": "",
+        "image": ""
+      },
+      "HBP4": {
+        "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "subtitle": "",
+        "caption": "",
+        "image": ""
+      }      
+    },
+
+    "airportRideBanner": {
+      "location": "/studyabroad",
+      "title": "Airport Ride",
+      "subtitle": "",
+      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "image": ""
+    },
+
+    "serviceCentrePageBanner": {
+      "location": "/services",
+      "title": "Service Centre",
+      "subtitle": "",
+      "caption": "",
+      "image": "https://images.unsplash.com/photo-1566694271474-27e7b2de5c16?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1351&q=80"      
+    }
+  }
+}

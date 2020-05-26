@@ -2,41 +2,6 @@ import React, { useState } from 'react';
 import { ButtonBase, Container, Typography, withStyles } from '@material-ui/core';
 import { Redirect } from "react-router-dom";
 
-const images = [
-  {
-    id: 1,
-    url:
-      'https://images.unsplash.com/photo-1534081333815-ae5019106622?auto=format&fit=crop&w=400&q=80',
-    title: 'School Information',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    width: '37%',
-  },
-  {
-    id: 2,
-    url:
-      'https://images.unsplash.com/photo-1531299204812-e6d44d9a185c?auto=format&fit=crop&w=400&q=80',
-    title: 'Study Abroad',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    width: '18%',
-  },
-  {
-    id: 3,
-    url:
-      'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80',
-    title: 'Homestay',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    width: '22.5%',
-  },
-  {
-    id: 4,
-    url:
-      'https://images.unsplash.com/photo-1453747063559-36695c8771bd?auto=format&fit=crop&w=400&q=80',
-    title: 'Airport Ride',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    width: '22.5%',
-  }
-];
-
 const styles = theme => ({
   root: {
     marginTop: theme.spacing(8),
@@ -127,8 +92,11 @@ const styles = theme => ({
 });
 
 function FeatureBoard(props) {
-  const { classes } = props;
   const [ redirectPath, setRedirectPath ] = useState({});
+  
+  const { classes, graphics } = props;
+  delete graphics['location'];  // remove identifier key-value pair ({location: /home}) to be able to map through the graphics data;
+  const graphicsArr = Object.values(graphics); 
 
   const handleClick = event => {
     switch(event.currentTarget.id) {
@@ -159,24 +127,27 @@ function FeatureBoard(props) {
           state: { title: 'Study Abroad', selected: 1 }
         });
         break;
+        
+      default:
+        console.log('Missing path redirect for the clicked ID.')
     }
   }
 
   return (
     <Container className={classes.root}>
       <div className={classes.row}>
-        {images.map(image => (
+        {graphicsArr.map((graphic, i) => (
           <ButtonBase
-            key={image.id}
+            key={i}
             className={classes.imageWrapper}
-            style={{ width: image.width }}
+            style={{ width: (i === 0) ? '37%' : (i === 1) ? '18%' : '22.5%'}}
           >
             <div
               className={classes.imageSrc}
-              style={{ backgroundImage: `url(${image.url})` }}
+              style={{ backgroundImage: `url(${graphic.image})` }}
             />
             <div className={classes.imageBackdrop} />
-            <div className={classes.imageButton} id={image.title} onClick={handleClick}>
+            <div className={classes.imageButton} id={graphic.title} onClick={handleClick}>
               {(Object.entries(redirectPath).length) ? 
                 <Redirect push to={redirectPath}/> 
                 : 
@@ -186,7 +157,7 @@ function FeatureBoard(props) {
                   color="inherit"
                   className={classes.imageTitle}
                 >
-                  {image.title}
+                  {graphic.title}
                   <div className={classes.imageMarked} />
                 </Typography>
               }
@@ -196,7 +167,7 @@ function FeatureBoard(props) {
                 color="inherit"
                 className={classes.imageDescription}
               >
-                {image.description}
+                {graphic.caption}
                 <div className={classes.imageMarked} />
               </Typography>
             </div>
