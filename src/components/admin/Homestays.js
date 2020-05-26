@@ -51,7 +51,7 @@ function Homestays(props) {
         {listOfHomestays.map((application, i) => {
           const formattedArrivalTime = application.arrivalFlightTime.toDate().toString();
           return (
-          <TableRow key={i}>
+          <TableRow key={i} hover>
             <TableCell>{application.firstName}</TableCell>
             <TableCell>{application.lastName}</TableCell>
             <TableCell>{application.homestayStartDate}</TableCell>

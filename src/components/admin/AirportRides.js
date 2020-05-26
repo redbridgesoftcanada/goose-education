@@ -50,7 +50,7 @@ function AirportRides(props) {
       </TableHead>
       <TableBody>
         {listOfAirportRides.map((application, i) => (
-          <TableRow key={i}>
+          <TableRow key={i} hover>
             <TableCell>{application.firstName}</TableCell>
             <TableCell>{application.lastName}</TableCell>
             <TableCell>{application.arrivalFlightName}</TableCell>

@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { CheckBox, CheckBoxOutlineBlank, Clear, Edit, PageviewOutlined } from "@material-ui/icons";
+import { CheckBox, CheckBoxOutlineBlank, Clear, EditOutlined } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function GooseTips(props) {
-  const { state, dispatch, listOfTips, firebase, history } = props;
+  const { state, dispatch, listOfTips, firebase } = props;
 
   // S T A T E
   const [ selectedTip, setSelectedTip ] = useState(null);
 
   // D I S P A T C H  M E T H O D S
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
-  const togglePreviewDialog = () => dispatch({type: 'TOGGLE_PREVIEW_DIALOG'});
   const toggleEditDialog = () => dispatch({type: 'TOGGLE_EDIT_DIALOG'});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
@@ -67,13 +66,13 @@ function GooseTips(props) {
         </TableHead>
         <TableBody>
           {listOfTips.map((tip, i) => (
-            <TableRow key={i}>
+            <TableRow key={i} hover>
               <TableCell>{tip.title}</TableCell>
               <TableCell>{tip.isFeatured ? <CheckBox/> : <CheckBoxOutlineBlank/>}</TableCell>
               <TableCell>{format(tip.updatedAt, "Pp")}</TableCell>
               <TableCell>
                 <IconButton color="secondary" onClick={() => setEditTip(tip.id)}>
-                  <Edit/>
+                  <EditOutlined/> 
                 </IconButton>
               </TableCell>
               <TableCell>

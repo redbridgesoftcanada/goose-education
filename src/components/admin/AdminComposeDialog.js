@@ -30,7 +30,7 @@ export default function AdminComposeDialog(props) {
         return <UploadAttachmentForm {...dialogProps}/>
       
       default:
-        console.log(`No corresponding formType (${formType}) in Admin Compose Dialog.`)
+        return;
     }
   }
 

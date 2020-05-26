@@ -71,7 +71,7 @@ function Applications(props) {
       </TableHead>
       <TableBody>
         {listOfApplications.map((application, i) => (
-          <TableRow key={i}>
+          <TableRow key={i} hover>
             <TableCell>{application.firstName}</TableCell>
             <TableCell>{application.lastName}</TableCell>
             <TableCell>{application.schoolName}</TableCell>
