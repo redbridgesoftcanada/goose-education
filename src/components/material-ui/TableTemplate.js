@@ -1,4 +1,4 @@
-import React, { useReducer, Fragment } from "react";
+import React, { useReducer } from "react";
 import { CircularProgress, Link, Typography, makeStyles } from "@material-ui/core";
 import Title from "./Title";
 import { DatabaseContext } from '../../components/database';
@@ -111,7 +111,11 @@ function generateContentTable(state, dispatch, type, context) {
       return <Messages {...props}/>
 
     case "Settings":
-      props.listOfGraphics = context.state.adminGraphics;
+      props.listOfGraphics = context.state.adminGraphics.sort((a, b) => {
+        if (a.location < b.location) return -1;
+        if (a.location > b.location) return 1;
+        return 0;
+      });
       return <Settings {...props}/>
 
     default:
@@ -160,7 +164,7 @@ function TableTemplate(props) {
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
   return (
-    <Fragment>
+    <>
       <Title>{type}</Title>
       <DatabaseContext.Consumer>
         {context => 
@@ -170,7 +174,7 @@ function TableTemplate(props) {
           </>
         }
       </DatabaseContext.Consumer>
-    </Fragment>
+    </>
   );
 }
 
