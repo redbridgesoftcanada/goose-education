@@ -275,9 +275,21 @@ function findAllGraphics(firebase, setState) {
         const allGraphics = snapshot.docs.map(doc => {
             let data = doc.data();
             let id = doc.id;
+            
+            let checkForNestedData = Object.values(data).filter(value => typeof value !== 'string').length !== 0;
+            if (checkForNestedData) {
+                Object.keys(data).map(key => {
+                    if (key === 'title' || key === 'subtitle' || key === 'caption' || key === 'image' || key === 'location') {
+                        return;
+                    } else {
+                        let nestedData = data[key];
+                        nestedData.id = key;
+                    }
+                })
+            }
             return {...data, id}
         });
-        
+
         setState(prevState => ({ ...prevState, adminGraphics: allGraphics }));
 
     }).catch(err => console.log('Error getting documents', err));
