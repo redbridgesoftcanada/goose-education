@@ -114,10 +114,12 @@ class Firebase {
 
   // S T A T I C  A S S E T S
   graphics = () => this.db.collection("graphics");
+  graphic = graphicId => this.db.collection("graphics").doc(graphicId);
 
   // H E L P E R S
   transaction = doc => this.db.runTransaction(doc);   // a set of read and write operations on one or more documents
   updateArray = () => this.fieldValue;  // to merge & update an array in an existing document (e.g. comments)
+  batch = () => this.db.batch(); // to execute multiple operations (set, update, delete) without needing to read them
 };
 
 export default Firebase;

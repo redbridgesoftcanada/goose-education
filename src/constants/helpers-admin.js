@@ -17,6 +17,18 @@ function textField(name, value, eventHandler, isMultiline) {
   )
 }
 
+function defaultValueTextField(name, value, eventHandler, isMultiline) {
+  return (
+    <OutlinedInput
+      fullWidth
+      name={name}
+      defaultValue={value}
+      onChange={eventHandler}
+      {...(isMultiline === true) && {multiline: true, rows: 4}}
+    />
+  )
+}
+
 function radioField(name, value, options, eventHandler, helperText) {
   // note. options needs to be an array of objects: {value, label}
   
@@ -112,4 +124,4 @@ function selectValidator(name, value, options, eventHandler) {
   )
 }
 
-export { textField, radioField, selectField, textValidator, richTextValidator, fileValidator, selectValidator }
+export { textField, radioField, selectField, textValidator, richTextValidator, fileValidator, selectValidator, defaultValueTextField }
