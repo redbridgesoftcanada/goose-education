@@ -295,7 +295,7 @@ export default function AdminDashboard() {
           :
             <Grid item xs={12}>
               <Paper>
-                <TableTemplate type={state.selectedContent}/>
+                <TableTemplate type={state.selectedContent} snackbarMessage={setSnackbarMessage}/>
               </Paper>
             </Grid>
           }

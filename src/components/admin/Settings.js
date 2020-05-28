@@ -7,20 +7,17 @@ import { withFirebase } from "../../components/firebase";
 const multiGraphicsIds = ['gooseCards', 'gooseFeatureBoard', 'homeFeatureBoard', 'homestayBannerProcess', 'networkingCards'];
 
 function Settings(props) {
-  const { dispatch, listOfGraphics, firebase } = props;
+  const { listOfGraphics, firebase, snackbarMessage } = props;
 
-  const INITIAL_STATE = {
+  const INITIAL_OPEN = {
     gooseCards: false,
     gooseFeatureBoard: false,
     homeFeatureBoard: false,
     homestayBannerProcess: false,
     networkingCards: false,
   }
-  const [ open, setOpen ] = useState(INITIAL_STATE);
+  const [ open, setOpen ] = useState(INITIAL_OPEN);
   const [ input, setInput ] = useState({});
-
-  // D I S P A T C H  M E T H O D S
-  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
 
   // E V E N T  L I S T E N E R S
   const handleOpen = event => {
@@ -36,12 +33,12 @@ function Settings(props) {
     setInput(prevState => ({...prevState, [inputCategory]: {inputRef, inputValue, inputType}}));
   }
 
-  const handleSave = async event => {
+  const handleSave = () => {
     const checkForInputs = Object.keys(input).length !== 0;
     if (checkForInputs) {
-      await createBatchUpdates(firebase, input, setSnackbarMessage);
+      createBatchUpdates(firebase, input, snackbarMessage);
     } else {
-      setSnackbarMessage("Unable to save - there have been no changes made.");
+      snackbarMessage("Nothing to save - no changes have been made.");
     }
   }
 
@@ -62,7 +59,7 @@ function Settings(props) {
           {generateSettingInputFields(listOfGraphics, open, handleOpen, handleTextInput)}
         </TableBody>
       </Table>
-      <Button fullWidth color="secondary" onClick={handleSave}>Save</Button>
+      <Button fullWidth variant="contained" color="secondary" onClick={handleSave}>Save</Button>
     </>
   )
 }
@@ -146,10 +143,8 @@ const createBatchUpdates = async (firebase, inputState, snackbarMessageListener)
     }
   });
   batch.commit().then(function () {
-    console.log('Updated values')
     snackbarMessageListener("Changes successfully saved.");
   });
 }
-
 
 export default withFirebase(Settings);

@@ -67,56 +67,59 @@ function toggleReducer(state, action) {
     
     case 'DELETE_CONFIRM':
       return {...state, deleteConfirmOpen: !state.deleteConfirmOpen}
+    
   }
 }
 
-function generateContentTable(state, dispatch, type, context) {
-  const props = { state, dispatch };
+function generateContentTable(state, dispatch, props, context) {
+  const { type, snackbarMessage } = props;
+  const customProps = { state, dispatch };
 
   switch(type) {
     case "Users":
-      props.listOfUsers = context.state.listOfUsers;
-      return <Accounts {...props}/>
+      customProps.listOfUsers = context.state.listOfUsers;
+      return <Accounts {...customProps}/>
     
     case "Schools":
-      props.listOfSchools = context.state.listOfSchools;
-    return <Schools {...props}/>
+      customProps.listOfSchools = context.state.listOfSchools;
+    return <Schools {...customProps}/>
 
     case "Applications":
-      props.listOfApplications = context.state.listOfApplications;
-      return <Applications {...props}/>
+      customProps.listOfApplications = context.state.listOfApplications;
+      return <Applications {...customProps}/>
     
     case "Homestays":
-      props.listOfHomestays = context.state.listOfHomestays;
-      return <Homestays {...props}/>
+      customProps.listOfHomestays = context.state.listOfHomestays;
+      return <Homestays {...customProps}/>
 
     case "Airport Rides":
-      props.listOfAirportRides = context.state.listOfAirportRides;
-      return <AirportRides {...props}/>
+      customProps.listOfAirportRides = context.state.listOfAirportRides;
+      return <AirportRides {...customProps}/>
 
     case "Goose Tips":
-      props.listOfTips = context.state.gooseTips;
-      return <GooseTips {...props}/>
+      customProps.listOfTips = context.state.gooseTips;
+      return <GooseTips {...customProps}/>
 
     case "Articles":
-      props.listOfArticles = context.state.listOfArticles;
-      return <Articles {...props}/>
+      customProps.listOfArticles = context.state.listOfArticles;
+      return <Articles {...customProps}/>
     
     case "Announcements":
-      props.listOfAnnouncements = context.state.listOfAnnouncements;
-      return <Announcements {...props}/>
+      customProps.listOfAnnouncements = context.state.listOfAnnouncements;
+      return <Announcements {...customProps}/>
 
     case "Messages":
-      props.listOfMessages = context.state.listOfMessages;
-      return <Messages {...props}/>
+      customProps.listOfMessages = context.state.listOfMessages;
+      return <Messages {...customProps}/>
 
     case "Settings":
-      props.listOfGraphics = context.state.adminGraphics.sort((a, b) => {
+      customProps.snackbarMessage = snackbarMessage;
+      customProps.listOfGraphics = context.state.adminGraphics.sort((a, b) => {
         if (a.location < b.location) return -1;
         if (a.location > b.location) return 1;
         return 0;
       });
-      return <Settings {...props}/>
+      return <Settings {...customProps}/>
 
     default:
       return <Typography>Sorry! No corresponding content to display.</Typography>
@@ -148,7 +151,6 @@ function generatePagination(classes, state, dispatch, type, context) {
 
 function TableTemplate(props) {
   const classes = useStyles();
-  const { type } = props;
 
   // S T A T E
   const INITIAL_STATE = {
@@ -165,12 +167,12 @@ function TableTemplate(props) {
 
   return (
     <>
-      <Title>{type}</Title>
+      <Title>{props.type}</Title>
       <DatabaseContext.Consumer>
         {context => 
           <>
-            {generateContentTable(state, dispatch, type, context)}
-            {type !== "Settings" && generatePagination(classes, state, dispatch, type, context)}
+            {generateContentTable(state, dispatch, props, context)}
+            {props.type !== "Settings" && generatePagination(classes, state, dispatch, props.type, context)}
           </>
         }
       </DatabaseContext.Consumer>
