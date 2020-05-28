@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, Tooltip, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
 import Title from './Title';
 
 // Generate Sales Data
@@ -27,7 +27,7 @@ export default function Chart() {
     <React.Fragment>
       <Title>Today</Title>
       <ResponsiveContainer>
-        <LineChart
+        <BarChart
           data={data}
           margin={{
             top: 16,
@@ -46,8 +46,10 @@ export default function Chart() {
               Sales ($)
             </Label>
           </YAxis>
-          <Line type="monotone" dataKey="amount" stroke={theme.palette.secondary.main} dot={false} />
-        </LineChart>
+          <Tooltip/>
+          <Bar dataKey="amount" fill={theme.palette.secondary.main} barSize={30}/>
+          {/* <Line type="monotone" dataKey="amount" stroke={theme.palette.secondary.main} dot={false} /> */}
+        </BarChart>
       </ResponsiveContainer>
     </React.Fragment>
   );

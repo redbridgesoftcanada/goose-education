@@ -5,8 +5,9 @@ import React, { useReducer } from "react";
 import clsx from "clsx";
 import { AppBar, Badge, Box, Button, Container, Divider, Drawer, Grid, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Paper, Snackbar,  Toolbar, Typography, makeStyles } from "@material-ui/core";
 import { ChevronLeft, Menu as MenuIcon, Notifications, Dashboard, People, Layers, Assignment, AirplanemodeActive, Home, School, Settings, QuestionAnswer, NewReleases, Description, LiveHelp } from "@material-ui/icons";
+import { DatabaseContext } from '../components/database';
 import { ADMIN_PAGES } from "../constants/constants";
-import Chart from "../components/material-ui/Chart";
+import ChartTemplate from "../components/material-ui/ChartTemplate";
 import Deposits from "../components/material-ui/Deposits";
 import TableTemplate from "../components/material-ui/TableTemplate";
 import AdminComposeDialog from '../components/admin/AdminComposeDialog';
@@ -278,20 +279,39 @@ export default function AdminDashboard() {
             <Grid container spacing={3}>
             
             {state.selectedContent === "Overview" ?
-            <>
-              {/* Chart */}
-              <Grid item xs={12} md={8} lg={9}>
-                <Paper className={fixedHeightPaper}>
-                  <Chart />
-                </Paper>
-              </Grid>
-              {/* Recent Deposits */}
-              <Grid item xs={12} md={4} lg={3}>
-                <Paper className={fixedHeightPaper}>
-                  <Deposits />
-                </Paper>
-              </Grid>
-            </>
+             <DatabaseContext.Consumer>
+             {context => 
+                <>
+                  {/* APPLICATIONS: [Submitted, Pending Review, Tuition Required, Approved] */}
+                  <Grid item xs={12} md={8} lg={9}>
+                    <Paper className={fixedHeightPaper}>
+                      <ChartTemplate/>
+                    </Paper>
+                  </Grid>
+
+                  {/* MESSAGES: Display as preview with username and some content */}
+                  <Grid item xs={12} md={4} lg={3}>
+                    <Paper className={fixedHeightPaper}>
+                      <Deposits />
+                    </Paper>
+                  </Grid>
+
+                  {/* SCHOOLS: Total number of applications per school */}
+                  <Grid item xs={6} md={6} lg={6}>
+                    <Paper className={fixedHeightPaper}>
+                      <ChartTemplate />
+                    </Paper>
+                  </Grid>
+
+                  {/* AIRPORT & HOMESTAY APPLICATIONS: Totals For Each */}
+                  <Grid item xs={6} md={6} lg={6}>
+                    <Paper className={fixedHeightPaper}>
+                      <ChartTemplate />
+                    </Paper>
+                  </Grid>
+                </>
+              }
+            </DatabaseContext.Consumer>
           :
             <Grid item xs={12}>
               <Paper>
