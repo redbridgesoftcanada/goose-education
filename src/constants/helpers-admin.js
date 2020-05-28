@@ -18,13 +18,15 @@ function textField(name, value, eventHandler, isMultiline) {
 }
 
 function defaultValueTextField(name, value, eventHandler, isMultiline) {
+  const checkMultiIds = typeof name !== 'string';
+
   return (
     <OutlinedInput
       fullWidth
-      name={name}
       defaultValue={value}
       onChange={eventHandler}
-      {...(isMultiline === true) && {multiline: true, rows: 4}}
+      {...(checkMultiIds) ? {name: name.outer, id: name.inner } : {name}}
+      {...(isMultiline) && {multiline: true, rows: 4}}
     />
   )
 }

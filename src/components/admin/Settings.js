@@ -7,7 +7,7 @@ import { withFirebase } from "../../components/firebase";
 const multiGraphicsIds = ['gooseCards', 'gooseFeatureBoard', 'homeFeatureBoard', 'homestayBannerProcess', 'networkingCards'];
 
 function Settings(props) {
-  const { state, dispatch, listOfGraphics, firebase } = props;
+  const { dispatch, listOfGraphics, firebase } = props;
 
   const INITIAL_STATE = {
     gooseCards: false,
@@ -29,10 +29,11 @@ function Settings(props) {
   }
 
   const handleTextInput = (event, type) => {
-    const inputRef = event.currentTarget.name;
-    const inputType = type;
+    const inputCategory = event.currentTarget.name;
+    const inputRef = event.currentTarget.id;
     const inputValue = event.currentTarget.value;
-    setInput(prevState => ({...prevState, [inputRef]: {inputValue, inputType}}));
+    const inputType = type;
+    setInput(prevState => ({...prevState, [inputCategory]: {inputRef, inputValue, inputType}}));
   }
 
   const handleSave = async event => {
@@ -42,7 +43,6 @@ function Settings(props) {
     } else {
       setSnackbarMessage("Unable to save - there have been no changes made.");
     }
-    // event.preventDefault();
   }
 
   return (
@@ -68,17 +68,6 @@ function Settings(props) {
 }
 
 // H E L P E R  F U N C T I O N S
-const templateInputFields = (id, title, subtitle, caption, image, handleTextListener) => {
-  const disabledInput = <TextField disabled variant="filled" color="secondary"/>;
-  return (
-    <>
-      <TableCell>{title ? defaultValueTextField(id, title, event => handleTextListener(event, 'title'), false) : disabledInput}</TableCell>
-      <TableCell>{subtitle ? defaultValueTextField(id, subtitle, event => handleTextListener(event, 'subtitle'), true) : disabledInput}</TableCell>
-      <TableCell>{caption ? defaultValueTextField(id, caption, event => handleTextListener(event, 'caption'), true) : disabledInput}</TableCell>
-      <TableCell>{image ? defaultValueTextField(id, image, event => handleTextListener(event, 'image'), false) : disabledInput}</TableCell>
-    </>
-)}
-
 const generateSettingInputFields = (listOfGraphics, openState, handleOpenListener, handleTextListener) => {
   return listOfGraphics.map((graphic, i) => {
     const checkForMultiGraphics = multiGraphicsIds.some(id => graphic.id.includes(id));
@@ -100,12 +89,13 @@ const generateSettingInputFields = (listOfGraphics, openState, handleOpenListene
             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
               <Collapse in={openState[graphic.id]} timeout="auto" unmountOnExit>
                 {Object.values(graphic).map((innerGraphic, i) => {
+                  const multiIds = JSON.stringify({"outer": graphic.id, "inner": innerGraphic.id});
                   if (typeof innerGraphic !== 'string') {
                     return (
                       <Table key={i}>
                         <TableBody>
                           <TableRow>
-                            {templateInputFields(innerGraphic.id, innerGraphic.title, innerGraphic.subtitle, innerGraphic.caption, innerGraphic.image, handleTextListener)}
+                            {templateInputFields(multiIds, innerGraphic.title, innerGraphic.subtitle, innerGraphic.caption, innerGraphic.image, handleTextListener)}
                           </TableRow>
                         </TableBody>
                       </Table>
@@ -127,13 +117,33 @@ const generateSettingInputFields = (listOfGraphics, openState, handleOpenListene
   });
 }
 
+const templateInputFields = (id, title, subtitle, caption, image, handleTextListener) => {
+  const checkMultiIds = id.includes('{');
+  if (checkMultiIds) {
+    id = JSON.parse(id);
+  }
+  const disabledInput = <TextField disabled variant="filled" color="secondary"/>;
+  return (
+    <>
+      <TableCell>{title ? defaultValueTextField(id, title, event => handleTextListener(event, 'title'), false) : disabledInput}</TableCell>
+      <TableCell>{subtitle ? defaultValueTextField(id, subtitle, event => handleTextListener(event, 'subtitle'), true) : disabledInput}</TableCell>
+      <TableCell>{caption ? defaultValueTextField(id, caption, event => handleTextListener(event, 'caption'), true) : disabledInput}</TableCell>
+      <TableCell>{image ? defaultValueTextField(id, image, event => handleTextListener(event, 'image'), false) : disabledInput}</TableCell>
+    </>
+)}
+
 const createBatchUpdates = async (firebase, inputState, snackbarMessageListener) => {
   let batch = firebase.batch();
   await Object.keys(inputState).map(key => {
-    let inputId = key;
-    let { inputValue, inputType } = inputState[key];
-    let docRef = firebase.graphic(inputId);
-    batch.update(docRef, {[inputType]: inputValue});
+    let inputCategory = key;
+    let { inputRef, inputValue, inputType } = inputState[key];
+
+    let docRef = firebase.graphic(inputCategory);
+    if (inputRef) {
+      batch.update(docRef, {[inputRef]: {[inputType]: inputValue}})
+    } else {
+      batch.update(docRef, {[inputType]: inputValue});
+    }
   });
   batch.commit().then(function () {
     console.log('Updated values')
