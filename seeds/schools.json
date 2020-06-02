@@ -84,10 +84,10 @@
             "googleUrl": "",
             "youtubeUrl": ["<iframe width='800' height='450' src='https://www.youtube.com/embed/q_Xz3ICFEA8' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>", "<iframe width='800' height='450' src='https://www.youtube.com/embed/77MOeoeQkEk' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>"],
             "isRecommended": true,
-            "isFeatured": true
-,
-"createdAt": 1579576698361,
-            "updatedAt": 1579576698361        },
+            "isFeatured": true,
+            "createdAt": 1579576698361,
+            "updatedAt": 1579576698361        
+        },
         { 
             "id": 5,
             "title": "Language Across Borders: LAB",
@@ -106,9 +106,9 @@
             "googleUrl": "",
             "youtubeUrl": ["<iframe width='800' height='450' src='https://www.youtube.com/embed/8rsVCS_Bxmw' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>", "<iframe width='800' height='450' src='https://www.youtube.com/embed/fnPgTtpZ73A' frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>"],
             "isRecommended": true,
-            "isFeatured": true
-,
-"createdAt": 1579576698361,
-            "updatedAt": 1579576698361        }
+            "isFeatured": true,
+            "createdAt": 1579576698361,
+            "updatedAt": 1579576698361        
+        }
     ]
 }
