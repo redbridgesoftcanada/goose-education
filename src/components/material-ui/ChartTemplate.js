@@ -3,32 +3,15 @@ import { useTheme } from '@material-ui/core/styles';
 import { BarChart, Bar, Tooltip, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
 import Title from './Title';
 
-// Generate Sales Data
-function createData(time, amount) {
-  return { time, amount };
-}
-
-const data = [
-  createData('00:00', 0),
-  createData('03:00', 300),
-  createData('06:00', 600),
-  createData('09:00', 800),
-  createData('12:00', 1500),
-  createData('15:00', 2000),
-  createData('18:00', 2400),
-  createData('21:00', 2400),
-  createData('24:00', undefined),
-];
-
-export default function Chart() {
+export default function Chart({ data }) {
   const theme = useTheme();
 
   return (
-    <React.Fragment>
-      <Title>Today</Title>
+    <>
+      <Title>{data.name}</Title>
       <ResponsiveContainer>
         <BarChart
-          data={data}
+          data={data.plots}
           margin={{
             top: 16,
             right: 16,
@@ -36,21 +19,20 @@ export default function Chart() {
             left: 24,
           }}
         >
-          <XAxis dataKey="time" stroke={theme.palette.text.secondary} />
+          <XAxis dataKey={data.xAxisKey} stroke={theme.palette.text.secondary} />
           <YAxis stroke={theme.palette.text.secondary}>
             <Label
               angle={270}
               position="left"
               style={{ textAnchor: 'middle', fill: theme.palette.text.primary }}
             >
-              Sales ($)
+              {data.dataKey}
             </Label>
           </YAxis>
           <Tooltip/>
-          <Bar dataKey="amount" fill={theme.palette.secondary.main} barSize={30}/>
-          {/* <Line type="monotone" dataKey="amount" stroke={theme.palette.secondary.main} dot={false} /> */}
+          <Bar dataKey={data.dataKey} fill={theme.palette.secondary.main} barSize={50}/>
         </BarChart>
       </ResponsiveContainer>
-    </React.Fragment>
+    </>
   );
 }

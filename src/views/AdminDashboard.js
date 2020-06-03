@@ -7,23 +7,11 @@ import { AppBar, Badge, Box, Button, Container, Divider, Drawer, Grid, IconButto
 import { ChevronLeft, Menu as MenuIcon, Notifications, Dashboard, People, Layers, Assignment, AirplanemodeActive, Home, School, Settings, QuestionAnswer, NewReleases, Description, LiveHelp } from "@material-ui/icons";
 import { DatabaseContext } from '../components/database';
 import { ADMIN_PAGES } from "../constants/constants";
+import { convertToSentenceCase } from "../constants/helpers";
 import ChartTemplate from "../components/material-ui/ChartTemplate";
 import Deposits from "../components/material-ui/Deposits";
 import TableTemplate from "../components/material-ui/TableTemplate";
 import AdminComposeDialog from '../components/admin/AdminComposeDialog';
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://www.gooseedu.com/">
-        Goose Education
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
 
 const drawerWidth = 260;
 const useStyles = makeStyles(theme => ({
@@ -104,33 +92,6 @@ const useStyles = makeStyles(theme => ({
     height: 240,
   },
 }));
-
-function loadMenuIcons(page) {
-  switch (page) {
-    case "Overview":
-      return <Dashboard/>
-    case "Users":
-      return <People/>
-    case "Schools":
-      return <School/>
-    case "Applications":
-      return <Layers/>
-    case "Homestays":
-      return <Home/>
-    case "Airport Rides":
-      return <AirplanemodeActive/>
-    case "Goose Tips":
-      return <LiveHelp/>
-    case "Articles":
-      return <Description/>
-    case "Announcements":
-      return <NewReleases/>
-    case "Messages":
-      return <QuestionAnswer/>
-    default:
-      return <Settings/>
-  }
-}
 
 function toggleReducer(state, action) {
   const { type, payload } = action;
@@ -279,46 +240,16 @@ export default function AdminDashboard() {
             <Grid container spacing={3}>
             
             {state.selectedContent === "Overview" ?
-             <DatabaseContext.Consumer>
-             {context => 
-                <>
-                  {/* APPLICATIONS: [Submitted, Pending Review, Tuition Required, Approved] */}
-                  <Grid item xs={12} md={8} lg={9}>
-                    <Paper className={fixedHeightPaper}>
-                      <ChartTemplate/>
-                    </Paper>
-                  </Grid>
-
-                  {/* MESSAGES: Display as preview with username and some content */}
-                  <Grid item xs={12} md={4} lg={3}>
-                    <Paper className={fixedHeightPaper}>
-                      <Deposits />
-                    </Paper>
-                  </Grid>
-
-                  {/* SCHOOLS: Total number of applications per school */}
-                  <Grid item xs={6} md={6} lg={6}>
-                    <Paper className={fixedHeightPaper}>
-                      <ChartTemplate />
-                    </Paper>
-                  </Grid>
-
-                  {/* AIRPORT & HOMESTAY APPLICATIONS: Totals For Each */}
-                  <Grid item xs={6} md={6} lg={6}>
-                    <Paper className={fixedHeightPaper}>
-                      <ChartTemplate />
-                    </Paper>
-                  </Grid>
-                </>
-              }
-            </DatabaseContext.Consumer>
-          :
-            <Grid item xs={12}>
-              <Paper>
-                <TableTemplate type={state.selectedContent} snackbarMessage={setSnackbarMessage}/>
-              </Paper>
-            </Grid>
-          }
+              <DatabaseContext.Consumer>
+                {({ state }) => generateAggregateCharts(fixedHeightPaper, state.adminAggregates)}
+              </DatabaseContext.Consumer>
+              :
+              <Grid item xs={12}>
+                <Paper>
+                  <TableTemplate type={state.selectedContent} snackbarMessage={setSnackbarMessage}/>
+                </Paper>
+              </Grid>
+            }
 
             </Grid>
           </Container>
@@ -326,8 +257,120 @@ export default function AdminDashboard() {
           <Copyright />
         </Box>
       </main>
-      
-
     </div>
   );
+}
+
+// H E L P E R  F U N C T I O N S
+function Copyright() {
+  return (
+    <Typography variant="body2" color="textSecondary" align="center">
+      {"Copyright © "}
+      <Link color="inherit" href="https://www.gooseedu.com/">
+        Goose Education
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
+
+function loadMenuIcons(page) {
+  switch (page) {
+    case "Overview":
+      return <Dashboard/>
+    case "Users":
+      return <People/>
+    case "Schools":
+      return <School/>
+    case "Applications":
+      return <Layers/>
+    case "Homestays":
+      return <Home/>
+    case "Airport Rides":
+      return <AirplanemodeActive/>
+    case "Goose Tips":
+      return <LiveHelp/>
+    case "Articles":
+      return <Description/>
+    case "Announcements":
+      return <NewReleases/>
+    case "Messages":
+      return <QuestionAnswer/>
+    default:
+      return <Settings/>
+  }
+}
+
+function generateAggregateCharts(fixedHeightPaper, aggregateData) {
+  const charts = configureChartData(aggregateData);
+
+  return (
+    <>
+      {/* APPLICATIONS: [Submitted, Pending Review, Tuition Required, Approved] */}
+      <Grid item xs={12} md={8} lg={9}>
+        <Paper className={fixedHeightPaper}>
+          <ChartTemplate data={charts[2]}/>
+        </Paper>
+      </Grid>
+
+      {/* MESSAGES: Display as preview with username and some content */}
+      <Grid item xs={12} md={4} lg={3}>
+        <Paper className={fixedHeightPaper}>
+          <Deposits />
+        </Paper>
+      </Grid>
+
+      {/* SCHOOLS: Total number of applications per school */}
+      {/* <Grid item xs={4} md={4} lg={4}>
+        <Paper className={fixedHeightPaper}>
+          <ChartTemplate />
+        </Paper>
+      </Grid> */}
+
+      {/* AIRPORT & HOMESTAY APPLICATIONS: Totals For Each */}
+      <Grid item xs={4} md={4} lg={4}>
+        <Paper className={fixedHeightPaper}>
+          <ChartTemplate data={charts[0]}/>
+        </Paper>
+      </Grid>
+
+      <Grid item xs={4} md={4} lg={4}>
+        <Paper className={fixedHeightPaper}>
+          <ChartTemplate data={charts[1]}/>
+        </Paper>
+      </Grid>
+    </>
+  )
+}
+
+function configureChartData(data) {
+  const dataTemplate = Object.keys(data).map(type => {
+    const { id, ...displayData } = data[type];
+    switch (type) {
+      case 'schoolApplications':
+        const { total, ...statusData } = displayData;
+        return {
+          name: convertToSentenceCase(type),
+          xAxisKey: 'status',
+          dataKey: 'totals',
+          plots: Object.keys(statusData).map(status => {
+            return {status, totals: statusData[status]}
+          })
+        }
+
+    case 'airportRideApplications':
+    case 'homestayApplications':
+        return {
+        name: convertToSentenceCase(type),
+        xAxisKey: 'type',
+        dataKey: 'totals',
+        plots: Object.keys(displayData).map(totals => {
+          return {type, totals: displayData[totals]}
+        })
+      }
+    }
+  }).filter(template => template !== undefined);
+
+  return dataTemplate;
 }
