@@ -9,7 +9,7 @@ import { DatabaseContext } from '../components/database';
 import { ADMIN_PAGES } from "../constants/constants";
 import { convertToSentenceCase } from "../constants/helpers";
 import ChartTemplate from "../components/material-ui/ChartTemplate";
-import Deposits from "../components/material-ui/Deposits";
+import PreviewTemplate from "../components/material-ui/PreviewTemplate";
 import TableTemplate from "../components/material-ui/TableTemplate";
 import AdminComposeDialog from '../components/admin/AdminComposeDialog';
 
@@ -241,7 +241,7 @@ export default function AdminDashboard() {
             
             {state.selectedContent === "Overview" ?
               <DatabaseContext.Consumer>
-                {({ state }) => generateAggregateCharts(fixedHeightPaper, state.adminAggregates)}
+                {({ state }) => generateAggregateCharts(fixedHeightPaper, state.adminAggregates, state.listOfMessages)}
               </DatabaseContext.Consumer>
               :
               <Grid item xs={12}>
@@ -302,7 +302,7 @@ function loadMenuIcons(page) {
   }
 }
 
-function generateAggregateCharts(fixedHeightPaper, aggregateData) {
+function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
   const charts = configureChartData(aggregateData);
 
   return (
@@ -317,25 +317,25 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData) {
       {/* MESSAGES: Display as preview with username and some content */}
       <Grid item xs={12} md={4} lg={3}>
         <Paper className={fixedHeightPaper}>
-          <Deposits />
+          <PreviewTemplate messages={messages} total={aggregateData.messages}/>
         </Paper>
       </Grid>
 
       {/* SCHOOLS: Total number of applications per school */}
-      {/* <Grid item xs={4} md={4} lg={4}>
+      {/* <Grid item xs={6} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
           <ChartTemplate />
         </Paper>
       </Grid> */}
 
       {/* AIRPORT & HOMESTAY APPLICATIONS: Totals For Each */}
-      <Grid item xs={4} md={4} lg={4}>
+      <Grid item xs={6} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
           <ChartTemplate data={charts[0]}/>
         </Paper>
       </Grid>
 
-      <Grid item xs={4} md={4} lg={4}>
+      <Grid item xs={6} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
           <ChartTemplate data={charts[1]}/>
         </Paper>
