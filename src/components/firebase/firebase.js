@@ -116,6 +116,8 @@ class Firebase {
   graphics = () => this.db.collection("graphics");
   graphic = graphicId => this.db.collection("graphics").doc(graphicId);
 
+  aggregates = () => this.db.collection("aggregates");
+
   // H E L P E R S
   transaction = doc => this.db.runTransaction(doc);   // a set of read and write operations on one or more documents
   updateArray = () => this.fieldValue;  // to merge & update an array in an existing document (e.g. comments)

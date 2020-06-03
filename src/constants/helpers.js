@@ -263,7 +263,46 @@ function findSchoolApplicationById(id, firebase, setState) {
     setState(prevState => ({ ...prevState, schoolApplication }));
 }
 
+function configureFetchAll(collection, firebase) {
+    switch (collection) {
+        case "aggregates": 
+            return { 
+                query: firebase.aggregates().get(), 
+                stateRef: "adminAggregates"    
+            }
+    }
+}
+
+function configureSnapshotData(collection, snapshot) {
+    switch (collection) {
+        case "aggregates": {
+            const formattedData = {};
+            snapshot.docs.map(doc => {
+                let data = doc.data();
+                let id = doc.id;
+                formattedData[id] = {...data, id};
+            });
+            return formattedData;
+        }
+    }
+}
+
 // D A T A  F E T C H I N G  ( A L L )
+function fetchAllDocuments(collection, firebase, setState) {
+    const fetchAllRefs = configureFetchAll(collection, firebase);
+    const { query, stateRef } = fetchAllRefs;
+    query.then(snapshot => {
+        if (snapshot.empty) {
+            console.log(`No matching documents in ${collection} collection.`);
+            return;
+        }
+        
+        const formattedData = configureSnapshotData(collection, snapshot);
+        setState(prevState => ({ ...prevState, [stateRef]: formattedData }));
+    })
+    .catch(err => console.log("Error in fetching all documents: ", err));
+}
+
 function findAllGraphics(firebase, setState) {
     const graphicsQuery = firebase.graphics().get();
     graphicsQuery.then(snapshot => {
@@ -624,4 +663,8 @@ function convertToTitleCase(text) {
     });
 }
 
-export { paginatedQuery, findGraphics, findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllGraphics, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase }
+function convertToSentenceCase(text) {
+    return text.replace(/([A-Z]+)/g, " $1").replace(/([A-Z][a-z])/g, " $1");
+}
+
+export { paginatedQuery, fetchAllDocuments, findGraphics, findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllGraphics, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase, convertToSentenceCase }

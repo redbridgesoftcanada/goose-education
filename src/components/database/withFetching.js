@@ -33,6 +33,7 @@ function withFetching(Component) {
       listOfArticles: [],
       listOfMessages: [],
       listOfAnnouncements: [],
+      adminAggregates: [],
       adminGraphics: [],
       profile: null,
       schoolApplication: null,
@@ -83,10 +84,11 @@ function withFetching(Component) {
         
         case '/admin':
           async function loadInitialData() {
+            HELPERS.fetchAllDocuments("aggregates", firebase, setState);
             try {
               for (let i = 0; i <= ADMIN_PAGES.slice(1).length; i++) {
                 if (ADMIN_PAGES[i] === "Settings") {
-                  HELPERS.findAllGraphics(firebase, setState)
+                  HELPERS.findAllGraphics(firebase, setState);
                 } else {
                   await paginatedQuery(ADMIN_PAGES[i]);
                 }
