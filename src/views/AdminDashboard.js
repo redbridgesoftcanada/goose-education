@@ -310,7 +310,7 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
       {/* APPLICATIONS: [Submitted, Pending Review, Tuition Required, Approved] */}
       <Grid item xs={12} md={8} lg={9}>
         <Paper className={fixedHeightPaper}>
-          <ChartTemplate data={charts[1]}/>
+          <ChartTemplate type='bar' data={charts[1]}/>
         </Paper>
       </Grid>
 
@@ -324,14 +324,14 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
       {/* AIRPORT & HOMESTAY APPLICATIONS: Totals For Each */}
       <Grid item xs={6} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
-          <ChartTemplate data={charts[0]}/>
+          <ChartTemplate type='bar' data={charts[0]}/>
         </Paper>
       </Grid>
 
       {/* SCHOOLS: Total number of applications per school */}
       <Grid item xs={6} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
-          <ChartTemplate data={charts[2]}/>
+          <ChartTemplate type='pie' data={charts[2]}/>
         </Paper>
       </Grid>
     </>
