@@ -310,7 +310,7 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
       {/* APPLICATIONS: [Submitted, Pending Review, Tuition Required, Approved] */}
       <Grid item xs={12} md={8} lg={9}>
         <Paper className={fixedHeightPaper}>
-          <ChartTemplate data={charts[2]}/>
+          <ChartTemplate data={charts[1]}/>
         </Paper>
       </Grid>
 
@@ -321,13 +321,6 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
         </Paper>
       </Grid>
 
-      {/* SCHOOLS: Total number of applications per school */}
-      {/* <Grid item xs={6} md={6} lg={6}>
-        <Paper className={fixedHeightPaper}>
-          <ChartTemplate />
-        </Paper>
-      </Grid> */}
-
       {/* AIRPORT & HOMESTAY APPLICATIONS: Totals For Each */}
       <Grid item xs={6} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
@@ -335,9 +328,10 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
         </Paper>
       </Grid>
 
+      {/* SCHOOLS: Total number of applications per school */}
       <Grid item xs={6} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
-          <ChartTemplate data={charts[1]}/>
+          <ChartTemplate data={charts[2]}/>
         </Paper>
       </Grid>
     </>
@@ -348,26 +342,40 @@ function configureChartData(data) {
   const dataTemplate = Object.keys(data).map(type => {
     const { id, ...displayData } = data[type];
     switch (type) {
-      case 'schoolApplications':
+      case 'schoolApplications': {
         const { total, ...statusData } = displayData;
         return {
           name: convertToSentenceCase(type),
-          xAxisKey: 'status',
-          dataKey: 'totals',
+          xAxisKey: 'Status',
+          dataKey: 'Totals',
           plots: Object.keys(statusData).map(status => {
-            return {status, totals: statusData[status]}
+            return {Status: status, Totals: statusData[status]}
           })
         }
+      }
 
-    case 'airportRideApplications':
-    case 'homestayApplications':
+    case 'otherApplications': {
+      const { total, ...applicationData } = displayData;
         return {
         name: convertToSentenceCase(type),
-        xAxisKey: 'type',
-        dataKey: 'totals',
-        plots: Object.keys(displayData).map(totals => {
-          return {type, totals: displayData[totals]}
+        xAxisKey: 'Type',
+        dataKey: 'Totals',
+        plots: Object.keys(applicationData).map(total => {
+          return {Type: convertToSentenceCase(total).replace('Total', ''), Totals: applicationData[total]}
         })
+      }
+    }
+
+    case 'schools': {
+      const { total, ...applicationData } = displayData;
+        return {
+          name: convertToSentenceCase(type),
+          xAxisKey: 'Name',
+          dataKey: 'Totals',
+          plots: Object.keys(applicationData).map(school => {
+            return {Name: school, Totals: applicationData[school]}
+          })
+        }
       }
     }
   }).filter(template => template !== undefined);
