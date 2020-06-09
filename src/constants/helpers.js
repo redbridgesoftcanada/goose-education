@@ -1,10 +1,7 @@
-// D A T A  F E T C H I N G  ( P A G I N A T I O N )
-// note. Firestore pagination works as a set of unrelated sequential queries
-
 let lastDocRef = {};
 let queryType, nextQueryRef;
 
-// C a l l b a c k  F u n c t i o n s  ----------------------------------
+// C A L L B A C K  F U N C T I O N S
 function configFirstPaginate(firebase, state) {
     let firstQueryRef, currentState, currentStateKey;
     switch(queryType) {
@@ -129,9 +126,9 @@ function amendPaginateData(snapshot, currentState) {
             return;
     }
 }
-// --------------------------------------------------------------------
 
-// P A G I N A T I O N
+// D A T A  F E T C H I N G  ( P A G I N A T I O N )
+// note. Firestore pagination works as a set of unrelated sequential queries
 function paginatedQuery(state, firebase, setState, type) {
     try {
         queryType = type; // (global variable) identifies Firestore collection for the data query.
@@ -182,7 +179,50 @@ function paginatedQuery(state, firebase, setState, type) {
     }
 }
 
+
+function configureFetchSelect(compound, collection, firebase) {
+    switch (collection) {
+        case "messages": 
+            if (compound === "recent") {
+                return { 
+                    query: firebase.messages().orderBy("updatedAt", "desc").limit(5).get(), 
+                    stateRef: "previewMessages"    
+                }
+            } else {
+                return;
+            }
+    }
+}
+
+function configureFetchSelectSnapshot(collection, snapshot) {
+    switch (collection) {
+        case "messages": {
+            let formattedData = snapshot.docs.map(doc => {
+                let data = doc.data();
+                let id = doc.id;
+                return {...data, id}
+            });
+            return formattedData;
+        }
+    }
+}
+
 // D A T A  F E T C H I N G  ( S E L E C T )
+function fetchSelectDocuments(compound, collection, firebase, setState) {
+    const fetchSelectRefs = configureFetchSelect(compound, collection, firebase);
+    const { query, stateRef } = fetchSelectRefs;
+    query.then(snapshot => {
+        if (snapshot.empty) {
+            console.log(`No matching documents in ${collection} collection.`);
+            return;
+        }
+        
+        const formattedData = configureFetchSelectSnapshot(collection, snapshot);
+        setState(prevState => ({ ...prevState, [stateRef]: formattedData }));
+    })
+    .catch(err => console.log("Error in fetching all documents: ", err));
+}
+
 function findGraphics(firebase, setState, location) {
     const graphicsQuery = firebase.graphics().where("location", "==", location).get();
     graphicsQuery.then(snapshot => {
@@ -270,10 +310,16 @@ function configureFetchAll(collection, firebase) {
                 query: firebase.aggregates().get(), 
                 stateRef: "adminAggregates"    
             }
+        
+        case "graphics":
+            return {
+                query: firebase.graphics().get(),
+                stateRef: "adminGraphics"
+            }
     }
 }
 
-function configureSnapshotData(collection, snapshot) {
+function configureFetchAllSnapshot(collection, snapshot) {
     switch (collection) {
         case "aggregates": {
             const formattedData = {};
@@ -283,6 +329,27 @@ function configureSnapshotData(collection, snapshot) {
                 formattedData[id] = {...data, id};
             });
             return formattedData;
+        }
+
+        case "graphics": {
+            const formattedData = {};
+            snapshot.docs.map(doc => {
+                let data = doc.data();
+                let id = doc.id;
+                
+                let checkForNestedData = Object.values(data).filter(value => typeof value !== 'string').length !== 0;
+                if (checkForNestedData) {
+                    Object.keys(data).map(key => {
+                        if (key === 'title' || key === 'subtitle' || key === 'caption' || key === 'image' || key === 'location') {
+                            return;
+                        } else {
+                            let nestedData = data[key];
+                            nestedData.id = key;
+                        }
+                    })
+                }
+                return formattedData[id] = {...data, id}
+            });
         }
     }
 }
@@ -297,41 +364,10 @@ function fetchAllDocuments(collection, firebase, setState) {
             return;
         }
         
-        const formattedData = configureSnapshotData(collection, snapshot);
+        const formattedData = configureFetchAllSnapshot(collection, snapshot);
         setState(prevState => ({ ...prevState, [stateRef]: formattedData }));
     })
     .catch(err => console.log("Error in fetching all documents: ", err));
-}
-
-function findAllGraphics(firebase, setState) {
-    const graphicsQuery = firebase.graphics().get();
-    graphicsQuery.then(snapshot => {
-        if (snapshot.empty) {
-            console.log('No matching documents.');
-            return;
-        } 
-        
-        const allGraphics = snapshot.docs.map(doc => {
-            let data = doc.data();
-            let id = doc.id;
-            
-            let checkForNestedData = Object.values(data).filter(value => typeof value !== 'string').length !== 0;
-            if (checkForNestedData) {
-                Object.keys(data).map(key => {
-                    if (key === 'title' || key === 'subtitle' || key === 'caption' || key === 'image' || key === 'location') {
-                        return;
-                    } else {
-                        let nestedData = data[key];
-                        nestedData.id = key;
-                    }
-                })
-            }
-            return {...data, id}
-        });
-
-        setState(prevState => ({ ...prevState, adminGraphics: allGraphics }));
-
-    }).catch(err => console.log('Error getting documents', err));
 }
 
 function findAllSchools(firebase, setState) {
@@ -668,4 +704,4 @@ function convertToSentenceCase(text) {
     return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
-export { paginatedQuery, fetchAllDocuments, findGraphics, findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllGraphics, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase, convertToSentenceCase }
+export { paginatedQuery, fetchSelectDocuments, fetchAllDocuments, findGraphics, findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase, convertToSentenceCase }
