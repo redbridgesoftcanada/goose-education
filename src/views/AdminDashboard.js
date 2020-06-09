@@ -241,7 +241,7 @@ export default function AdminDashboard() {
             
             {state.selectedContent === "Overview" ?
               <DatabaseContext.Consumer>
-                {({ state }) => generateAggregateCharts(fixedHeightPaper, state.adminAggregates, state.listOfMessages)}
+                {({ state }) => generateAggregateCharts(fixedHeightPaper, state.adminAggregates, state.previewMessages)}
               </DatabaseContext.Consumer>
               :
               <Grid item xs={12}>
@@ -333,7 +333,7 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
       {/* MESSAGES: Display as preview with username and some content */}
       <Grid item xs={12} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
-          <PreviewTemplate title="recent messages" data={messages} total={aggregateData.messages}/>
+          <PreviewTemplate title="recent messages" data={messages}/>
         </Paper>
       </Grid>
     </>

@@ -24,6 +24,7 @@ function withFetching(Component) {
       featuredSchools: [],
       featuredTips: [],
       taggedArticles: [],
+      previewMessages: [],
       gooseTips: [],
       listOfUsers: [],
       listOfSchools: [],
@@ -85,13 +86,16 @@ function withFetching(Component) {
         case '/admin':
           async function loadInitialData() {
             HELPERS.fetchAllDocuments("aggregates", firebase, setState);
+            HELPERS.fetchSelectDocuments("recent", "messages", firebase, setState)
             try {
               for (let i = 0; i <= ADMIN_PAGES.slice(1).length; i++) {
                 if (ADMIN_PAGES[i] === "Settings") {
-                  HELPERS.findAllGraphics(firebase, setState);
-                } else {
+                  HELPERS.fetchAllDocuments("graphics", firebase, setState);
+                }
+                else {
                   await paginatedQuery(ADMIN_PAGES[i]);
                 }
+                
               }
             } catch(error) {
               console.log("Unable to fetch data", error)

@@ -6,21 +6,21 @@ import Title from './Title';
 import parse from 'html-react-parser';
 
 export default function PreviewTemplate(props) {
-  const { messages, total } = props;
+  const { title, data } = props;
 
   return (
     <>
-      <Title>Recent Messages</Title>
-      {messages.length ? 
-        messages.map((message, i) => {
+      <Title>{title}</Title>
+      {data.length ? 
+        data.map((message, i) => {
           return (
-          <Grid container key={i}>
-            <Grid item xs={3} md={3} lg={3}>
+          <Grid container key={i} wrap="nowrap">
+            <Grid item xs={4} md={2} lg={2}>
               <Avatar style={{backgroundColor: pink[500]}}><PersonIcon/></Avatar>
             </Grid>
-            <Grid item xs={9} md={9} lg={9}>
+            <Grid item xs={8} md={10} lg={10} zeroMinWidth>
               <Typography variant="subtitle2" align="left">{message.authorDisplayName}</Typography>
-              <Typography color="textSecondary" variant="caption" align="left" noWrap>{parse(message.description)}</Typography>
+              <Typography variant="caption" align="left" color="textSecondary" >{parse(message.description)}</Typography>
             </Grid>
           </Grid>
         )})
