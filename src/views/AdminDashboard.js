@@ -308,30 +308,32 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
   return (
     <>
       {/* APPLICATIONS: [Submitted, Pending Review, Tuition Required, Approved] */}
-      <Grid item xs={12} md={8} lg={9}>
+      <Grid item xs={12} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
-          <ChartTemplate type='bar' data={charts[1]}/>
-        </Paper>
-      </Grid>
-
-      {/* MESSAGES: Display as preview with username and some content */}
-      <Grid item xs={12} md={4} lg={3}>
-        <Paper className={fixedHeightPaper}>
-          <PreviewTemplate messages={messages} total={aggregateData.messages}/>
-        </Paper>
-      </Grid>
-
-      {/* AIRPORT & HOMESTAY APPLICATIONS: Totals For Each */}
-      <Grid item xs={6} md={6} lg={6}>
-        <Paper className={fixedHeightPaper}>
-          <ChartTemplate type='bar' data={charts[0]}/>
+          <ChartTemplate chart='bar' data={charts[1]}/>
         </Paper>
       </Grid>
 
       {/* SCHOOLS: Total number of applications per school */}
-      <Grid item xs={6} md={6} lg={6}>
+      <Grid item xs={12} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
-          <ChartTemplate type='pie' data={charts[2]}/>
+          <ChartTemplate chart='pie' data={charts[2]}/>
+        </Paper>
+      </Grid>
+
+
+      {/* AIRPORT & HOMESTAY APPLICATIONS: Totals For Each */}
+      <Grid item xs={12} md={6} lg={6}>
+        <Paper className={fixedHeightPaper}>
+          <ChartTemplate chart='bar' data={charts[0]}/>
+        </Paper>
+      </Grid>
+
+
+      {/* MESSAGES: Display as preview with username and some content */}
+      <Grid item xs={12} md={6} lg={6}>
+        <Paper className={fixedHeightPaper}>
+          <PreviewTemplate title="recent messages" data={messages} total={aggregateData.messages}/>
         </Paper>
       </Grid>
     </>

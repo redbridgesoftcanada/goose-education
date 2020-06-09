@@ -1,18 +1,28 @@
 import React from 'react';
-import { useTheme } from '@material-ui/core/styles';
-import { BarChart, Bar, Tooltip, XAxis, YAxis, Label, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { useTheme } from '@material-ui/core';
+import { BarChart, Bar, Tooltip, XAxis, YAxis, Label, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import Title from './Title';
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function Chart(props) {
   const theme = useTheme();
 
-  const { type, data } = props;
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  const { chart, data } = props;
+
+  const renderPieLegend = dataPlots => {
+    return (
+      dataPlots.map((entry, i) => (
+       { value: entry.Name, type: 'square', id:`item-${i}`, color: COLORS[i % COLORS.length] }
+      ))
+    )
+  }
+
   return (
     <>
-      <Title>{data.name}</Title>
+      <Title>{(data.name !== 'schools') ? data.name : "Applications Per School"}</Title>
 
-      {type === 'bar' &&
+      {chart === 'bar' &&
         <ResponsiveContainer>
           <BarChart
             data={data.plots}
@@ -39,19 +49,19 @@ export default function Chart(props) {
         </ResponsiveContainer>
       }
 
-      {type === 'pie' &&
-        <PieChart width={800} height={400}>
+      {chart === 'pie' &&
+      <ResponsiveContainer>
+        <PieChart>
           <Pie
             data={data.plots}
-            cx={120}
-            cy={200}
             outerRadius={80}
             fill="#8884d8"
-            dataKey={data.dataKey}
-          >
+            dataKey={data.dataKey}>
             {data.plots.map((entry, i) => <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />)}
           </Pie>
+          <Legend layout="vertical" verticalAlign="middle" align="right" payload={renderPieLegend(data.plots)}/>
         </PieChart>
+      </ResponsiveContainer>
       }
     </>
   );
