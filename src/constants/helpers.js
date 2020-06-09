@@ -664,7 +664,8 @@ function convertToTitleCase(text) {
 }
 
 function convertToSentenceCase(text) {
-    return text.replace(/([A-Z]+)/g, " $1").replace(/([A-Z][a-z])/g, " $1");
+    const result = text.replace( /([A-Z])/g, " $1" );
+    return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
 export { paginatedQuery, fetchAllDocuments, findGraphics, findFeaturedSchools, findFeaturedArticles, findFeaturedTips, findAllGraphics, findAllSchools, findAllArticles, findAllTips, findAllMessages, findAllAnnouncements, findAllUsers, findAllSchoolApplications, findAllHomestayApplications, findAllAirportRideApplications, findUserById, findSchoolApplicationById, createPagination, singleFilterQuery, multipleFilterQuery, sortQuery, convertToCamelCase, convertToTitleCase, convertToSentenceCase }
