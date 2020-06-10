@@ -66,6 +66,10 @@ class Firebase {
   doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
   doPasswordUpdate = password => this.auth.currentUser.updatePassword(password);
 
+  // U N I V E R S A L  C O L L E C T I O N  R E F E R E N C E
+  collectionRef = collId => this.db.collection(collId);
+  docRef = (collId, docId) => this.db.collection(collId).doc(docId);
+
   // U S E R S
   users = () => this.db.collection("users");
   user = uid => this.db.doc(`users/${uid}`);
@@ -115,7 +119,6 @@ class Firebase {
   // S T A T I C  A S S E T S
   graphics = () => this.db.collection("graphics");
   graphic = graphicId => this.db.collection("graphics").doc(graphicId);
-
   aggregates = () => this.db.collection("aggregates");
 
   // H E L P E R S

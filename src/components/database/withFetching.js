@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import DatabaseContext from './context';
-import { ADMIN_PAGES, TAGS } from '../../constants/constants';
-import * as HELPERS from '../../constants/helpers';
+import { ADMIN_PAGES } from '../../constants/constants';
+import { fetchPaginatedQuery, fetchAllDocuments, fetchSelectDocuments } from '../../constants/helpers';
 
 function withFetching(Component) {
 
   function WithFetchingComponent(props) {  
     const location = useLocation();
+    const path = location.pathname;
     const firebase = props.firebase;
 
     let userId;
@@ -42,55 +43,55 @@ function withFetching(Component) {
     const [ state, setState ] = useState(INITIAL_STATE);
 
     const paginatedQuery = type => {
-      return HELPERS.paginatedQuery(state, firebase, setState, type);
+      return fetchPaginatedQuery(state, firebase, setState, type);
     }
 
     useEffect(() => {
-      switch(location.pathname) {
+      switch(path) {
         case '/':
-          HELPERS.findGraphics(firebase, setState, '/home');
-          HELPERS.findFeaturedSchools(firebase, setState);
-          HELPERS.findFeaturedArticles(firebase, setState);
-          HELPERS.findFeaturedTips(firebase, setState);
+          fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          fetchSelectDocuments("featured", "schools", firebase, setState, '');
+          fetchSelectDocuments("featured", "articles", firebase, setState, '');
+          fetchSelectDocuments("featured", "tips", firebase, setState, '');
           break;
         
         case '/goose':
-          HELPERS.findGraphics(firebase, setState, '/goose');
-          HELPERS.findAllTips(firebase, setState);
+          fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          fetchAllDocuments("tips", firebase, setState);
           break;
         
         case '/networking':
-          HELPERS.findGraphics(firebase, setState, '/networking');
-          HELPERS.findAllArticles(TAGS, firebase, setState);
+          fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          fetchAllDocuments("articles", firebase, setState);
           break;
         
         case '/schools':
-          HELPERS.findGraphics(firebase, setState, '/schools');
-          HELPERS.findAllSchools(firebase, setState);
+          fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          fetchAllDocuments("schools", firebase, setState);
           break;
 
         case '/studyabroad':
-          HELPERS.findGraphics(firebase, setState, '/studyabroad');
+          fetchSelectDocuments("location", "graphics", firebase, setState, path);
 
         case '/services':
-          HELPERS.findGraphics(firebase, setState, '/services');
-          HELPERS.findAllAnnouncements(firebase, setState);
-          HELPERS.findAllMessages(firebase, setState);
+          fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          fetchAllDocuments("announcements", firebase, setState);
+          fetchAllDocuments("messages", firebase, setState);
           break;
         
         case '/profile':
-          HELPERS.findUserById(userId, firebase, setState);
-          HELPERS.findSchoolApplicationById(userId, firebase, setState);
+          fetchSelectDocuments("profileId", "users", firebase, setState, userId);
+          fetchSelectDocuments("schoolApplicationId", "schoolApplications", firebase, setState, userId);
           break;
         
         case '/admin':
           async function loadInitialData() {
-            HELPERS.fetchAllDocuments("aggregates", firebase, setState);
-            HELPERS.fetchSelectDocuments("recent", "messages", firebase, setState)
+            fetchAllDocuments("aggregates", firebase, setState);
+            fetchSelectDocuments("recent", "messages", firebase, setState, '');
             try {
               for (let i = 0; i <= ADMIN_PAGES.slice(1).length; i++) {
                 if (ADMIN_PAGES[i] === "Settings") {
-                  HELPERS.fetchAllDocuments("graphics", firebase, setState);
+                  fetchAllDocuments("graphics", firebase, setState);
                 }
                 else {
                   await paginatedQuery(ADMIN_PAGES[i]);
@@ -107,7 +108,7 @@ function withFetching(Component) {
         default:
           console.log('No path to fetch data!')
       }
-    }, [location.pathname]);
+    }, [path]);
 
     return (
     <DatabaseContext.Provider value={{state, paginatedQuery}}>
