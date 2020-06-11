@@ -1,9 +1,11 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const PDFDocument = require('pdfkit');
 
 admin.initializeApp();
 
 const db = admin.firestore();
+const bucket = admin.storage().bucket();
 const FieldValue = admin.firestore.FieldValue;
 
 // C L O U D  F U N C T I O N S
@@ -45,16 +47,21 @@ exports.aggregateHomestayApplications = functions.firestore
 exports.aggregateSchoolApplications = functions.firestore
   .document('schoolApplications/{schoolApplicationId}')
   .onWrite((change, context) => {
-    // aggregate (1): total number of applications by school;
+    // invocation (1): aggregate total number of applications by school;
     const schoolsRef = db.collection('aggregates').doc('schools');
     const school = change.after.get('schoolName');
     const aggregateSchools = (!change.after.exists) ? aggregateTotalsTransaction(schoolsRef, -1, school) : aggregateTotalsTransaction(schoolsRef, 1, school);
 
-    // aggregate (2): total number of applications by application status;
+    // invocation (2): aggregate total number of applications by application status;
     const applicationsRef = db.collection('aggregates').doc('schoolApplications');
     const aggregateApplications = configureAggregateHelpers(applicationsRef, 1, "status", change);
 
-    return aggregateApplications && aggregateSchools;
+    // invocation (3): create downloadable PDF of school application;
+    const applicationId = context.params.schoolApplicationId;
+    const newApplicationData = change.after.data();
+    const generatePDFApplication = generatePDF(applicationId, newApplicationData);
+
+    return aggregateApplications && aggregateSchools && generatePDFApplication;
 });
 
 exports.aggregateArticles = functions.firestore
@@ -153,4 +160,24 @@ const aggregateMultiTotalsTransaction = (ref, increment, prevField, newField) =>
     console.log(`Update (${increment}) transaction failed: `, error);
     return;
   });
+}
+
+function generatePDF(id, form) {
+  const doc = new PDFDocument;                        // create an instance = READABLE Node stream;
+  const filename = `${id}/test-${Date.now()}.pdf`;
+  const file = bucket.file(filename);                 // BUCKET METHOD: creates a File object from Bucket (methods: createWriteStream, getSignedUrl);
+  const bucketFileStream = file.createWriteStream();  // FILE METHOD: creates a writeable stream to overwrite the contents of the file in your bucket;
+
+  doc.pipe(bucketFileStream);                         // send the output of the PDF document to another WRITABLE Node stream;
+  
+  doc.end();                                          // finalize the PDF file;
+
+  bucketFileStream.on("finish", function () {
+    console.log('the file upload is completed');
+  });
+
+  bucketFileStream.on("error", function(err) {
+    console.error(err);
+  });
+
 }
