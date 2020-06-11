@@ -24,43 +24,21 @@ const prodConfig = {
 
 const firebaseConfig = process.env.NODE_ENV === 'production' ? prodConfig : devConfig;
 
+// const firebaseCollections = ['articles', 'tips', 'schools', 'announcements', 'graphics', 'schoolApplications', 'homestayApplications', 'airportRideApplications'];
+const firebaseCollections = ['announcements'];
+
 const jsonToFirestore = async () => {
   try {
-    console.log('Initialzing Firebase.');
+    console.log('Initializing Firebase.');
     await firestoreService.initializeApp(serviceAccount, firebaseConfig.databaseURL);
     console.log('Initialized - begin importing seed data.');
 
-    console.log('Importing articles.')
-    await firestoreService.restore('./seeds/articles.json');
-    console.log('Upload Success.');
-
-    console.log('Importing goose tips.')
-    await firestoreService.restore('./seeds/tips.json');
-    console.log('Upload Success.');
-
-    console.log('Importing schools.')
-    await firestoreService.restore('./seeds/schools.json');
-    console.log('Upload Success.');
-
-    console.log('Importing announcements.')
-    await firestoreService.restore('./seeds/announcements.json');
-    console.log('Upload Success.');
-
-    console.log('Importing graphics.')
-    await firestoreService.restore('./seeds/graphics.json');
-    console.log('Upload Success.');
-
-    console.log('Importing school applications.')
-    await firestoreService.restore('./seeds/schoolApplications.json');
-    console.log('Upload Success.');
-
-    console.log('Importing homestay applications.')
-    await firestoreService.restore('./seeds/homestayApplications.json');
-    console.log('Upload Success.');
-
-    console.log('Importing airport ride applications.')
-    await firestoreService.restore('./seeds/airportRideApplications.json');
-    console.log('Upload Success.');
+    firebaseCollections.forEach(async collection => {
+      console.log(`Importing ${collection}.`);
+      let seedPathFile = `./seeds/${collection}.json`;
+      await firestoreService.restore(seedPathFile);
+      console.log('Upload success.');
+    });
 
     console.log('Completed importing all seed data.')
   }

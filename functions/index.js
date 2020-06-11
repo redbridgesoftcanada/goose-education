@@ -7,9 +7,16 @@ const db = admin.firestore();
 const FieldValue = admin.firestore.FieldValue;
 
 // C L O U D  F U N C T I O N S
-
 // !change.before.exists = no existing document in collection BEFORE update = document created + add one to total field;
 // !change.after.exists = no existing document in collection AFTER update = document deleted + subtract one from total field;
+
+exports.aggregateTips = functions.firestore
+  .document('tips/{tipId}')
+  .onWrite((change, context) => {
+    const tipRef = db.collection('aggregates').doc('tips');
+    const aggregateTips = (!change.after.exists) ? aggregateTotalsTransaction(tipRef, -1) : aggregateTotalsTransaction(tipRef, 1);
+    return aggregateTips;
+});
 
 exports.aggregateMessages = functions.firestore
   .document('messages/{messageId}')
@@ -45,25 +52,46 @@ exports.aggregateSchoolApplications = functions.firestore
 
     // aggregate (2): total number of applications by application status;
     const applicationsRef = db.collection('aggregates').doc('schoolApplications');
-    const status = change.after.get('status');
-    const prevStatus = change.before.get('status');
-
-    // only update if the status has changed, crucial to prevent infinite loops (according to Firebase documentation);
-    if (status === prevStatus) return null;
-
-    let aggregateApplications;
-    if (!change.before.exists) {
-      aggregateApplications = aggregateTotalsTransaction(applicationsRef, 1, status);
-    } else if (!change.after.exists) {
-      aggregateApplications = aggregateMultiTotalsTransaction(applicationsRef, -1, prevStatus, status);
-    } else {
-      aggregateApplications = aggregateMultiTotalsTransaction(applicationsRef, 1, prevStatus, status);
-    }
+    const aggregateApplications = configureAggregateHelpers(applicationsRef, 1, "status", change);
 
     return aggregateApplications && aggregateSchools;
 });
 
+exports.aggregateArticles = functions.firestore
+  .document('articles/{articleId}')
+  .onWrite((change, context) => {
+    const articleRef = db.collection('aggregates').doc('articles');
+    const aggregateArticles = configureAggregateHelpers(articleRef, 1, "tag", change);
+    return aggregateArticles;
+});
+
+exports.aggregateAnnounces = functions.firestore
+  .document('announcements/{announceId}')
+  .onWrite((change, context) => {
+    const announceRef = db.collection('aggregates').doc('announcements');
+    const aggregateAnnounces = configureAggregateHelpers(announceRef, 1, "tag", change);
+    return aggregateAnnounces;
+});
+
 // H E L P E R  F U N C T I O N S
+const configureAggregateHelpers = (ref, increment, field, change) => {
+  const newValue = change.after.get(field);
+  const oldValue = change.before.get(field);
+
+  if (newValue === oldValue) return null;
+
+  let aggregateValues;
+  if (!change.before.exists) {
+    aggregateValues = aggregateTotalsTransaction(ref, increment, newValue);
+  } else if (!change.after.exists) {
+    aggregateValues = aggregateMultiTotalsTransaction(ref, -increment, oldValue, newValue);
+  } else {
+    aggregateValues = aggregateMultiTotalsTransaction(ref, increment, oldValue, newValue);
+  }
+
+  return aggregateValues;
+}
+
 const aggregateTotalsTransaction = (ref, increment, field) => {
   return db.runTransaction(transaction => {
     return transaction.get(ref)

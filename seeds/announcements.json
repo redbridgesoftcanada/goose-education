@@ -1,36 +1,36 @@
 {
-    "announcements": [
-        {
-            "id": 0,
-            "title": "1공지사항 게시판 타이틀입니다",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "announcements": {
+        "9d2b44d0-d8d0-47fc-8ed4-fb5dfda3d3d1": {
             "attachments": [],
             "authorDisplayName": "슈퍼관리자",
-            "authorID": 0,
-            "tag": "Other",
-            "instagramURL": "",
-            "link1": "",
-            "link2": "",
+            "authorID": "VpD5DtI9E3bPuHcOVTCdcT6hop93",
             "comments": [],
-            "views": 152,
             "createdAt": 1579576698362,
-            "updatedAt": 1579576698362
-        },
-        {
-            "id": 1,
-            "title": "2공지사항 게시판 타이틀입니다",
-            "description": "공지사항 게시판 타이틀입니다.",
-            "attachments": [],
-            "authorDisplayName": "슈퍼관리자",
-            "authorID": 0,
-            "tag": "Other",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "id": "9d2b44d0-d8d0-47fc-8ed4-fb5dfda3d3d1",
             "instagramURL": "",
             "link1": "",
             "link2": "",
-            "comments": [],
-            "views": 76,
+            "tag": "Other",
+            "title": "1공지사항 게시판 타이틀입니다",
+            "updatedAt": 1579576698362,
+            "views": 152
+        },
+        "4aa0a5e5-8995-4794-ba2b-372212538fe3": {
+            "attachments": [],
+            "authorDisplayName": "슈퍼관리자",
+            "authorID": 0,
             "createdAt": 1581099122308,
-            "updatedAt": 1581099122308
+            "comments": [],
+            "description": "공지사항 게시판 타이틀입니다.",
+            "id": "4aa0a5e5-8995-4794-ba2b-372212538fe3",
+            "instagramURL": "",
+            "link1": "",
+            "link2": "",
+            "tag": "Other",
+            "title": "2공지사항 게시판 타이틀입니다",
+            "updatedAt": 1581099122308,
+            "views": 76
         }
-    ]
+    }
 }

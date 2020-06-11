@@ -1,16 +1,46 @@
 {
-    "tips": [
-        { 
-            "id": 1,
-            "title": "[구스꿀띱] 게시글 제목입니다.",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-            "image": "6_copy_14_2_copy_6_1_copy_2_2948936627_zlcboNC3_e1e0cdafaaf268f678768639069a77d6921aba1e.jpg",
-            "author": "최고관리자",
+    "tips": {
+        "0b629e94-f0b0-4d54-8558-df1b42143a2d": { 
+            "authorDisplayName": "최고관리자",
+            "authorID": "VpD5DtI9E3bPuHcOVTCdcT6hop93",
             "comments": [],
-            "views": 162,
             "createdAt": 1579576698361,
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "id": "b76bffda-3f69-4ffc-8895-f3b07e86133c",
+            "image": "6_copy_14_2_copy_6_1_copy_2_2948936627_zlcboNC3_e1e0cdafaaf268f678768639069a77d6921aba1e.jpg",
+            "instagramURL": "",
+            "isFeatured": true,
+            "title": "[구스꿀띱] 게시글 제목입니다.",
             "updatedAt": 1579576698361,
-            "isFeatured": true
+            "views": 162
+        },
+        "b76bffda-3f69-4ffc-8895-f3b07e86133c": { 
+            "authorDisplayName": "최고관리자",
+            "authorID": "VpD5DtI9E3bPuHcOVTCdcT6hop93",
+            "comments": [],
+            "createdAt": 1591893685162,
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "id": "b76bffda-3f69-4ffc-8895-f3b07e86133c",
+            "image": "6_copy_14_2_copy_6_1_copy_2_2948936627_zlcboNC3_e1e0cdafaaf268f678768639069a77d6921aba1e.jpg",
+            "instagramURL": "",
+            "isFeatured": true,
+            "title": "[구스꿀띱] 게시글 제목입니다. 2.0",
+            "updatedAt": 1591893685162,
+            "views": 100
+        },
+        "80e30b3e-075e-42b6-8b0b-76fd12f76162": { 
+            "authorDisplayName": "최고관리자",
+            "authorID": "VpD5DtI9E3bPuHcOVTCdcT6hop93",
+            "comments": [],
+            "createdAt": 1591893685162,
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "id": "80e30b3e-075e-42b6-8b0b-76fd12f76162",
+            "image": "6_copy_14_2_copy_6_1_copy_2_2948936627_zlcboNC3_e1e0cdafaaf268f678768639069a77d6921aba1e.jpg",
+            "instagramURL": "",
+            "isFeatured": false,
+            "title": "[구스꿀띱] 게시글 제목입니다.",
+            "updatedAt": 1591893685162,
+            "views": 5
         }
-    ]
+    }
 }
