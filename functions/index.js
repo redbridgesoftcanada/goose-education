@@ -49,12 +49,12 @@ exports.aggregateSchoolApplications = functions.firestore
     const aggregateApplications = configureAggregateHelpers(applicationsRef, 1, 'status', change);
 
     // O T H E R (create PDF with downloadable link of school application);
-    const newApplicationData = change.after.data();
+    // const newApplicationData = change.after.data();
     const applicationId = context.params.schoolApplicationId;
-    const generatePDFApplication = generatePDF(applicationId, newApplicationData, change);
+    const generatePDFApplication = generatePDF(applicationId, change);
 
     await Promise.all([aggregateSchools, aggregateApplications, generatePDFApplication])
-    .catch(e => console.log('Caught error in schoolApplications cloud function: ', e));
+    .catch(console.error);
 });
 
 exports.aggregateArticles = functions.firestore
@@ -127,10 +127,7 @@ const aggregateTotalsTransaction = (ref, increment, field) => {
   }).then(() => { 
     console.log(`Update single/total aggregate (${increment}) transaction successfully committed!`);
     return true;
-  }).catch(error => { 
-    console.log(`Update single/total aggregate (${increment}) failed: `, error);
-    return;
-  });
+  }).catch(console.error);
 }
 
 const aggregateMultiTotalsTransaction = (ref, increment, prevField, newField) => {
@@ -162,17 +159,20 @@ const aggregateMultiTotalsTransaction = (ref, increment, prevField, newField) =>
   }).then(() => { 
     console.log(`Update multi/total aggregate (${increment}) transaction successfully committed!`);
     return true;
-  }).catch(error => { 
-    console.log(`Update multi/total aggregate (${increment}) failed: `, error);
-    return;
-  });
+  }).catch(console.error);
 }
 
-async function generatePDF(id, form, change) {
-  if (!change.after.exists) return;
+async function generatePDF(id, change) {
+  const form = (!change.after.exists) ? change.before.data() : change.after.data();
   const schoolApplicationRef = db.collection('schoolApplications').doc(`${id}`);
   const filename = `applications/${form.schoolName}-${id}.pdf`;
   const file = bucket.file(filename);
+
+  if (!change.after.exists) {
+    await file.delete();
+    console.log(`Deleted ${filename} from Google Storage bucket.`);
+    return;
+  }
 
   const checkIfFileExists = await file.exists();
   if (checkIfFileExists[0]) {
@@ -191,9 +191,7 @@ async function generatePDF(id, form, change) {
     return generateDownloadUrl(schoolApplicationRef, form, file);
   });
 
-  bucketFileStream.on('error', e => {
-    console.error(e);
-  });
+  bucketFileStream.on('error', e => console.error);
 }
 
 function generateDownloadUrl(ref, form, file) {
