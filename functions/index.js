@@ -83,7 +83,7 @@ const configureAggregateHelpers = (ref, increment, field, change) => {
       if (!change.after.exists) aggregateValues = aggregateTotalsTransaction(ref, -increment, change.before.get('schoolName'));
       break;
     
-    case field !== 'customField': {
+    case field !== '' && field !== 'customField': {
       const newValue = change.after.get(field);
       const oldValue = change.before.get(field);
       const checkNestedTotals = field === 'airportRidesTotal' || field === 'homestayTotal';
@@ -94,7 +94,7 @@ const configureAggregateHelpers = (ref, increment, field, change) => {
           break;
         
         case !change.before.exists:
-          aggregateValues = aggregateTotalsTransaction(ref, increment, newValue);
+          aggregateValues =  aggregateTotalsTransaction(ref, increment, newValue);
           break;
 
         case !change.after.exists:
@@ -121,62 +121,55 @@ const aggregateTotalsTransaction = (ref, increment, field) => {
         console.log('Document does not exist!');
         return;
       }
-      if (field) {
-        transaction.set(ref, {
-          [field]: FieldValue.increment(increment), 
-          total: FieldValue.increment(increment)
-        }, { merge: true });
-      } else {
-        transaction.set(ref, {total: FieldValue.increment(increment)}, { merge: true });
-      }
-      return true;
+      const operations = (field) ? { [field]: FieldValue.increment(increment), total: FieldValue.increment(increment) } : { total: FieldValue.increment(increment) };
+      return transaction.set(ref, operations, { merge: true });
     });
-  })
-  .then(() => { 
-    console.log(`Update (${increment}) transaction successfully committed!`);
+  }).then(() => { 
+    console.log(`Update single/total aggregate (${increment}) transaction successfully committed!`);
     return true;
-  })
-  .catch(error => { 
-    console.log(`Update (${increment}) transaction failed: `, error);
+  }).catch(error => { 
+    console.log(`Update single/total aggregate (${increment}) failed: `, error);
     return;
   });
 }
 
 const aggregateMultiTotalsTransaction = (ref, increment, prevField, newField) => {
   return db.runTransaction(transaction => {
-    return transaction.get(ref)
-    .then(doc => {
+    return transaction.get(ref).then(doc => {
       if (!doc.exists) {
         console.log('Document does not exist!');
         return;
       }
-
-      if (Math.sign(increment) === -1) {
-        transaction.set(ref, {
-          [prevField]: FieldValue.increment(increment),
-          [newField]: FieldValue.increment(increment), 
-          total: FieldValue.increment(increment)
-        }, { merge: true });
-      } else {
-        transaction.set(ref, {
-          [prevField]: FieldValue.increment(-increment),
-          [newField]: FieldValue.increment(increment), 
-        }, { merge: true });
+      
+      if (prevField === newField) {
+        console.log('Nothing happens - trying to multi update the same fields (prevField, newField).')
+        return;
       }
-      return true;
+      
+      let operations;
+      if (Math.sign(increment) === -1) {
+        operations = (newField) ? 
+          { [prevField]: FieldValue.increment(increment), 
+            [newField]: FieldValue.increment(increment), 
+            total: FieldValue.increment(increment) } 
+          : 
+          { [prevField]: FieldValue.increment(increment), total: FieldValue.increment(increment) };
+      } else {
+        operations = { [prevField]: FieldValue.increment(-increment), [newField]: FieldValue.increment(increment) }
+      }
+      return transaction.set(ref, operations, { merge: true });
     });
-  })
-  .then(() => { 
-    console.log(`Update (${increment}) transaction successfully committed!`);
+  }).then(() => { 
+    console.log(`Update multi/total aggregate (${increment}) transaction successfully committed!`);
     return true;
-  })
-  .catch(error => { 
-    console.log(`Update (${increment}) transaction failed: `, error);
+  }).catch(error => { 
+    console.log(`Update multi/total aggregate (${increment}) failed: `, error);
     return;
   });
 }
 
 async function generatePDF(id, form, change) {
+  if (!change.after.exists) return;
   const schoolApplicationRef = db.collection('schoolApplications').doc(`${id}`);
   const filename = `applications/${form.schoolName}-${id}.pdf`;
   const file = bucket.file(filename);
