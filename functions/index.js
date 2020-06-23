@@ -185,6 +185,63 @@ async function generatePDF(id, change) {
 
   doc.pipe(bucketFileStream);
   
+  doc.image('./gooseedu-logo.png', 60, 45, {fit: [100, 100]});
+  doc.font('Helvetica-Bold').fontSize(20).text('APPLICATION FORM', 300, 72, {characterSpacing: 2});
+  doc.font('Helvetica-Bold').fontSize(16).text('Agency Name: Goose Education', 282, 95);
+
+  // Student Information
+  doc.roundedRect(72, 150, 451, 210, 2).stroke();
+  doc.roundedRect(72, 150, 451, 30, 2).stroke();
+  doc.font('Helvetica-Bold').fontSize(16).text('STUDENT INFORMATION', 80, 160);
+  doc.font('Helvetica').fontSize(12);
+  doc.text(`Last Name: ${form.lastName}`, 80, 190);
+  doc.text(`First Name: ${form.firstName}`, 330, 190);
+  doc.moveTo(72, 210).lineTo(524, 210).stroke();
+  doc.moveTo(315, 180).lineTo(315, 240).stroke();
+  doc.text('Date of Birth ', 80, 220, {continued: true}).fontSize(7).text('(MM/DD/YYYY)', 80, 224, {continued: true}).fontSize(12).text(`: ${form.birthDate}`, 80, 220);
+  doc.text('Gender:', 330, 220);
+  (form.gender === 'Male') ? doc.rect(380, 220, 8, 8).fill().stroke() : doc.rect(380, 220, 8, 8).stroke();
+  (form.gender === 'Female') ? doc.rect(440, 220, 8, 8).fill().stroke() : doc.rect(440, 220, 8, 8).stroke();
+  doc.text('M', 405, 220);
+  doc.text('F', 455, 220);
+  doc.moveTo(72, 240).lineTo(524, 240);
+  doc.text(`Address: ${form.address}`, 80, 250);
+  doc.moveTo(72, 270).lineTo(524, 270);
+  doc.text(`Telephone: ${form.address}`, 80, 280);
+  doc.moveTo(72, 300).lineTo(524, 300);
+  doc.text(`Email: ${form.email}`, 80, 310);
+  doc.moveTo(72, 330).lineTo(524, 330);
+  doc.moveTo(315, 330).lineTo(315, 360).stroke();
+  doc.text(`Emergency Contact: ${form.emergencyContactNumber}`, 80, 340);
+  doc.text(`Relationship: ${form.emergencyContactRelation}`, 330, 340);
+
+  // Program Information
+  doc.font('Helvetica-Bold').text(`SCHOOL NAME: ${form.schoolName}`, 72, 380);
+  doc.roundedRect(72, 400, 451, 120, 2).stroke();
+  doc.roundedRect(72, 400, 451, 30, 2).stroke();
+  doc.font('Helvetica-Bold').fontSize(16).text('PROGRAM INFORMATION', 80, 410);
+  doc.font('Helvetica').fontSize(12);
+  doc.text(`Program Name: ${form.programName}`, 80, 440);
+  doc.moveTo(72, 460).lineTo(524, 460);
+  doc.text(`Program Duration: ${form.programDuration}`, 80, 470);
+  doc.moveTo(72, 490).lineTo(524, 490);
+  doc.text(`Start Date: ${form.startDate}`, 80, 500);
+
+  // Arrival Date & Insurance
+  doc.font('Helvetica-Bold').text('ARRIVAL DATE ', 72, 545).fontSize(7).text('(MM/DD/YYYY)', 160, 549, {continued: true}).fontSize(12).text(`: ${form.arrivalDate}`, 165, 545);
+  doc.roundedRect(72, 565, 451, 50, 2).stroke();
+  doc.roundedRect(72, 565, 451, 30, 2).stroke();
+  doc.font('Helvetica-Bold').fontSize(16).text('INSURANCE', 80, 575);
+  doc.font('Helvetica').fontSize(12);
+  (form.insurance) ? doc.rect(80, 600, 8, 8).fill().stroke() : doc.rect(80, 600, 8, 8).stroke();
+  doc.text('Yes', 100, 600);
+  (!form.insurance) ? doc.rect(200, 600, 8, 8).fill().stroke() : doc.rect(200, 600, 8, 8).stroke();
+  doc.text('No', 220, 600);
+
+  doc.fontSize(10);
+  doc.text('Goose Education | 487 Suji-ro, Suji-gu, Yongin-si, Gyeonggi-do, Korea', 150, 685);
+  doc.text('Tel: +1.010.5344.6642 | Email: goose.education@gmail.com | Website: ', 90, 697, {continued: true}).text('www.gooseedu.com', {link:'http://www.gooseedu.com/'});
+
   doc.end();
 
   bucketFileStream.on('finish', () => {
