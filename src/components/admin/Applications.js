@@ -99,7 +99,7 @@ function Applications(props) {
               </IconButton>
             </TableCell>
             <TableCell>
-              <IconButton color="secondary" onClick={()=>console.log('Clicked')}>
+              <IconButton color="secondary" onClick={() => window.open(application.downloadUrl)}>
                 <CloudDownload/>
               </IconButton>
             </TableCell>

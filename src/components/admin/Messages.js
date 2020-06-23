@@ -73,8 +73,8 @@ function Messages(props) {
                 </IconButton>
               </TableCell>
               <TableCell>
-                {message.attachment ?
-                  <IconButton color="secondary" onClick={()=>console.log('Clicked')}>
+                {message.attachments.length ?
+                  <IconButton color="secondary" onClick={()=>window.open(message.attachments, "_blank")}>
                     <CloudDownload fontSize="small"/>
                   </IconButton>
                   :
