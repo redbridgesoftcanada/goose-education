@@ -32,9 +32,17 @@ exports.aggregateAirportRideApplications = functions.firestore
 
 exports.aggregateHomestayApplications = functions.firestore
   .document('homestayApplications/{homestayApplicationId}')
-  .onWrite((change, context) => {
+  .onWrite(async (change, context) => {
+    // A G G R E G A T E (total number of applications);
     const otherApplicationsRef = db.collection('aggregates').doc('otherApplications');
-    return configureAggregateHelpers(otherApplicationsRef, 1, 'homestayTotal', change);
+    const aggregateTotalHomestays = configureAggregateHelpers(otherApplicationsRef, 1, 'homestayTotal', change);
+
+    // O T H E R (create PDF with downloadable link of homestay application);
+    const applicationId = context.params.homestayApplicationId;
+    const generateApplicationPDF = configurePDFGenerator('homestay', applicationId, change);
+
+    await Promise.all([aggregateTotalHomestays, generateApplicationPDF])
+    .catch(console.error);
 });
 
 exports.aggregateSchoolApplications = functions.firestore
@@ -49,11 +57,10 @@ exports.aggregateSchoolApplications = functions.firestore
     const aggregateApplications = configureAggregateHelpers(applicationsRef, 1, 'status', change);
 
     // O T H E R (create PDF with downloadable link of school application);
-    // const newApplicationData = change.after.data();
     const applicationId = context.params.schoolApplicationId;
-    const generatePDFApplication = generatePDF(applicationId, change);
+    const generateApplicationPDF = configurePDFGenerator('school', applicationId, change);
 
-    await Promise.all([aggregateSchools, aggregateApplications, generatePDFApplication])
+    await Promise.all([aggregateSchools, aggregateApplications, generateApplicationPDF])
     .catch(console.error);
 });
 
@@ -162,11 +169,21 @@ const aggregateMultiTotalsTransaction = (ref, increment, prevField, newField) =>
   }).catch(console.error);
 }
 
-async function generatePDF(id, change) {
+async function configurePDFGenerator(type, id, change) {
   const form = (!change.after.exists) ? change.before.data() : change.after.data();
-  const schoolApplicationRef = db.collection('schoolApplications').doc(`${id}`);
-  const filename = `applications/${form.schoolName}-${id}.pdf`;
-  const file = bucket.file(filename);
+
+  let ref, filename, file;
+  if (type === 'school') {
+    ref = db.collection('schoolApplications').doc(`${id}`);
+    filename = `applications/${form.schoolName}-${id}.pdf`;
+    file = bucket.file(filename);
+  }
+  
+  if (type === 'homestay') {
+    ref = db.collection('homestayApplications').doc(`${id}`);
+    filename = `applications/homestay-${id}.pdf`;
+    file = bucket.file(filename);
+  }
 
   if (!change.after.exists) {
     await file.delete();
@@ -176,7 +193,7 @@ async function generatePDF(id, change) {
 
   const checkIfFileExists = await file.exists();
   if (checkIfFileExists[0]) {
-    if (!form.downloadUrl) return generateDownloadUrl(schoolApplicationRef, form, file);
+    if (!form.downloadUrl) return generateDownloadUrl(ref, form, file);
     return;
   }
 
@@ -185,14 +202,14 @@ async function generatePDF(id, change) {
 
   doc.pipe(bucketFileStream);
   
+  // Header
   doc.image('./gooseedu-logo.png', 60, 45, {fit: [100, 100]});
-  doc.font('Helvetica-Bold').fontSize(20).text('APPLICATION FORM', 300, 72, {characterSpacing: 2});
   doc.font('Helvetica-Bold').fontSize(16).text('Agency Name: Goose Education', 282, 95);
 
-  // Student Information
+  // Personal Information
   doc.roundedRect(72, 150, 451, 210, 2).stroke();
   doc.roundedRect(72, 150, 451, 30, 2).stroke();
-  doc.font('Helvetica-Bold').fontSize(16).text('STUDENT INFORMATION', 80, 160);
+  doc.font('Helvetica-Bold').fontSize(16).text('PERSONAL INFORMATION', 80, 160);
   doc.font('Helvetica').fontSize(12);
   doc.text(`Last Name: ${form.lastName}`, 80, 190);
   doc.text(`First Name: ${form.firstName}`, 330, 190);
@@ -204,16 +221,38 @@ async function generatePDF(id, change) {
   (form.gender === 'Female') ? doc.rect(440, 220, 8, 8).fill().stroke() : doc.rect(440, 220, 8, 8).stroke();
   doc.text('M', 405, 220);
   doc.text('F', 455, 220);
-  doc.moveTo(72, 240).lineTo(524, 240);
+  doc.moveTo(72, 240).lineTo(524, 240).stroke();
   doc.text(`Address: ${form.address}`, 80, 250);
-  doc.moveTo(72, 270).lineTo(524, 270);
+  doc.moveTo(72, 270).lineTo(524, 270).stroke();
   doc.text(`Telephone: ${form.address}`, 80, 280);
-  doc.moveTo(72, 300).lineTo(524, 300);
+  doc.moveTo(72, 300).lineTo(524, 300).stroke();
   doc.text(`Email: ${form.email}`, 80, 310);
-  doc.moveTo(72, 330).lineTo(524, 330);
+  doc.moveTo(72, 330).lineTo(524, 330).stroke();
   doc.moveTo(315, 330).lineTo(315, 360).stroke();
   doc.text(`Emergency Contact: ${form.emergencyContactNumber}`, 80, 340);
   doc.text(`Relationship: ${form.emergencyContactRelation}`, 330, 340);
+
+  // Form Specific Sections
+  (type === 'school') ? generateSchoolSections(doc, form) : 
+  (type === 'homestay') ? generateHomestaySections(doc, form) : null;
+
+  // Footer
+  doc.fontSize(10);
+  doc.text('Goose Education | 487 Suji-ro, Suji-gu, Yongin-si, Gyeonggi-do, Korea', 150, 685);
+  doc.text('Tel: +1.010.5344.6642 | Email: goose.education@gmail.com | Website: ', 90, 697, {continued: true}).text('www.gooseedu.com', {link:'http://www.gooseedu.com/'});
+
+  doc.end();
+
+  bucketFileStream.on('finish', () => {
+    return generateDownloadUrl(ref, form, file);
+  });
+
+  bucketFileStream.on('error', e => console.error);
+}
+
+function generateSchoolSections(doc, form) {
+  // Document Title
+  doc.font('Helvetica-Bold').fontSize(20).text('APPLICATION FORM', 300, 72, {characterSpacing: 2});
 
   // Program Information
   doc.font('Helvetica-Bold').text(`SCHOOL NAME: ${form.schoolName}`, 72, 380);
@@ -222,9 +261,9 @@ async function generatePDF(id, change) {
   doc.font('Helvetica-Bold').fontSize(16).text('PROGRAM INFORMATION', 80, 410);
   doc.font('Helvetica').fontSize(12);
   doc.text(`Program Name: ${form.programName}`, 80, 440);
-  doc.moveTo(72, 460).lineTo(524, 460);
+  doc.moveTo(72, 460).lineTo(524, 460).stroke();
   doc.text(`Program Duration: ${form.programDuration}`, 80, 470);
-  doc.moveTo(72, 490).lineTo(524, 490);
+  doc.moveTo(72, 490).lineTo(524, 490).stroke();
   doc.text(`Start Date: ${form.startDate}`, 80, 500);
 
   // Arrival Date & Insurance
@@ -237,24 +276,51 @@ async function generatePDF(id, change) {
   doc.text('Yes', 100, 600);
   (!form.insurance) ? doc.rect(200, 600, 8, 8).fill().stroke() : doc.rect(200, 600, 8, 8).stroke();
   doc.text('No', 220, 600);
+}
 
-  doc.fontSize(10);
-  doc.text('Goose Education | 487 Suji-ro, Suji-gu, Yongin-si, Gyeonggi-do, Korea', 150, 685);
-  doc.text('Tel: +1.010.5344.6642 | Email: goose.education@gmail.com | Website: ', 90, 697, {continued: true}).text('www.gooseedu.com', {link:'http://www.gooseedu.com/'});
+function generateHomestaySections(doc, form) {
+  // Document Title
+  doc.font('Helvetica-Bold').fontSize(20).text('HOMESTAY FORM', 330, 72, {characterSpacing: 2});
 
-  doc.end();
+  // Accommodation Information
+  doc.roundedRect(72, 400, 451, 60, 2).stroke();
+  doc.moveTo(72, 430).lineTo(523, 430).stroke();
+  doc.font('Helvetica-Bold').fontSize(16).text('ACCOMMODATION', 80, 410);
+  doc.font('Helvetica').fontSize(12);
+  doc.moveTo(315, 430).lineTo(315, 460).stroke();
+  doc.text(`Start Date: ${form.homestayStartDate}`, 80, 440);
+  doc.text(`End Date: ${form.homestayEndDate}`, 330, 440);
 
-  bucketFileStream.on('finish', () => {
-    return generateDownloadUrl(schoolApplicationRef, form, file);
-  });
+  // Flight Information
+  const checkForFlightInfo = form.arrivalFlightName && form.arrivalFlightDate && form.arrivalFlightTime;
 
-  bucketFileStream.on('error', e => console.error);
+  doc.font('Helvetica-Bold').text('Flight Information Provided:', 72, 490);
+  if (!checkForFlightInfo) {
+    doc.rect(380, 490, 8, 8).stroke();
+    doc.rect(480, 490, 8, 8).fill().stroke();
+  } else {
+    doc.rect(380, 490, 8, 8).fill().stroke();
+    doc.rect(480, 490, 8, 8).stroke();
+  }
+  doc.text('Yes', 400, 490);
+  doc.text('No', 500, 490);
+
+
+  doc.roundedRect(72, 505, 451, 60, 2).stroke();
+  doc.moveTo(72, 535).lineTo(523, 535).stroke();
+  doc.fontSize(16).text('FLIGHT INFORMATION', 80, 515);
+  doc.font('Helvetica').fontSize(12);
+  doc.text(`Name: ${(form.arrivalFlightName) ? form.arrivalFlightName : 'N/A'}`, 80, 545);
+  doc.moveTo(230, 535).lineTo(230, 565).stroke();
+  doc.text(`Date: ${(form.arrivalFlightDate) ? form.arrivalFlightDate : 'N/A'}`, 240, 545);
+  doc.moveTo(380, 535).lineTo(380, 565).stroke();
+  doc.text(`Time: ${(form.arrivalFlightTime) ? form.arrivalFlightTime : 'N/A'}`, 390, 545);
 }
 
 function generateDownloadUrl(ref, form, file) {
   return file.getSignedUrl({action: 'read', expires: '03-17-2025'}).then(signedUrl => {
     if (signedUrl[0] === form.downloadUrl) {
-      console.log('I have nothing to do!');
+      console.log('Nothing to do - existing download URL is the same as the newly generated one!');
       return;
     }
     return ref.set({ downloadUrl: signedUrl[0] }, { merge: true });
