@@ -13,21 +13,21 @@ exports.aggregateTips = functions.firestore
   .document('tips/{tipId}')
   .onWrite((change, context) => {
     const tipRef = db.collection('aggregates').doc('tips');
-    return configureAggregateHelpers(tipRef, 1, '', change);
+    return configureAggregation(tipRef, 1, '', change);
 });
 
 exports.aggregateMessages = functions.firestore
   .document('messages/{messageId}')
   .onWrite((change, context) => {
     const messageRef = db.collection('aggregates').doc('messages');
-    return configureAggregateHelpers(messageRef, 1, '', change);
+    return configureAggregation(messageRef, 1, '', change);
 });
 
 exports.aggregateAirportRideApplications = functions.firestore
   .document('airportRideApplications/{airportRideApplicationId}')
   .onWrite((change, context) => {
     const otherApplicationsRef = db.collection('aggregates').doc('otherApplications');
-    return configureAggregateHelpers(otherApplicationsRef, 1, 'airportRidesTotal', change);
+    return configureAggregation(otherApplicationsRef, 1, 'airportRidesTotal', change);
 });
 
 exports.aggregateHomestayApplications = functions.firestore
@@ -35,7 +35,7 @@ exports.aggregateHomestayApplications = functions.firestore
   .onWrite(async (change, context) => {
     // A G G R E G A T E (total number of applications);
     const otherApplicationsRef = db.collection('aggregates').doc('otherApplications');
-    const aggregateTotalHomestays = configureAggregateHelpers(otherApplicationsRef, 1, 'homestayTotal', change);
+    const aggregateTotalHomestays = configureAggregation(otherApplicationsRef, 1, 'homestayTotal', change);
 
     // O T H E R (create PDF with downloadable link of homestay application);
     const applicationId = context.params.homestayApplicationId;
@@ -50,11 +50,11 @@ exports.aggregateSchoolApplications = functions.firestore
   .onWrite(async (change, context) => {
     // A G G R E G A T E (total number of applications by school);
     const schoolsRef = db.collection('aggregates').doc('schools');
-    const aggregateSchools = configureAggregateHelpers(schoolsRef, 1, 'customField', change);
+    const aggregateSchools = configureAggregation(schoolsRef, 1, 'customField', change);
 
     // A G G R E G A T E (total number of applications by status); 
     const applicationsRef = db.collection('aggregates').doc('schoolApplications');
-    const aggregateApplications = configureAggregateHelpers(applicationsRef, 1, 'status', change);
+    const aggregateApplications = configureAggregation(applicationsRef, 1, 'status', change);
 
     // O T H E R (create PDF with downloadable link of school application);
     const applicationId = context.params.schoolApplicationId;
@@ -68,56 +68,78 @@ exports.aggregateArticles = functions.firestore
   .document('articles/{articleId}')
   .onWrite((change, context) => {
     const articleRef = db.collection('aggregates').doc('articles');
-    return configureAggregateHelpers(articleRef, 1, 'tag', change);
+    return configureAggregation(articleRef, 1, 'tag', change);
 });
 
 exports.aggregateAnnounces = functions.firestore
   .document('announcements/{announceId}')
   .onWrite((change, context) => {
     const announceRef = db.collection('aggregates').doc('announcements');
-    return configureAggregateHelpers(announceRef, 1, 'tag', change);
+    return configureAggregation(announceRef, 1, 'tag', change);
 });
 
 // H E L P E R  F U N C T I O N S
 // !change.before.exists = no existing document in collection BEFORE update = document created + add one to total field;
 // !change.after.exists = no existing document in collection AFTER update = document deleted + subtract one from total field;
 
-const configureAggregateHelpers = (ref, increment, field, change) => {
-  let aggregateValues;
+const configureAggregation = (ref, increment, field, change) => {
+  const onCreateEvent = !change.before.exists;
+  const onDeleteEvent = !change.after.exists;
+
+  const customField = field === 'customField';
+  const otherApplicationTotals = field === 'airportRidesTotal' || field === 'homestayTotal';
+  
+  const newValue = change.after.get(field);
+  const oldValue = change.before.get(field);
+  
+  let aggregation;
   switch(true) {
-    case field === 'customField': 
-      if (!change.before.exists) aggregateValues = aggregateTotalsTransaction(ref, increment, change.after.get('schoolName'));
-      if (!change.after.exists) aggregateValues = aggregateTotalsTransaction(ref, -increment, change.before.get('schoolName'));
+    case customField && onCreateEvent:
+      aggregation = aggregateTotalsTransaction(ref, increment, change.after.get('schoolName'));
+      break;
+
+    case customField && onDeleteEvent:
+      aggregation = aggregateTotalsTransaction(ref, -increment, change.before.get('schoolName'));
       break;
     
-    case field !== '' && field !== 'customField': {
-      const newValue = change.after.get(field);
-      const oldValue = change.before.get(field);
-      const checkNestedTotals = field === 'airportRidesTotal' || field === 'homestayTotal';
-
+    case field && !customField: {
       switch(true) {
-        case checkNestedTotals: 
-          aggregateValues = (!change.after.exists) ? aggregateTotalsTransaction(ref, -increment, field) : aggregateTotalsTransaction(ref, increment, field);
+        case otherApplicationTotals && onCreateEvent: 
+          aggregation = aggregateTotalsTransaction(ref, increment, field);
+          break;
+
+        case otherApplicationTotals && onDeleteEvent: 
+          aggregation = aggregateTotalsTransaction(ref, -increment, field);
           break;
         
-        case !change.before.exists:
-          aggregateValues =  aggregateTotalsTransaction(ref, increment, newValue);
+        case onCreateEvent:
+          aggregation =  aggregateTotalsTransaction(ref, increment, newValue);
           break;
 
-        case !change.after.exists:
-          aggregateValues = aggregateMultiTotalsTransaction(ref, -increment, oldValue, newValue);
+        case onDeleteEvent:
+          aggregation = aggregateMultiTotalsTransaction(ref, -increment, oldValue, newValue);
           break;
         
         default:
-          aggregateValues = aggregateMultiTotalsTransaction(ref, increment, oldValue, newValue);
+          aggregation = aggregateMultiTotalsTransaction(ref, increment, oldValue, newValue);
       }
       break;
     }
     
+    case !field && onCreateEvent: 
+      aggregation = aggregateTotalsTransaction(ref, increment);
+      break;
+    
+    case !field && onDeleteEvent:
+      aggregation = aggregateTotalsTransaction(ref, -increment);
+      break;
+
     default: 
-      aggregateValues = (!change.after.exists) ? aggregateTotalsTransaction(ref, -increment) : aggregateTotalsTransaction(ref, increment);
+      console.log('Missing configuration for provided aggregation condition.')
+      return;
   }
-  return aggregateValues;
+  
+  return aggregation;
 }
 
 const aggregateTotalsTransaction = (ref, increment, field) => {
@@ -128,7 +150,11 @@ const aggregateTotalsTransaction = (ref, increment, field) => {
         console.log('Document does not exist!');
         return;
       }
-      const operations = (field) ? { [field]: FieldValue.increment(increment), total: FieldValue.increment(increment) } : { total: FieldValue.increment(increment) };
+
+      const operations = (field) ? 
+        { [field]: FieldValue.increment(increment), total: FieldValue.increment(increment) } : 
+        { total: FieldValue.increment(increment) };
+
       return transaction.set(ref, operations, { merge: true });
     });
   }).then(() => { 
@@ -157,10 +183,14 @@ const aggregateMultiTotalsTransaction = (ref, increment, prevField, newField) =>
             [newField]: FieldValue.increment(increment), 
             total: FieldValue.increment(increment) } 
           : 
-          { [prevField]: FieldValue.increment(increment), total: FieldValue.increment(increment) };
+          { [prevField]: FieldValue.increment(increment), 
+            total: FieldValue.increment(increment) };
       } else {
-        operations = { [prevField]: FieldValue.increment(-increment), [newField]: FieldValue.increment(increment) }
+        operations = 
+          { [prevField]: FieldValue.increment(-increment), 
+            [newField]: FieldValue.increment(increment) }
       }
+
       return transaction.set(ref, operations, { merge: true });
     });
   }).then(() => { 
@@ -170,33 +200,39 @@ const aggregateMultiTotalsTransaction = (ref, increment, prevField, newField) =>
 }
 
 async function configurePDFGenerator(type, id, change) {
-  const form = (!change.after.exists) ? change.before.data() : change.after.data();
+  const onDeleteEvent = !change.after.exists;
+  const form = (onDeleteEvent) ? change.before.data() : change.after.data();
 
   let ref, filename, file;
   if (type === 'school') {
     ref = db.collection('schoolApplications').doc(`${id}`);
-    filename = `applications/${form.schoolName}-${id}.pdf`;
+    filename = `applications/schools/${form.schoolName}-${id}.pdf`;
+    file = bucket.file(filename);
+  } 
+  else if (type === 'homestay') {
+    ref = db.collection('homestayApplications').doc(`${id}`);
+    filename = `applications/homestays/${id}-${form.authorID}.pdf`;
     file = bucket.file(filename);
   }
   
-  if (type === 'homestay') {
-    ref = db.collection('homestayApplications').doc(`${id}`);
-    filename = `applications/homestay-${id}.pdf`;
-    file = bucket.file(filename);
-  }
-
-  if (!change.after.exists) {
+  if (onDeleteEvent) {
     await file.delete();
     console.log(`Deleted ${filename} from Google Storage bucket.`);
     return;
   }
-
+  
   const checkIfFileExists = await file.exists();
   if (checkIfFileExists[0]) {
-    if (!form.downloadUrl) return generateDownloadUrl(ref, form, file);
+    if (!form.downloadUrl) {
+      return generateDownloadUrl(ref, form, file);
+    }
     return;
   }
 
+  generatePDF(type, ref, file, form)
+}
+
+function generatePDF(type, ref, file, form){
   const doc = new PDFDocument;
   const bucketFileStream = file.createWriteStream();
 
@@ -255,7 +291,7 @@ function generateSchoolSections(doc, form) {
   doc.font('Helvetica-Bold').fontSize(20).text('APPLICATION FORM', 300, 72, {characterSpacing: 2});
 
   // Program Information
-  doc.font('Helvetica-Bold').text(`SCHOOL NAME: ${form.schoolName}`, 72, 380);
+  doc.font('Helvetica-Bold').fontSize(12).text(`SCHOOL NAME: ${form.schoolName}`, 72, 380);
   doc.roundedRect(72, 400, 451, 120, 2).stroke();
   doc.roundedRect(72, 400, 451, 30, 2).stroke();
   doc.font('Helvetica-Bold').fontSize(16).text('PROGRAM INFORMATION', 80, 410);
