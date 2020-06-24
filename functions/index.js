@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const PDFDocument = require('pdfkit');
+const { format } = require('date-fns');
 
 admin.initializeApp(functions.config().firebase);
 
@@ -25,9 +26,17 @@ exports.aggregateMessages = functions.firestore
 
 exports.aggregateAirportRideApplications = functions.firestore
   .document('airportRideApplications/{airportRideApplicationId}')
-  .onWrite((change, context) => {
+  .onWrite(async (change, context) => {
+    // A G G R E G A T E (total number of applications);
     const otherApplicationsRef = db.collection('aggregates').doc('otherApplications');
-    return configureAggregation(otherApplicationsRef, 1, 'airportRidesTotal', change);
+    const aggregateTotalAirportRides = configureAggregation(otherApplicationsRef, 1, 'airportRidesTotal', change);
+
+    // O T H E R (create PDF with downloadable link of homestay application);
+    const applicationId = context.params.airportRideApplicationId;
+    const generateApplicationPDF = configurePDFGenerator('airport', applicationId, change);
+
+    await Promise.all([aggregateTotalAirportRides, generateApplicationPDF])
+    .catch(console.error);
 });
 
 exports.aggregateHomestayApplications = functions.firestore
@@ -214,6 +223,11 @@ async function configurePDFGenerator(type, id, change) {
     filename = `applications/homestays/${id}-${form.authorID}.pdf`;
     file = bucket.file(filename);
   }
+  else if (type === 'airport') {
+    ref = db.collection('airportRideApplications').doc(`${id}`);
+    filename = `applications/airportRides/${id}-${form.authorID}.pdf`;
+    file = bucket.file(filename);
+  }
   
   if (onDeleteEvent) {
     await file.delete();
@@ -260,7 +274,7 @@ function generatePDF(type, ref, file, form){
   doc.moveTo(72, 240).lineTo(524, 240).stroke();
   doc.text(`Address: ${form.address}`, 80, 250);
   doc.moveTo(72, 270).lineTo(524, 270).stroke();
-  doc.text(`Telephone: ${form.address}`, 80, 280);
+  doc.text(`Telephone: ${form.phoneNumber}`, 80, 280);
   doc.moveTo(72, 300).lineTo(524, 300).stroke();
   doc.text(`Email: ${form.email}`, 80, 310);
   doc.moveTo(72, 330).lineTo(524, 330).stroke();
@@ -270,7 +284,8 @@ function generatePDF(type, ref, file, form){
 
   // Form Specific Sections
   (type === 'school') ? generateSchoolSections(doc, form) : 
-  (type === 'homestay') ? generateHomestaySections(doc, form) : null;
+  (type === 'homestay') ? generateHomestaySections(doc, form) : 
+  (type === 'airport') ? generateAirportSections(doc, form) : null;
 
   // Footer
   doc.fontSize(10);
@@ -350,7 +365,55 @@ function generateHomestaySections(doc, form) {
   doc.moveTo(230, 535).lineTo(230, 565).stroke();
   doc.text(`Date: ${(form.arrivalFlightDate) ? form.arrivalFlightDate : 'N/A'}`, 240, 545);
   doc.moveTo(380, 535).lineTo(380, 565).stroke();
-  doc.text(`Time: ${(form.arrivalFlightTime) ? form.arrivalFlightTime : 'N/A'}`, 390, 545);
+  doc.text(`Time: ${(form.arrivalFlightTime) ? format(form.arrivalFlightTime, 'p') : 'N/A'}`, 390, 545);
+}
+
+function generateAirportSections(doc, form) {
+  // Document Title
+  doc.font('Helvetica-Bold').fontSize(20).text('AIRPORT RIDE FORM', 290, 72, {characterSpacing: 2});
+  
+  // Flight Information
+  doc.roundedRect(72, 400, 451, 60, 2).stroke();
+  doc.moveTo(72, 430).lineTo(523, 430).stroke();
+  doc.font('Helvetica-Bold').fontSize(16).text('ARRIVAL FLIGHT INFORMATION', 80, 410);
+  doc.font('Helvetica').fontSize(12);
+  doc.text(`Name: ${form.arrivalFlightName}`, 80, 440);
+  doc.moveTo(230, 430).lineTo(230, 460).stroke();
+  doc.text(`Date: ${form.arrivalFlightDate}`, 240, 440);
+  doc.moveTo(380, 430).lineTo(380, 460).stroke();
+  doc.text(`Time: ${format(form.arrivalFlightTime, 'p')}`, 390, 440);
+
+  doc.roundedRect(72, 490, 451, 60, 2).stroke();
+  doc.moveTo(72, 520).lineTo(523, 520).stroke();
+  doc.font('Helvetica-Bold').fontSize(16).text('DEPARTURE FLIGHT INFORMATION', 80, 500);
+  doc.font('Helvetica').fontSize(12);
+  doc.text(`Name: ${form.departureFlightName}`, 80, 530);
+  doc.moveTo(230, 520).lineTo(230, 550).stroke();
+  doc.text(`Date: ${form.departureFlightDate}`, 240, 530);
+  doc.moveTo(380, 520).lineTo(380, 550).stroke();
+  doc.text(`Time: ${format(form.departureFlightTime, 'p')}`, 390, 530);
+
+  // Homestay Information
+  const checkForHomestayInfo = form.homestayStartDate && form.homestayEndDate;
+
+  doc.font('Helvetica-Bold').text('Homestay Information Provided:', 72, 580);
+  if (!checkForHomestayInfo) {
+    doc.rect(380, 580, 8, 8).stroke();
+    doc.rect(480, 580, 8, 8).fill().stroke();
+  } else {
+    doc.rect(380, 580, 8, 8).fill().stroke();
+    doc.rect(480, 580, 8, 8).stroke();
+  }
+  doc.text('Yes', 400, 580);
+  doc.text('No', 500, 580);
+
+  doc.roundedRect(72, 600, 451, 60, 2).stroke();
+  doc.moveTo(72, 630).lineTo(523, 630).stroke();
+  doc.font('Helvetica-Bold').fontSize(16).text('ACCOMMODATION', 80, 610);
+  doc.font('Helvetica').fontSize(12);
+  doc.moveTo(315, 630).lineTo(315, 660).stroke();
+  doc.text(`Start Date: ${(form.homestayStartDate) ? form.homestayStartDate : 'N/A'}`, 80, 640);
+  doc.text(`End Date: ${(form.homestayEndDate) ? form.homestayEndDate : 'N/A'}`, 330, 640);
 }
 
 function generateDownloadUrl(ref, form, file) {
