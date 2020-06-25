@@ -15,17 +15,15 @@ function ProfileBase() {
       <AuthUserContext.Consumer>
         {authUser =>
           <DatabaseContext.Consumer>
-            {context => 
+            {({ state }) => 
               <>
-                <UserProfile authUser={authUser} profile={context.state.profile}/>
-                <br/>
-                <UserApplicationHistory authUser={authUser} application={context.state.application}/>
+                <UserProfile authUser={authUser} profile={state.profile}/>
+                <UserApplicationHistory authUser={authUser} applications={state.schoolApplication}/>
               </>
             }
           </DatabaseContext.Consumer>
         }
       </AuthUserContext.Consumer>
-
       <Footer />
     </>
   );

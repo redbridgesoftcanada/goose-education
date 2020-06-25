@@ -1,6 +1,6 @@
 {
-  "schoolApplications": {
-    "VpD5DtI9E3bPuHcOVTCdcT6hop93": {
+  "schoolApplications": [
+    {
       "additionalRequests": "",
       "address": "3720 Robson St",
       "arrivalDate": "2/11/2021",
@@ -23,7 +23,7 @@
       "updatedAt": 1591122019817,
       "visa": "286 595 533"
     },
-    "dzMGvyTIlNYxsdJuTxvogP3miUx2": {
+    {
       "additionalRequests": "",
       "address": "3858 Hastings St",
       "arrivalDate": "4/21/2021",
@@ -38,15 +38,15 @@
       "insurance": "522 150 614",
       "lastName": "Boswell",
       "phoneNumber": "604-726-3489",
-      "programDuration": "",
-      "programName": "",
+      "programDuration": "12",
+      "programName": "Hospitality Marketing & Sales",
       "schoolName": "Canadian College",
       "startDate": "4/21/2021",
       "status": "Pending Review",
       "updatedAt": 1591122019817,
       "visa": "522 150 614"
     },
-    "ilVze9sdJ7MRcwp3kTGM2t9I7t92": {
+    {
       "additionalRequests": "",
       "address": "4659 Findlay Creek Rd",
       "arrivalDate": "1/15/2022",
@@ -61,15 +61,15 @@
       "insurance": "047 863 576",
       "lastName": "Pena",
       "phoneNumber": "250-521-4306",
-      "programDuration": "",
-      "programName": "",
+      "programDuration": "8",
+      "programName": "Global English",
       "schoolName": "VGC International College",
       "startDate": "1/15/2022",
       "status": "Tuition Required",
       "updatedAt": 1591122019817,
       "visa": "047 863 576"
     },
-    "jhT6S2NDnifzWumyzmq56ay5XL32": {
+    {
       "additionalRequests": "",
       "address": "2295 Wallace St",
       "arrivalDate": "6/21/2024",
@@ -84,13 +84,13 @@
       "insurance": "368 706 818",
       "lastName": "Fulmer",
       "phoneNumber": "250-753-4091",
-      "programDuration": "",
-      "programName": "",
+      "programDuration": "2",
+      "programName": "Leadership",
       "schoolName": "VGC International College",
       "startDate": "6/21/2024",
       "status": "Approved",
       "updatedAt": 1591122019817,
       "visa": "368 706 818"
     }
-  }
+  ]
 }

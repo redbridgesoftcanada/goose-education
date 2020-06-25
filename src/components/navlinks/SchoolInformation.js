@@ -26,7 +26,7 @@ function SchoolInformation(props) {
               underline="none"
               className={classes.rightLink}
               component={RouterLink}
-              to={{ pathname: '/schools', state: { tab: 0 }}}>
+              to={{ pathname: '/schools', selected: { tab: 0 }}}>
                 School Information
             </Link>
           </StyledMenuItem>
@@ -38,7 +38,7 @@ function SchoolInformation(props) {
               underline="none"
               className={classes.rightLink}
               component={RouterLink}
-              to={{ pathname: '/schools', state: { selected: 1 } }}>
+              to={{ pathname: '/schools', selected: { tab: 1 } }}>
                 School Application
             </Link>
           </StyledMenuItem>

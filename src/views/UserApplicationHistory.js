@@ -1,17 +1,15 @@
 import React from 'react';
-import { Container, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import { Container, Button, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
 import { format } from 'date-fns';
 import { withAuthorization } from '../components/session';
+import { STATUSES } from '../constants/constants';
+
 
 // const styles = theme => {
 // };
 
 function UserApplicationHistory(props) {
-  let application;
-  if (props.application) {
-    application = props.application;
-  }
+  const { applications } = props;
 
   return (
     <Container>
@@ -19,26 +17,29 @@ function UserApplicationHistory(props) {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell align='center'>No</TableCell>
-            <TableCell align='center'>Content</TableCell>
-            <TableCell align='center'>Status</TableCell>
+            <TableCell align='center'>Program</TableCell>
+            <TableCell align='center'>School</TableCell>
             <TableCell align='center'>Date</TableCell>
-            <TableCell align='center'>Download</TableCell>
+            <TableCell align='center'>Status</TableCell>
+            <TableCell align='center'>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {application ? 
-          <TableRow>
-            <TableCell align='center'>1</TableCell>
-            <TableCell align='center'>{application.programName}, {application.schoolName}</TableCell>
-            <TableCell align='center'>{application.status}</TableCell>
-            <TableCell align='center'>{format(application.createdAt, 'Pp')}</TableCell>
-            <TableCell align='center'>
-              <IconButton size='small'>
-                <GetAppIcon />
-            </IconButton>
-            </TableCell>
-          </TableRow>
+          {applications && applications.length ? 
+            applications.map(application => {
+              return (
+                <TableRow key={application.id}>
+                  <TableCell align='center'>{application.programName} ({application.programDuration} weeks)</TableCell>
+                  <TableCell align='center'>{application.schoolName}</TableCell>
+                  <TableCell align='center'>{format(application.createdAt, 'P')}</TableCell>
+                  <TableCell align='center'>{application.status}</TableCell>
+                  <TableCell align='center'>
+                    {(application.status !== STATUSES[2]) && "No changes can be made at this time."}
+                    {(application.status === STATUSES[2]) && <Button color="secondary" size="small">Pay Tuition</Button>}
+                  </TableCell>
+                </TableRow>
+              )
+            })
           : 
           <TableRow>
             <TableCell/>

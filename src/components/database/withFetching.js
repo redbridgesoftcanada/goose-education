@@ -80,8 +80,8 @@ function withFetching(Component) {
           break;
         
         case '/profile':
-          fetchSelectDocuments("profileId", "users", firebase, setState, userId);
-          fetchSelectDocuments("schoolApplicationId", "schoolApplications", firebase, setState, userId);
+          fetchSelectDocuments("profile", "users", firebase, setState, userId);
+          fetchSelectDocuments("schoolApplication", "schoolApplications", firebase, setState, userId);
           break;
         
         case '/admin':

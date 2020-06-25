@@ -22,9 +22,9 @@ const useStyles = makeStyles(theme => ({
 
 function Schools(props) {
   const { history, listOfSchools, pageBanner, banner, posterTop, posterBottom } = props;
-
+  
   const INITIAL_STATE = { 
-    tab: props.location.state.tab, 
+    tab: props.location.selected.tab, 
     school: null 
   }
   const [ selected, setSelected ] = useState(INITIAL_STATE);

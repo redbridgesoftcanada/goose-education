@@ -240,10 +240,16 @@ function configureFetchSelect(select, collection, firebase, id) {
                 stateRef: `${id.replace("/", "")}Graphics`
             }
 
-        case select.includes("Id"):
+        case select === 'schoolApplication':
             return {
-                query: firebase.docRef(`${collection}/${id}`).get(),
-                stateRef: select.replace("Id", "")
+                query: firebase.collectionRef(collection).where("authorID", "==", id).get(),
+                stateRef: select                
+            }
+
+        case select === 'profile':
+            return {
+                query: firebase.docRef(`${collection}`, `${id}`).get(),
+                stateRef: select
             }
 
         default:

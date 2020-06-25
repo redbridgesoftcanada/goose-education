@@ -3,9 +3,9 @@ import { Button, Checkbox, Container, FormControl, FormControlLabel, FormLabel, 
 import { format } from 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-
 import { withAuthorization } from '../components/session';
-import { STATUSES } from '../constants/constants';
+import { STATUSES, PERSONAL_FIELDS, PROGRAM_FIELDS, ARRIVAL_FIELDS, OTHER_FIELDS } from '../constants/constants';
+import { convertToCamelCase, convertToTitleCase } from '../constants/helpers';
 
 const styles = theme => ({
     root: {
@@ -20,65 +20,28 @@ const styles = theme => ({
     },
 });
 
-const applicationSections = {
-    studentInfo: ['last_name', 'first_name', 'gender', 'birth_date', 'phone_number', 'email', 'emergency_contact_number', 'emergency_contact_relation', 'address', 'visa'],
-    programInfo: ['school_name', 'program_name', 'program_duration', 'start_date'],
-    otherInfo: ['insurance', 'arrival_date'],
-}
-
 let INITIAL_STATE = {
     isLoading: false,
     isError: false,
-    agreeToPrivacy: false,
-    additionalRequests: ''
+    agreeToPrivacy: false
 }
 
-Object.values(applicationSections).map(section => {
-    section.map(field => {
-        let camelCaseField = field.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
-        switch(field) {
-            case 'birth_date':
-            case 'start_date':
-            case 'arrival_date':
-                return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: format(Date.now(), 'MM/dd/yyyy')}
-            
-            default:
-                return INITIAL_STATE = {...INITIAL_STATE, [camelCaseField]: ''}
-        }
-    });
+const formFields = [ ...PERSONAL_FIELDS, OTHER_FIELDS[1], ...PROGRAM_FIELDS, OTHER_FIELDS[0], ARRIVAL_FIELDS[0], OTHER_FIELDS[2] ];
+
+formFields.map(field => {
+    field = convertToCamelCase(field);
+    return INITIAL_STATE = field.includes('Date') ? {...INITIAL_STATE, [field]: format(Date.now(), 'MM/dd/yyyy')} : {...INITIAL_STATE, [field]: ''}
 });
 
 function toggleReducer(state, action) {
-    let { type, payload } = action;
-    let { name, value } = type;
+    const { type, payload } = action;
+    const { name, value } = type;
 
-    switch (type) {
-        case 'birthDate':
-        case 'startDate':
-        case 'arrivalDate':
-            return {
-                ...state,
-                [type]: format(payload, 'MM/dd/yyyy')
-            }
-
-        case 'checkbox':
-            return {
-                ...state,
-                [payload.name]: payload.checked
-            }
-        
-        case 'submit': 
-            return {
-                ...INITIAL_STATE
-            }
-
-        default:
-            return {
-                ...state,
-                [name]: value
-            }
-        }
-  }
+    if (type.includes('Date')) return { ...state, [type]: format(payload, 'MM/dd/yyyy') }
+    if (type === 'checkbox') return { ...state, [payload.name]: payload.checked }
+    if (type === 'submit') return { ...INITIAL_STATE }
+    return { ...state, [name]: value }
+}
 
 function SchoolApplicationBase(props) {
     const { authUser, classes, firebase, history } = props;
@@ -86,119 +49,115 @@ function SchoolApplicationBase(props) {
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
     const onSubmit = event => {
-        const { isLoading, isError, agreeToPrivacy, ...applicationForm } = state;
-        firebase.schoolApplication(authUser.uid).set({
+        const { isLoading, isError, agreeToPrivacy, ...schoolApplication } = state;
+        firebase.schoolApplication(authUser.uid).add({
             authorID: authUser.uid,
             createdAt: Date.now(),
             updatedAt: Date.now(),
             status: STATUSES[0],
-            ...applicationForm
-        }, { merge: true }) 
-        .then(() => {
-            history.push('/profile');
-            })
-            .catch(error => 
+            ...schoolApplication
+        })
+        .then(() => history.push('/profile'))
+        .catch(error => 
             dispatch({ type: 'error', payload: error }));
-
             event.preventDefault();
     }
 
     return (
         <Container>
             <form className={classes.root} autoComplete="off" onSubmit={onSubmit}>
-                { Object.values(applicationSections).map(section => { 
-                    return section.map((field, i) => {
-                        let camelCaseField = field.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
-                        let capitalizedField = field.replace(/(?:_| |\b)(\w)/g, function($1){return $1.toUpperCase().replace('_',' ');});
+                {formFields.map((field, i) => {
+                    const titleField = convertToTitleCase(field);
+                    field = convertToCamelCase(field);
 
-                        switch(field) {
-                            case 'gender':
+                    switch(field) {
+                        case 'gender':
+                            return (
+                                <Fragment key={i}>
+                                    <FormLabel component="legend" className={classes.legend}>Gender</FormLabel>
+                                    <RadioGroup
+                                    name={field}
+                                    value={state[field]}
+                                    onChange={(event) => dispatch({ type: event.target })}
+                                    >
+                                        <FormControlLabel value="female" control={<Radio />} label="Female" />
+                                        <FormControlLabel value="male" control={<Radio />} label="Male" />
+                                        <FormControlLabel value="other" control={<Radio />} label="Other" />
+                                        <FormControlLabel value="undisclosed" control={<Radio />} label="Prefer Not To Say" />
+                                    </RadioGroup> 
+                                </Fragment>
+                            )
+                        
+                        case 'birthDate':
+                        case 'startDate':
+                        case 'arrivalDate':
+                            return (
+                                <MuiPickersUtilsProvider utils={DateFnsUtils} key={i}>
+                                    <FormLabel component="legend" className={classes.legend}>{titleField}</FormLabel>
+                                    <KeyboardDatePicker
+                                    disableToolbar
+                                    variant="inline"
+                                    format="MM/dd/yyyy"
+                                    margin="normal"
+                                    name={field}
+                                    value={state[field]}
+                                    onChange={(date) => dispatch({ type: field, payload: date })}
+                                    KeyboardButtonProps={{ 'aria-label': 'change date' }}
+                                    />
+                                </MuiPickersUtilsProvider>
+                            )
+
+                        case 'visa':
+                            return (
+                                <Fragment key={i}>
+                                    <FormLabel component="legend" className={classes.legend}>VISA Status</FormLabel>
+                                    <RadioGroup 
+                                    name={field}
+                                    value={state[field]}
+                                    onChange={(event) => dispatch({ type: event.target })}
+                                    >
+                                        <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                                        <FormControlLabel value="no" control={<Radio />} label="No" />
+                                    </RadioGroup> 
+                                </Fragment>
+                            )
+
+                            case 'programDuration':
                                 return (
                                     <Fragment key={i}>
-                                        <FormLabel component="legend" className={classes.legend}>Gender</FormLabel>
-                                        <RadioGroup
-                                        name={camelCaseField}
-                                        value={state[camelCaseField]}
-                                        onChange={(event) => dispatch({ type: event.target })}
-                                        >
-                                            <FormControlLabel value="female" control={<Radio />} label="Female" />
-                                            <FormControlLabel value="male" control={<Radio />} label="Male" />
-                                            <FormControlLabel value="other" control={<Radio />} label="Other" />
-                                            <FormControlLabel value="undisclosed" control={<Radio />} label="Prefer Not To Say" />
-                                        </RadioGroup> 
-                                    </Fragment>
-                                )
-                            
-                            case 'birth_date':
-                            case 'start_date':
-                            case 'arrival_date':
-                                return (
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils} key={i}>
-                                        <FormLabel component="legend" className={classes.legend}>{capitalizedField}</FormLabel>
-                                        <KeyboardDatePicker
-                                        disableToolbar
-                                        variant="inline"
-                                        format="MM/dd/yyyy"
-                                        margin="normal"
-                                        name={camelCaseField}
-                                        value={state[camelCaseField]}
-                                        onChange={(date) => dispatch({ type: camelCaseField, payload: date })}
-                                        KeyboardButtonProps={{ 'aria-label': 'change date' }}
-                                        />
-                                    </MuiPickersUtilsProvider>
-                                )
-
-                            case 'visa':
-                                return (
-                                    <Fragment key={i}>
-                                        <FormLabel component="legend" className={classes.legend}>VISA Status</FormLabel>
-                                        <RadioGroup 
-                                        name={camelCaseField}
-                                        value={state[camelCaseField]}
-                                        onChange={(event) => dispatch({ type: event.target })}
-                                        >
-                                            <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                                            <FormControlLabel value="no" control={<Radio />} label="No" />
-                                        </RadioGroup> 
+                                        <FormLabel component="legend" className={classes.legend}>{titleField}</FormLabel>
+                                        <FormControl className={classes.formControl}>
+                                            <Select
+                                            name={field}
+                                            value={state[field]}
+                                            onChange={(event) => dispatch({ type: event.target })}
+                                            >
+                                                <MenuItem value={10}>10 Weeks</MenuItem>
+                                                <MenuItem value={20}>20 Weeks</MenuItem>
+                                                <MenuItem value={30}>30 Weeks</MenuItem>
+                                            </Select>
+                                        </FormControl>
                                     </Fragment>
                                 )
 
-                                case 'program_duration':
-                                    return (
-                                        <Fragment key={i}>
-                                            <FormLabel component="legend" className={classes.legend}>{capitalizedField}</FormLabel>
-                                            <FormControl className={classes.formControl}>
-                                                <Select
-                                                name={camelCaseField}
-                                                value={state[camelCaseField]}
-                                                onChange={(event) => dispatch({ type: event.target })}
-                                                >
-                                                    <MenuItem value={10}>10 Weeks</MenuItem>
-                                                    <MenuItem value={20}>20 Weeks</MenuItem>
-                                                    <MenuItem value={30}>30 Weeks</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                        </Fragment>
-                                    )
-    
-                            default:
-                                return (
-                                    <Fragment key={i}>
-                                        <FormLabel component="legend" className={classes.legend}>{capitalizedField}</FormLabel>
-                                        <TextField
-                                        color="secondary"
-                                        variant="outlined"
-                                        name={camelCaseField}
-                                        value={state[camelCaseField]}
-                                        onChange={(event) => dispatch({ type: event.target })}
-                                        type="text"
-                                        placeholder={capitalizedField}
-                                        />
-                                    </Fragment>
-                                )
+                        default:
+                            return (
+                                <Fragment key={i}>
+                                    <FormLabel component="legend" className={classes.legend}>{titleField}</FormLabel>
+                                    <TextField
+                                    color="secondary"
+                                    variant="outlined"
+                                    name={field}
+                                    value={state[field]}
+                                    onChange={(event) => dispatch({ type: event.target })}
+                                    type="text"
+                                    placeholder={titleField}
+                                    />
+                                </Fragment>
+                            )
                         }
                     })
-                }) }
+                }
 
                 <Typography variant="h6">Additional Requests</Typography>
                 <TextField
