@@ -209,6 +209,7 @@ const aggregateMultiTotalsTransaction = (ref, increment, prevField, newField) =>
 }
 
 async function configurePDFGenerator(type, id, change) {
+  const onCreateEvent = !change.before.exists;
   const onDeleteEvent = !change.after.exists;
   const form = (onDeleteEvent) ? change.before.data() : change.after.data();
 
@@ -228,7 +229,7 @@ async function configurePDFGenerator(type, id, change) {
     filename = `applications/airportRides/${id}-${form.authorID}.pdf`;
     file = bucket.file(filename);
   }
-  
+
   if (onDeleteEvent) {
     await file.delete();
     console.log(`Deleted ${filename} from Google Storage bucket.`);
@@ -237,10 +238,12 @@ async function configurePDFGenerator(type, id, change) {
   
   const checkIfFileExists = await file.exists();
   if (checkIfFileExists[0]) {
-    if (!form.downloadUrl) {
-      return generateDownloadUrl(ref, form, file);
-    }
+    if (!form.downloadUrl) return generateDownloadUrl(ref, form, file);
     return;
+  } 
+  else if (!checkIfFileExists[0] && !onCreateEvent) {
+    if (!form.downloadUrl) return;
+    return ref.update({ downloadUrl: '' });
   }
 
   generatePDF(type, ref, file, form)
@@ -283,9 +286,9 @@ function generatePDF(type, ref, file, form){
   doc.text(`Relationship: ${form.emergencyContactRelation}`, 330, 340);
 
   // Form Specific Sections
-  (type === 'school') ? generateSchoolSections(doc, form) : 
-  (type === 'homestay') ? generateHomestaySections(doc, form) : 
-  (type === 'airport') ? generateAirportSections(doc, form) : null;
+  (type === 'school') && generateSchoolSections(doc, form); 
+  (type === 'homestay') && generateHomestaySections(doc, form); 
+  (type === 'airport') && generateAirportSections(doc, form);
 
   // Footer
   doc.fontSize(10);
@@ -299,6 +302,16 @@ function generatePDF(type, ref, file, form){
   });
 
   bucketFileStream.on('error', e => console.error);
+}
+
+function generateDownloadUrl(ref, form, file) {
+  return file.getSignedUrl({action: 'read', expires: '03-17-2025'}).then(signedUrl => {
+    if (signedUrl[0] === form.downloadUrl) {
+      console.log('Nothing to do - existing download URL is the same as the newly generated one!');
+      return;
+    }
+    return ref.set({ downloadUrl: signedUrl[0] }, { merge: true });
+  });
 }
 
 function generateSchoolSections(doc, form) {
@@ -414,14 +427,4 @@ function generateAirportSections(doc, form) {
   doc.moveTo(315, 630).lineTo(315, 660).stroke();
   doc.text(`Start Date: ${(form.homestayStartDate) ? form.homestayStartDate : 'N/A'}`, 80, 640);
   doc.text(`End Date: ${(form.homestayEndDate) ? form.homestayEndDate : 'N/A'}`, 330, 640);
-}
-
-function generateDownloadUrl(ref, form, file) {
-  return file.getSignedUrl({action: 'read', expires: '03-17-2025'}).then(signedUrl => {
-    if (signedUrl[0] === form.downloadUrl) {
-      console.log('Nothing to do - existing download URL is the same as the newly generated one!');
-      return;
-    }
-    return ref.set({ downloadUrl: signedUrl[0] }, { merge: true });
-  });
 }
