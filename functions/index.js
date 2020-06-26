@@ -270,8 +270,8 @@ function generatePDF(type, ref, file, form){
   doc.moveTo(315, 180).lineTo(315, 240).stroke();
   doc.text('Date of Birth ', 80, 220, {continued: true}).fontSize(7).text('(MM/DD/YYYY)', 80, 224, {continued: true}).fontSize(12).text(`: ${form.birthDate}`, 80, 220);
   doc.text('Gender:', 330, 220);
-  (form.gender === 'Male') ? doc.rect(380, 220, 8, 8).fill().stroke() : doc.rect(380, 220, 8, 8).stroke();
-  (form.gender === 'Female') ? doc.rect(440, 220, 8, 8).fill().stroke() : doc.rect(440, 220, 8, 8).stroke();
+  (form.gender === 'male') ? doc.rect(380, 220, 8, 8).fill().stroke() : doc.rect(380, 220, 8, 8).stroke();
+  (form.gender === 'female') ? doc.rect(440, 220, 8, 8).fill().stroke() : doc.rect(440, 220, 8, 8).stroke();
   doc.text('M', 405, 220);
   doc.text('F', 455, 220);
   doc.moveTo(72, 240).lineTo(524, 240).stroke();
