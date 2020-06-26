@@ -22,7 +22,8 @@ const useStyles = makeStyles(theme => ({
 
 function Schools(props) {
   const { history, listOfSchools, pageBanner, banner, posterTop, posterBottom } = props;
-  
+  const listOfSchoolNames = listOfSchools.map(school => school.title);
+
   const INITIAL_STATE = { 
     tab: props.location.selected.tab, 
     school: null 
@@ -86,7 +87,7 @@ function Schools(props) {
           <TabPanel value={selected.tab} index={1}>
             <AuthUserContext.Consumer>
               {authUser => authUser ? 
-                <SchoolApplication authUser={authUser} /> 
+                <SchoolApplication authUser={authUser} listOfSchoolNames={listOfSchoolNames} /> 
                 : 
                 <Typography variant="h5">Please Register or Login to Apply</Typography> 
               }

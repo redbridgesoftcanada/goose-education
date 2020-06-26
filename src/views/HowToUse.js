@@ -28,7 +28,7 @@ function HowToUse(props) {
             <Grid item xs={12} md={6}>
                 {listOfText.map((text, i) => {
                     return (
-                        <div className={classes.wrapper}>
+                        <div className={classes.wrapper} key={i}>
                             <Typography color="secondary" variant="body1" className={classes.number}>{circledIndexes[i]}</Typography>
                             <Typography align="left" variant="body1">{text}</Typography>
                         </div>

@@ -1,211 +1,166 @@
-import React, { Fragment, useEffect, useReducer } from 'react';
+import React, { Fragment, useReducer } from 'react';
 import { useRouteMatch } from "react-router-dom";
-import { Button, Checkbox, Container, FormControlLabel, FormLabel, OutlinedInput, Radio, RadioGroup, TextField, Typography, withStyles } from '@material-ui/core';
-import { MuiPickersUtilsProvider, KeyboardDatePicker, KeyboardTimePicker } from '@material-ui/pickers';
+import { Button, Checkbox, Container, FormControlLabel, FormLabel, Typography, withStyles } from '@material-ui/core';
+import { MuiPickersUtilsProvider, KeyboardDatePicker, KeyboardDateTimePicker } from '@material-ui/pickers';
 import { format } from 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { withAuthorization } from '../components/session';
+import { PERSONAL_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS, OTHER_FIELDS } from '../constants/constants';
 import { convertToCamelCase, convertToTitleCase } from '../constants/helpers';
-import { PERSONAL_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS } from '../constants/constants';
+import { textField, radioField } from '../constants/helpers-admin';
 
 const styles = theme => ({
-    root: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
+  root: {
+      display: 'flex',
+      flexDirection: 'column',
+  },
 
-    legend: {
-        textAlign: 'left',
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(1)
-    },
+  legend: {
+      textAlign: 'left',
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(1)
+  }
 });
 
-function toggleReducer(state, action) {
-    const { type, payload } = action;
+let INITIAL_STATE = {
+  isLoading: false,
+  isError: false,
+  agreeToPrivacy: false
+};
 
-    switch (type) {
-        case 'INITIALIZE_FORM':
-            const { applicationType, applicationFormFields } = payload;
-
-            const prepopulateInputs = {}
-            applicationFormFields.map(field => { 
-                const formFieldContent = convertToCamelCase(field);
-                if (field.includes('date')) {
-                    prepopulateInputs[formFieldContent] = format(Date.now(), 'MM/dd/yyyy');
-                } else if (field.includes('time')) {
-                    prepopulateInputs[formFieldContent] = Date.now();
-                } else {
-                    prepopulateInputs[formFieldContent] = '';
-                }
-            });
-            
-            return {...state, ...prepopulateInputs, applicationType}
-        
-        case 'USER_INPUT': {
-            const formField = payload.name;
-            const formInput = payload.value;
-            return {...state, [formField]: formInput}
-        }
-
-        case 'DATE_PICKER': {
-            const formField = payload.field;
-            const formInput = format(payload.date, 'MM/dd/yyyy');
-            return {...state, [formField]: formInput}
-        }
-
-        case 'TIME_PICKER': {
-            const formField = payload.field;
-            const formInput = payload.date;
-            return {...state, [formField]: formInput}
-        }
-
-        case 'CHECKBOX': {
-            const formField = payload.name;
-            const formInput = payload.checked;
-            return {...state, [formField]: formInput}
-        }
-        
-        case 'RESET': 
-            return {...payload}
-
-        default:
-           console.log('No corresponding dispatch method in Study Abroad Service Application.')
-        }
+let formFields; 
+function configureFormFields(match) {
+  if (match.url.includes('homestay')) {
+      formFields = [PERSONAL_FIELDS, ARRIVAL_FIELDS, HOMESTAY_FIELDS, OTHER_FIELDS[2]].flat();
+  } else if (match.url.includes('airport')) {
+      formFields = [PERSONAL_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS, OTHER_FIELDS[2]].flat();
   }
 
+  formFields.map(field => {
+    field = convertToCamelCase(field);
+    return INITIAL_STATE = field.includes('Date') ? {...INITIAL_STATE, [field]: format(Date.now(), 'MM/dd/yyyy')} : {...INITIAL_STATE, [field]: ''}
+  });
+}
+
+function toggleReducer(state, action) {
+  const { type, payload } = action;
+  const { name, value } = type;
+
+  if (type === 'checkbox') return { ...state, [payload.name]: payload.checked }
+  if (typeof type === 'string' && type.includes('Date')) return { ...state, [type]: payload }
+  if (type === 'submit') return { ...INITIAL_STATE }
+  return { ...state, [name]: value }
+}
+
 function StudyAbroadServiceApplicationBase(props) {
-    const { authUser, classes, firebase, history } = props;
-    
-    const INITIAL_STATE = {
-        isLoading: false,
-        isError: false,
-        agreeToPrivacy: false
-    };
-    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    console.log(state)
+  const { authUser, classes, firebase, history } = props;
+  const match = useRouteMatch();
 
-    // L O A D  A P P L I C A T I O N  F O R M  F I E L D S
-    const match = useRouteMatch();
-    const applicationType = (match.url.includes('homestay')) ? 'homestay' : 'airport';
+  configureFormFields(match);
 
-    let applicationFormFields, firebaseRef;
-    if (applicationType === 'homestay') {
-        applicationFormFields = [PERSONAL_FIELDS, ARRIVAL_FIELDS, HOMESTAY_FIELDS].flat();
-        firebaseRef = firebase.homestayApplication(authUser.uid);
-    } else if (applicationType === 'airport') {
-        applicationFormFields = [PERSONAL_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS].flat();
-        firebaseRef = firebase.airportRideApplication(authUser.uid);
-    }
+  const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
-    // E V E N T  L I S T E N E R S
-    const handleUserInput = event => dispatch({type:'USER_INPUT', payload: event.target});
-    const handleDatePicker = (field, date) => dispatch({type:'DATE_PICKER', payload: { field, date }});
-    const handleTimePicker = (field, date) => dispatch({type:'TIME_PICKER', payload: { field, date }});
-    const handleCheckBox = event => dispatch({type: 'CHECKBOX', payload: event.target});
+  // E V E N T  L I S T E N E R S
+  const handleFormInput = event => dispatch({type: event.target});
 
-    const onSubmit = event => {
-        const { isLoading, isError, agreeToPrivacy, applicationType, ...applicationForm } = state;
-        firebaseRef.set({...applicationForm}, { merge: true })
-        .then(() => {
-            dispatch({type:'RESET', payload: INITIAL_STATE});
-            history.push('/profile')
-        });
-        // .catch(error => dispatch({ type: 'error', payload: error }));
-        event.preventDefault();
-    }
+  const onSubmit = event => {
+    const { isLoading, isError, agreeToPrivacy, ...applicationForm } = state;
+    const firebaseRef = (match.url.includes('homestay')) ? firebase.homestayApplications(authUser.uid) : firebase.airportRideApplications(authUser.uid);
+    firebaseRef.add({
+      authorID: authUser.uid,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      ...applicationForm})
+    .then(() => history.push('/profile'))
+    // .catch(error => dispatch({ type: 'error', payload: error }));
+    event.preventDefault();
+  }
 
-    useEffect(() => {
-        dispatch({type: 'INITIALIZE_FORM', payload: { applicationType, applicationFormFields }})
-    }, []);
+  return (
+    <Container>
+      <form className={classes.root} autoComplete="off" onSubmit={onSubmit}>
+          {formFields.map(field => {
+            const titleField = convertToTitleCase(field);  
+            field = convertToCamelCase(field);
+            
+            switch(field) {
+              case 'gender': {              
+                const options = [
+                  {value: "female", label: "Female"}, 
+                  {value: "male", label: "Male"}, 
+                  {value: "other", label: "Other"}, 
+                  {value: "undisclosed", label: "Prefer Not To Say"}
+                ];   
+                return (
+                  <Fragment key={field}>
+                    <FormLabel component="legend" className={classes.legend}>Gender</FormLabel>
+                    {radioField(field, state[field], options, handleFormInput, "")}
+                  </Fragment>);
+              }
 
-    return (
-        <Container>
-            <form className={classes.root} autoComplete="off" onSubmit={onSubmit}>
-                {applicationFormFields.map((field, i) => {
-                    const formFieldLabel = convertToTitleCase(field);  
-                    const formFieldContent = convertToCamelCase(field);     
-                    if (field.includes('gender')) {
-                        return (
-                            <Fragment key={i}>
-                                <FormLabel component="legend" className={classes.legend}>Gender</FormLabel>
-                                <RadioGroup
-                                name={formFieldContent}
-                                defaultValue={state[formFieldContent]}
-                                onChange={handleUserInput}>
-                                    <FormControlLabel value="female" control={<Radio />} label="Female" />
-                                    <FormControlLabel value="male" control={<Radio />} label="Male" />
-                                    <FormControlLabel value="other" control={<Radio />} label="Other" />
-                                    <FormControlLabel value="undisclosed" control={<Radio />} label="Prefer Not To Say" />
-                                </RadioGroup> 
-                            </Fragment>
-                        );
-                    } else if (field.includes('date')) {
-                        return (
-                            <MuiPickersUtilsProvider key={i} utils={DateFnsUtils}>
-                                <FormLabel component="legend" className={classes.legend}>{formFieldLabel}</FormLabel>
-                                <KeyboardDatePicker
-                                variant="inline"
-                                format="MM/dd/yyyy"
-                                margin="normal"
-                                name={formFieldContent}
-                                value={state[formFieldContent]}
-                                onChange={date => handleDatePicker(formFieldContent, date)}
-                                KeyboardButtonProps={{ 'aria-label': 'change date' }}
-                                />
-                            </MuiPickersUtilsProvider>
-                        );
-                    } else if (field.includes('time')) {
-                        return (
-                            <MuiPickersUtilsProvider key={i} utils={DateFnsUtils}>
-                                <FormLabel component="legend" className={classes.legend}>{formFieldLabel}</FormLabel>
-                                <KeyboardTimePicker
-                                variant="inline"
-                                margin="normal"
-                                name={formFieldContent}
-                                value={state[formFieldContent]}
-                                onChange={date => handleTimePicker(formFieldContent, date)}
-                                KeyboardButtonProps={{ 'aria-label': 'change time' }}/>
-                            </MuiPickersUtilsProvider>
-                        );
-                    } else {
-                        return (
-                            <Fragment key={i}>
-                                <FormLabel component="legend" className={classes.legend}>{formFieldLabel}</FormLabel>
-                                <OutlinedInput
-                                color="secondary"
-                                name={formFieldContent}
-                                defaultValue={state[formFieldContent]}
-                                onChange={handleUserInput}/>
-                            </Fragment>
-                        );
-                    }
-                })}
+              case 'arrivalFlightDate':
+              case 'departureFlightDate':
+                return (
+                  <MuiPickersUtilsProvider utils={DateFnsUtils} key={field}>
+                    <FormLabel component="legend" className={classes.legend}>{titleField}</FormLabel>
+                    <KeyboardDateTimePicker
+                    name={field}
+                    value={state[field]}
+                    onChange={date => dispatch({type: field, payload: date})}
+                    format="MM/dd/yyyy HH:mm"
+                    variant="inline"
+                    disablePast={true}
+                    {...(field === "departureFlightDate") && { minDate: state.arrivalFlightDate}}
+                    />
+                  </MuiPickersUtilsProvider>);
+              
+              case 'birthDate':
+              case 'homestayStartDate':
+              case 'homestayEndDate':
+                return (
+                  <MuiPickersUtilsProvider utils={DateFnsUtils} key={field}>
+                    <FormLabel component="legend" className={classes.legend}>{titleField}</FormLabel>
+                    <KeyboardDatePicker
+                    name={field}
+                    value={state[field]}
+                    onChange={date => dispatch({type: field, payload: date})}
+                    variant="inline"
+                    format="MM/dd/yyyy"
+                    {...(field !== "birthDate") && { disablePast: true }}
+                    {...(field === "homestayStartDate") && { minDate: state.arrivalFlightDate }}
+                    {...(field === "homestayEndDate") && { minDate: state.homestayStartDate}}
+                    />
+                </MuiPickersUtilsProvider>);
 
-                <Typography variant="h6">Additional Requests</Typography>
-                <TextField
-                multiline
-                rows="6"
-                placeholder="Please fill in any other details here."
-                variant="outlined"
-                name='additionalRequests'
-                value={state.additionalRequests}
-                onChange={handleUserInput}
-                />
+              case 'additionalRequests': 
+                return (
+                  <Fragment key={field}>
+                    <Typography variant="h6">Additional Requests</Typography>
+                    {textField(field, state[field], handleFormInput, true)}
+                  </Fragment>);
+              
+              default:
+                return (
+                  <Fragment key={field}>
+                    <FormLabel component="legend" className={classes.legend}>{titleField}</FormLabel>              
+                    {textField(field, state[field], handleFormInput, false)}
+                </Fragment>);
+            }
+          })}
 
-                <Typography variant="h6">Privacy</Typography>
-                <Typography align="left" variant="body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
-                <FormControlLabel
-                value="end"
-                control={<Checkbox required size="small" checked={state.agreeToPrivacy} name='agreeToPrivacy' onChange={handleCheckBox}/>}
-                label={<Typography variant="body2">I agree to the Privacy Agreement.</Typography>}
-                labelPlacement="end"
-                />
+          <Typography variant="h6">Privacy</Typography>
+          <Typography align="left" variant="body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
+          <FormControlLabel
+          value="end"
+          control={<Checkbox required size="small" checked={state.agreeToPrivacy} name='agreeToPrivacy' onChange={event => dispatch({type: 'checkbox', payload: event.target})}/>}
+          label={<Typography variant="body2">I agree to the Privacy Agreement.</Typography>}
+          labelPlacement="end"
+          />
 
-                <Button variant="contained" color="secondary" type="submit">Submit Application</Button>
-            </form>
-        </Container>
-    )
+          <Button variant="contained" color="secondary" type="submit">Submit Application</Button>
+      </form>
+    </Container>
+  )
 }
 
 const studyAbroadServiceApplication = withStyles(styles)(StudyAbroadServiceApplicationBase);
