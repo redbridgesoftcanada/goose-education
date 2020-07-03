@@ -63,7 +63,8 @@ service cloud.firestore {
     }
 
     match /users/{user} {
-      allow read, update: if isLoggedIn() && request.auth.id == user;
+      allow read;
+      allow update: if isLoggedIn() && request.auth.id == user;
       allow delete: if isLoggedInAndAdmin();
     }
 
@@ -80,18 +81,21 @@ service cloud.firestore {
     }
 
     match /airportRideApplications/{airportApplication} {
+      allow read, delete: if isLoggedInAndAdmin() || isLoggedInAndOwner();
       allow create: if isLoggedIn() && airportRideInfoIsValid();
-      allow read, update, delete: if isLoggedInAndAdmin() && airportRideInfoIsValid() || isLoggedInAndOwner() && airportRideInfoIsValid();
+      allow update: if isLoggedInAndAdmin() && airportRideInfoIsValid();
     }    
 
     match /homestayApplications/{homestayApplication} {
+      allow read, delete: if isLoggedInAndAdmin() || isLoggedInAndOwner();
       allow create: if isLoggedIn() && homestayInfoIsValid();
-      allow read, update, delete: if  isLoggedInAndAdmin() && homestayInfoIsValid() || isLoggedInAndOwner() && homestayInfoIsValid();
+      allow update: if isLoggedInAndAdmin() && homestayInfoIsValid();
     }    
 
     match /schoolApplications/{schoolApplication} {
+      allow read, delete: if isLoggedInAndAdmin() || isLoggedInAndOwner();
       allow create: if isLoggedIn() && schoolInfoIsValid();
-      allow read, update, delete: if  isLoggedInAndAdmin() && schoolInfoIsValid() || isLoggedInAndOwner() && schoolInfoIsValid();
+      allow update: if isLoggedInAndAdmin() && schoolInfoIsValid();
     }
   }
 }
