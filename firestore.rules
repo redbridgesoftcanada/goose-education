@@ -37,7 +37,15 @@ service cloud.firestore {
       return personalInfoIsValid() &&
       request.resource.data.keys().hasAll(["arrivalFlightDate", "arrivalFlightName", "arrivalFlightTime", "departureFlightDate", "departureFlightName", "departureFlightTime"]);
     }
+ 
+    match /aggregates/{aggregate} {
+      allow read;
+    }
 
+    match /graphics/{graphic} {
+      allow read;
+      allow update: if isLoggedInAndAdmin();
+    } 
 
     match /schools/{school} {
       allow read;
@@ -84,6 +92,6 @@ service cloud.firestore {
     match /schoolApplications/{schoolApplication} {
       allow create: if isLoggedIn() && schoolInfoIsValid();
       allow read, update, delete: if  isLoggedInAndAdmin() && schoolInfoIsValid() || isLoggedInAndOwner() && schoolInfoIsValid();
-    }    
+    }
   }
 }
