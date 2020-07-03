@@ -1,7 +1,89 @@
+rules_version = "2";
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+    
+    function isLoggedIn() {
+      return request.auth != null;
     }
+
+    function isLoggedInAndOwner() {
+      return isLoggedIn() && request.auth.uid == resource.data.authorID;
+    }
+
+    function isLoggedInAndAdmin() {
+      return isLoggedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.roles.admin == true;
+    }
+
+    function contentIsValid() {
+      return request.resource.data.keys().hasAll(["title", "description"]);
+    }
+
+    function personalInfoIsValid() {
+      return request.resource.data.keys().hasAll(["address", "birthDate", "email", "emergencyContactNumber", "emergencyContactRelation", "firstName", "gender", "lastName", "phoneNumber"]);
+    }
+
+    function schoolInfoIsValid() {
+      return personalInfoIsValid() && 
+      request.resource.data.keys().hasAll(["programName", "schoolName", "startDate"]);
+    }
+
+    function homestayInfoIsValid() {
+      return personalInfoIsValid() && 
+      request.resource.data.keys().hasAll(["homestayStartDate", "homestayEndDate"]);
+    }
+
+    function airportRideInfoIsValid() {
+      return personalInfoIsValid() &&
+      request.resource.data.keys().hasAll(["arrivalFlightDate", "arrivalFlightName", "arrivalFlightTime", "departureFlightDate", "departureFlightName", "departureFlightTime"]);
+    }
+
+
+    match /schools/{school} {
+      allow read;
+      allow write: if isLoggedInAndAdmin();
+    }
+
+    match /announcements/{announcement} {
+      allow read;
+      allow write: if isLoggedInAndAdmin() && contentIsValid();
+    }
+
+    match /tips/{tip} {
+      allow read;
+      allow write: if isLoggedInAndAdmin() && contentIsValid();
+    }
+
+    match /users/{user} {
+      allow read, update: if isLoggedIn() && request.auth.id == user;
+      allow delete: if isLoggedInAndAdmin();
+    }
+
+    match /articles/{article} {
+      allow read;
+      allow create: if isLoggedIn() && contentIsValid();
+      allow update, delete: if isLoggedInAndAdmin() && contentIsValid() || isLoggedInAndOwner() && contentIsValid();
+    }
+
+    match /messages/{message} {
+      allow read;
+      allow create: if isLoggedIn() && contentIsValid();
+      allow update, delete: if isLoggedInAndAdmin() && contentIsValid() || isLoggedInAndOwner() && contentIsValid();
+    }
+
+    match /airportRideApplications/{airportApplication} {
+      allow create: if isLoggedIn() && airportRideInfoIsValid();
+      allow read, update, delete: if isLoggedInAndAdmin() && airportRideInfoIsValid() || isLoggedInAndOwner() && airportRideInfoIsValid();
+    }    
+
+    match /homestayApplications/{homestayApplication} {
+      allow create: if isLoggedIn() && homestayInfoIsValid();
+      allow read, update, delete: if  isLoggedInAndAdmin() && homestayInfoIsValid() || isLoggedInAndOwner() && homestayInfoIsValid();
+    }    
+
+    match /schoolApplications/{schoolApplication} {
+      allow create: if isLoggedIn() && schoolInfoIsValid();
+      allow read, update, delete: if  isLoggedInAndAdmin() && schoolInfoIsValid() || isLoggedInAndOwner() && schoolInfoIsValid();
+    }    
   }
 }
