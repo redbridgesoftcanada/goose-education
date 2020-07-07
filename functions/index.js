@@ -88,9 +88,6 @@ exports.aggregateAnnounces = functions.firestore
 });
 
 // H E L P E R  F U N C T I O N S
-// !change.before.exists = no existing document in collection BEFORE update = document created + add one to total field;
-// !change.after.exists = no existing document in collection AFTER update = document deleted + subtract one from total field;
-
 const configureAggregation = (ref, increment, field, change) => {
   const onCreateEvent = !change.before.exists;
   const onDeleteEvent = !change.after.exists;
@@ -251,7 +248,8 @@ async function configurePDFGenerator(type, id, change) {
 
 function generatePDF(type, ref, file, form){
   const doc = new PDFDocument;
-  const bucketFileStream = file.createWriteStream();
+  const metadata = { metadata: { owner: form.authorID } }
+  const bucketFileStream = file.createWriteStream({metadata: metadata});
 
   doc.pipe(bucketFileStream);
   
