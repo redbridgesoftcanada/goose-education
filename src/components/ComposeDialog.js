@@ -1,8 +1,8 @@
 import React, { useEffect, useReducer } from 'react';
-import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, Input, MenuItem, TextField } from '@material-ui/core';
-import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, Input } from '@material-ui/core';
+import { ValidatorForm } from 'react-material-ui-form-validator';
 import { TAGS } from '../constants/constants';
-import { FileValidator, EditorValidator, SelectValidator } from '../constants/customValidators';
+import { textField, textValidator, richTextValidator, fileValidator, selectValidator } from '../constants/helpers-admin';
 import { withAuthorization } from '../components/session';
 
 function toggleReducer(state, action) {
@@ -66,42 +66,39 @@ function ComposeDialogBase(props) {
 
     // configure Firestore collection/document locations
     let uploadKey, uploadRef, uploadTask, newDoc, formContent, redirectPath;
-    if (composeType === 'article') {
-      const { isEdit, isLoading, uploads, ...articleForm } = state;
-      uploadKey = 'image';
-      newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
-      formContent = {...articleForm};
-      redirectPath = {
-        pathname: '/networking', 
-        state: {
-          title: 'Networking', 
-          selected: 0
+    switch (composeType) {
+      case "article": {
+        const { isEdit, isLoading, uploads, ...articleForm } = state;
+        uploadKey = 'image';
+        newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
+        formContent = {...articleForm};
+        redirectPath = {
+          pathname: '/networking', 
+          state: { title: 'Networking', selected: 0 }
         }
+        break;
       }
 
-    } else if (composeType === 'message') {
-      const { isEdit, isLoading, tag, instagramURL, uploads, ...messageForm } = state;
-      uploadKey = 'attachments';
-      newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
-      formContent = {...messageForm}
-      redirectPath = {
-        pathname: '/services',
-        state: {
-          title: 'Service Centre',
-          tab: 1
+      case "message": {
+        const { isEdit, isLoading, tag, instagramURL, uploads, ...messageForm } = state;
+        uploadKey = 'attachments';
+        newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
+        formContent = {...messageForm}
+        redirectPath = {
+          pathname: '/services',
+          state: { title: 'Service Centre', tab: 1 }
         }
+        break;
       }
 
-    } else if (composeType === 'announce') {
-      const { isEdit, isLoading, uploads, ...announceForm } = state;
-      uploadKey = 'attachments';
-      newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
-      formContent = {...announceForm};
-      redirectPath = {
-        pathname: '/services', 
-        state: {
-          title: 'Service Centre', 
-          tab: 0
+      case "announce": {
+        const { isEdit, isLoading, uploads, ...announceForm } = state;
+        uploadKey = 'attachments';
+        newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
+        formContent = {...announceForm};
+        redirectPath = {
+          pathname: '/services', 
+          state: { title: 'Service Centre', tab: 0 }
         }
       }
     }
@@ -161,118 +158,70 @@ function ComposeDialogBase(props) {
   
   return (
     <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='md'>
-      <DialogTitle>
-        {composeType === 'article' ? 
-          !isEdit ? 'Create Post' : 'Edit Post'
-        : 
-        composeType === 'message' ? 
-          !isEdit ? 'Create Counselling Request' : 'Edit Counselling Request'
-        :
-        composeType === 'announce' ? 
-          !isEdit ? 'Create Announcement' : 'Edit Announcement'
-        :
-        ''
-        }
-      </DialogTitle>
+      <DialogTitle>{generateDialogTitle(isEdit, composeType)}</DialogTitle>
       <DialogContent>
         <ValidatorForm onSubmit={onSubmit}>
-          <>
-            <FormLabel component="legend">Title</FormLabel>
-            <TextValidator 
-              type="text" 
-              variant="outlined" 
-              fullWidth 
-              InputLabelProps={{shrink: true}}
-              name="title"
-              value={title}
-              onChange={handleFormFields}
-              validators={['required']}
-              errorMessages={['Cannot submit an empty title.']}/>
+          <FormLabel component="legend">Title</FormLabel>
+          {textValidator("title", title, handleFormFields)}
 
-            {composeType === 'article' || composeType === 'announce' ?
-              <>
-                <FormLabel component="legend">Tag</FormLabel>
-                <SelectValidator
-                  variant="outlined"
-                  displayEmpty
-                  name='tag' 
-                  defaultValue={tag}
-                  value={tag}
-                  onChange={handleFormFields}
-                  validators={['required']}
-                  errorMessages={['Please select a tag.']}>
-                    <MenuItem value="" disabled>Select One</MenuItem>
-                    {TAGS.slice(1).map((tag, i) => {
-                        return <MenuItem key={i} name={tag} value={tag}>{tag}</MenuItem>
-                    })}
-                </SelectValidator>
-              </>
-              :
-              ''
-            }
+          {(composeType === 'article' || composeType === 'announce') &&
+            <>
+              <FormLabel component="legend">Tag</FormLabel>
+              {selectValidator("tag", tag, TAGS.slice(1), handleFormFields)}
+            </>
+          }
 
-            {composeType === 'article' &&
-              <>
-                <FormLabel component="legend">Instagram</FormLabel>
-                <TextField 
-                  type="url"
-                  variant="outlined" 
-                  fullWidth 
-                  InputLabelProps={{shrink: true}}
-                  name="instagramURL"
-                  value={instagramURL}
-                  onChange={handleFormFields}/>
-              </>
-            }
+          {composeType === 'article' &&
+            <>
+              <FormLabel component="legend">Instagram</FormLabel>
+              {textValidator("instagramURL", instagramURL, handleFormFields)}
+            </>
+          }
 
-            <EditorValidator 
-              defaultValue={description}
-              value={description} 
-              onChange={handleRichText}
-              validators={['isQuillEmpty']}
-              errorMessages={['Cannot submit an empty post.']}/>
+          {richTextValidator("", description, handleRichText)}
 
-            <FormLabel component="legend">Link #1</FormLabel>
-            <TextField 
-              type="url" 
-              variant="outlined" 
-              fullWidth 
-              InputLabelProps={{shrink: true}}
-              name="link1"
-              value={link1}
-              onChange={handleFormFields}/>
+          <FormLabel component="legend">Link #1</FormLabel>
+          {textField("link1", link1, handleFormFields, false)}
 
-            <FormLabel component="legend">Link #2</FormLabel>
-            <TextField 
-              type="url" 
-              variant="outlined" 
-              fullWidth 
-              InputLabelProps={{shrink: true}}
-              name="link2"
-              value={link2}
-              onChange={handleFormFields}/>
+          <FormLabel component="legend">Link #2</FormLabel>
+          {textField("link2", link2, handleFormFields, false)}
 
-            <FormLabel component="legend">Uploads</FormLabel>
-            {composeType === 'article' ?
-              <FileValidator
-                disableUnderline
-                onChange={handleFileUpload}
-                name="file"
-                value={uploads}
-                validators={['isRequiredUpload']}
-                errorMessages={['Please upload an image.']} />
-              :
-              <Input type="file" disableUnderline onChange={handleFileUpload}/>
-            }
+          <FormLabel component="legend">Uploads</FormLabel>
+          {composeType === 'article' ?
+            fileValidator("file", uploads, handleFileUpload)
+            :
+            <Input type="file" disableUnderline onChange={handleFileUpload}/>
+          }
 
-            <Button variant="contained" color="secondary" fullWidth type="submit">
-            { isLoading ? <CircularProgress /> : 'Submit' }
-            </Button>
-          </>
+          <Button variant="contained" color="secondary" fullWidth type="submit">
+          { isLoading ? <CircularProgress /> : 'Submit' }
+          </Button>
         </ValidatorForm>
       </DialogContent>
     </Dialog>
   )
+}
+
+function generateDialogTitle(isEdit, composeType) {
+  switch(isEdit) {
+    case false: {
+      switch (composeType) {
+        case "article": return "Create Post";
+        case "message": return "Create Counselling Request";
+        case "announce": return "Create Announcement";
+      }
+    }
+    break;
+    
+    case true: {
+      switch (composeType) {
+        case "article": return "Edit Post";
+        case "message": return "Edit Counselling Request";
+        case "announce": return "Edit Announcement";
+      }
+    }
+    break;
+  }
 }
 
 // const composeDialog = withStyles(styles)(ComposeDialogBase);
