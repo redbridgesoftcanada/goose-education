@@ -28,10 +28,7 @@ function toggleReducer(state, action) {
 
     case 'FILE_UPLOAD':
       const uploadFile = payload;
-      if (!uploadFile) {
-        return { ...state, uploads: [] }
-      }
-      return { ...state, uploads: uploadFile }
+      return (!uploadFile) ? { ...state, uploads: [] } : { ...state, uploads: uploadFile };
 
     default:
       const inputField = payload.name;
@@ -58,18 +55,19 @@ function ComposeDialogBase(props) {
   
   const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'EDIT_FORM', payload: { composeType, isEdit, prevContent }});
   const handleFormFields = event => dispatch({ payload:event.target });
-  const handleRichText = value => dispatch({ type:'RICH_TEXT', payload:value });
+  const handleRichText = (name, value) => dispatch({ type:'RICH_TEXT', payload:value });
   const handleFileUpload = event => dispatch({ type:'FILE_UPLOAD', payload:event.target.files[0] });
 
   const onSubmit = event => {
     dispatch({ type: 'INITIALIZE_SAVE' });
 
     // configure Firestore collection/document locations
-    let uploadKey, uploadRef, uploadTask, newDoc, formContent, redirectPath;
+    let uploadKey, uploadRef, newDoc, formContent, redirectPath;
     switch (composeType) {
       case "article": {
         const { isEdit, isLoading, uploads, ...articleForm } = state;
         uploadKey = 'image';
+        uploadRef = firebase.imagesRef(uploads);
         newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
         formContent = {...articleForm};
         redirectPath = {
@@ -82,6 +80,7 @@ function ComposeDialogBase(props) {
       case "message": {
         const { isEdit, isLoading, tag, instagramURL, uploads, ...messageForm } = state;
         uploadKey = 'attachments';
+        uploadRef = firebase.attachmentsRef(uploads);
         newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
         formContent = {...messageForm}
         redirectPath = {
@@ -94,6 +93,7 @@ function ComposeDialogBase(props) {
       case "announce": {
         const { isEdit, isLoading, uploads, ...announceForm } = state;
         uploadKey = 'attachments';
+        uploadRef = firebase.attachmentsRef(uploads);
         newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
         formContent = {...announceForm};
         redirectPath = {
@@ -103,49 +103,45 @@ function ComposeDialogBase(props) {
       }
     }
 
+    const defaultDocFields = {
+      authorID: authUser.uid,
+      authorDisplayName: authUser.roles['admin'] ? '슈퍼관리자' : authUser.displayName,
+      comments: [],
+      ...!isEdit && { createdAt: Date.now() },
+      updatedAt: Date.now(),
+      views: 0
+    }
+
     // user uploads a file with the form (note. empty array overwrites to a File object)
     if (uploads.length !== 0) {
+      const metadata = { customMetadata: { "owner": authUser.uid } }
+      const uploadTask = uploadRef.put(uploads, metadata);
 
-      uploadRef = (composeType === 'article') ? firebase.imagesRef(uploads) : firebase.attachmentsRef(uploads);
-      uploadTask = uploadRef.put(uploads);
-
-      uploadTask.on('state_changed', function (snapshot) {
-      }, function(error) {
-        console.log(error)
+      uploadTask.on('state_changed', function(snapshot) {
+      }, function(error) { dispatch({ type: 'error', payload: error.code });
       }, function () {
-        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        uploadTask.snapshot.ref.getDownloadURL()
+        .then(function(downloadURL) {
           newDoc.set({
-            authorID: authUser.uid,
-            authorDisplayName: authUser.roles['admin'] ? '슈퍼관리자' : authUser.displayName,
-            comments: [],
-            ...!isEdit && { createdAt: Date.now() },
-            updatedAt: Date.now(),
-            views: 0,
-            [uploadKey]: downloadURL, 
-            ...formContent
+            ...defaultDocFields,
+            ...formContent,
+            [uploadKey]: downloadURL
           }, { merge: true })
-          .then(() => {
-            onClose();
-            history.push(redirectPath)});
-          // .catch(error => dispatch({ type: 'error', payload: error }))
-      })});
+        .then(() => {
+          onClose();
+          history.push(redirectPath)});
+        })});
 
     // user does not upload a file with the form
     } else {
       newDoc.set({
-        authorID: authUser.uid,
-        authorDisplayName: authUser.roles['admin'] ? '슈퍼관리자' : authUser.displayName,
-        comments: [],
-        ...!isEdit && { createdAt: Date.now() },
-        updatedAt: Date.now(),
-        views: 0,
-        [uploadKey]: uploads, 
-        ...formContent
+        ...defaultDocFields,
+        ...formContent,
+        [uploadKey]: uploads
       }, { merge: true })
       .then(() => {
         onClose();
         history.push(redirectPath)});
-      // .catch(error => dispatch({ type: 'error', payload: error }));
     }
     event.preventDefault();
   }
@@ -178,7 +174,7 @@ function ComposeDialogBase(props) {
             </>
           }
 
-          {richTextValidator("", description, handleRichText)}
+          {richTextValidator("description", description, handleRichText)}
 
           <FormLabel component="legend">Link #1</FormLabel>
           {textField("link1", link1, handleFormFields, false)}
@@ -188,13 +184,11 @@ function ComposeDialogBase(props) {
 
           <FormLabel component="legend">Uploads</FormLabel>
           {composeType === 'article' ?
-            fileValidator("file", uploads, handleFileUpload)
-            :
-            <Input type="file" disableUnderline onChange={handleFileUpload}/>
+            fileValidator("file", uploads, handleFileUpload) : <Input type="file" disableUnderline onChange={handleFileUpload}/>
           }
 
           <Button variant="contained" color="secondary" fullWidth type="submit">
-          { isLoading ? <CircularProgress /> : 'Submit' }
+          {isLoading ? <CircularProgress /> : 'Submit'}
           </Button>
         </ValidatorForm>
       </DialogContent>

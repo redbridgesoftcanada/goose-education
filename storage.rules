@@ -12,13 +12,15 @@ service firebase.storage {
     }
 
     function isAdmin() {
-      return request.auth.id == process.env.ADMIN_UID;
+      let adminUsers = ["VpD5DtI9E3bPuHcOVTCdcT6hop93"];
+      return request.auth.uid in adminUsers;
     }
 
-    allow create: if isLoggedIn();
+    match /{allBuckets=**} {
+      allow write: if isLoggedIn();
+    }
 
-    match /applications/{restOfPath=**} {
-      // airportRides/{airportRide}, homestays/{homestay}, schools/{school}
+    match /applications/{allApplications=**} {
       allow read: if isLoggedIn() && isOwner() || isLoggedIn() && isAdmin();
     }
 
