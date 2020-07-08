@@ -335,7 +335,9 @@ function configureFetchAllSnapshot(collection, snapshot) {
 
         case "articles": 
             const allArticles = snapshot.docs.map(doc => {
-                return {...doc.data()}
+                let data = doc.data();
+                let id = doc.id;
+                return {...data, id}
             });
 
             formattedData = TAGS.map(tag => {
