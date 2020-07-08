@@ -267,10 +267,9 @@ function Announcement(props) {
             </Typography>
             {selectedAnnounce.comments.length ? 
                 selectedAnnounce.comments.map((comment, i) => {
-                    let isCommentOwner = authUser.uid === comment.authorID;
-                    return (
-                        <Comments key={i} comment={comment} isCommentOwner={isCommentOwner} {...commentsProps} /> 
-                )})
+                    const isCommentOwner = (!authUser) ? false : authUser.uid === comment.authorID;
+                    return <Comments key={i} comment={comment} isCommentOwner={isCommentOwner} {...commentsProps} /> 
+                })
             :
                 <Typography>There are currently no comments.</Typography> 
             }
