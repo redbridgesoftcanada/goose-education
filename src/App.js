@@ -28,19 +28,14 @@ function App() {
   useEffect(() => {
     // custom validation to check if <ReactQuill> component is empty - or - is only HTML tags (accessible as 'isQuillEmpty' rule)
     ValidatorForm.addValidationRule('isQuillEmpty', value => {
-        if (value.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
-          return false;
-        }
+        if (value && value.replace(/<(.|\n)*?>/g, '').trim().length === 0) return false;
         return true;
     });
 
     ValidatorForm.addValidationRule("isRequiredUpload", value => {
-      if (!value || value.length === 0) {
-        return false;
-      }
+      if (!value || value.length === 0) return false;
       return true;
     });
-    
   }, []);
 
   return (
