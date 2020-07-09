@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import DatabaseContext from './context';
 import { ADMIN_PAGES } from '../../constants/constants';
+import { fetchUserMedia } from '../../constants/helpers/instagramAPI';
 import { fetchPaginatedQuery } from '../../constants/helpers/pagination';
 import { fetchSelectDocuments } from '../../constants/helpers/fetchSelect';
 import { fetchAllDocuments } from '../../constants/helpers/fetchAll';
@@ -41,6 +42,7 @@ function withFetching(Component) {
       adminGraphics: [],
       profile: null,
       schoolApplication: null,
+      instagram: []
     }
     const [ state, setState ] = useState(INITIAL_STATE);
 
@@ -55,7 +57,7 @@ function withFetching(Component) {
           fetchSelectDocuments("featured", "schools", firebase, setState, '');
           fetchSelectDocuments("featured", "articles", firebase, setState, '');
           fetchSelectDocuments("featured", "tips", firebase, setState, '');
-          // fetchAPIData("instagram", firebase, setState);
+          fetchUserMedia(setState);
           break;
         
         case '/goose':
