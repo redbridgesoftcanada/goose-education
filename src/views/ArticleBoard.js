@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer } from 'react';
 import { Container, Grid, Link, Typography, withStyles } from '@material-ui/core';
 import { Switch, Route, Link as RouterLink, useRouteMatch } from "react-router-dom";
-import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
+import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/features';
 import parse from 'html-react-parser';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';

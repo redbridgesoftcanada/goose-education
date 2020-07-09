@@ -3,7 +3,7 @@ import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, with
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format } from 'date-fns';
 import { AuthUserContext } from '../components/session';
-import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
+import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/features';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';
 import Filter from '../components/FilterButton';
