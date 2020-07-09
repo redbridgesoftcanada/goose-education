@@ -1,11 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-
-admin.initializeApp(functions.config().firebase);
-
 const db = admin.firestore();
-const { configureAggregation } = require('./helpers-aggregates');
-const { configurePDFGenerator } = require('./helpers-pdf');
+const { configureAggregation } = require('./helpers/_aggregates');
+const { configurePDFGenerator } = require('./helpers/_pdf');
 
 exports.totalTips = functions.firestore
   .document('tips/{tipId}')
