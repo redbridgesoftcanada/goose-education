@@ -10,12 +10,11 @@ export default function Chart(props) {
 
   const { chart, data } = props;
 
+  if (!data) return null;
+
   const renderPieLegend = dataPlots => {
-    return (
-      dataPlots.map((entry, i) => (
-       { value: entry.Name, type: 'square', id:`item-${i}`, color: COLORS[i % COLORS.length] }
-      ))
-    )
+    return dataPlots.map((entry, i) => (
+      { value: entry.Name, type: 'square', id:`item-${i}`, color: COLORS[i % COLORS.length] }));
   }
 
   return (

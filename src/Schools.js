@@ -25,7 +25,7 @@ function Schools(props) {
   const listOfSchoolNames = listOfSchools.map(school => school.title);
 
   const INITIAL_STATE = { 
-    tab: props.location.selected.tab, 
+    tab: props.location.selected ? props.location.selected.tab : 0, 
     school: null 
   }
   const [ selected, setSelected ] = useState(INITIAL_STATE);

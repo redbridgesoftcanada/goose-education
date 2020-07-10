@@ -247,7 +247,7 @@ function Announcement(props) {
                             composeOpen={editDialogOpen} 
                             onClose={resetAllActions} 
                         />
-                        <DeleteConfirmation deleteType='announce' open={editConfirmOpen} handleDelete={handleAnnounceDelete} onClose={handleDeleteConfirmation}/>
+                        <DeleteConfirmation deleteType='admin_announce' open={editConfirmOpen} handleDelete={handleAnnounceDelete} onClose={handleDeleteConfirmation}/>
                     </>
                     }
                 </Grid>
