@@ -271,10 +271,9 @@ function Message(props) {
                 {selectedMessage ? selectedMessage.comments.length : ''} Comments
             </Typography>
             {selectedMessage && selectedMessage.comments.length ? selectedMessage.comments.map((comment, i) => {
-                let isCommentOwner = authUser.uid === comment.authorID;
-                return (
-                    <Comments key={i} comment={comment} isCommentOwner={isCommentOwner} {...commentsProps} /> 
-            )})
+                const isCommentOwner = (!authUser) ? false : authUser.uid === comment.authorID;
+                return <Comments key={i} comment={comment} isCommentOwner={isCommentOwner} {...commentsProps} /> 
+            })
             : <Typography>There are currently no comments.</Typography> }
             <br/>
             <div>

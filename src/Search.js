@@ -7,7 +7,7 @@ import { AuthUserContext } from './components/session';
 import ArticleDialog from './components/ArticleDialog';
 import SearchBar from './components/SearchBar';
 import Pagination from './components/Pagination';
-import { createPagination, singleFilterQuery, multipleFilterQuery } from './constants/helpers';
+import { createPagination, singleFilterQuery, multipleFilterQuery } from './constants/helpers/features';
 import NavBar from './views/NavBar';
 import Footer from './views/Footer';
 

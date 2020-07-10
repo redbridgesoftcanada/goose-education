@@ -8,7 +8,7 @@ import SortPopover from '../components/SortPopover';
 import SearchField from '../components/SearchField';
 import ArticleDialog from '../components/ArticleDialog';
 import Pagination from '../components/Pagination';
-import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
+import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/features';
 
 const styles = theme => ({
     root: {

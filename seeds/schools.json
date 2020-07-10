@@ -1,7 +1,6 @@
 {
     "schools": [
         { 
-            "id": 1,
             "title": "iTTTi",
             "type": "ESL",
             "location": "Vancouver",
@@ -23,7 +22,6 @@
             "updatedAt": 1579576698361
         },
         { 
-            "id": 2,
             "title": "Canadian College",
             "type": "College",
             "location": "Vancouver",
@@ -45,7 +43,6 @@
             "updatedAt": 1579576698361
         },
         { 
-            "id": 3,
             "title": "Canadian College of English Language: CCEL",
             "type": "ESL Institution",
             "location": "Vancouver",
@@ -67,7 +64,6 @@
             "updatedAt": 1579576698361
         },
         { 
-            "id": 4,
             "title": "VGC International College",
             "type": "ESL Institution",
             "location": "Vancouver",
@@ -89,7 +85,6 @@
             "updatedAt": 1579576698361        
         },
         { 
-            "id": 5,
             "title": "Language Across Borders: LAB",
             "type": "ESL Institution",
             "location": "Vancouver",

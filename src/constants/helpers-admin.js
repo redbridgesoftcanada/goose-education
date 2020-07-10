@@ -85,15 +85,13 @@ function textValidator(name, value, eventHandler) {
 }
 
 function richTextValidator(name, value, eventHandler) {
-  if (value) {
-    return (
-      <EditorValidator
-        defaultValue={value}
-        onChange={value => eventHandler(name, value)}
-        validators={["isQuillEmpty"]}
-        errorMessages={["Cannot submit an empty post."]}/>
-    )
-  }
+  return (
+    <EditorValidator
+      defaultValue={value}
+      onChange={value => eventHandler(name, value)}
+      validators={["isQuillEmpty"]}
+      errorMessages={["Cannot submit an empty post."]}/>
+  )
 }
 
 function fileValidator(name, value, eventHandler) {
@@ -109,6 +107,7 @@ function fileValidator(name, value, eventHandler) {
 }
 
 function selectValidator(name, value, options, eventHandler) {
+  // note. options needs to be an array;
   return (
     <SelectValidator
       variant="outlined"
@@ -120,7 +119,7 @@ function selectValidator(name, value, options, eventHandler) {
       errorMessages={['Please select a tag.']}>
         <MenuItem value="" disabled>Select One</MenuItem>
         {options.map((option, i) => {
-            return <MenuItem key={i} name={option.name} value={option.value}>{option.value}</MenuItem>
+            return <MenuItem key={i} name={option} value={option}>{option}</MenuItem>
         })}
     </SelectValidator>
   )

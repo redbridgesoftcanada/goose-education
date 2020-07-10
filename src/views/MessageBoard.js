@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow, withStyles } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format } from 'date-fns';
-import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers';
+import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/features';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';

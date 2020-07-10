@@ -48,29 +48,6 @@ const styles = theme => ({
     }
 });
 
-function generateLinks(classes, link) {
-    const isFacebook = link.includes('facebook');
-    const isInstagram = link.includes('instagram');
-    const isMaps = link.includes('map');
-
-    return (
-        <Grid container className={classes.link} spacing={1} onClick={() => window.open(link, "_blank")}>
-            <Grid item>
-                {isFacebook ? <Facebook fontSize='small'/> 
-                :
-                isInstagram ? <Instagram fontSize='small'/>
-                :
-                isMaps ? <RoomOutlined fontSize='small'/>
-                :
-                <LanguageOutlined fontSize='small'/>}
-            </Grid>
-            <Grid item>
-                <Typography variant='body2'>{link}</Typography>
-            </Grid>
-        </Grid>
-    );
-}
-
 function toggleReducer(state, action) {
     const { type, payload } = action;
   
@@ -146,12 +123,8 @@ function Article(props) {
 
     const commentsProps = { formType: 'article', classes, firebase, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, openPostActions, closePostActions, handleEdit, handleDeleteConfirmation, resetAllActions, selectedResource: article }
 
-    let isArticleOwner;
-    if (!article) {
-      return null;
-    } else {
-      isArticleOwner = (authUser.uid === article.authorID);
-    }
+    if (!article) return null;
+    const isArticleOwner = (!authUser) ? false : isArticleOwner = authUser.uid === article.authorID;
   
     const onSubmit = event => {
       firebase.article(article.id).update({ 
@@ -284,10 +257,9 @@ function Article(props) {
             
             {article.comments.length ? 
                 article.comments.map((comment, i) => {
-                    let isCommentOwner = authUser.uid === comment.authorID;
-                    return (
-                        <Comments key={i} comment={comment} isCommentOwner={isCommentOwner} {...commentsProps} /> 
-                )})
+                    const isCommentOwner = (!authUser) ? false : authUser.uid === comment.authorID;
+                    return <Comments key={i} comment={comment} isCommentOwner={isCommentOwner} {...commentsProps} /> 
+                })
                 : 
                 <Typography>There are currently no comments.</Typography> 
             }
@@ -303,6 +275,29 @@ function Article(props) {
             </ValidatorForm>
         </Container>
     )
+}
+
+function generateLinks(classes, link) {
+    const isFacebook = link.includes('facebook');
+    const isInstagram = link.includes('instagram');
+    const isMaps = link.includes('map');
+
+    return (
+        <Grid container className={classes.link} spacing={1} onClick={() => window.open(link, "_blank")}>
+            <Grid item>
+                {isFacebook ? <Facebook fontSize='small'/> 
+                :
+                isInstagram ? <Instagram fontSize='small'/>
+                :
+                isMaps ? <RoomOutlined fontSize='small'/>
+                :
+                <LanguageOutlined fontSize='small'/>}
+            </Grid>
+            <Grid item>
+                <Typography variant='body2'>{link}</Typography>
+            </Grid>
+        </Grid>
+    );
 }
 
 export default withStyles(styles)(withFirebase(Article));
