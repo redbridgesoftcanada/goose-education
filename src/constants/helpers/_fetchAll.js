@@ -1,5 +1,5 @@
 import { TAGS } from '../constants';
-import { convertToCamelCase } from './features';
+import { convertToCamelCase } from './_features';
 
 export function fetchAllDocuments(collection, firebase, setState) {
   const fetchAllRefs = configureFetchAll(collection, firebase);

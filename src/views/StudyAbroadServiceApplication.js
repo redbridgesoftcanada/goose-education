@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { withAuthorization } from '../components/session';
 import { PERSONAL_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS, OTHER_FIELDS } from '../constants/constants';
-import { convertToCamelCase, convertToTitleCase } from '../constants/helpers/features';
+import { convertToCamelCase, convertToTitleCase } from '../constants/helpers/_features';
 import { textField, radioField } from '../constants/helpers-admin';
 
 const styles = theme => ({

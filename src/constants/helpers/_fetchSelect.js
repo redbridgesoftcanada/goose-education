@@ -1,4 +1,4 @@
-import { convertToCamelCase } from './features';
+import { convertToCamelCase } from './_features';
 
 export function fetchSelectDocuments(select, collection, firebase, setState, id) {
   const fetchSelectRefs = configureFetchSelect(select, collection, firebase, id);

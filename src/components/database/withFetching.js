@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import DatabaseContext from './context';
 import { ADMIN_PAGES } from '../../constants/constants';
-import { fetchUserMedia } from '../../constants/helpers/instagramAPI';
-import { fetchPaginatedQuery } from '../../constants/helpers/pagination';
-import { fetchSelectDocuments } from '../../constants/helpers/fetchSelect';
-import { fetchAllDocuments } from '../../constants/helpers/fetchAll';
+import { fetchUserMedia } from '../../constants/helpers/_instagramAPI';
+import { fetchPaginatedQuery } from '../../constants/helpers/_pagination';
+import { fetchSelectDocuments } from '../../constants/helpers/_fetchSelect';
+import { fetchAllDocuments } from '../../constants/helpers/_fetchAll';
 
 function withFetching(Component) {
 

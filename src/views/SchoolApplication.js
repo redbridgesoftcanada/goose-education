@@ -5,7 +5,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { withAuthorization } from '../components/session';
 import { STATUSES, PERSONAL_FIELDS, PROGRAM_FIELDS, ARRIVAL_FIELDS, OTHER_FIELDS } from '../constants/constants';
-import { convertToCamelCase, convertToTitleCase } from '../constants/helpers/features';
+import { convertToCamelCase, convertToTitleCase } from '../constants/helpers/_features';
 import { textField, radioField, selectField } from '../constants/helpers-admin';
 
 const styles = theme => ({

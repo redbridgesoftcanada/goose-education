@@ -7,7 +7,7 @@ import { AppBar, Badge, Box, Button, Container, Divider, Drawer, Grid, IconButto
 import { ChevronLeft, Menu as MenuIcon, Notifications, Dashboard, People, Layers, Assignment, AirplanemodeActive, Home, School, Settings, QuestionAnswer, NewReleases, Description, LiveHelp } from "@material-ui/icons";
 import { DatabaseContext } from '../components/database';
 import { ADMIN_PAGES } from "../constants/constants";
-import { convertToSentenceCase } from "../constants/helpers/features";
+import { convertToSentenceCase } from "../constants/helpers/_features";
 import ChartTemplate from "../components/material-ui/ChartTemplate";
 import PreviewTemplate from "../components/material-ui/PreviewTemplate";
 import TableTemplate from "../components/material-ui/TableTemplate";
