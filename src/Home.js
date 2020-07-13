@@ -5,6 +5,7 @@ import PageBanner from './views/PageBanner';
 import FeatureCarousel from './views/FeatureCarousel';
 import FeatureBoard from './views/FeatureBoard';
 import ArticleThumbnails from './views/ArticleThumbnails';
+import FeatureInstagram from './views/FeatureInstagram';
 import SplitThumbnails from './views/SplitThumbnails';
 import Footer from './views/Footer';
 import { DatabaseContext } from './components/database';
@@ -21,6 +22,7 @@ function Index() {
           <ArticleThumbnails wrapperText={context.state.homeGraphics.homeBlackWrapper} featuredArticles={context.state.featuredArticles} />
           <SplitThumbnails whiteWrapperText={context.state.homeGraphics.homeWhiteWrapper} redWrapperText={context.state.homeGraphics.homeRedWrapper}
           previewSchools={context.state.featuredSchools} previewTips={context.state.featuredTips}/>
+          <FeatureInstagram instagram={context.state.instagram}/>
           <Footer />
         </>
       }

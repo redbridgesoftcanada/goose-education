@@ -9,7 +9,10 @@ const styles = theme => ({
     card: {
         maxWidth: 345,
         width: '50%',
-        display: 'inline-block'
+        display: 'inline-block',
+        position: 'absolute',
+        top: '35%',
+        right: '10%',
     },
     media: {
         height: 200,
