@@ -12,7 +12,7 @@ const styles = theme => ({
         display: 'inline-block',
         position: 'absolute',
         top: '35%',
-        right: '10%',
+        right: '5%',
     },
     media: {
         height: 200,

@@ -6,6 +6,7 @@ import Typography from '../components/onePirate/Typography';
 import PageBannerLayout from './PageBannerLayout';
 
 const useStyles = (props, options) => {
+  const isPageBanner = props.layoutType === 'pageBanner';
   return makeStyles(theme => ({
     background: {
       backgroundImage: `url(${props.backgroundImage})`,
@@ -14,18 +15,15 @@ const useStyles = (props, options) => {
     title: {
       position: 'absolute',
       color: theme.palette.common.white,
-      ...(props.layoutType === 'headerBanner') ? {marginTop: 20} : {marginTop: 90},
+      ...isPageBanner ? { marginTop: 90 } : { marginTop: 20 }
     },
-    ...(props.layoutType === 'headerBanner') && {
-      button: {
-        minWidth: 200,
-      },
+
+    ...isPageBanner && {
+      button: { minWidth: 200 },
       h5: {
         marginBottom: theme.spacing(4),
         marginTop: theme.spacing(4),
-        [theme.breakpoints.up('sm')]: {
-          marginTop: theme.spacing(10),
-        },
+        [theme.breakpoints.up('sm')]: { marginTop: theme.spacing(10) },
       },
       more: {
         marginTop: theme.spacing(2),
@@ -58,7 +56,7 @@ function loadPageBanner(classes, title, caption) {
   return (
     <>
       <Typography color="inherit" align="left" variant="h2" marked="center">{title}</Typography>
-      <Typography  color="inherit" align="left" variant="body1" className={classes.more}>{caption}</Typography>
+      <Typography color="inherit" align="left" variant="body1" className={classes.more}>{caption}</Typography>
       <Button
         color="secondary"
         variant="contained"
