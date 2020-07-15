@@ -2,8 +2,7 @@ import React from 'react';
 import { Button, Link } from '@material-ui/core'
 import { Link as RouterLink } from "react-router-dom";
 
-function Networking(props) {
-    const { classes } = props;
+function Networking(classes) {
 
     return (
       <Button>

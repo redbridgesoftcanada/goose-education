@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Link } from '@material-ui/core';
+import { Button, Link, MenuItem } from '@material-ui/core';
 import { Link as RouterLink } from "react-router-dom";
 
-function StudyAbroad(props) {
-  const { classes, StyledMenu, StyledMenuItem } = props;
-
+function StudyAbroad(classes, StyledMenu) {
   const [ anchorEl, setAnchorEl ] = useState(null);
-
-  // E V E N T  L I S T E N E R S
   const handleClick = event => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
@@ -16,33 +12,28 @@ function StudyAbroad(props) {
       <Button onMouseOver={handleClick}>Study Abroad</Button>
       <StyledMenu
         anchorEl={anchorEl}
-        keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
-        MenuListProps={{ onMouseLeave: handleClose }}
-      >
-        <StyledMenuItem onClick={handleClose}>
+        MenuListProps={{ 
+          onClick: handleClose, 
+          onMouseLeave: handleClose,
+        }}>
+        <MenuItem className={classes.menuItem}>
           <Link
-            color="inherit"
-            variant="h6"
-            underline="none"
-            className={classes.rightLink}
+            className={classes.link}
             component={RouterLink} 
-            to={{ pathname: '/goose', state: { selected: 0} }}>
+            to={{ pathname: '/goose', state: { selected: 0 } }}>
               Goose Study Abroad
           </Link>
-        </StyledMenuItem>
-        <StyledMenuItem onClick={handleClose}>
+        </MenuItem>
+        <MenuItem className={classes.menuItem}>
         <Link
-            color="inherit"
-            variant="h6"
-            underline="none"
-            className={classes.rightLink}
+            className={classes.link}
             component={RouterLink} 
             to={{ pathname: '/goose', state: { selected: 1 } }}>
               Goose Tips
           </Link>
-        </StyledMenuItem>
+        </MenuItem>
       </StyledMenu>
     </>
   );

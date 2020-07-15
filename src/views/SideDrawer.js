@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { Collapse, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core'
 import { AccountCircle, DeleteForever, ExitToApp, ExpandLess, ExpandMore } from '@material-ui/icons';
 import { NAV_PAGES } from '../constants/constants';
-import Logout from '../components/navlinks/Logout';
+import Logout from '../components/navlinks/_logout';
 
 function createRedirectPath(authUser, index) {
     const isAdmin = authUser.roles['admin'];

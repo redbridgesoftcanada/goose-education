@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
 import { withAuthorization } from '../components/session';
-import EditProfile from '../components/navlinks/EditProfile';
+import EditProfile from '../components/navlinks/_editProfile';
 
 // const styles = theme => {
 // };
