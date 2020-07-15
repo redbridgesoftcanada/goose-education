@@ -1,40 +1,12 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
 import { Link as RouterLink } from "react-router-dom";
 import Button from '../components/onePirate/Button';
 import Typography from '../components/onePirate/Typography';
 import PageBannerLayout from './PageBannerLayout';
-
-const useStyles = (props, options) => {
-  const isPageBanner = props.layoutType === 'pageBanner';
-  return makeStyles(theme => ({
-    background: {
-      backgroundImage: `url(${props.backgroundImage})`,
-      backgroundPosition: 'center',
-    },
-    title: {
-      position: 'absolute',
-      color: theme.palette.common.white,
-      ...isPageBanner ? { marginTop: 90 } : { marginTop: 20 }
-    },
-
-    ...isPageBanner && {
-      button: { minWidth: 200 },
-      h5: {
-        marginBottom: theme.spacing(4),
-        marginTop: theme.spacing(4),
-        [theme.breakpoints.up('sm')]: { marginTop: theme.spacing(10) },
-      },
-      more: {
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-      }
-    }
-  }))(props, options);
-}
+import { useStyles } from '../styles/home';
 
 function PageBanner(props) {
-  const classes = useStyles(props);
+  const classes = useStyles(props, 'pageBanner');
   const { backgroundImage, title, layoutType } = props;
 
   return (
@@ -45,7 +17,7 @@ function PageBanner(props) {
         {(layoutType === 'pageBanner') ?
           loadPageBanner(classes, title, props.caption)
           :  
-          <Typography className={classes.title} align="center" variant="h4">{title}</Typography>
+          <Typography className={classes.headerTitle} variant="h4">{title}</Typography>
         }
       </PageBannerLayout>
     </>
@@ -55,13 +27,12 @@ function PageBanner(props) {
 function loadPageBanner(classes, title, caption) {
   return (
     <>
-      <Typography color="inherit" align="left" variant="h2" marked="center">{title}</Typography>
-      <Typography color="inherit" align="left" variant="body1" className={classes.more}>{caption}</Typography>
+      <Typography className={classes.pageBannerTitle} variant="h2" marked="center">{title}</Typography>
+      <Typography className={classes.pageBannerCaption} variant="body1" >{caption}</Typography>
       <Button
         color="secondary"
         variant="contained"
         size="medium"
-        className={classes.button}
         component={RouterLink}
         to={{
           pathname: '/goose', 

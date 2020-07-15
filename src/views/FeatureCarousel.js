@@ -1,42 +1,25 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardMedia, IconButton, Typography, withStyles } from '@material-ui/core';
+import { Card, CardContent, CardHeader, CardMedia, IconButton, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import Carousel, { Dots } from '@brainhubeu/react-carousel';
-import '@brainhubeu/react-carousel/lib/style.css';
 import { Redirect } from "react-router-dom";
- 
-const styles = theme => ({
-    card: {
-        maxWidth: 345,
-        width: '50%',
-        display: 'inline-block',
-        position: 'absolute',
-        top: '35%',
-        right: '5%',
-    },
-    media: {
-        height: 200,
-        backgroundPosition:'center', 
-        backgroundSize:'contain',
-    },
-  });
+import { useStyles } from '../styles/home';
+import '@brainhubeu/react-carousel/lib/style.css';
 
-function FeatureCarousel(props) {
-    const { classes, featuredSchools } = props;
+export default function FeatureCarousel(props) {
+    const classes = useStyles(props, 'featureCarousel');
+    const { featuredSchools } = props;
 
-    const [redirectPath, setRedirectPath] = useState({});
+    const [ redirectPath, setRedirectPath ] = useState({});
 
-    const handleClick = (event) => {
-        switch(event.currentTarget.id) {
-            case 'School Information':
-                setRedirectPath({
-                    pathname: '/schools', 
-                    state: { title: 'School Information', tab: 0 }
-                });
-                break;
-            
-            default:
-                const selectedSchool = featuredSchools.find(school => school.id.toString() === event.currentTarget.id);
+    const handleClick = event => {
+        if (event.currentTarget.id === 'School Information') {
+            setRedirectPath({
+                pathname: '/schools', 
+                state: { title: 'School Information', tab: 0 }
+            });
+        } else {
+            const selectedSchool = featuredSchools.find(school => school.id.toString() === event.currentTarget.id);
                 setRedirectPath({
                     pathname: `/schools/${selectedSchool.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
                     state: { title: 'School Information', tab: 0, selectedSchool }
@@ -45,7 +28,7 @@ function FeatureCarousel(props) {
     };
 
     return (
-        <Card className={classes.card}>
+        <Card className={classes.featureCard}>
             <CardHeader
                 title="School Information"
                 titleTypographyProps={{ style: { fontWeight:700 }}}
@@ -83,7 +66,5 @@ function FeatureCarousel(props) {
             </Carousel>
             <Dots value={featuredSchools.length}/>
         </Card>
-      );
+    );
 }
-
-export default withStyles(styles)(FeatureCarousel);
