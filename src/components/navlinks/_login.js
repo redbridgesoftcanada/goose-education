@@ -1,29 +1,10 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { Button, Link } from "@material-ui/core"
-import { Link as RouterLink } from "react-router-dom";
+import LinkButton from '../customMUI/linkButton';
 
-function Login(props) {
-    const { classes } = props;
-
-    return (
-      <Button>
-        <Link
-          color="inherit"
-          variant="h6"
-          underline="none"
-          className={classes.rightLink}
-          component={RouterLink}
-          to="/login"
-        >
-          {'Login'}
-        </Link>
-      </Button>
-    );
+export default function Login() {
+  return (
+    <LinkButton 
+      to="/login"
+      label='Login'/>
+  );
 };
-
-Login.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
-
-export default Login;

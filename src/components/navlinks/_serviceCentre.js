@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Button, Link, MenuItem } from '@material-ui/core';
-import { Link as RouterLink } from "react-router-dom";
+import { Button, MenuItem } from '@material-ui/core';
+import { StyledMenu, LinkButton } from '../customMUI';
 
-export default function ServiceCentre(classes, StyledMenu) {
+export default function ServiceCentre(classes) {
   const [ anchorEl, setAnchorEl ] = useState(null);
   const handleClick = event => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -19,22 +19,16 @@ export default function ServiceCentre(classes, StyledMenu) {
           onMouseLeave: handleClose,
         }}>
           
-        <MenuItem className={classes.menuItem}>
-          <Link
-            className={classes.link}
-            component={RouterLink}
-            to={{ pathname: '/services', state: { tab: 0 }}} >
-              Announcements
-          </Link>
+        <MenuItem className={classes.navlinkItem}>
+          <LinkButton 
+            to={{ pathname: '/services', state: { tab: 0 }}}
+            label='Announcements'/>
         </MenuItem>
 
-        <MenuItem className={classes.menuItem}>
-          <Link
-            className={classes.link}
-            component={RouterLink}
-            to= {{ pathname: '/services', state: { tab: 1 } }} >
-              Message Board
-          </Link>
+        <MenuItem className={classes.navlinkItem}>
+          <LinkButton 
+            to= {{ pathname: '/services', state: { tab: 1 } }}
+            label='Message Board'/>
         </MenuItem>
       </StyledMenu>
     </>

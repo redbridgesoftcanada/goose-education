@@ -1,19 +1,9 @@
 import React from 'react';
-import clsx from 'clsx';
-import { Link } from '@material-ui/core';
-import { Link as RouterLink } from "react-router-dom";
+import LinkButton from '../customMUI/linkButton';
 
-export default function StudyAbroadCounselling(classes, TransparentButton) {
+export default function StudyAbroadCounselling() {
   return (
-    <>
-      <TransparentButton>
-        <Link
-          className={clsx(classes.link, classes.linkSecondary)}
-          component={RouterLink} 
-          to={{pathname: '/services', state: { selected: 1 }}}>
-            Study Abroad Counselling
-        </Link>
-      </TransparentButton>
-    </>
-  );
-};
+    <LinkButton 
+      to={{pathname: '/services', state: { selected: 1 }}}
+      label='Study Abroad Counselling'/>
+)};

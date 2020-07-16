@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Button, Link, MenuItem } from '@material-ui/core';
-import { Link as RouterLink } from "react-router-dom";
+import { Button, MenuItem } from '@material-ui/core';
+import { StyledMenu, LinkButton } from '../customMUI';
 
-function StudyAbroad(classes, StyledMenu) {
+function StudyAbroad(classes) {
   const [ anchorEl, setAnchorEl ] = useState(null);
   const handleClick = event => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -18,21 +18,15 @@ function StudyAbroad(classes, StyledMenu) {
           onClick: handleClose, 
           onMouseLeave: handleClose,
         }}>
-        <MenuItem className={classes.menuItem}>
-          <Link
-            className={classes.link}
-            component={RouterLink} 
-            to={{ pathname: '/goose', state: { selected: 0 } }}>
-              Goose Study Abroad
-          </Link>
+        <MenuItem className={classes.navlinkItem}>
+          <LinkButton 
+            to={{ pathname: '/goose', state: { selected: 0 } }}
+            label='Goose Study Abroad'/>
         </MenuItem>
-        <MenuItem className={classes.menuItem}>
-        <Link
-            className={classes.link}
-            component={RouterLink} 
-            to={{ pathname: '/goose', state: { selected: 1 } }}>
-              Goose Tips
-          </Link>
+        <MenuItem className={classes.navlinkItem}>
+          <LinkButton 
+            to={{ pathname: '/goose', state: { selected: 1 } }}
+            label='Goose Tips'/>
         </MenuItem>
       </StyledMenu>
     </>
