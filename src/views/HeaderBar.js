@@ -1,100 +1,75 @@
-import React, { useReducer } from 'react';
-import { Button, IconButton, InputAdornment, TextField } from '@material-ui/core'
+import React, { useState } from 'react';
+import { AppBar, Button, Grid, IconButton, InputAdornment, TextField, Toolbar } from '@material-ui/core'
 import { Facebook, Instagram, Search } from '@material-ui/icons';
-
-import AppBar from '../components/onePirate/AppBar';
-import Toolbar from '../components/onePirate/Toolbar';
+import { ReactComponent as Kakao } from '../assets/img/kakao-talk.svg';
+import { ReactComponent as Naver } from '../assets/img/icon_blog.svg';
 import { AuthUserContext } from '../components/session';
-import Login from '../components/navlinks/Login';
-import Register from '../components/navlinks/Register';
-import MyPage from '../components/navlinks/MyPage';
-import Logout from '../components/navlinks/Logout';
-import SideDrawer from '../views/SideDrawer';
-
-function toggleReducer(state, action) {
-    const { type, payload } = action;
-    switch(type) {
-        case 'drawer':
-            return {
-                ... state,
-                drawerOpen: !state.drawerOpen
-            }
-        
-        case 'menu':
-            const selectedMenu = payload.toLowerCase().replace(/ /g,"_");
-            return {
-                ...state,
-                [selectedMenu]: !state[selectedMenu]
-            }
-
-        case 'menu_item':
-            const selectedMenuItem = payload.toLowerCase().replace(/ /g,"_");
-            return {
-                ...state,
-                drawerOpen: false,
-                [selectedMenuItem]: !state[selectedMenuItem]
-            }
-
-        default: 
-            break;
-    }
-}
+import * as NAVLINKS from '../components/navlinks';
+import NavDrawer from './NavDrawer';
+import useStyles from '../styles/constants';
 
 function HeaderBar(props) {
-    const { classes } = props;
-    const [ state, dispatch ] = useReducer(toggleReducer, false);
+    const classes = useStyles(props, 'headerBar');
+    const [ drawer, setDrawerOpen ] = useState(false);
 
     return (
-        <AppBar position="static">
+        <AppBar className={classes.appBar} elevation={0}>
             <Toolbar className={classes.toolbar}>
-                <div className={classes.left}>
-                    <IconButton><Instagram/></IconButton>
-                    <IconButton><Facebook/></IconButton>
-                    <IconButton><img className={classes.kakao} src={require('../assets/img/kakao-talk.svg')} alt="Kakao Talk"/></IconButton>
-                    <IconButton><img className={classes.naver} src={require('../assets/img/icon_blog.png')} alt="Naver"/></IconButton>
-                    <TextField
-                        className={classes.textField}
-                        placeholder="Search"
-                        variant="outlined"
-                        InputProps={{
-                            style:{margin: 7, marginLeft: 10},
-                            startAdornment: (
-                            <InputAdornment position="start">
-                                <Search />
-                            </InputAdornment>
-                            ),
-                        }}
-                        inputProps={{style:{padding: '7.5px 14px'}}}
-                    />
-                </div>
+                <Grid container className={classes.container}>
+                    <Grid item>
+                        <Grid item className={classes.iconButtons}>
+                            <IconButton><Instagram/></IconButton>
+                            <IconButton><Facebook/></IconButton>
+                            <IconButton>
+                                <Kakao className={classes.customKakao}/>
+                            </IconButton>
+                            <IconButton>
+                                <Naver className={classes.customNaver}/>
+                            </IconButton>
+                        </Grid>
 
-                {/* COMPONENTS > NAVLINKS */}
-                <div className={classes.logins}>
-                    <AuthUserContext.Consumer>
-                        {authUser => authUser ? 
-                        <>
-                            <Button onClick={() => dispatch({ type: 'drawer' })}>    
-                                {(authUser && authUser.roles['admin']) ? 'Admin' : authUser.displayName}
-                            </Button>
-                            <SideDrawer 
-                                classes={classes} 
-                                authUser={authUser}
-                                isOpen={state.drawerOpen} 
-                                state={{...state}}
-                                handleMenuClick={event => dispatch({ type: 'menu', payload: event.currentTarget.id })} 
-                                handleMenuItemClick={event => dispatch({ type:'menu_item', payload: event.currentTarget.id })}
-                                onClose={() => dispatch({ type: 'drawer' })}/>
-                            <MyPage classes={classes}/>
-                            <Logout classes={classes}/>
-                        </>
-                        : 
-                        <>
-                            <Login classes={classes}/>
-                            <Register classes={classes}/>
-                        </>
-                        }
-                    </AuthUserContext.Consumer>
-                </div>
+                        <Grid item className={classes.search}>
+                            <TextField
+                                variant='outlined'
+                                placeholder="Search"
+                                className={classes.searchBar}
+                                InputProps={{
+                                    className: classes.searchBarInput,
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Search />
+                                        </InputAdornment>
+                                    )}
+                                }
+                            />
+                        </Grid>
+                    </Grid>
+
+                    <Grid item>
+                        <AuthUserContext.Consumer>
+                            {authUser => authUser ? 
+                            <>
+                                <Button onClick={() => setDrawerOpen(!drawer)}>    
+                                    {(authUser && authUser.roles['admin']) ? 'Admin' : authUser.displayName}
+                                </Button>
+                                <NavDrawer 
+                                    classes={classes} 
+                                    authUser={authUser}
+                                    isOpen={drawer}
+                                    onClose={() => setDrawerOpen(!drawer)}
+                                    Logout={NAVLINKS.Logout({classes})}/>
+                                {NAVLINKS.MyPage()}
+                                {NAVLINKS.Logout({classes})}
+                            </>
+                            : 
+                            <>
+                                {NAVLINKS.Login()}
+                                {NAVLINKS.Register()}
+                            </>
+                            }
+                        </AuthUserContext.Consumer>
+                    </Grid>
+                </Grid>
             </Toolbar>
         </AppBar>
     );
