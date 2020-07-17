@@ -89,85 +89,83 @@ function generateSitePageList(classes, sitePages, navMenu, navMenuHandler, navMa
             </Fragment>
 )})}
 
-function generatePageSubsections(sitePage) {
-    const nestedPages = [];
-    switch(sitePage){
-        case 'Goose Study Abroad':
-            nestedPages.push('Goose Study Abroad', 'Goose Tips');
-            break;
-        case 'School Information':
-            nestedPages.push('School Information', 'School Application');
-            break;
-        case 'Study Abroad Services':
-            nestedPages.push('Homestay', 'Airport Ride');
-            break;
-        case 'Service Centre':
-            nestedPages.push('Announcements', 'Message Board');
-            break;
-        default:
-            break;
-    }
-    return nestedPages;
-}
 
 function generateNestedPages(classes, sPage, navMenu, navManuItemHandler) { 
-    const pageSubsections = generatePageSubsections(sPage);
-    return pageSubsections.map((item, i) => {
-        const nestedPageLink = createNestedMenuLinks(item);
+    const config = configPageSubsections(sPage, {}, '');
+    return config.subsections.map((section, i) => {
+        const { path } = configPageSubsections(sPage, config, section);
         return (
-            <Collapse key={i} in={navMenu[sPage]} timeout='auto' unmountOnExit>
-                <ListItem button component={RouterLink} to={nestedPageLink} className={classes.navDrawerMenuItems} onClick={event => navManuItemHandler(event.currentTarget.id)}>
-                    <ListItemText primary={item}/>
+            <Collapse key={i} 
+                in={navMenu[sPage]} 
+                timeout='auto' 
+                unmountOnExit>
+                <ListItem 
+                    button 
+                    className={classes.navDrawerMenuItems} 
+                    to={path} 
+                    component={RouterLink} 
+                    onClick={event => navManuItemHandler(event.currentTarget.id)}>
+                    <ListItemText primary={section}/>
                 </ListItem>
             </Collapse>
     )});
 }
 
-function createNestedMenuLinks(selectedPage) {
-    let nestedPageLink = {};
-    switch (selectedPage) {
+function configPageSubsections(sitePage, configPages, section) {
+    let config;
+    if (Object.keys(configPages).length === 0) config = {};
+    config = configPages;
+
+    switch(sitePage){
         case 'Goose Study Abroad':
-        case 'Goose Tips':
-            nestedPageLink = {
+            config.subsections = ['Goose Study Abroad', 'Goose Tips'];
+            config.path = { 
                 pathname: '/goose', 
                 state: {
-                  title: 'Goose Study Abroad',
-                  selected: (selectedPage === 'Goose Study Abroad' ? 0 : 1)
+                    title: 'Goose Study Abroad',
+                    ...(section && {
+                        selected: (section === 'Goose Study Abroad') ? 0 : 1 })
                 }
             }
             break;
+        
         case 'School Information':
-        case 'School Application':
-            nestedPageLink = {
+            config.subsections = ['School Information', 'School Application'];
+            config.path = {
                 pathname: '/schools', 
                 state: {
                   title: 'School Information',
-                  selected: (selectedPage === 'School Information' ? 0 : 1)
+                  ...(section && {
+                    selected: (section === 'School Information') ? 0 : 1 })
                 }
             }
             break;
-        case 'Homestay':
-        case 'Airport Ride':
-            nestedPageLink = {
+        case 'Study Abroad Services':
+            config.subsections = ['Homestay', 'Airport Ride'];
+            config.path = {
                 pathname: '/studyabroad', 
                 state: {
                   title: 'Study Abroad',
-                  selected: (selectedPage === 'Homestay' ? 0 : 1)
+                  ...(section && {
+                    selected: (section === 'Homestay') ? 0 : 1 })
                 }
             }
             break;
-        case 'Announcements':
-        case 'Message Board':
-            nestedPageLink = {
+        case 'Service Centre':
+            config.subsections = ['Announcements', 'Message Board'];
+            config.path = {
                 pathname: '/services', 
                 state: {
                   title: 'Service Centre',
-                  selected: (selectedPage === 'Announcements' ? 0 : 1)
+                  ...(section && {
+                    selected: (section === 'Announcements') ? 0 : 1 })
                 }
             }
             break;
+           
         default:
+            config.subsections = [];
             break;
     }
-    return nestedPageLink;
+    return config;
 }
