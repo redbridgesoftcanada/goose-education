@@ -5,7 +5,7 @@ import { AccountCircle, DeleteForever, ExitToApp, ExpandLess, ExpandMore } from 
 import { NAV_PAGES } from '../constants/constants';
 
 export default function NavDrawer(props) {
-    const { authUser, classes, isOpen, onClose, Logout } = props;
+    const { authUser, classes, isOpen, onClose, Logout, title } = props;
 
     const [ navMenu, setNavMenu ] = useState(false);
     const [ navMenuItem, setNavMenuItem ] = useState(false);
@@ -27,7 +27,7 @@ export default function NavDrawer(props) {
                 <ListItem>{Logout}</ListItem>
                 {generateUserPageList(isAdmin, userPages)}
                 <Divider/>
-                <ListSubheader>Navigation</ListSubheader>
+                <ListSubheader>{title}</ListSubheader>
                 {generateSitePageList(classes, sitePages, navMenu, selectedNavMenu, selectedNavMenuItem)}
             </List>
         </Drawer>

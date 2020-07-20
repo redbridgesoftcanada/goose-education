@@ -13,16 +13,16 @@ import { DatabaseContext } from './components/database';
 function Index() {
   return (
     <DatabaseContext.Consumer>
-      {context => context.state.homeGraphics &&
+      {({ state }) => state.homeGraphics &&
         <>
-          <NavBar />
-          <PageBanner title={context.state.homeGraphics.homePoster.title} caption={context.state.homeGraphics.homePoster.subtitle} backgroundImage={context.state.homeGraphics.homePoster.image} layoutType='pageBanner'/>
-          <FeatureCarousel featuredSchools={context.state.featuredSchools}/>
-          <NavButtonBase graphics={context.state.homeGraphics.homeFeatureBoard}/>
-          <FeatureArticles wrapperText={context.state.homeGraphics.homeBlackWrapper} featuredArticles={context.state.featuredArticles} />
-          <FeatureOthers whiteWrapperText={context.state.homeGraphics.homeWhiteWrapper} redWrapperText={context.state.homeGraphics.homeRedWrapper}
-          previewSchools={context.state.featuredSchools} previewTips={context.state.featuredTips}/>
-          <FeatureInstagram instagram={context.state.instagram}/>
+          <NavBar/>
+          <PageBanner title={state.homeGraphics.homePoster.title} caption={state.homeGraphics.homePoster.subtitle} backgroundImage={state.homeGraphics.homePoster.image} layoutType='pageBanner'/>
+          <FeatureCarousel featuredSchools={state.featuredSchools}/>
+          <NavButtonBase graphics={state.homeGraphics.homeFeatureBoard}/>
+          <FeatureArticles wrapperText={state.homeGraphics.homeBlackWrapper} featuredArticles={state.featuredArticles} />
+          <FeatureOthers whiteWrapperText={state.homeGraphics.homeWhiteWrapper} redWrapperText={state.homeGraphics.homeRedWrapper}
+          previewSchools={state.featuredSchools} previewTips={state.featuredTips}/>
+          <FeatureInstagram instagram={state.instagram}/>
           <Footer />
         </>
       }

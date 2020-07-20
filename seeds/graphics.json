@@ -1,5 +1,13 @@
 {
   "graphics": {
+    "navDrawer": {
+      "location": "/home",
+      "title": "Navigation",
+      "subtitle": "",
+      "caption": "",
+      "image": ""
+    },
+
     "homePoster": {
       "location": "/home",
       "title": "Find Your Own Path, Make Your Dreams Come True",

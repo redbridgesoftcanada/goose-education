@@ -4,6 +4,7 @@ import { Facebook, Instagram, Search } from '@material-ui/icons';
 import { ReactComponent as Kakao } from '../assets/img/kakao-talk.svg';
 import { ReactComponent as Naver } from '../assets/img/icon_blog.svg';
 import { AuthUserContext } from '../components/session';
+import { DatabaseContext } from '../components/database';
 import * as NAVLINKS from '../components/navlinks';
 import NavDrawer from './NavDrawer';
 import useStyles from '../styles/constants';
@@ -52,12 +53,17 @@ function HeaderBar(props) {
                                 <Button onClick={() => setDrawerOpen(!drawer)}>    
                                     {(authUser && authUser.roles['admin']) ? 'Admin' : authUser.displayName}
                                 </Button>
-                                <NavDrawer 
-                                    classes={classes} 
-                                    authUser={authUser}
-                                    isOpen={drawer}
-                                    onClose={() => setDrawerOpen(!drawer)}
-                                    Logout={NAVLINKS.Logout({classes})}/>
+                                <DatabaseContext.Consumer>
+                                    {({ state }) =>  state.homeGraphics &&
+                                        <NavDrawer 
+                                            title={state.homeGraphics.navDrawer.title}
+                                            classes={classes} 
+                                            authUser={authUser}
+                                            isOpen={drawer}
+                                            onClose={() => setDrawerOpen(!drawer)}
+                                            Logout={NAVLINKS.Logout({classes})}/>
+                                    }
+                                </DatabaseContext.Consumer>
                                 {NAVLINKS.MyPage()}
                                 {NAVLINKS.Logout({classes})}
                             </>
