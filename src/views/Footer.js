@@ -6,30 +6,29 @@ import { ReactComponent as Naver } from '../assets/img/icon_blog.svg';
 import { Link as RouterLink } from "react-router-dom";
 import useStyles from '../styles/constants';
 
-const instagramUrl = 'https://www.instagram.com/gooseedu/';
-const facebookUrl = 'https://www.facebook.com/gooseedu';
-const kakaoUrl = 'https://pf.kakao.com/_hNspC';
-const naverUrl = 'https://blog.naver.com/gooseedu';
-
 export default function FooterBar(props) {
   const classes = useStyles(props, 'footer');
+  const { 
+    leftWrapper: { FL1, FL2, FL3, FL4, FL5, FL6 }, 
+    rightWrapper: { FR1, FR2, FR3, FR4, FR5 } 
+  } = props;
   
   const handleIconClick = (event) => {
     switch(event.currentTarget.id) {
       case 'instagram':
-        window.open(instagramUrl, '_blank');
+        window.open(FR1, '_blank');
       break;
 
       case 'facebook':
-        window.open(facebookUrl, '_blank');
+        window.open(FR2, '_blank');
       break;
 
       case 'kakao':
-        window.open(kakaoUrl, '_blank');
+        window.open(FR3, '_blank');
       break;
 
       case 'naver':
-        window.open(naverUrl, '_blank');
+        window.open(FR4, '_blank');
       break;
 
       default:
@@ -46,21 +45,21 @@ export default function FooterBar(props) {
         <Grid item>
           <ul className={classes.list}>
             <li>
-              {LinkHighlight(classes, '/', 'Goose Study Abroad')}
+              {LinkHighlight(classes, '/', FL1.title)}
               {' | '}
-              {LinkHighlight(classes, '/privacy', 'Privacy Policy')}
+              {LinkHighlight(classes, '/privacy', FL2.title)}
             </li>
             <li className={classes.listItem}>
-              Representative: Jay Hyun
+              {FL3.title}
             </li>
             <li className={classes.listItem}>
-              Address: 487, Suji-ro, Suji-gu, Yongin-si, Gyeonggi-do, Korea
+              {FL4.title}
             </li>
             <li className={classes.listItem}>
-              Personal Number: 010-5344-6642 (Korea)
+              {FL5.title}
             </li>
             <li className={classes.listItem}>
-              Company Registration Number: 680-87-01164
+              {FL6.title}
             </li>
           </ul>
         </Grid>
@@ -83,7 +82,7 @@ export default function FooterBar(props) {
         </Grid>
 
         <Grid item className={classes.copyright}>
-          <Copyright/>
+          <Copyright text={FR5}/>
         </Grid>
   
       </Grid>
@@ -105,13 +104,13 @@ function LinkHighlight(classes, path, text) {
   );
 }
 
-function Copyright() {
+function Copyright(text) {
   return (
     <>
-      {'COPYRIGHT © '}
-      <Link color="inherit">Goose International</Link>
+      {text.title}
+      <Link color="inherit">{text.subtitle}</Link>
       {' '}
-      ALL RIGHTS RESERVED
+      {text.caption}
     </>
   );
 }

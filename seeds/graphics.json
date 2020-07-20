@@ -8,6 +8,80 @@
       "image": ""
     },
 
+    "footerLeft": {
+      "location": "/home",
+      "FL1": {
+        "title": "Goose Study Abroad",
+        "subtitle": "",
+        "caption": "",
+        "image": ""
+      },
+      "FL2": {
+        "title": "Privacy Policy",
+        "subtitle": "",
+        "caption": "",
+        "image": ""
+      },
+      "FL3": {
+        "title": "Representative: Jay Hyun",
+        "subtitle": "",
+        "caption": "",
+        "image": ""
+      },
+      "FL4": {
+        "title": "Address: 487, Suji-ro, Suji-gu, Yongin-si, Gyeonggi-do, Korea",
+        "subtitle": "",
+        "caption": "",
+        "image": ""
+      },
+      "FL5": {
+        "title": "Personal Number: 010-5344-6642 (Korea)",
+        "subtitle": "",
+        "caption": "",
+        "image": ""
+      },
+      "FL6": {
+        "title": "Company Registration Number: 680-87-01164",
+        "subtitle": "",
+        "caption": "",
+        "image": ""
+      }
+    },
+
+    "footerRight": {
+      "location": "/home",
+      "FR1": {
+        "title": "",
+        "subtitle": "",
+        "caption": "",
+        "image": "https://www.instagram.com/gooseedu/"
+      },
+      "FR2": {
+        "title": "",
+        "subtitle": "",
+        "caption": "",
+        "image": "https://www.facebook.com/gooseedu"
+      },
+      "FR3": {
+        "title": "",
+        "subtitle": "",
+        "caption": "",
+        "image": "https://pf.kakao.com/_hNspC"
+      },
+      "FR4": {
+        "title": "",
+        "subtitle": "",
+        "caption": "",
+        "image": "https://blog.naver.com/gooseedu"
+      },
+      "FR5": {
+        "title": "COPYRIGHT © ",
+        "subtitle": "Goose International",
+        "caption": "ALL RIGHTS RESERVED",
+        "image": ""
+      }
+    },
+    
     "homePoster": {
       "location": "/home",
       "title": "Find Your Own Path, Make Your Dreams Come True",

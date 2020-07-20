@@ -16,14 +16,25 @@ function Index() {
       {({ state }) => state.homeGraphics &&
         <>
           <NavBar/>
-          <PageBanner title={state.homeGraphics.homePoster.title} caption={state.homeGraphics.homePoster.subtitle} backgroundImage={state.homeGraphics.homePoster.image} layoutType='pageBanner'/>
+          <PageBanner 
+            title={state.homeGraphics.homePoster.title} 
+            caption={state.homeGraphics.homePoster.subtitle} 
+            backgroundImage={state.homeGraphics.homePoster.image}
+            layoutType='pageBanner'/>
           <FeatureCarousel featuredSchools={state.featuredSchools}/>
           <NavButtonBase graphics={state.homeGraphics.homeFeatureBoard}/>
-          <FeatureArticles wrapperText={state.homeGraphics.homeBlackWrapper} featuredArticles={state.featuredArticles} />
-          <FeatureOthers whiteWrapperText={state.homeGraphics.homeWhiteWrapper} redWrapperText={state.homeGraphics.homeRedWrapper}
-          previewSchools={state.featuredSchools} previewTips={state.featuredTips}/>
+          <FeatureArticles 
+            wrapperText={state.homeGraphics.homeBlackWrapper} 
+            featuredArticles={state.featuredArticles} />
+          <FeatureOthers 
+            whiteWrapperText={state.homeGraphics.homeWhiteWrapper} 
+            redWrapperText={state.homeGraphics.homeRedWrapper}
+            previewSchools={state.featuredSchools} 
+            previewTips={state.featuredTips}/>
           <FeatureInstagram instagram={state.instagram}/>
-          <Footer />
+          <Footer 
+            leftWrapper={state.homeGraphics.footerLeft} 
+            rightWrapper={state.homeGraphics.footerRight}/>
         </>
       }
     </DatabaseContext.Consumer>
