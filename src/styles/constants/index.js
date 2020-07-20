@@ -1,5 +1,5 @@
 import { appBarStyles } from './_appbar';
-// import { footerStyles } from './_footer';
+import { footerStyles } from './_footer';
 
 const useStyles = (props, stylesheet) => {
   switch (stylesheet) {
@@ -7,8 +7,8 @@ const useStyles = (props, stylesheet) => {
     case 'headerBar':
       return appBarStyles(props, stylesheet);
 
-    // case 'footer': 
-    //   return footerStyles(props);
+    case 'footer': 
+      return footerStyles(props);
   }
 }
 
