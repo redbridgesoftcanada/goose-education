@@ -19,8 +19,8 @@ function HeaderBar(props) {
                 <Grid container className={classes.container}>
                     <Grid item>
                         <Grid item className={classes.iconButtons}>
-                            <IconButton><Instagram/></IconButton>
-                            <IconButton><Facebook/></IconButton>
+                            <IconButton color='inherit'><Instagram/></IconButton>
+                            <IconButton color='inherit'><Facebook/></IconButton>
                             <IconButton>
                                 <Kakao className={classes.customKakao}/>
                             </IconButton>
