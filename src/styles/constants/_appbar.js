@@ -12,13 +12,22 @@ export const appBarStyles = (props, stylesheet) => {
       [theme.breakpoints.up('sm')]: {
         height: 70,
       },
+      [theme.breakpoints.down('xs')]: {
+        height: 115,
+      },
     },
     
     container: {
       alignItems: 'center',
       justifyContent: 'space-between',
+      ...(stylesheet === 'navbar') && {
+        [theme.breakpoints.down('xs')]: {
+          justifyContent: 'center'
+        }
+      }
     },
 
+    // N A V B A R  S T Y L E S
     logo: {
       marginLeft: theme.spacing(2)
     },
@@ -65,8 +74,13 @@ export const appBarStyles = (props, stylesheet) => {
       },
     },
 
+    // H E A D E R  B A R  S T Y L E S
     iconButtons: {
-      float: 'left'
+      float: 'left',
+      color: theme.palette.common.black,
+      [theme.breakpoints.down('sm')]: {
+        display: 'none',
+      }
     },
 
     customKakao: {
@@ -81,7 +95,10 @@ export const appBarStyles = (props, stylesheet) => {
 
     search: {
       float: 'left',
-      marginTop: theme.spacing(1)
+      marginTop: theme.spacing(1),
+      [theme.breakpoints.down('sm')]: {
+        display: 'none',
+      },
     },
 
     searchBar: {
@@ -94,6 +111,6 @@ export const appBarStyles = (props, stylesheet) => {
 
     navDrawerMenuItems: {
       paddingLeft: theme.spacing(4)
-    }
+    },
   }))(props);
 }

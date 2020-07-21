@@ -1,5 +1,8 @@
 import React from 'react';
 import withRoot from './withRoot';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import CondenseAppBar from './views/CondenseAppBar';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import FeatureCarousel from './views/FeatureCarousel';
@@ -10,12 +13,15 @@ import FeatureInstagram from './views/FeatureInstagram';
 import Footer from './views/Footer';
 import { DatabaseContext } from './components/database';
 
-function Index() {
+function Home() {
+  const theme = useTheme();
+  const checkBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
+
   return (
     <DatabaseContext.Consumer>
       {({ state }) => state.homeGraphics &&
         <>
-          <NavBar/>
+          {checkBreakpoint ? <CondenseAppBar/> : <NavBar/>} 
           <PageBanner 
             title={state.homeGraphics.homePoster.title} 
             caption={state.homeGraphics.homePoster.subtitle} 
@@ -41,4 +47,4 @@ function Index() {
   );
 }
 
-export default withRoot(Index);
+export default withRoot(Home);
