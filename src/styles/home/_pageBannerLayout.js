@@ -1,43 +1,60 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const pageBannerLayoutStyles = props => {
-  const isHeaderBanner = props.layoutType === 'headerBanner';
+  const isPageBanner = props.layoutType === 'pageBanner';
+  
+  const flexContainerStyles = { display: 'flex', flexDirection: 'column', alignItems: 'center' };
+  const backgroundStyles = { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }; 
+  
   return makeStyles(theme => ({
     root: {
-      color: theme.palette.common.white,
-      position: 'relative',
-      ...isHeaderBanner && { display: 'flex' },
       alignItems: 'center',
-      [theme.breakpoints.up('sm')]: {
-        ...isHeaderBanner ? { height: '22vh', minHeight: 205 } : { height: '80vh', minHeight: 500 },
-        maxHeight: 1300
-      },
+      color: theme.palette.common.white,
+      height: !isPageBanner ? '22vh' : '80vh',
+      minHeight: !isPageBanner ? 205 : 500,
+      maxHeight: 1300,
+      position: 'relative',
+      ...!isPageBanner && { display: 'flex' },
+      ...isPageBanner && {
+        [theme.breakpoints.down('sm')]: { 
+          height: '40vh'
+        }
+      }
     },
 
     container: {
       marginBottom: theme.spacing(14),
-      ...isHeaderBanner ? 
-        { marginTop: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: 'inherit' } : 
-        { marginTop: 130, marginLeft: 40, width: 950, float: 'left' },
+      marginTop: !isPageBanner ? 0 : '21vh',
+      ...!isPageBanner && { ...flexContainerStyles, maxWidth: 'inherit' },
+      ...isPageBanner &&  { 
+        float: 'left',
+        marginLeft: 40, 
+        width: 815,
+        [theme.breakpoints.down('md')]: {
+          ...flexContainerStyles, 
+          marginLeft: 70, 
+          width: '85%'
+        }, 
+        [theme.breakpoints.down('sm')]: {
+          marginLeft: 0, 
+          width: 'auto'
+        },
+        [theme.breakpoints.down('xs')]: {
+          marginTop: '15vh', 
+          width: 'auto'
+        }
+      }
     },
 
     backdrop: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
+      ...backgroundStyles,
       backgroundColor: theme.palette.common.black,
       opacity: 0.5,
       zIndex: -1,
     },
 
     background: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
+      ...backgroundStyles,
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat',
       zIndex: -2,

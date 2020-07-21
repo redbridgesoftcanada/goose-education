@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const pageBannerStyles = props => {
   const isPageBanner = props.layoutType === 'pageBanner';
+  
   return makeStyles(theme => ({
     background: {
       backgroundImage: `url(${props.backgroundImage})`,
@@ -9,28 +10,46 @@ export const pageBannerStyles = props => {
     },
 
     headerTitle: {
+      color: theme.palette.common.white,
+      marginTop: isPageBanner ? 90 : 20,
       position: 'absolute',
       textAlign: 'center',
-      color: theme.palette.common.white,
-      ...isPageBanner ? { marginTop: 90 } : { marginTop: 20 }
     },
 
     pageBannerTitle: {
       color: theme.palette.common.white,
       textAlign: 'left',
+      [theme.breakpoints.down('md')]: { 
+        textAlign: 'center' 
+      }
     },
     
     pageBannerCaption: {
       color: theme.palette.common.white,
+      margin: `${theme.spacing(2)}px 0`,
       textAlign: 'left',
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
+      ...theme.typography.body1,
+      [theme.breakpoints.down('md')]: { 
+        textAlign: 'center' 
+      },
+      [theme.breakpoints.down('sm')]: { 
+        display: 'none' 
+      }
+    },
+
+    pageBannerButton: {
+      backgroundColor: theme.palette.secondary.main,
+      color: theme.palette.common.white,
+      [theme.breakpoints.down('sm')]: { 
+        marginTop: theme.spacing(2) 
+      }
     },
 
     h5: {
-      marginBottom: theme.spacing(4),
-      marginTop: theme.spacing(4),
-      [theme.breakpoints.up('sm')]: { marginTop: theme.spacing(10) },
+      margin: `${theme.spacing(4)}px 0`,
+      [theme.breakpoints.up('sm')]: { 
+        marginTop: theme.spacing(10) 
+      },
     }
   }))(props);
 }
