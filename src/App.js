@@ -39,7 +39,7 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
+    <div className="App" style={{ overflow:'hidden' }}>
       <ScrollToTop>
         <Switch>
           <Route path="/admin" render={props => <Admin {...props} />}/>
@@ -53,37 +53,37 @@ function App() {
           <Route exact path="/" render={() => <Home /> }/>
 
           <DatabaseContext.Consumer>
-            {context =>
+            {({ state }) =>
               <>
-                {context.state.gooseGraphics && <Route path="/goose" render={props => <Goose {...props} pageBanner={context.state.gooseGraphics.goosePageBanner}/>}/> }
-                {context.state.networkingGraphics && <Route path="/networking" render={props => 
+                {state.gooseGraphics && <Route path="/goose" render={props => <Goose {...props} pageBanner={state.gooseGraphics.goosePageBanner}/>}/> }
+                {state.networkingGraphics && <Route path="/networking" render={props => 
                   <Networking {...props} 
-                    pageBanner={context.state.networkingGraphics.networkingPageBanner} 
-                    poster={context.state.networkingGraphics.networkingPoster}
-                    posterCards={context.state.networkingGraphics.networkingCards} 
-                    wrapper={context.state.networkingGraphics.networkingWrapper}/>}/> }
+                    pageBanner={state.networkingGraphics.networkingPageBanner} 
+                    poster={state.networkingGraphics.networkingPoster}
+                    posterCards={state.networkingGraphics.networkingCards} 
+                    wrapper={state.networkingGraphics.networkingWrapper}/>}/> }
                 
-                {context.state.schoolsGraphics && <Route path="/schools" render={props => 
+                {state.schoolsGraphics && <Route path="/schools" render={props => 
                   <Schools {...props} 
-                    listOfSchools={context.state.listOfSchools} 
-                    pageBanner={context.state.schoolsGraphics.schoolInfoPageBanner}
-                    banner={context.state.schoolsGraphics.schoolInfoBanner}
-                    posterTop={context.state.schoolsGraphics.schoolInfoPosterTop}
-                    posterBottom={context.state.schoolsGraphics.schoolInfoPosterBottom}/>}/>}
+                    listOfSchools={state.listOfSchools} 
+                    pageBanner={state.schoolsGraphics.schoolInfoPageBanner}
+                    banner={state.schoolsGraphics.schoolInfoBanner}
+                    posterTop={state.schoolsGraphics.schoolInfoPosterTop}
+                    posterBottom={state.schoolsGraphics.schoolInfoPosterBottom}/>}/>}
 
-                {context.state.studyabroadGraphics && <Route path="/studyabroad" render={props => 
+                {state.studyabroadGraphics && <Route path="/studyabroad" render={props => 
                   <StudyAbroad {...props}
-                    pageBanner={context.state.studyabroadGraphics.studyAbroadPageBanner} 
-                    poster={context.state.studyabroadGraphics.studyAbroadPoster}
-                    homestayBanner={context.state.studyabroadGraphics.homestayBanner}
-                    homestayProcessBanner={context.state.studyabroadGraphics.homestayBannerProcess}
-                    airportRideBanner={context.state.studyabroadGraphics.airportRideBanner}/>}/>}
+                    pageBanner={state.studyabroadGraphics.studyAbroadPageBanner} 
+                    poster={state.studyabroadGraphics.studyAbroadPoster}
+                    homestayBanner={state.studyabroadGraphics.homestayBanner}
+                    homestayProcessBanner={state.studyabroadGraphics.homestayBannerProcess}
+                    airportRideBanner={state.studyabroadGraphics.airportRideBanner}/>}/>}
                 
-                {context.state.servicesGraphics && <Route path="/services" render={props => 
+                {state.servicesGraphics && <Route path="/services" render={props => 
                   <ServiceCentre {...props} 
-                    listOfMessages={context.state.listOfMessages} 
-                    listOfAnnouncements={context.state.listOfAnnouncements}
-                    pageBanner={context.state.servicesGraphics.serviceCentrePageBanner}/>}/>}
+                    listOfMessages={state.listOfMessages} 
+                    listOfAnnouncements={state.listOfAnnouncements}
+                    pageBanner={state.servicesGraphics.serviceCentrePageBanner}/>}/>}
               </>
             }
           </DatabaseContext.Consumer>
