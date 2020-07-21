@@ -1,22 +1,16 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const navButtonBaseStyles = classes => {
+export const navButtonBaseStyles = props => {
+    
+  const absoluteStyles = { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 };
+
   return makeStyles(theme => ({
     root: {
-      maxWidth: '100%',
-      marginTop: theme.spacing(6),
-      marginBottom: theme.spacing(4),
-    },
-    row: {
       display: 'flex',
       flexWrap: 'wrap',
     },
-    column: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      flexDirection: 'column',
-    },
-    imageWrapper: {
+
+    buttonBase: {
       position: 'relative',
       display: 'inline-block',
       padding: 0,
@@ -39,53 +33,53 @@ export const navButtonBaseStyles = classes => {
         border: '4px solid currentColor',
       },
     },
+
+    imageSrc: {
+      ...absoluteStyles,
+       backgroundSize: 'cover',
+       backgroundPosition: 'center 40%',
+     },
+
+    imageBackdrop: {
+    ...absoluteStyles,
+      background: theme.palette.common.black,
+      opacity: 0.5,
+      transition: theme.transitions.create('opacity'),
+    },
+
     imageButton: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
+     ...absoluteStyles,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       color: theme.palette.common.white,
     },
-    imageSrc: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center 40%',
-    },
-    imageBackdrop: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
-      background: theme.palette.common.black,
-      opacity: 0.5,
-      transition: theme.transitions.create('opacity'),
-    },
+
     imageTitle: {
+      ...theme.typography.h6,
+      color: theme.palette.common.white,
       position: 'relative',
       padding: `${theme.spacing(2)}px ${theme.spacing(4)}px 14px`,
     },
+
     imageDescription: {
-      padding: `${theme.spacing(2)}px ${theme.spacing(4)}px 14px`,
+      ...theme.typography.caption,
+      padding: `0 ${theme.spacing(4)}px 14px`,
       textAlign: 'left',
+      [theme.breakpoints.down('sm')]: {
+        display: 'none'
+      }
     },
+
     imageMarked: {
-      height: 3,
-      width: 18,
       background: theme.palette.common.white,
-      position: 'absolute',
-      bottom: -2,
+      height: 3,
       left: 'calc(50% - 9px)',
+      marginTop: 8,
+      position: 'absolute',
       transition: theme.transitions.create('opacity'),
-    },
-  }))(classes);
+      width: 18
+    }
+  }))(props);
 }

@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { ButtonBase, Container, Typography } from '@material-ui/core';
+import { Box, ButtonBase, Typography } from '@material-ui/core';
 import { Redirect } from "react-router-dom";
 import { useStyles } from '../styles/home';
 
 export default function NavButtonBase(props) {
   const classes = useStyles(props, 'navButtonBase');
-  const { graphics } = props;
-
-  const [ redirectPath, setRedirectPath ] = useState({});
   
-  delete graphics['location'];  // remove identifier key-value pair ({location: /home}) to be able to map through the graphics data;
+  const { graphics } = props;
+  delete graphics['location'];  
+  // remove identifier key-value pair ({location: /home}) 
+  // to be able to map through the graphics data;
   const graphicsArr = Object.values(graphics); 
+  
+  const [ redirectPath, setRedirectPath ] = useState({});
 
-  const handleClick = event => {
+  const assignRedirectPath = event => {
     switch(event.currentTarget.id) {
       case 'School Information':
         setRedirectPath({
@@ -48,46 +50,43 @@ export default function NavButtonBase(props) {
   }
 
   return (
-    <Container className={classes.root}>
-      <div className={classes.row}>
-        {graphicsArr.map((graphic, i) => (
-          <ButtonBase
-            key={i}
-            className={classes.imageWrapper}
-            style={{ width: (i === 0) ? '37%' : (i === 1) ? '18%' : '22.5%'}}
+    <Box className={classes.root}>
+      {graphicsArr.map((graphic, i) => (
+        <ButtonBase key={i}
+          className={classes.buttonBase}
+          style={{ width: (i === 0) ? '37%' : (i === 1) ? '18%' : '22.5%' }}
+        >
+          <div
+            className={classes.imageSrc}
+            style={{ backgroundImage: `url(${graphic.image})` }}
+          />
+          <div className={classes.imageBackdrop} />
+          <div 
+            className={classes.imageButton} 
+            id={graphic.title} 
+            onClick={assignRedirectPath}
           >
-            <div
-              className={classes.imageSrc}
-              style={{ backgroundImage: `url(${graphic.image})` }}
-            />
-            <div className={classes.imageBackdrop} />
-            <div className={classes.imageButton} id={graphic.title} onClick={handleClick}>
-              {(Object.entries(redirectPath).length) ? 
-                <Redirect push to={redirectPath}/> 
-                : 
-                <Typography
-                  component="span"
-                  variant="h6"
-                  color="inherit"
-                  className={classes.imageTitle}
-                >
-                  {graphic.title}
-                  <div className={classes.imageMarked} />
-                </Typography>
-              }
+            {(Object.entries(redirectPath).length) ? 
+              <Redirect push to={redirectPath}/> 
+              : 
               <Typography
+                className={classes.imageTitle}
                 component="span"
-                variant="caption"
-                color="inherit"
-                className={classes.imageDescription}
               >
-                {graphic.caption}
+                {graphic.title}
                 <div className={classes.imageMarked} />
               </Typography>
-            </div>
-          </ButtonBase>
-        ))}
-      </div>
-    </Container>
+            }
+            <Typography
+              className={classes.imageDescription}
+              component="span"
+            >
+              {graphic.caption}
+              <div className={classes.imageMarked} />
+            </Typography>
+          </div>
+        </ButtonBase>
+      ))}
+    </Box>
   );
 }
