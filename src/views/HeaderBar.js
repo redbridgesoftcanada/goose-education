@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import { AppBar, Button, Grid, IconButton, InputAdornment, TextField, Toolbar } from '@material-ui/core'
 import { Facebook, Instagram, Search } from '@material-ui/icons';
 import { ReactComponent as Kakao } from '../assets/img/kakao-talk.svg';
@@ -12,6 +13,20 @@ import useStyles from '../styles/constants';
 function HeaderBar(props) {
     const classes = useStyles(props, 'headerBar');
     const [ drawer, setDrawerOpen ] = useState(false);
+    const [ searchQuery, setQuery ] = useState('');
+    
+    const history = useHistory();
+    const handleSearch = event => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            history.push({ 
+                pathname:'/search', 
+                search:`?query=${searchQuery}`, 
+                state: {...props, resources: []} 
+            });
+            console.log('Empty array being sent as resources in HeaderBar.')
+        }
+    }
 
     return (
         <AppBar className={classes.appBar} elevation={0}>
@@ -31,6 +46,8 @@ function HeaderBar(props) {
 
                         <Grid item className={classes.search}>
                             <TextField
+                                onChange={event => setQuery(event.target.value)}
+                                onKeyDown={handleSearch}
                                 variant='outlined'
                                 placeholder="Search"
                                 className={classes.searchBar}
