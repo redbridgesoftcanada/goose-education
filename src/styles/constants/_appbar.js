@@ -1,10 +1,11 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const appBarStyles = (props, stylesheet) => {
+  const isNavBar = stylesheet === 'navbar';
   return makeStyles(theme => ({
     appBar: {
       color: theme.palette.common.white,
-      ...(stylesheet === 'navbar') ? { position: 'static' } : { position: 'sticky' }
+      ...isNavBar ? { position: 'static' } : { position: 'sticky' }
     },
 
     toolbar: {
@@ -20,8 +21,9 @@ export const appBarStyles = (props, stylesheet) => {
     container: {
       alignItems: 'center',
       justifyContent: 'space-between',
-      ...(stylesheet === 'navbar') && {
+      ...isNavBar && {
         [theme.breakpoints.down('xs')]: {
+          flexDirection: 'column',
           justifyContent: 'center'
         }
       }
