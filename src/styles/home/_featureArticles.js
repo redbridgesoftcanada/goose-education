@@ -13,25 +13,32 @@ export const featureArticlesStyles = props => {
     },
     
     title: {
+      ...theme.typography.h4,
       color: theme.palette.common.white,
       marginTop: theme.spacing(7),
       marginBottom: theme.spacing(2),
     },
 
     description: {
+      ...theme.typography.body2,
       color: theme.palette.common.white,
+      [theme.breakpoints.down('sm')] : {
+        width: '75%',
+        marginLeft: '12%'
+      }
     },
 
     button: {
       color: theme.palette.common.white,
-      marginTop: theme.spacing(5)
+      marginTop: theme.spacing(5),
+      [theme.breakpoints.down('sm')]: { 
+        display: 'none'
+      }
     },
 
     imageWrapper: {
-        marginTop: theme.spacing(5),
-        marginBottom: theme.spacing(15),
-        display: 'flex',
-        position: 'relative',
+      marginTop: theme.spacing(5),
+      marginBottom: theme.spacing(15),
     },
 
     image: {

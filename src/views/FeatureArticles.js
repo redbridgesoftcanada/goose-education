@@ -14,11 +14,10 @@ export default function FeatureArticles(props) {
     const [ article, setArticle ] = useState({ selected: null, dialogOpen: false });
 
     const handleIconClick = () => {
-        const networkingPath = { 
+        setRedirectPath({ 
             pathname: '/networking', 
             state: { title: 'Networking', selected: 0 } 
-        }
-        setRedirectPath(networkingPath);
+        });
     }
 
     const handleArticleClick = event => {
@@ -31,7 +30,7 @@ export default function FeatureArticles(props) {
     return (
         <section className={classes.root}>
             <div className={classes.header}>
-                <Typography className={classes.title} variant="h4">{wrapperText.title}</Typography>
+                <Typography className={classes.title}>{wrapperText.title}</Typography>
                 {(Object.entries(redirectPath).length) ? 
                     <Redirect push to={redirectPath}/>
                     :
@@ -40,12 +39,12 @@ export default function FeatureArticles(props) {
                     </IconButton>
                 }
             </div>
-            <Typography className={classes.description} variant="body2">{wrapperText.caption}</Typography>
-            <Container className={classes.imageWrapper}>
-                <Grid container spacing={2}>
+            <Typography className={classes.description}>{wrapperText.caption}</Typography>
+            <Grid container className={classes.imageWrapper}>
+                <Grid container item spacing={1}>
                     {featuredArticles.map(feature => {
                         return (
-                            <Grid item key={feature.id} xs={12} md={3}>
+                            <Grid item key={feature.id} xs={12} sm={6} md={3}>
                                 <div id={feature.id} onClick={handleArticleClick}>
                                     <img
                                         className={classes.image}
@@ -57,7 +56,7 @@ export default function FeatureArticles(props) {
                         )
                     })}
                 </Grid>
-            </Container>
+            </Grid>
             <AuthUserContext.Consumer>
                 {authUser => 
                     <ArticleDialog 
