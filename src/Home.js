@@ -40,7 +40,9 @@ function Home() {
             redWrapperText={state.homeGraphics.homeRedWrapper}
             previewSchools={state.featuredSchools} 
             previewTips={state.featuredTips}/>
-          <FeatureInstagram instagram={state.instagram}/>
+          <FeatureInstagram 
+            title={state.homeGraphics.homeInstagram.title}
+            instagram={state.instagram}/>
           <Footer 
             leftWrapper={state.homeGraphics.footerLeft} 
             rightWrapper={state.homeGraphics.footerRight}/>
