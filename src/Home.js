@@ -11,24 +11,26 @@ import NavButtonBase from './views/NavButtonBase';
 import FeatureArticles from './views/FeatureArticles';
 import FeatureOthers from './views/FeatureOthers';
 import FeatureInstagram from './views/FeatureInstagram';
+import CondenseFooter from './views/CondenseFooter';
 import Footer from './views/Footer';
 
 function Home() {
   const theme = useTheme();
-  const checkAppBarBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
-  const checkPageBannerBreakpoint = useMediaQuery(theme.breakpoints.between('xs', 'md'));
+  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+  const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
+  const rangeBreakpoint = useMediaQuery(theme.breakpoints.between('xs', 'md'));
 
   return (
     <DatabaseContext.Consumer>
       {({ state }) => state.homeGraphics &&
         <>
-          {!checkAppBarBreakpoint ? <NavBar/> : <CondenseAppBar/>} 
+          {!mdBreakpoint ? <NavBar/> : <CondenseAppBar/>} 
           <PageBanner 
             title={state.homeGraphics.homePoster.title} 
             caption={state.homeGraphics.homePoster.subtitle} 
             backgroundImage={state.homeGraphics.homePoster.image}
             layoutType='pageBanner'/>
-          {!checkPageBannerBreakpoint &&
+          {!rangeBreakpoint &&
             <FeatureCarousel featuredSchools={state.featuredSchools}/>
           }
           <NavButtonBase graphics={state.homeGraphics.homeFeatureBoard}/>
@@ -43,9 +45,16 @@ function Home() {
           <FeatureInstagram 
             title={state.homeGraphics.homeInstagram.title}
             instagram={state.instagram}/>
+          
+          {!smBreakpoint ?
           <Footer 
             leftWrapper={state.homeGraphics.footerLeft} 
             rightWrapper={state.homeGraphics.footerRight}/>
+          :
+          <CondenseFooter
+            leftWrapper={state.homeGraphics.footerLeft} 
+            rightWrapper={state.homeGraphics.footerRight}/>
+          }
         </>
       }
     </DatabaseContext.Consumer>

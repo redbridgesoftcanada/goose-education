@@ -9,39 +9,65 @@ export const footerStyles = props => {
       flexWrap: 'nowrap',
       overflow: 'hidden'
     },
-    leftWrapper: {
-      marginLeft: theme.spacing(5),
-      alignItems: 'center'
+
+    condenseWrapper: {
+      alignItems: 'center',
+      flexDirection: 'column'
     },
+
+    leftWrapper: {
+      alignItems: 'center',
+      marginLeft: theme.spacing(5),
+      [theme.breakpoints.down('md')]: {
+        marginLeft: theme.spacing(2)
+      }
+    },
+
     list: {
       fontSize: 13,
       listStyle: 'none',
       textAlign: 'left'
     },
+
     listItem: {
-      marginTop: theme.spacing(1)/4
+      marginTop: theme.spacing(1) / 4
     },
+
     linkHover: {
       '&:hover': {
         color: theme.palette.secondary.main,
       },
     },
+
     rightWrapper: {
-      marginRight: theme.spacing(5),
+      alignItems: 'flex-end',
       flexDirection: 'column',
-      alignItems: 'flex-end'
+      marginRight: theme.spacing(5),
+      [theme.breakpoints.down('md')]: {
+        marginRight: theme.spacing(2)
+      }
     },
+
     icon: {
       width: 48,
       height: 48,
-      backgroundColor: theme.palette.custom.red,
+      backgroundColor: theme.palette.common.white,
       marginRight: theme.spacing(1),
       '&:hover': {
         backgroundColor: theme.palette.common.white,
+        color: theme.palette.secondary.main,
+        fill: theme.palette.secondary.main
       }
     },
+
     copyright: {
-      marginTop: theme.spacing(1)
+      marginTop: theme.spacing(1),
+      textAlign: 'right',
+      [theme.breakpoints.down('sm')]: {
+        marginTop: 0,
+        textAlign: 'center'
+      }
     }
+
   }))(props);
 }

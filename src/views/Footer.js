@@ -32,6 +32,8 @@ export default function FooterBar(props) {
       break;
 
       default:
+        console.log(`No redirect link for ${event.currentTarget.id} in Footer.`)
+        return;
     }
   }
 
@@ -82,13 +84,15 @@ export default function FooterBar(props) {
         </Grid>
 
         <Grid item className={classes.copyright}>
-          <Copyright text={FR5}/>
+          <Copyright {...FR5}/>
         </Grid>
   
       </Grid>
     </Grid>
   );
 }
+
+
 
 function LinkHighlight(classes, path, text) {
   return (
@@ -104,13 +108,13 @@ function LinkHighlight(classes, path, text) {
   );
 }
 
-function Copyright(text) {
+function Copyright(props) {
   return (
     <>
-      {text.title}
-      <Link color="inherit">{text.subtitle}</Link>
+      {props.title}
+      <Link color="inherit">{props.subtitle}</Link>
       {' '}
-      {text.caption}
+      {props.caption}
     </>
   );
 }
