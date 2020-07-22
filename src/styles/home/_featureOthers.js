@@ -56,7 +56,7 @@ export const featureOthersStyles = props => {
 
     rightBackground: {
         color: theme.palette.common.white,
-        backgroundColor: theme.palette.custom.red,
+        backgroundColor: theme.palette.secondary.main,
     },
 
     button: {

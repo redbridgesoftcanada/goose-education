@@ -3,9 +3,6 @@ import { green, grey, red } from '@material-ui/core/colors';
 
 const rawTheme = createMuiTheme({
   palette: {
-    custom: {
-      red: '#bf1f22'
-    },
     primary: {
       light: '#69696a',
       main: '#fff',
@@ -13,7 +10,8 @@ const rawTheme = createMuiTheme({
     },
     secondary: {
       light: '#fff5f8',
-      main: '#ff3366',
+      main: '#bf1f22', 
+      // former main: '#ff3366'
       dark: '#e62958',
     },
     warning: {
