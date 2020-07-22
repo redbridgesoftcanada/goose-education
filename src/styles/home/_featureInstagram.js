@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 export const featureInstagramStyles = props => {
   return makeStyles(theme => ({
     root: {
+      backgroundColor: theme.palette.secondary.light,
       overflow: 'hidden',
       marginBottom: theme.spacing(2)
     },

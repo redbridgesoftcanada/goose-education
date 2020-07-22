@@ -27,7 +27,7 @@ export default function FeatureInstagram(props) {
   return (
     <section className={classes.root}>
       <Typography className={classes.header}>{title}</Typography>
-      <Container className={classes.container}>  
+      <Container className={classes.container} maxWidth={false}>  
         <Carousel autoPlay={8000} infinite {...slidesConfig}>
           {instagram.map(media => {
             return (
