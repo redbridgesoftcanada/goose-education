@@ -44,13 +44,13 @@ export default function CondenseAppBar(props) {
                             Logout={NAVLINKS.Logout({classes})}/>
                         }
                     </DatabaseContext.Consumer>
-                    {NAVLINKS.MyPage()}
+                    {NAVLINKS.MyPage(classes)}
                     {NAVLINKS.Logout({classes})}
                   </>
                 : 
                   <>
-                    {NAVLINKS.Login()}
-                    {NAVLINKS.Register()}
+                    {NAVLINKS.Login(classes)}
+                    {NAVLINKS.Register(classes)}
                   </>
                 }
               </AuthUserContext.Consumer>
