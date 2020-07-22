@@ -38,7 +38,7 @@ export default function FeatureOthers(props) {
 
     return (
         <section className={classes.root}>
-            <Grid container spacing={0}>
+            <Grid container>
                 {generateFeatureSchools(classes, whiteWrapperText, previewSchools, redirectPath, handleClick)}
                 {generateFeatureTips(classes, redWrapperText, previewTips, redirectPath, handleClick)}
             </Grid>
@@ -50,10 +50,10 @@ function generateFeatureSchools(classes, customText, previewSchools, redirectPat
     return (
         <Grid item xs={12} md={6}>
             <div className={classes.header}>
-                <Typography variant="h4" className={classes.titleLeft}>
+                <Typography className={classes.titleLeft}>
                     {customText.title}
                 </Typography>
-                { (Object.entries(redirectPath).length) ? 
+                {(Object.entries(redirectPath).length) ? 
                     <Redirect push to={redirectPath}/>
                     :
                     <IconButton id='school_information' className={classes.button} onClick={clickHandler}>
@@ -95,7 +95,7 @@ function generateFeatureTips(classes, customText, previewTips, redirectPath, cli
     return (
         <Grid item xs={12} md={6} className={classes.rightBackground}>
             <div className={classes.header}>
-                <Typography variant="h4" className={classes.titleRight}>
+                <Typography className={classes.titleRight}>
                     {customText.title}
                 </Typography>
                 { (Object.entries(redirectPath).length) ? 

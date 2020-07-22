@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const featureOthersStyles = props => {
-  return makeStyles(theme => ({
+    return makeStyles(theme => ({
     root: {
       overflow: 'hidden',
     },
@@ -16,10 +16,12 @@ export const featureOthersStyles = props => {
     },
 
     titleLeft: {
+        ...theme.typography.h4,
         marginTop: theme.spacing(7),
     },
     
     titleRight: {
+        ...theme.typography.h4,
         color: theme.palette.common.white,
         marginTop: theme.spacing(7),
     },
@@ -38,6 +40,9 @@ export const featureOthersStyles = props => {
         maxWidth: '25%',
         height: 'auto',
         margin: '0px auto',
+        [theme.breakpoints.down('xs')]: {
+            display: 'none'
+        }
     },
 
     description: {
@@ -55,18 +60,24 @@ export const featureOthersStyles = props => {
     },
 
     button: {
-        marginTop: theme.spacing(5),
+        marginTop: theme.spacing(6),
         "&:hover": {
             backgroundColor: "transparent"
+        },
+        [theme.breakpoints.down('sm')]: {
+            display: 'none'
         }
     },
 
     buttonWhite: {
         color: theme.palette.common.white,
-        marginTop: theme.spacing(5),
+        marginTop: theme.spacing(6),
         "&:hover": {
             backgroundColor: "transparent"
         },
+        [theme.breakpoints.down('sm')]: {
+            display: 'none'
+        }
     }
 
   }))(props);
