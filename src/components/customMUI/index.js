@@ -1,4 +1,4 @@
-import LinkButton from './linkButton';
-import StyledMenu from './styledMenu';
+import NavLink from './navlink';
+import FlatMenu from './flatMenu';
 
-export { LinkButton, StyledMenu }
+export { NavLink, FlatMenu }

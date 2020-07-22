@@ -1,9 +1,14 @@
 import React from 'react';
-import LinkButton from '../customMUI/linkButton';
+import { Button } from '@material-ui/core';
+import NavLink from '../customMUI/navlink';
 
-export default function Register() {
+export default function Register(classes) {
+  if (!classes) return null;
+
   return (
-    <LinkButton 
-      to='/register'
-      label='Register'/>
+    <Button className={classes.navlinkItem}>
+      <NavLink 
+        to='/register'
+        label='Register'/>
+    </Button>
 )};

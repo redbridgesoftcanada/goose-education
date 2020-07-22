@@ -25,11 +25,11 @@ export default function NavBar(props) {
 
             <Grid item className={classes.navlinks}>
               {NAVLINKS.StudyAboard(classes)}
-              {NAVLINKS.Networking()}
+              {NAVLINKS.Networking(classes)}
               {NAVLINKS.SchoolInformation(classes)}
               {NAVLINKS.StudyAbroadServices(classes)}
               {NAVLINKS.ServiceCentre(classes)}
-              {NAVLINKS.StudyAbroadCounselling()}
+              {NAVLINKS.StudyAbroadCounselling(classes)}
             </Grid>
           </Grid>
         </Toolbar>

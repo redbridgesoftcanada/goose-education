@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, MenuItem } from '@material-ui/core';
-import { StyledMenu, LinkButton } from '../customMUI';
+import { FlatMenu, NavLink } from '../customMUI';
 
 export default function ServiceCentre(classes) {
   const [ anchorEl, setAnchorEl ] = useState(null);
@@ -10,7 +10,7 @@ export default function ServiceCentre(classes) {
   return (
     <>
       <Button onMouseOver={handleClick}>Service Centre</Button>
-      <StyledMenu
+      <FlatMenu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}
@@ -20,17 +20,17 @@ export default function ServiceCentre(classes) {
         }}>
           
         <MenuItem className={classes.navlinkItem}>
-          <LinkButton 
+          <NavLink 
             to={{ pathname: '/services', state: { tab: 0 }}}
             label='Announcements'/>
         </MenuItem>
 
         <MenuItem className={classes.navlinkItem}>
-          <LinkButton 
+          <NavLink 
             to= {{ pathname: '/services', state: { tab: 1 } }}
             label='Message Board'/>
         </MenuItem>
-      </StyledMenu>
+      </FlatMenu>
     </>
   );
 };

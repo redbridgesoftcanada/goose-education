@@ -1,13 +1,14 @@
 import React from 'react';
-import { Button, Link } from "@material-ui/core";
+import { Button } from "@material-ui/core";
+import NavLink from '../customMUI/navlink';
 import { withFirebase } from '../firebase';
 
 function Logout({classes, firebase}) {
   return (
-    <Button onClick={firebase.doSignOut}>
-      <Link className={classes.link}>
-        {'Sign Out'}
-      </Link>
+    <Button className={classes.navlinkItem} onClick={firebase.doSignOut}>
+      <NavLink 
+        to='/'
+        label='Sign Out'/>
     </Button>
   )
 }

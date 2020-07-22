@@ -1,9 +1,12 @@
 import React from 'react';
-import LinkButton from '../customMUI/linkButton';
+import { Button } from "@material-ui/core";
+import NavLink from '../customMUI/navlink';
 
-export default function MyPage() {
+export default function MyPage(classes) {
   return (
-    <LinkButton 
-      to="/profile"
-      label='My Page'/>
+    <Button className={classes.navlinkItem}>
+      <NavLink 
+        to="/profile"
+        label='My Page'/>
+    </Button>
 )};

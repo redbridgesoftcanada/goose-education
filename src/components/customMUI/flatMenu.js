@@ -1,13 +1,14 @@
 import React from 'react';
 import { Menu, withStyles } from '@material-ui/core';
 
-const StyledMenu = withStyles(theme => ({
+const FlatMenu = withStyles(theme => ({
   paper: {
     border: `1px solid ${theme.palette.primary.main}`,
   },
 }))(props => (
   <Menu
     elevation={0}
+    disableScrollLock={true}
     getContentAnchorEl={null}
     anchorOrigin={{
       vertical: 'bottom',
@@ -21,4 +22,4 @@ const StyledMenu = withStyles(theme => ({
   />
 ));
 
-export default StyledMenu;
+export default FlatMenu;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, MenuItem } from '@material-ui/core';
-import { StyledMenu, LinkButton } from '../customMUI';
+import { FlatMenu, NavLink } from '../customMUI';
 
 function StudyAbroad(classes) {
   const [ anchorEl, setAnchorEl ] = useState(null);
@@ -10,25 +10,25 @@ function StudyAbroad(classes) {
   return (
     <>
       <Button onMouseOver={handleClick}>Study Abroad</Button>
-      <StyledMenu
+      <FlatMenu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}
-        MenuListProps={{ 
+        MenuListProps={{
           onClick: handleClose, 
           onMouseLeave: handleClose,
         }}>
         <MenuItem className={classes.navlinkItem}>
-          <LinkButton 
+          <NavLink 
             to={{ pathname: '/goose', state: { selected: 0 } }}
             label='Goose Study Abroad'/>
         </MenuItem>
         <MenuItem className={classes.navlinkItem}>
-          <LinkButton 
+          <NavLink 
             to={{ pathname: '/goose', state: { selected: 1 } }}
             label='Goose Tips'/>
         </MenuItem>
-      </StyledMenu>
+      </FlatMenu>
     </>
   );
 };

@@ -1,25 +1,27 @@
 import React from 'react';
-import { Button, Link, withStyles } from '@material-ui/core';
+import { Link, withStyles } from '@material-ui/core';
 import { Link as RouterLink } from "react-router-dom";
 
-const LinkButton = withStyles(theme => ({
+const NavLink = withStyles(theme => ({
   root: {
     ...theme.fontHeader,
     ...theme.typography.h6,
     fontSize: 14,
+    backgroundColor: 'transparent',
     color: theme.palette.common.black,
     '&:hover': {
       backgroundColor: 'transparent',
+      color: theme.palette.secondary.main,
       textDecoration: 'none',
     },
-  }
+  },
 }))(props => (
-  <Button>
     <Link 
       component={RouterLink}
       {...props}
-    >{props.label}</Link>
-  </Button>
+    >
+      {props.label}
+    </Link>
 ));
 
-export default LinkButton;
+export default NavLink;

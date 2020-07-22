@@ -51,8 +51,10 @@ export const appBarStyles = (props, stylesheet) => {
 
     navlinkItem: {
       backgroundColor: 'transparent',
+      color: theme.palette.common.black,
       '&:hover': {
-        backgroundColor: theme.palette.secondary.main
+        backgroundColor: 'transparent',
+        color: theme.palette.secondary.main
       },
     },
 

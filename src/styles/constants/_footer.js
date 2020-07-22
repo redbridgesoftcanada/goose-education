@@ -3,8 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 export const footerStyles = props => {
   return makeStyles(theme => ({ 
     root: {
-      backgroundColor: theme.palette.secondary.light,
-      padding: `${theme.spacing(3)}px 0px`,
       alignItems: 'center',
       flexWrap: 'nowrap',
       overflow: 'hidden'

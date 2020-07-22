@@ -1,9 +1,12 @@
 import React from 'react';
-import LinkButton from '../customMUI/linkButton';
+import { Button } from '@material-ui/core';
+import NavLink from '../customMUI/navlink';
 
-export default function Networking() {
+export default function Networking(classes) {
   return (
-    <LinkButton 
-      to={{ pathname: '/networking', state: { selected: 0 } }}
-      label='Networking'/>
+    <Button className={classes.navlinkItem}>
+      <NavLink 
+        to={{ pathname: '/networking', state: { selected: 0 } }}
+        label='Networking'/>
+    </Button>
 )};

@@ -67,7 +67,7 @@ function HeaderBar(props) {
                         <AuthUserContext.Consumer>
                             {authUser => authUser ? 
                             <>
-                                <Button onClick={() => setDrawerOpen(!drawer)}>    
+                                <Button className={classes.navlinkItem} onClick={() => setDrawerOpen(!drawer)}>    
                                     {(authUser && authUser.roles['admin']) ? 'Admin' : authUser.displayName}
                                 </Button>
                                 <DatabaseContext.Consumer>
@@ -81,13 +81,13 @@ function HeaderBar(props) {
                                             Logout={NAVLINKS.Logout({classes})}/>
                                     }
                                 </DatabaseContext.Consumer>
-                                {NAVLINKS.MyPage()}
+                                {NAVLINKS.MyPage(classes)}
                                 {NAVLINKS.Logout({classes})}
                             </>
                             : 
                             <>
-                                {NAVLINKS.Login()}
-                                {NAVLINKS.Register()}
+                                {NAVLINKS.Login(classes)}
+                                {NAVLINKS.Register(classes)}
                             </>
                             }
                         </AuthUserContext.Consumer>
