@@ -23,7 +23,7 @@ export const pageBannerLayoutStyles = props => {
     },
 
     container: {
-      marginBottom: theme.spacing(14),
+      marginBottom: theme.spacing(7),
       marginTop: !isPageBanner ? 0 : '21vh',
       ...!isPageBanner && { ...flexContainerStyles, maxWidth: 'inherit' },
       ...isPageBanner &&  { 
