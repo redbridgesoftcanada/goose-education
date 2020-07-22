@@ -28,9 +28,8 @@ export const featureInstagramStyles = props => {
     },
 
     cardContent: {
-      height: '18vh',
+      height: 150,
       [theme.breakpoints.down('sm')]: {
-        height: '15vh',
         padding: '10px 16px 0 16px'
       }
     },
