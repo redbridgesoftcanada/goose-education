@@ -4,15 +4,12 @@ export const featureInstagramStyles = props => {
   return makeStyles(theme => ({
     root: {
       overflow: 'hidden',
+      marginBottom: theme.spacing(2)
     },
 
     header: {
-      display: 'flex',
-      justifyContent: 'center',
-    },
-
-    title: {
-      marginTop: theme.spacing(7),
+      ...theme.typography.h4,
+      marginTop: theme.spacing(5),
     },
 
     container: {
@@ -30,7 +27,16 @@ export const featureInstagramStyles = props => {
       backgroundSize:'contain',
     },
 
+    cardContent: {
+      height: '18vh',
+      [theme.breakpoints.down('sm')]: {
+        height: '15vh',
+        padding: '10px 16px 0 16px'
+      }
+    },
+
     caption: {
+      ...theme.typography.subtitle2,
       maxWidth: 350
     }
     
