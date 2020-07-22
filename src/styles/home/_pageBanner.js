@@ -39,7 +39,12 @@ export const pageBannerStyles = props => {
 
     pageBannerButton: {
       backgroundColor: theme.palette.secondary.main,
+      borderRadius: 5,
       color: theme.palette.common.white,
+      '&:hover': {
+        backgroundColor: theme.palette.secondary.main,
+        boxShadow: '0 0 0 5px rgba(0, 0, 0, 0.2)'
+      },
       [theme.breakpoints.down('sm')]: { 
         marginTop: theme.spacing(2) 
       }

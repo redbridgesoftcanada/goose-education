@@ -79,9 +79,17 @@ export const appBarStyles = (props, stylesheet) => {
     // H E A D E R  B A R  S T Y L E S
     iconButtons: {
       float: 'left',
-      color: theme.palette.common.black,
       [theme.breakpoints.down('sm')]: {
         display: 'none',
+      }
+    },
+
+    icon: {
+      color: theme.palette.common.black,
+      '&:hover': {
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.secondary.main,
+        fill: theme.palette.secondary.main
       }
     },
 

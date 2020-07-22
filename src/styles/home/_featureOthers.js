@@ -50,7 +50,8 @@ export const featureOthersStyles = props => {
         flexDirection: 'column',
         padding: theme.spacing(3, 2),
         "&:hover": {
-            cursor: 'pointer'
+            cursor: 'pointer',
+            textDecoration: 'underline'
         },
     },
 
@@ -61,9 +62,6 @@ export const featureOthersStyles = props => {
 
     button: {
         marginTop: theme.spacing(6),
-        "&:hover": {
-            backgroundColor: "transparent"
-        },
         [theme.breakpoints.down('sm')]: {
             display: 'none'
         }
@@ -72,9 +70,6 @@ export const featureOthersStyles = props => {
     buttonWhite: {
         color: theme.palette.common.white,
         marginTop: theme.spacing(6),
-        "&:hover": {
-            backgroundColor: "transparent"
-        },
         [theme.breakpoints.down('sm')]: {
             display: 'none'
         }

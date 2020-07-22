@@ -34,12 +34,12 @@ function HeaderBar(props) {
                 <Grid container className={classes.container}>
                     <Grid item>
                         <Grid item className={classes.iconButtons}>
-                            <IconButton color='inherit'><Instagram/></IconButton>
-                            <IconButton color='inherit'><Facebook/></IconButton>
-                            <IconButton>
+                            <IconButton className={classes.icon}><Instagram/></IconButton>
+                            <IconButton className={classes.icon}><Facebook/></IconButton>
+                            <IconButton className={classes.icon}>
                                 <Kakao className={classes.customKakao}/>
                             </IconButton>
-                            <IconButton>
+                            <IconButton className={classes.icon}>
                                 <Naver className={classes.customNaver}/>
                             </IconButton>
                         </Grid>

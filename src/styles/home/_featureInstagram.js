@@ -20,7 +20,7 @@ export const featureInstagramStyles = props => {
 
     image: {
       "&:hover": {
-          cursor: 'pointer',
+        cursor: 'pointer'
       },
       height: 350,
       backgroundPosition:'center', 

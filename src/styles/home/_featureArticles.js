@@ -50,6 +50,7 @@ export const featureArticlesStyles = props => {
       margin: '0px auto',
       "&:hover": {
         cursor: 'pointer',
+        boxShadow: '0 0 0 5px white'
       }
     }
   }))(props);
