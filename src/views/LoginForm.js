@@ -1,22 +1,11 @@
 import React, { useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { Button, TextField, Typography, makeStyles } from '@material-ui/core'
-
+import { Button, Grid, Typography } from '@material-ui/core';
 import { withFirebase } from '../components/firebase';
 import { RegisterLink } from './RegisterForm';
 import { PasswordForgetLink } from './ForgotPasswordForm';
-
-const useStyles = makeStyles(theme => ({
-    root: {
-      '& .MuiTextField-root': {
-        margin: theme.spacing(1),
-        width: 300,
-      },
-    },
-    error: {
-      color: theme.palette.secondary.main
-    },
-}));
+import { FormInputs }  from '../components/customMUI';
+import { useStyles } from '../styles/login';
 
 const INITIAL_STATE = {
   email: '',
@@ -24,84 +13,75 @@ const INITIAL_STATE = {
   error: null,
 };
 
-const LoginFormBase = props => {
-    const classes = useStyles();
+function LoginForm(props) {
+  const classes = useStyles(props);
+  const { firebaseValidator } = FormInputs;
+  const { firebase, history, loginForm } = props;
 
-    const [ state, setState ] = useState({...INITIAL_STATE});
-    const { email, password, error } = state;
-    const { firebase, history } = props;
+  const [ state, setState ] = useState({...INITIAL_STATE});
+  const { email, password, error } = state;
 
-    // Firebase error objects have a message property by default, but only shown when there is an actual error using conditional rendering.
-    const isInvalid = password === '' || email === '';
+  const onChange = event => setState({
+    ...state,
+    error: null,
+    [event.target.name]: event.target.value});
 
-    const onChange = event => setState({...state, [event.target.name]: event.target.value});
+  const onSubmit = event => {
+    firebase.doSignInWithEmailAndPassword(email, password)
+    .then(authUser => {
+      const user = authUser.user;
+      const lastSignInTime = Number(user.metadata.b);
+      return firebase.user(user.uid).set({lastSignInTime}, {merge: true});
+    })
+    .then(() => {
+      setState({...INITIAL_STATE});
+      history.push('/');
+    })
+    .catch(error => setState({error}));
+    
+    event.preventDefault();
+  }
 
-    const onSubmit = event => {
-      firebase.doSignInWithEmailAndPassword(email, password)
-      .then(authUser => {
-        const user = authUser.user;
-        const lastSignInTime = Number(user.metadata.b);
-        return firebase.user(user.uid).set({lastSignInTime}, {merge: true});
-      })
-      .then(() => {
-        setState({...INITIAL_STATE});
-        history.push('/');
-      })
-      .catch(error => setState({ error }));
-      
-      event.preventDefault();
-    }
+  return (
+    <>
+      <Typography className={classes.formTitle}>{loginForm.title}</Typography>
+      <form className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
+        <Grid container spacing={2} className={classes.formFields}>
+          <Grid item>
+            {firebaseValidator('text', 'email', email, 'Email Address', onChange, error)}
+          </Grid>
 
-    return (
-        <>
-          <Typography variant='h4'>Login to Goose Education</Typography>
-          <form className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
-            <div> 
-              <TextField
-                color="secondary"
-                variant="outlined"
-                name="email"
-                value={email}
-                onChange={onChange}
-                type="text"
-                placeholder="Email Address"
-                error={(error && error.code.includes("email")) ? true : false}
-              />
-              <TextField
-                color="secondary"
-                variant="outlined"
-                name="password"
-                value={password}
-                onChange={onChange}
-                type="password"
-                placeholder="Password"
-                error={(error && error.code.includes("argument")) ? true : false}
-              />
-              </div>
-            {error && <Typography variant="body2" className={classes.error}>{error.message}</Typography>}
-            <Button 
-              variant="contained" 
-              size="large" 
-              disabled={isInvalid} 
-              type="submit"
-            >
-              Login
-            </Button>
-          </form>
-          <PasswordForgetLink/>
-          <br/><br/>
-          <RegisterLink/>
-        </>
-    )
+          <Grid item>
+            {firebaseValidator('password', 'password', password, 'Password', onChange, error)}
+          </Grid>
+        </Grid>
+        {error && <Typography className={classes.error}>{error.message}</Typography>}
+        <Button
+          className={classes.submitButton}
+          variant="contained" 
+          color="secondary"
+          size="large" 
+          type="submit"
+        >
+          {loginForm.caption}
+        </Button>
+      </form>
+      <PasswordForgetLink forgotLinkStyle={classes.forgotLink}/>
+      <br/><br/>
+      <RegisterLink registerLinkStyle={classes.registerLink}/>
+    </>
+  )
 }
 
 const LoginLink = () => (
-  <Typography variant="body2">
-    Have an account? <Link to="/login" >Login</Link>
+  <Typography 
+    variant="body2"
+    component={Link}
+    to='/login'
+  >
+    Have an account? Login
   </Typography>
 );
 
-const LoginForm = withRouter(withFirebase(LoginFormBase));
-
-export default LoginForm;
+export default withRouter(withFirebase(LoginForm));
 export { LoginLink };

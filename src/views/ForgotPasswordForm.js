@@ -54,9 +54,13 @@ const PasswordForgetFormBase = ({ firebase }) => {
   )
 }
 
-const PasswordForgetLink = () => (
-  <Typography variant="body2">
-    <Link to="/forgotpassword">Forgot Password?</Link>
+const PasswordForgetLink = props => (
+  <Typography 
+    className={props.forgotLinkStyle} 
+    component={Link} 
+    to="/forgotpassword"
+  >
+    Forgot Password?
   </Typography>
 );
 

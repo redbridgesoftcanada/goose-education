@@ -89,6 +89,10 @@ function withFetching(Component) {
           fetchSelectDocuments("schoolApplication", "schoolApplications", firebase, setState, userId);
           break;
         
+        case '/login':
+          fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          break;
+        
         case '/admin':
           async function loadInitialData() {
             fetchAllDocuments("aggregates", firebase, setState);

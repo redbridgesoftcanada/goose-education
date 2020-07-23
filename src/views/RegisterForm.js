@@ -395,9 +395,12 @@ function RegisterFormBase({ firebase, history }) {
     </>
 )}
 
-const RegisterLink = () => (
-  <Typography variant="body2">
-    Don't have an account? <Link to="/register" >Sign Up</Link>
+const RegisterLink = props => (
+  <Typography 
+    className={props.registerLinkStyle}
+    component={Link}
+    to='/register'>
+    Don't have an account? Sign Up
   </Typography>
 );
 

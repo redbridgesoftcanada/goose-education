@@ -81,6 +81,14 @@
         "image": ""
       }
     },
+
+    "loginForm": {
+      "location": "/login",
+      "title": "Login to Goose Education",
+      "subtitle": "",
+      "caption": "Login",
+      "image": ""
+    },
     
     "homePoster": {
       "location": "/home",
