@@ -1,17 +1,13 @@
 import React from 'react';
 import withRoot from './withRoot';
-import { useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useMediaQuery, useTheme } from '@material-ui/core';
 import { DatabaseContext } from './components/database';
 import FeatureCarousel from './components/FeatureCarousel';
 import FeatureArticles from './components/FeatureArticles';
 import FeatureOthers from './components/FeatureOthers';
 import FeatureInstagram from './components/FeatureInstagram';
 import NavButtonBase from './components/NavButtonBase';
-import CondenseAppBar from './views/CondenseAppBar';
-import CondenseFooter from './views/CondenseFooter';
-import NavBar from './views/NavBar';
-import Footer from './views/Footer';
+import { CondenseAppBar, CondenseFooter, NavBar, Footer } from './views/appBars';
 import PageBanner from './views/PageBanner';
 
 function Home() {
