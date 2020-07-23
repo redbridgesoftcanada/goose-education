@@ -8,7 +8,7 @@ import TabPanel from './components/TabPanel';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import ArticleBoard from './views/ArticleBoard';
-import Poster from './views/Poster';
+import Poster from './components/Poster';
 import Footer from './views/Footer';
 
 const useStyles = makeStyles(theme => ({

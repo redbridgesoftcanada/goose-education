@@ -5,9 +5,9 @@ import TabPanel from './components/TabPanel';
 import { DatabaseContext } from './components/database';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
-import Poster from './views/Poster';
-import GooseCoreFeatures from './views/GooseCoreFeatures';
-import GoosePlatform from './views/GoosePlatform';
+import Poster from './components/Poster';
+import GooseCoreFeatures from './components/GooseCoreFeatures';
+import GoosePlatform from './components/GoosePlatform';
 import GooseTips from './views/GooseTips';
 import Footer from './views/Footer';
 

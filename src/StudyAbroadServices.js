@@ -7,8 +7,8 @@ import TabPanel from './components/TabPanel';
 import withRoot from './withRoot';
 import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
-import Poster from './views/Poster';
-import HomestayProcess from './views/HomestayProcess';
+import Poster from './components/Poster';
+import HomestayProcess from './components/HomestayProcess';
 import StudyAbroadServiceApplication from './views/StudyAbroadServiceApplication';
 import Footer from './views/Footer';
 

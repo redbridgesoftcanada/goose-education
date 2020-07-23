@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core';
 
 import Typography from '../components/onePirate/Typography';
-import PageBannerLayout from './PageBannerLayout';
+import PageBannerLayout from '../views/PageBannerLayout';
 
 const useStyles = (props, options) => {
   let style;
