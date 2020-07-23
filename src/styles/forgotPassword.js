@@ -31,8 +31,8 @@ export const useStyles = props => {
       }
     },
 
-    formFields: {
-      justifyContent: 'center'
+    formSubtitle: {
+      ...theme.typography.body1
     },
 
     root: {
@@ -42,38 +42,14 @@ export const useStyles = props => {
       },
     },
 
+    formField: {
+      margin: `${theme.spacing(2)}px 0`
+    },
+
     error: {
       ...theme.typography.body2,
       color: theme.palette.secondary.main
-    },
-
-    submitButton: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1)
-    },
-
-    forgotLink: {
-      ...theme.typography.body2,
-      color: theme.palette.common.black,
-      textDecoration: 'none',
-      '&:hover': {
-        textDecoration: 'underline',
-      },
-      '&:focus': {
-        color: theme.palette.secondary.main
-      }
-    },
-
-    registerLink: {
-      ...theme.typography.body2,
-      color: theme.palette.common.black,
-      textDecoration: 'none',
-      '&:hover': {
-        textDecoration: 'underline',
-      },
-      '&:focus': {
-        color: theme.palette.secondary.main
-      }
     }
+
   }))(props);
 }

@@ -92,6 +92,10 @@ function withFetching(Component) {
         case '/login':
           fetchSelectDocuments("location", "graphics", firebase, setState, path);
           break;
+      
+        case '/forgotpassword': 
+          fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          break;
         
         case '/admin':
           async function loadInitialData() {
