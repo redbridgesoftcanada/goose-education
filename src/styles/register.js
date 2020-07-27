@@ -31,6 +31,10 @@ export const useStyles = props => {
       }
     },
 
+    stepButtons: {
+      marginBottom: theme.spacing(1)
+    },
+
     formFields: {
       justifyContent: 'center'
     },
@@ -65,6 +69,11 @@ export const useStyles = props => {
     divider: {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(1),
-    }
+    },
+
+    snackBar: {
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.secondary.main
+    },
   }))(props);
 }
