@@ -2,6 +2,7 @@ import React from 'react';
 import { TextValidator } from "react-material-ui-form-validator";
 import { OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio, RadioGroup, Select, Checkbox } from "@material-ui/core";
 import { EditorValidator, FileValidator, SelectValidator } from "./validators";
+import { convertToSentenceCase } from '../../constants/helpers/_features';
 
 // N O  V A L I D A T I O N
 function textField(name, value, eventHandler, isMultiline) {
@@ -87,6 +88,20 @@ function checkboxField(state, name, label, text, eventHandler) {
 }
 
 // V A L I D A T I O N
+function customTextValidator(name, value, handleChange, props) {
+  return (
+    <TextValidator 
+      variant="outlined" 
+      fullWidth 
+      InputLabelProps={{shrink: true}}
+      name={name}
+      value={value}
+      onChange={handleChange}
+      {...props}
+    />
+  )
+}
+
 function firebaseValidator(type, name, value, placeholder, eventHandler, error) {
   const checkError = error => {
     if (error.code.includes("email") || error.code.includes("argument")) {
@@ -106,18 +121,19 @@ function firebaseValidator(type, name, value, placeholder, eventHandler, error) 
   )
 }
 
-function textValidator(name, value, placeholder, eventHandler) {
+function textValidator(name, value, handleValue, props) {
+  const errorField = convertToSentenceCase(name).toLowerCase();
   return (
     <TextValidator 
-      variant="outlined" 
       fullWidth 
+      variant="outlined" 
       InputLabelProps={{shrink: true}}
       name={name}
       value={value}
-      onChange={eventHandler}
+      onChange={handleValue}
       validators={["required"]}
-      errorMessages={[`Cannot submit an empty ${name}.`]}
-      {...placeholder && {placeholder: placeholder}}
+      errorMessages={[`Cannot submit an empty ${errorField}.`]}
+      {...props}
     />
   )
 }
@@ -163,4 +179,4 @@ function selectValidator(name, value, options, eventHandler) {
   )
 }
 
-export { textField, radioField, selectField, checkboxField, firebaseValidator, textValidator, richTextValidator, fileValidator, selectValidator, defaultValueTextField }
+export { textField, radioField, selectField, checkboxField, customTextValidator, firebaseValidator, textValidator, richTextValidator, fileValidator, selectValidator, defaultValueTextField }
