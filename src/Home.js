@@ -1,13 +1,13 @@
 import React from 'react';
 import withRoot from './withRoot';
 import { useMediaQuery, useTheme } from '@material-ui/core';
+import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
 import { DatabaseContext } from './components/database';
 import FeatureCarousel from './components/FeatureCarousel';
 import FeatureArticles from './components/FeatureArticles';
 import FeatureOthers from './components/FeatureOthers';
 import FeatureInstagram from './components/FeatureInstagram';
 import NavButtonBase from './components/NavButtonBase';
-import { CondenseAppBar, CondenseFooter, NavBar, Footer } from './views/appBars';
 import PageBanner from './views/PageBanner';
 
 function Home() {
@@ -20,7 +20,7 @@ function Home() {
     <DatabaseContext.Consumer>
       {({ state }) => state.homeGraphics &&
         <>
-          {!mdBreakpoint ? <NavBar/> : <CondenseAppBar/>} 
+          {ResponsiveNavBars(mdBreakpoint)}
           <PageBanner 
             title={state.homeGraphics.homePoster.title} 
             caption={state.homeGraphics.homePoster.subtitle} 
@@ -40,15 +40,7 @@ function Home() {
             title={state.homeGraphics.homeInstagram.title}
             instagram={state.instagram}/>
           
-          {!smBreakpoint ?
-          <Footer 
-            leftWrapper={state.homeGraphics.footerLeft} 
-            rightWrapper={state.homeGraphics.footerRight}/>
-          :
-          <CondenseFooter
-            leftWrapper={state.homeGraphics.footerLeft} 
-            rightWrapper={state.homeGraphics.footerRight}/>
-          }
+          {ResponsiveFooters(smBreakpoint)}
         </>
       }
     </DatabaseContext.Consumer>

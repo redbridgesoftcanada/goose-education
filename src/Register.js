@@ -3,6 +3,7 @@ import withRoot from './withRoot';
 import { Grid, useTheme, useMediaQuery} from '@material-ui/core';
 import { DatabaseContext } from './components/database';
 import { CondenseAppBar, CondenseFooter, NavBar, Footer } from './views/appBars';
+import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
 import RegisterForm from './views/RegisterForm';
 import { useStyles } from './styles/register';
 
@@ -29,23 +30,22 @@ function Register() {
   }
 
   return (
-    <DatabaseContext.Consumer>
-      {({ state }) =>
-        <>
-          {!mdBreakpoint ? <NavBar/> : <CondenseAppBar/>} 
-        
+    <>
+      {ResponsiveNavBars(mdBreakpoint)}
+      <DatabaseContext.Consumer>
+        {({ state }) =>
           <Grid container className={classes.container}>
             <Grid item className={classes.form}>
               <RegisterForm/>
             </Grid>
             
             <Grid item className={classes.footer}>
-              {state.homeGraphics && loadFooterComponent(state)}
+              {ResponsiveFooters(smBreakpoint)}
             </Grid>
           </Grid>
-        </>
-      }
-    </DatabaseContext.Consumer>
+        }
+      </DatabaseContext.Consumer>
+    </>
   );
 }
 

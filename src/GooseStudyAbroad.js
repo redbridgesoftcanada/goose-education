@@ -15,6 +15,8 @@ import useStyles from './styles/goose';
 function GooseEdu(props) {
   const theme = useTheme();
   const classes = useStyles(props, 'studyAbroad');
+  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+  const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
 
   // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
   const [value, setValue] = useState(props.location.state.selected);
@@ -26,7 +28,7 @@ function GooseEdu(props) {
 
   return (
       <>
-        {ResponsiveNavBars(theme)}
+        {ResponsiveNavBars(mdBreakpoint)}
         <PageBanner title={props.pageBanner.title} backgroundImage={props.pageBanner.image} layoutType='headerBanner'/>
         <Paper className={classes.root}>
             <Tabs
@@ -55,7 +57,7 @@ function GooseEdu(props) {
               </DatabaseContext.Consumer>
           </Paper>
           
-          {ResponsiveFooters(theme)}
+          {ResponsiveFooters(smBreakpoint)}
       </>
   )
 };
