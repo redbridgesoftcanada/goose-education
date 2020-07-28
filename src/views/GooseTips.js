@@ -1,85 +1,17 @@
 import React, { useReducer, useEffect } from 'react';
-import { Container, Grid, LinearProgress, Typography, withStyles } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+import { Container, Grid, LinearProgress, Typography } from '@material-ui/core';
+import MarkedTypography from '../components/onePirate/Typography';
 import { AuthUserContext } from '../components/session';
-import Filter from '../components/FilterButton';
+import FilterButton from '../components/FilterButton';
 import FilterDialog from '../components/FilterDialog';
-import Sort from '../components/SortButton';
+import SortButton from '../components/SortButton';
 import SortPopover from '../components/SortPopover';
 import SearchField from '../components/SearchField';
 import ArticleDialog from '../components/ArticleDialog';
 import Pagination from '../components/Pagination';
-import { singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/_features';
-
-const styles = theme => ({
-    root: {
-        overflow: 'hidden',
-    },
-    image: {
-        display: 'block',
-        border: 0,
-        width: 'auto',
-        maxWidth: '100%',
-        height: 'auto',
-        margin: '0 auto',
-    },
-    item: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: theme.spacing(3, 5),
-        textAlign: 'left',
-        "&:hover": {
-            cursor: 'pointer',
-        },
-    },
-    title: {
-        marginTop: theme.spacing(7),
-        marginBottom: theme.spacing(2),
-    },
-    body: {
-        display: 'flex',
-        flexDirection: 'column',
-        padding: theme.spacing(1, 0),
-    },
-    articleTitle: {
-        fontWeight: 700,
-    },
-    articleDescription: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        width: '23em',
-    },
-    search: {
-        float: 'right',
-        border: `2px solid ${theme.palette.secondary.main}`,
-        borderRadius: 5,
-        paddingLeft: theme.spacing(1),
-    },
-    searchButton: {
-        color: theme.palette.common.white,
-        backgroundColor: theme.palette.secondary.main,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2)
-    },
-    filterButton: {
-        float: 'left',
-        color: theme.palette.primary.light,
-        border: `2px solid ${theme.palette.primary.light}`,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
-        marginRight: theme.spacing(1),
-    },
-    badge: {
-        backgroundColor: 'rgb(240, 150, 20)',
-        color: theme.palette.common.white,
-        padding: 3,
-        width: '4em',
-        fontSize: 12,
-        fontWeight: 600,
-        textAlign: 'center',
-        textTransform: 'uppercase',
-    },
-});
+import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/_features';
+import useStyles from '../styles/goose';
 
 function toggleReducer(state, action) {
     let { type, payload } = action;
@@ -188,8 +120,9 @@ function toggleReducer(state, action) {
     }
 }
 
-function GooseTips(props) {
-    const { classes, history } = props;
+export default function GooseTips(props) {
+    const classes = useStyles(props, 'tips');
+    const history = useHistory();
     
     const INITIAL_STATE = {
         gooseTips: [],
@@ -210,8 +143,11 @@ function GooseTips(props) {
     }
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+
     const { gooseTips, isError, error, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, anchorOpen, selectedAnchor, tipOpen, selectedTip, searchQuery, currentPage, tipsPerPage } = state;
+    
     const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
+    
     const redirectPath = {
         pathname:'/search', 
         search: `?query=${searchQuery}`, 
@@ -238,41 +174,40 @@ function GooseTips(props) {
     const closeTipDialog = () => dispatch({ type:'CLOSE_TIP' });
     
     // P A G I N A T I O N 
-    const totalTips = gooseTips.length;
-    const totalPages = Math.ceil(totalTips / tipsPerPage);
-    const indexOfLastTip = (currentPage * tipsPerPage) + 1;
-    const indexOfFirstTip = indexOfLastTip - tipsPerPage;
-    const paginatedTips = (totalPages > 1) ? gooseTips.slice(indexOfFirstTip, indexOfLastTip) : gooseTips;
+    const totalPages = Math.ceil(gooseTips.length / tipsPerPage);
+    const paginatedTips = createPagination(gooseTips, currentPage, tipsPerPage, totalPages);
     const handlePageChange = (newPage) => dispatch({ type:'CHANGE_PAGE', payload: newPage });
+
 
     // listen for changes to props gooseTips and update local state
     useEffect(() => {
-        dispatch({ type:'DEFAULT_TIPS', payload: props.gooseTips });
-    }, [props.gooseTips])
+        dispatch({ type:'DEFAULT_TIPS', payload: props.tips });
+    }, [props.tips])
     
     return (
         <section className={classes.root}>
             <Container>
-                <Typography variant="h3" marked="center" className={classes.title}>Goose Tips</Typography>
-                <Filter 
+                <MarkedTypography variant="h3" marked="center" className={classes.title}>Goose Tips</MarkedTypography>
+                <FilterButton 
                     isFilter={isFiltered} 
                     handleFilterClick={toggleFilterDialog} 
-                    handleFilterReset={resetFilter}
-                />
-                <Sort 
+                    handleFilterReset={resetFilter}/>
+                <SortButton 
                     selectedAnchor={selectedAnchor}
                     handleSortClick={openSort}/>
                 <SearchField 
                     handleSearch={createSearch}
                     handleSearchClick={() => history.push(redirectPath)}/>
-
                 <FilterDialog
                     {...filterProps}
                     handleSearchQuery={createFilterQuery}
                     handleSearchClick={handleFilterQuery} 
                     onClose={toggleFilterDialog} 
                 />
-                <SortPopover anchorEl={anchorOpen} open={Boolean(anchorOpen)} onClose={closeSort}/>
+                <SortPopover 
+                    anchorEl={anchorOpen} 
+                    open={Boolean(anchorOpen)} 
+                    onClose={closeSort}/>
                 <AuthUserContext.Consumer>
                     { authUser => authUser &&
                         <ArticleDialog  
@@ -322,5 +257,3 @@ function GooseTips(props) {
         </section>
     );
 }
-
-export default withStyles(styles)(GooseTips);
