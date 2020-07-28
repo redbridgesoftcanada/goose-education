@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Paper, Tabs, Tab, useTheme, useMediaQuery } from '@material-ui/core';
 import withRoot from './withRoot';
+import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
 import TabPanel from './components/TabPanel';
 import { DatabaseContext } from './components/database';
 import GooseCoreFeatures from './components/GooseCoreFeatures';
@@ -8,9 +9,7 @@ import GoosePlatform from './components/GoosePlatform';
 import Poster from './components/Poster';
 import PageBanner from './views/PageBanner';
 import GooseTips from './views/GooseTips';
-import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
 import useStyles from './styles/goose';
-
 
 function GooseEdu(props) {
   const theme = useTheme();
@@ -31,33 +30,39 @@ function GooseEdu(props) {
         {ResponsiveNavBars(mdBreakpoint)}
         <PageBanner title={props.pageBanner.title} backgroundImage={props.pageBanner.image} layoutType='headerBanner'/>
         <Paper className={classes.root}>
-            <Tabs
-                value={value}
-                onChange={handleChange}
-                textColor="secondary"
-                variant="fullWidth"
-                centered
-            >
-                <Tab label="Goose Education" />
-                <Tab label="Goose Tips" />
-            </Tabs>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            textColor="secondary"
+            variant="fullWidth"
+            centered
+          >
+            <Tab label="Goose Education"/>
+            <Tab label="Goose Tips"/>
+          </Tabs>
             <DatabaseContext.Consumer>
-              {context => context.state.gooseGraphics &&
+              {({ state }) => state.gooseGraphics &&
                 <>
                   <TabPanel value={value} index={0}>
-                    <Poster body={context.state.gooseGraphics.goosePoster} backgroundImage={context.state.gooseGraphics.goosePoster.image} layoutType='goose_edu'/>
-                    <GooseCoreFeatures graphics={context.state.gooseGraphics.gooseFeatureBoard}/>
-                    <GoosePlatform graphics={context.state.gooseGraphics.gooseCards}/>
+                    <Poster 
+                      body={state.gooseGraphics.goosePoster} 
+                      backgroundImage={state.gooseGraphics.goosePoster.image} layoutType='goose_edu'/>
+                    <GooseCoreFeatures 
+                      breakpoint={smBreakpoint}
+                      graphics={state.gooseGraphics.gooseFeatureBoard}/>
+                    <GoosePlatform 
+                      breakpoint={smBreakpoint}
+                      graphics={state.gooseGraphics.gooseCards}/>
                   </TabPanel>
+
                   <TabPanel value={value} index={1}>
-                    <GooseTips {...props} gooseTips={context.state.gooseTips}/>
+                    <GooseTips tips={state.gooseTips}/>
                   </TabPanel>
                 </>
               }
-              </DatabaseContext.Consumer>
+            </DatabaseContext.Consumer>
           </Paper>
-          
-          {ResponsiveFooters(smBreakpoint)}
+        {/* {ResponsiveFooters(smBreakpoint)} */}
       </>
   )
 };
