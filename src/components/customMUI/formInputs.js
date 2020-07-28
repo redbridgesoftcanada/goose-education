@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextValidator } from "react-material-ui-form-validator";
-import { OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio, RadioGroup, Select } from "@material-ui/core";
+import { OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio, RadioGroup, Select, Checkbox } from "@material-ui/core";
 import { EditorValidator, FileValidator, SelectValidator } from "./validators";
 
 // N O  V A L I D A T I O N
@@ -68,6 +68,24 @@ function selectField(name, value, options, eventHandler) {
   )
 }
 
+function checkboxField(state, name, label, text, eventHandler) {
+  return (
+    <>
+    <FormControlLabel
+      control={
+        <Checkbox 
+          checked={state} 
+          name={name} 
+          onChange={eventHandler}
+        />
+      }
+      label={label}
+    />
+    {text && <FormHelperText>{text}</FormHelperText>}
+    </>
+  )
+}
+
 // V A L I D A T I O N
 function firebaseValidator(type, name, value, placeholder, eventHandler, error) {
   const checkError = error => {
@@ -88,7 +106,7 @@ function firebaseValidator(type, name, value, placeholder, eventHandler, error) 
   )
 }
 
-function textValidator(name, value, eventHandler) {
+function textValidator(name, value, placeholder, eventHandler) {
   return (
     <TextValidator 
       variant="outlined" 
@@ -99,6 +117,7 @@ function textValidator(name, value, eventHandler) {
       onChange={eventHandler}
       validators={["required"]}
       errorMessages={[`Cannot submit an empty ${name}.`]}
+      {...placeholder && {placeholder: placeholder}}
     />
   )
 }
@@ -144,4 +163,4 @@ function selectValidator(name, value, options, eventHandler) {
   )
 }
 
-export { textField, radioField, selectField, firebaseValidator, textValidator, richTextValidator, fileValidator, selectValidator, defaultValueTextField }
+export { textField, radioField, selectField, checkboxField, firebaseValidator, textValidator, richTextValidator, fileValidator, selectValidator, defaultValueTextField }
