@@ -1,116 +1,31 @@
-import React, { useReducer, useState } from "react";
-import { Link, withRouter } from "react-router-dom";
-import { Button, Container, Divider, FormGroup, IconButton, Snackbar, Step, StepLabel, Stepper, Typography } from "@material-ui/core";
-import ChevronRightOutlinedIcon from '@material-ui/icons/ChevronRightOutlined';
+import React, { useState, createRef } from "react";
+import { Link, useHistory, withRouter } from "react-router-dom";
 import { ValidatorForm } from "react-material-ui-form-validator";
-
+import { Box, Button, Collapse, Container, FormGroup, List, ListItem, ListItemIcon, ListItemText, Snackbar, Step, StepLabel, Stepper, Typography } from "@material-ui/core";
+import { ChevronRightOutlined, ExpandMoreOutlined } from '@material-ui/icons';
+import { FormInputs } from '../components/customMUI';
 import { withFirebase } from "../components/firebase";
 import { LoginLink } from "./LoginForm";
-import TermsofServiceDialog from "../components/TermsOfServiceDialog";
-import { FormInputs } from '../components/customMUI';
 import { useStyles } from '../styles/register';
 
-const INITIAL_STATE = {
-  activeStep: 0,
-  allTermsAgreed: false,
-  gooseTermsAndConditions: false,
-  openTermsAndConditionsDialog: false,
-  collectionPersonalInfo: false,
-  gooseAlerts: false,
-  username: "",
-  email: "",
-  passwordOne: "",
-  passwordTwo: "",
-  firstName: "",
-  lastName: "",
-  phoneNumber: "",
-  mobileNumber: "",
-  address: "",
-  receiveEmails: true,
-  receiveSMS: true,
-  publicAccount: true,
-  isError: false,
-  error: null,
-}
-
 const steps = ['Terms of Service', 'Account Setup', 'Personal Information', 'Notifications'];
+const { customTextValidator, textValidator, checkboxField } = FormInputs;
 
-// function toggleReducer(state, action) {
-//   let type = action.type;
-//   let { name, value } = type;
-
-//   let payload = action.payload;
-
-//   switch(type) {
-//     case 'next': 
-//     return {
-//       ...state,
-//       activeStep: state.activeStep + 1
-//     }
-
-//     case 'back': 
-//     return {
-//       ...state,
-//       activeStep: state.activeStep - 1
-//     }
-
-//     case 'submit': 
-//     return {
-//       ...INITIAL_STATE
-//     }
-
-//     case 'error':
-//       return {
-//         isError: true,
-//         error: payload
-//       }
-    
-//     case 'allTermsAgreed':
-//       return {
-//         ...state,
-//         allTermsAgreed: payload.checked,
-//         gooseTermsAndConditions: payload.checked,
-//         collectionPersonalInfo: payload.checked,
-//         gooseAlerts: payload.checked,
-//       }
-
-//     case 'dialog': 
-//       return {
-//         ...state,
-//         openTermsAndConditionsDialog: !state.openTermsAndConditionsDialog,
-//       }
-
-//     case 'notifications':
-//     case 'termsOfService':
-//       return {
-//         ...state,
-//         [payload.name]: payload.checked
-//       }
-
-//     default: 
-//     return {
-//       ...state,
-//       [name]: value
-//     }
-//   }
-// }
-
-function RegisterForm({ firebase, history }) {
+function RegisterForm({ firebase }) {
   const classes = useStyles();
-  const { textValidator, checkboxField } = FormInputs;
+  const history = useHistory();
+
+  const accountFormRef = createRef();
+  const personalFormRef = createRef();
 
   const [ activeStep, setActiveStep ] = useState(0);
 
   const [ termsOfService, setTermsOfService ] = useState({
     allTermsAgreed: false,
-    gooseTermsAndConditions: false,
-    openTermsAndConditionsDialog: false,
-    collectionPersonalInfo: false,
-    gooseAlerts: false
+    collapseOpenTC: false,
+    collapseOpenCP: false
   });
-  const handleTermsOfServiceFields = event => {
-    setTermsOfService(termsOfService => ({...termsOfService, [event.target.name]: event.target.checked}))
-  }
+  const { allTermsAgreed, collapseOpenTC, collapseOpenCP } = termsOfService;
 
   const [ accountInfo, setAccountInfo ] = useState({
     username: "",
@@ -118,9 +33,7 @@ function RegisterForm({ firebase, history }) {
     passwordOne: "",
     passwordTwo: ""
   });
-  const handleAccountFields = event => {
-    setAccountInfo(accountInfo => ({...accountInfo, [event.target.name]: event.target.value}))
-  }
+  const { username, email, passwordOne, passwordTwo } = accountInfo;
 
   const [ personalInfo, setPersonalInfo ] = useState({
     firstName: "",
@@ -129,183 +42,230 @@ function RegisterForm({ firebase, history }) {
     mobileNumber: "",
     address: ""
   });
-  const handlePersonalFields = event => {
-    setPersonalInfo(personalInfo => ({...personalInfo, [event.target.name]: event.target.value}))
-  }
+  const { firstName, lastName, phoneNumber, mobileNumber, address } = personalInfo;
 
   const [ notifications, setNotifications ] = useState({
     receiveEmails: true,
-    receiveSMS: true,
     publicAccount: true
   });
+  const { receiveEmails, publicAccount } = notifications;
 
-  // const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  // const { activeStep, allTermsAgreed, gooseTermsAndConditions, openTermsAndConditionsDialog, collectionPersonalInfo, gooseAlerts, username, email, passwordOne, passwordTwo, firstName, lastName, phoneNumber, mobileNumber, address, receiveEmails, receiveSMS, publicAccount, isError, error } = state;
+  const [ error, setError ] = useState({
+    exists: false,
+    message: null
+  });
 
-  // Firebase error objects have a message property by default, but only shown when there is an actual error using conditional rendering.
-  // const isInvalid = passwordOne !== passwordTwo || passwordOne === "" || email === "" || username === "";
+  const handleTermsOfServiceFields = event => {
+    const formField = event.target.name;
+    const userInput = event.target.checked;
+    setTermsOfService(termsOfService => ({...termsOfService, [formField]: userInput }));
+  }
 
-  // const isButtonDisabled = () => {
-  //   switch (activeStep) {
-  //     case 0:
-  //       return !(allTermsAgreed || gooseTermsAndConditions && collectionPersonalInfo);
+  const handleAccountFields = event => {
+    const field = event.target.name;
+    const input = event.target.value;
+    setAccountInfo(accountInfo => ({...accountInfo, [field]: input }))
+  }
 
-  //     case 1:
-  //       return username === "" || email === "" || passwordOne === "" || passwordOne !== passwordTwo;
+  const handlePersonalFields = event => {
+    const field = event.target.name;
+    const input = event.target.value;
+    setPersonalInfo(personalInfo => ({...personalInfo, [field]: input }))
+  }
 
-  //     case 2: 
-  //       return firstName === "" || lastName === ""; 
-      
-  //     default:
-  //   }
-  // }
-  
-  const getStepButtons = () => {
-    return (
-      <>
-        <Button
-          disabled={activeStep === 0}
-          onClick={() => setActiveStep(activeStep - 1)}
-        >
-          Back
-        </Button>
-    
-      {activeStep === steps.length - 1 ? 
-      <Button 
-        variant="contained"
-        color="secondary"
-        type="submit"
-      >
-        Sign Up
-      </Button>
-      :
-      <Button
-        variant="contained" 
-        color="secondary" 
-        onClick={() => setActiveStep(activeStep + 1)}
-      >
-        Next
-      </Button>
+  const handleNotifications = event => {
+    const field = event.target.name;
+    const input = event.target.value;
+    setNotifications(notifications => ({...notifications, [field]: input }))
+  }
+
+  const triggerCollapse = event => {
+    if (event.currentTarget.id === 'termsAndConditions') {
+      setTermsOfService(termsOfService => ({...termsOfService, collapseOpenTC: !termsOfService.collapseOpenTC}))
+    }
+    if (event.currentTarget.id === 'personalInfo') {
+      setTermsOfService(termsOfService => ({...termsOfService, collapseOpenCP: !termsOfService.collapseOpenCP}))
+    }
+  }
+
+  const onNext = () => {
+    switch (activeStep) {
+      case 0:
+        if (!allTermsAgreed) {
+          setError({exists: true, message: "Please agree to the terms and conditions."});
+        } else if (allTermsAgreed) {
+          setActiveStep(activeStep + 1);
+        }
+        break;
+        
+    case 1:
+      if (accountFormRef.current) {
+        accountFormRef.current.isFormValid(false).then(isValid => {
+          if (passwordOne !== passwordTwo) {
+            setError({exists: true, message: "Passwords do not match."});
+          } else if (passwordOne === passwordTwo && isValid){
+            setActiveStep(activeStep + 1);
+          }
+        });
       }
-    </>
-  )
-}
+      break;
+    
+    case 2: 
+      if (personalFormRef.current) {
+        personalFormRef.current.isFormValid(false).then(isValid => {
+          if (isValid) {
+            setActiveStep(activeStep + 1);
+          }
+        });
+      }
+      break;
+    }
+  }
 
-  const getStepContent = (stepIndex) => {
-    switch (stepIndex) {
+  const onSubmit = event => {
+    firebase.doCreateUserWithEmailAndPassword(email, passwordOne)
+    .then(authUser => {
+      const user = authUser.user;
+      const roles = { admin: false };
+
+      return firebase.user(user.uid).set({
+        username, email, firstName, lastName, phoneNumber, mobileNumber, receiveEmails, publicAccount, roles
+      }, { merge: true });
+    })
+    .then(() => { history.push('/') })
+    .catch(e => setError({ exists: true, message: e }));
+    
+    event.preventDefault();
+  }
+
+  const getStepContent = step => {
+    switch (step) {
       case 0:
         const { allTermsAgreed, gooseTermsAndConditions, openTermsAndConditionsDialog, collectionPersonalInfo, gooseAlerts } = termsOfService;
         return (
-          <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+          <form className={classes.root} onSubmit={onSubmit}>
             <Typography className={classes.formTitle}>Please agree to the Terms of Service.</Typography>
             <Container>
               <FormGroup>
-                {checkboxField(allTermsAgreed, 'allTermsAgreed', 'Agree to All Terms', 'This includes agreements to all required and optional terms. You may choose to agree or disagree to inidual terms. You may still use the service even if you do not agree to the optional terms.', handleTermsOfServiceFields)}
-                <Divider className={classes.divider}/>
-                <div className={classes.gooseTermsAndConditions}>
-                  {checkboxField(gooseTermsAndConditions, 'gooseTermsAndConditions', '[Required] Goose Terms and Conditions', '', handleTermsOfServiceFields)}
-                  <IconButton onClick={() => setTermsOfService(termsOfService => ({...termsOfService, openTermsAndConditionsDialog: !termsOfService.openTermsAndConditionsDialog}))}>
-                    <ChevronRightOutlinedIcon fontSize="small"/>
-                  </IconButton>
-                </div>
-                <TermsofServiceDialog open={openTermsAndConditionsDialog} onClose={() => setTermsOfService(termsOfService => ({...termsOfService, openTermsAndConditionsDialog: !termsOfService.openTermsAndConditionsDialog}))} />
-                {checkboxField(collectionPersonalInfo, 'collectionPersonalInfo', '[Required] Collection and Use of Personal Information', '', handleTermsOfServiceFields)}
-                {checkboxField(gooseAlerts, 'gooseAlerts', '[Optional] Add Goose alerts and receive marketing messages.', '', handleTermsOfServiceFields)}
+                {checkboxField(allTermsAgreed, 'allTermsAgreed', 'Agree to All Terms', 'This includes agreements to all required and optional terms. You may choose to agree or disagree to individual terms. You may still use the service even if you do not agree to the optional terms.', handleTermsOfServiceFields)}
+                <List>
+                  <ListItem disableGutters button onClick={triggerCollapse} id='termsAndConditions'>
+                    <ListItemIcon>
+                      {collapseOpenTC ? <ExpandMoreOutlined/> : <ChevronRightOutlined/>}
+                    </ListItemIcon>
+                    <ListItemText>
+                      Goose Terms and Conditions
+                    </ListItemText>
+                  </ListItem>
+
+                  <Collapse in={collapseOpenTC} timeout="auto" unmountOnExit>
+                    <List>
+                      <ListItem>
+                        <ListItemText>Hello</ListItemText>
+                      </ListItem>
+                    </List>
+                  </Collapse>
+
+                  <ListItem id='personalInfo' disableGutters button onClick={triggerCollapse}>
+                    <ListItemIcon>
+                      {collapseOpenCP ? <ExpandMoreOutlined/> : <ChevronRightOutlined/>}
+                    </ListItemIcon>
+                    <ListItemText>
+                      Collection and Use of Personal Information
+                    </ListItemText>
+                  </ListItem>
+                </List>
+
+                <Collapse in={collapseOpenCP} timeout="auto" unmountOnExit>
+                  <List>
+                    <ListItem>
+                      <ListItemText>Information</ListItemText>
+                    </ListItem>
+                  </List>
+                </Collapse>
+
               </FormGroup>
             </Container>
-            {getStepButtons()}
           </form>
         );
 
       case 1:
         const { username, email, passwordOne, passwordTwo } = accountInfo;
         return (
-          <ValidatorForm className={classes.root} onSubmit={onSubmit}>
-            {textValidator('username', username, 'Username', handleAccountFields)}
-            {textValidator('email', email, 'Email Address', handleAccountFields)}
-            {textValidator('passwordOne', passwordOne, 'Password', handleAccountFields)}
-            {textValidator('passwordTwo', passwordTwo, 'Confirm Password', handleAccountFields)}
-            {/* {error && <Typography className={classes.error}>{error.message}</Typography>} */}
-            {getStepButtons()}
+          <ValidatorForm ref={accountFormRef} className={classes.root} onSubmit={onSubmit}>
+            <Box>
+              {customTextValidator('username', username, handleAccountFields, {
+                type: 'text',
+                placeholder: 'Username', 
+                validators:['required'], 
+                errorMessages:['Cannot submit an empty username.']})}
+            </Box>
+            <Box>
+              {customTextValidator('email', email, handleAccountFields, {
+                type: 'email',
+                placeholder: 'Email',
+                validators:['required', 'isEmail'], 
+                errorMessages:['Cannot submit an empty email.', 'Please submit a valid email address.']})}
+            </Box>
+            <Box>
+              {customTextValidator('passwordOne', passwordOne, handleAccountFields, {
+                type: 'password',
+                placeholder: 'Password',
+                validators:['required', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})'], 
+                errorMessages:['Cannot submit an empty password.', 'Please choose a secure password (At least one lowercase, one uppercase, one numeric character, one special character. At least 8 characters long.']})}
+            </Box>
+            <Box>
+              {customTextValidator('passwordTwo', passwordTwo, handleAccountFields, {
+                type: 'password',
+                placeholder: 'Confirm password',
+                validators:['required', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})'], 
+                errorMessages:['Cannot submit an empty password.', 'Please choose a secure password (At least one lowercase, one uppercase, one numeric character, one special character. At least 8 characters long.']})}
+            </Box>
           </ValidatorForm>
         );
 
       case 2:
         const { firstName, lastName, phoneNumber, mobileNumber, address } = personalInfo;
         return (
-          <ValidatorForm className={classes.root} onSubmit={onSubmit}>
-            {textValidator('firstName', firstName, 'First Name', handlePersonalFields)}
-            {textValidator('lastName', lastName, 'Last Name', handlePersonalFields)}
-            {textValidator('phoneNumber', phoneNumber, 'Phone Number', handlePersonalFields)}
-            {textValidator('mobileNumber', mobileNumber, 'Mobile Number', handlePersonalFields)}
-            {textValidator('address', address, 'Address', handlePersonalFields)}
-            {/* {error && <Typography className={classes.error}>{error.message}</Typography>} */}
-            {getStepButtons()}
+          <ValidatorForm ref={personalFormRef} className={classes.root} onSubmit={onSubmit}>
+            <Box>{textValidator('firstName', firstName, handlePersonalFields, {type: 'text', placeholder: 'First Name'})}</Box>
+            <Box>{textValidator('lastName', lastName, handlePersonalFields, {type: 'text', placeholder: 'Last Name'})}</Box>
+            <Box>{textValidator('phoneNumber', phoneNumber, handlePersonalFields, {type: 'tel', placeholder: 'Phone Number'})}</Box>
+            <Box>{textValidator('mobileNumber', mobileNumber, handlePersonalFields, {type: 'tel', placeholder: 'Mobile Number'})}</Box>
+            <Box>{textValidator('address', address, handlePersonalFields, {type: 'text', placeholder: 'Address'})}</Box>
           </ValidatorForm>
         );
 
       case 3:
         return (
-          <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
+          <form className={classes.root} onSubmit={onSubmit}>
             <Container>
               <FormGroup>
-{/*                 
-                <FormControlLabel
-                  control={<Checkbox checked={receiveEmails} name="receiveEmails" onChange={(event) => dispatch({ type: 'notifications', payload: event.target })} />}
-                  label="Receive Emails"
-                />
-                <FormHelperText>I would like to receieve email notifications.</FormHelperText>
-                <FormControlLabel
-                  control={<Checkbox checked={receiveSMS} name="receieveSMS" onChange={(event) => dispatch({ type: 'notifications', payload: event.target })} />}
-                  label="Receive SMS"
-                />
-                <FormHelperText>I would like to receieve SMS notifications. Additional charges may apply from your service provider.</FormHelperText>
-                <FormControlLabel
-                  control={<Checkbox checked={publicAccount} name="publicAccount" onChange={(event) => dispatch({ type: 'notifications', payload: event.target })} />}
-                  label="Public Account"
-                />
-                <FormHelperText>Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.</FormHelperText> */}
+                {checkboxField(receiveEmails, 'receiveEmails', 'Receive Emails', 'I would like to receieve email notifications.', handleNotifications)}
+                {checkboxField(publicAccount, 'publicAccount', 'Public Account', 'Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.', handleNotifications)}
               </FormGroup>
           </Container>
-          { getStepButtons() }
         </form>
         );
 
       default:
-        return 'Unknown step index';
+        console.log('Unknown step index in Registration Form content.')
+        return;
     }
-  }
-
-  const onSubmit = event => {
-    firebase.doCreateUserWithEmailAndPassword(accountInfo.email, accountInfo.passwordOne)
-    .then(authUser => {
-      const user = authUser.user;
-      const roles = { admin: false };
-
-      return firebase.user(user.uid).set({
-        // username, email, firstName, lastName, phoneNumber, mobileNumber, receiveEmails, receiveSMS, publicAccount, roles
-      }, { merge: true });
-    })
-    .then(() => {
-        // dispatch({ type: 'submit' });
-        history.push('/');
-      })
-      // .catch(error => 
-        // dispatch({ type: 'error', payload: error }));
-    
-      event.preventDefault();
   }
 
   return (
     <>
-      {/* { isError && 
+      {error.exists && 
         <Snackbar
-          open={isError}
-          autoHideDuration={1000}
+          open={error.exists}
+          autoHideDuration={2000}
+          onClose={() => setError({ exists: false, message: null })}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left'}}
-          message={<Typography className={classes.error}>{error}</Typography>}
+          ContentProps={{classes: {root: classes.snackBar}}}
+          message={<Typography className={classes.error}>{error.message}</Typography>}
         />
-      } */}
+      }
       <Typography className={classes.formTitle}>Create a New Account</Typography>
       <Stepper activeStep={activeStep} alternativeLabel>
         {steps.map(label => (
@@ -315,8 +275,36 @@ function RegisterForm({ firebase, history }) {
         ))}
       </Stepper>
       {getStepContent(activeStep)}
+      {getStepButtons(classes.stepButtons, activeStep, setActiveStep, onNext)}
       <LoginLink/>
     </>
+)}
+
+const getStepButtons = (stepButtonsStyle, activeStep, setActiveStep, onNext) => {
+  return (
+    <Box className={stepButtonsStyle}>
+      <Button
+        disabled={activeStep === 0}
+        onClick={() => setActiveStep(activeStep - 1)}>
+        Back
+      </Button>
+  
+    {activeStep === steps.length - 1 ? 
+      <Button 
+        variant="contained"
+        color="secondary"
+        type="submit">
+        Sign Up
+      </Button>
+      :
+      <Button
+        variant="contained" 
+        color="secondary"
+        onClick={() => onNext()}>
+        Next
+      </Button>
+    }
+    </Box>
 )}
 
 const RegisterLink = props => (

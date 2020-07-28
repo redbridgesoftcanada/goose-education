@@ -1,25 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
+import { Paper, Tabs, Tab, useTheme, useMediaQuery } from '@material-ui/core';
 import withRoot from './withRoot';
 import TabPanel from './components/TabPanel';
 import { DatabaseContext } from './components/database';
-import NavBar from './views/NavBar';
-import PageBanner from './views/PageBanner';
-import Poster from './components/Poster';
 import GooseCoreFeatures from './components/GooseCoreFeatures';
 import GoosePlatform from './components/GoosePlatform';
+import Poster from './components/Poster';
+import PageBanner from './views/PageBanner';
 import GooseTips from './views/GooseTips';
-import Footer from './views/Footer';
+import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
+import useStyles from './styles/goose';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-      flexGrow: 1,
-      backgroundColor: theme.palette.background.paper,
-    },
-}));
 
 function GooseEdu(props) {
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles(props, 'studyAbroad');
 
   // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
   const [value, setValue] = useState(props.location.state.selected);
@@ -31,7 +26,7 @@ function GooseEdu(props) {
 
   return (
       <>
-        <NavBar/>
+        {ResponsiveNavBars(theme)}
         <PageBanner title={props.pageBanner.title} backgroundImage={props.pageBanner.image} layoutType='headerBanner'/>
         <Paper className={classes.root}>
             <Tabs
@@ -59,7 +54,8 @@ function GooseEdu(props) {
               }
               </DatabaseContext.Consumer>
           </Paper>
-          <Footer/>
+          
+          {ResponsiveFooters(theme)}
       </>
   )
 };

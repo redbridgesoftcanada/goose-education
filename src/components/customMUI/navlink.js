@@ -6,7 +6,7 @@ const NavLink = withStyles(theme => ({
   root: {
     ...theme.fontHeader,
     ...theme.typography.h6,
-    fontSize: 14,
+    fontSize: '0.875rem',
     backgroundColor: 'transparent',
     color: theme.palette.common.black,
     '&:hover': {
