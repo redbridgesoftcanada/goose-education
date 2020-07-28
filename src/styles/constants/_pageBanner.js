@@ -11,9 +11,11 @@ export const pageBannerStyles = props => {
 
     headerTitle: {
       color: theme.palette.common.white,
-      marginTop: isPageBanner ? 90 : 20,
       position: 'absolute',
       textAlign: 'center',
+      [theme.breakpoints.down('xs')]: {
+        marginTop: -10,
+      }
     },
 
     pageBannerTitle: {

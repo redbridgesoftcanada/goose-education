@@ -3,16 +3,17 @@ import { Link as RouterLink } from "react-router-dom";
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Button from '../components/onePirate/Button';
-import Typography from '../components/onePirate/Typography';
+import MarkedTypography from '../components/onePirate/Typography';
 import PageBannerLayout from './PageBannerLayout';
-import { useStyles } from '../styles/home';
+import useStyles from '../styles/constants';
 
 function PageBanner(props) {
   const classes = useStyles(props, 'pageBanner');
   const { backgroundImage, title, layoutType } = props;
   
   const theme = useTheme();
-  const checkPageBannerBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+  const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
+  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <>
@@ -20,9 +21,9 @@ function PageBanner(props) {
         {/* Increase the network loading priority of the background image. */}
         <img style={{ display:'none' }} src={backgroundImage} alt='header background banner'/>
         {(layoutType === 'pageBanner') ?
-          loadPageBanner(classes, title, props.caption, checkPageBannerBreakpoint)
+          loadPageBanner(classes, title, props.caption, smBreakpoint)
           :  
-          <Typography className={classes.headerTitle} variant="h4">{title}</Typography>
+          <MarkedTypography className={classes.headerTitle} variant={!xsBreakpoint ? "h2" : "h4"}>{title}</MarkedTypography>
         }
       </PageBannerLayout>
     </>
@@ -32,8 +33,8 @@ function PageBanner(props) {
 function loadPageBanner(classes, title, caption, breakpoint) {
   return (
     <>
-      <Typography className={classes.pageBannerTitle} variant={!breakpoint ? "h2" : "h4"} marked="center">{title}</Typography>
-      <Typography className={classes.pageBannerCaption}>{caption}</Typography>
+      <MarkedTypography className={classes.pageBannerTitle} variant={!breakpoint ? "h2" : "h4"} marked="center">{title}</MarkedTypography>
+      <MarkedTypography className={classes.pageBannerCaption}>{caption}</MarkedTypography>
       <Button
         className={classes.pageBannerButton}
         component={RouterLink}

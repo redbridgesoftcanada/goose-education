@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { Container } from '@material-ui/core';
-import { useStyles } from '../styles/home';
+import useStyles from '../styles/constants';
 
 function PageBannerLayout(props) {
   const classes = useStyles(props, 'pageBannerLayout');

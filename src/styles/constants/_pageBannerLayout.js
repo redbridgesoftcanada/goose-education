@@ -2,6 +2,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const pageBannerLayoutStyles = props => {
   const isPageBanner = props.layoutType === 'pageBanner';
+  const isHeaderBanner = props.layoutType === 'headerBanner';
+  const isPoster = !isPageBanner && !isHeaderBanner;
   
   const flexContainerStyles = { display: 'flex', flexDirection: 'column', alignItems: 'center' };
   const backgroundStyles = { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }; 
@@ -10,7 +12,7 @@ export const pageBannerLayoutStyles = props => {
     root: {
       alignItems: 'center',
       color: theme.palette.common.white,
-      height: !isPageBanner ? '22vh' : '80vh',
+      height: isPoster ? '45vh' : isHeaderBanner ? '22vh' : '80vh',
       minHeight: !isPageBanner ? 205 : 500,
       maxHeight: 1300,
       position: 'relative',
@@ -23,9 +25,14 @@ export const pageBannerLayoutStyles = props => {
     },
 
     container: {
-      marginBottom: theme.spacing(7),
+      marginBottom: isPoster ? theme.spacing(20) : theme.spacing(7),
       marginTop: !isPageBanner ? 0 : '21vh',
-      ...!isPageBanner && { ...flexContainerStyles, maxWidth: 'inherit' },
+
+      ...!isPageBanner && { 
+        ...flexContainerStyles, 
+        maxWidth: 'inherit',
+      },
+      
       ...isPageBanner &&  { 
         float: 'left',
         marginLeft: 40, 
