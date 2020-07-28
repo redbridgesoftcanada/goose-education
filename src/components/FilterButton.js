@@ -1,44 +1,44 @@
 import React from 'react';
-import { Button, withStyles } from '@material-ui/core';
+import { Button, useMediaQuery, useTheme, withStyles } from '@material-ui/core';
 import { HighlightOffOutlined, SearchOutlined } from '@material-ui/icons';
 
 const styles = theme => ({
-    filterButton: {
+    root: {
         float: 'left',
-        border: `2px solid ${theme.palette.primary.light}`,
         marginRight: theme.spacing(1),
-        
-        "&:hover": {
-            backgroundColor: theme.palette.primary.light,
-            color: '#FFF'
+        "& .MuiButton-startIcon": {
+            [theme.breakpoints.down('sm')]: {
+                marginRight: 0
+            }
         }
-    },
+    }
 });
 
-function Filter(props) {
+function FilterButton(props) {
+    const theme = useTheme();
+    const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
     const { classes, isFilter, handleFilterClick, handleFilterReset } = props;
 
     const notFiltered = {
         onClick: handleFilterClick, 
         startIcon: <SearchOutlined/>,
-        children: 'Filter'
+        ...!smBreakpoint && { children: 'Filter' }
     };
     
     const isFiltered = {
         onClick: handleFilterReset, 
         startIcon: <HighlightOffOutlined/>,
-        children: 'Clear'
+        ...!smBreakpoint && { children: 'Clear' }
     };
 
     return (
         <Button
-            variant='outlined'
+            className={classes.root} 
+            color='secondary'
+            variant='contained'
             size='medium' 
-            className={classes.filterButton} 
-            {...(isFilter) ? isFiltered : notFiltered}
-        >
-        </Button>
+            {...isFilter ? isFiltered : notFiltered}/>
     )
 }
 
-export default withStyles(styles)(Filter);
+export default withStyles(styles)(FilterButton);

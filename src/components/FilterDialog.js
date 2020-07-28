@@ -5,27 +5,24 @@ import { FILTER_OPTIONS, FILTER_CONJUNCTIONS } from '../constants/constants';
 
 const useStyles = makeStyles(theme => ({
     container: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      justifyContent: 'space-evenly',
-      maxWidth: '285px',
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-evenly',
+        maxWidth: 285,
     },
     title: {
         textAlign: 'center'
     },
     menu: {
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1),
-      width: 200,
+        margin: theme.spacing(1, 0),
+        width: 200,
     },
     search: {
-      width: '80%',
-      padding: theme.spacing(1, 1)
+        width: '80%',
+        padding: theme.spacing(1, 1)
     },
     button: {
-        margin: theme.spacing(1),
-        color: theme.palette.common.white,
-        backgroundColor: theme.palette.secondary.main,
+        margin: theme.spacing(1)
     },
   }));
 
@@ -38,18 +35,17 @@ function FilterDialog(props) {
         <DialogTitle className={classes.title}>Filter</DialogTitle>
         <div className={classes.container}>
             <TextField className={classes.menu}
-            select
-            label="Content"
-            name="filterOption"
-            value={filterOption}
-            onChange={handleSearchQuery}
-            margin="normal"
-            >
-            {FILTER_OPTIONS.map((option, i) => (
-                <MenuItem key={i} value={option}>
-                {option}
-                </MenuItem>
-            ))}
+                select
+                label="Content"
+                name="filterOption"
+                value={filterOption}
+                onChange={handleSearchQuery}
+                margin="normal">
+                {FILTER_OPTIONS.map((option, i) => (
+                    <MenuItem key={i} value={option}>
+                    {option}
+                    </MenuItem>
+                ))}
             </TextField>
             <TextField className={classes.menu}
                 select
@@ -57,8 +53,7 @@ function FilterDialog(props) {
                 name="filterConjunction"
                 value={filterConjunction}
                 onChange={handleSearchQuery}
-                margin="normal"
-            >
+                margin="normal">
                 {FILTER_CONJUNCTIONS.map((option, i) => (
                     <MenuItem key={i} value={option}>
                     {option}
@@ -72,13 +67,13 @@ function FilterDialog(props) {
                 value={filterQuery}
                 variant="outlined"
                 onChange={handleSearchQuery}
-                margin="dense"
-            />
+                margin="dense"/>
         </div>
         <div className={classes.container}>
         {(isError) && <Typography>{error}</Typography>}
             <Button
                 variant="contained"
+                color="secondary"
                 className={classes.button}
                 startIcon={<CheckOutlined/>}
                 onClick={handleSearchClick} 
@@ -87,6 +82,7 @@ function FilterDialog(props) {
             </Button>
             <Button
                 variant="contained"
+                color="secondary"
                 className={classes.button}
                 startIcon={<CloseOutlined />}
                 onClick={onClose}
