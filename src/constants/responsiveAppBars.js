@@ -1,5 +1,4 @@
 import React from 'react';
-import { DatabaseContext } from '../components/database';
 import { CondenseAppBar, CondenseFooter, NavBar, Footer } from '../views/appBars';
 
 function ResponsiveNavBars(breakpoint) {
@@ -9,16 +8,11 @@ function ResponsiveNavBars(breakpoint) {
 }
 
 function ResponsiveFooters(breakpoint) {
+  const { footerLeft, footerRight } = JSON.parse(localStorage.getItem('footer'));
+  const props = { leftWrapper: footerLeft, rightWrapper: footerRight }
+
   return (
-    <DatabaseContext.Consumer>
-      {({ state }) => { 
-        const props = { leftWrapper: state.homeGraphics.footerLeft, rightWrapper: state.homeGraphics.footerRight }
-    
-        return state.homeGraphics && 
-          !breakpoint ? <Footer {...props}/> : <CondenseFooter {...props}/>
-        }
-      }
-    </DatabaseContext.Consumer>
+    !breakpoint ? <Footer {...props}/> : <CondenseFooter {...props}/>
   )
 }
 

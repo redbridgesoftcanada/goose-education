@@ -62,7 +62,7 @@ function GooseEdu(props) {
               }
             </DatabaseContext.Consumer>
           </Paper>
-        {/* {ResponsiveFooters(smBreakpoint)} */}
+        {ResponsiveFooters(smBreakpoint)}
       </>
   )
 };

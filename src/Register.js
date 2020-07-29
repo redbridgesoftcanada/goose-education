@@ -32,19 +32,15 @@ function Register() {
   return (
     <>
       {ResponsiveNavBars(mdBreakpoint)}
-      <DatabaseContext.Consumer>
-        {({ state }) =>
-          <Grid container className={classes.container}>
-            <Grid item className={classes.form}>
-              <RegisterForm/>
-            </Grid>
-            
-            <Grid item className={classes.footer}>
-              {ResponsiveFooters(smBreakpoint)}
-            </Grid>
-          </Grid>
-        }
-      </DatabaseContext.Consumer>
+      <Grid container className={classes.container}>
+        <Grid item className={classes.form}>
+          <RegisterForm/>
+        </Grid>
+        
+        <Grid item className={classes.footer}>
+          {ResponsiveFooters(smBreakpoint)}
+        </Grid>
+      </Grid>
     </>
   );
 }

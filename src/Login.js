@@ -20,8 +20,7 @@ function Login() {
           <Grid container className={classes.container}>
             <Grid item className={classes.form}>
               {state.loginGraphics &&
-                <LoginForm
-                  loginForm={state.loginGraphics.loginForm}/>
+                <LoginForm loginForm={state.loginGraphics.loginForm}/>
               }
             </Grid>
             

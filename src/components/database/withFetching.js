@@ -50,7 +50,15 @@ function withFetching(Component) {
       return fetchPaginatedQuery(state, firebase, setState, type);
     }
 
+    if (state.footerGraphics && localStorage.getItem('footer') === null) {
+      localStorage.setItem('footer', JSON.stringify(state.footerGraphics));
+    }
+
     useEffect(() => {
+      if (!state.footerGraphics) {
+        fetchSelectDocuments("location", "graphics", firebase, setState, '/footer');
+      }
+
       switch(path) {
         case '/':
           fetchSelectDocuments("location", "graphics", firebase, setState, path);
