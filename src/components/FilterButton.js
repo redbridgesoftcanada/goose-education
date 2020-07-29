@@ -6,19 +6,19 @@ import useStyles from '../styles/constants/index';
 export default function FilterButton(props) {
     const classes = useStyles(props, 'buttons');
     const theme = useTheme();
-    const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+    const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
     const { isFilter, handleFilterClick, handleFilterReset } = props;
 
     const notFiltered = {
         onClick: handleFilterClick, 
         startIcon: <FilterList/>,
-        ...!smBreakpoint && { children: 'Filter' }
+        ...!xsBreakpoint && { children: 'Filter' }
     };
     
     const isFiltered = {
         onClick: handleFilterReset, 
         startIcon: <HighlightOffOutlined/>,
-        ...!smBreakpoint && { children: 'Clear' }
+        ...!xsBreakpoint && { children: 'Clear' }
     };
 
     return (

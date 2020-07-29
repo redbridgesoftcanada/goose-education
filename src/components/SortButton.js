@@ -7,7 +7,7 @@ export default function SortButton(props) {
     const classes = useStyles(props, 'buttons');
     const theme = useTheme();
 
-    const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+    const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
     const { selectedAnchor, handleSortClick} = props;
 
     const buttonProps = {};
@@ -28,7 +28,7 @@ export default function SortButton(props) {
                 buttonProps.children = 'Sort';
         }
         
-        if (smBreakpoint) buttonProps.children = '';
+        if (xsBreakpoint) buttonProps.children = '';
         return buttonProps;
     }
 
