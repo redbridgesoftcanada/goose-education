@@ -43,5 +43,30 @@ export const buttonStyles = props => {
       }
     },
 
+    container: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'space-evenly',
+      maxWidth: 285,
+    },
+
+    title: {
+        textAlign: 'center'
+    },
+
+    menu: {
+        margin: theme.spacing(1, 0),
+        width: 200,
+    },
+
+    filterSearch: {
+        width: '80%',
+        padding: theme.spacing(1, 1)
+    },
+
+    button: {
+        margin: theme.spacing(1)
+    },
+
   }))(props);
 }

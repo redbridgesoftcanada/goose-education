@@ -1,66 +1,31 @@
 import React from 'react';
-import { Button, Dialog, DialogTitle, MenuItem, TextField, makeStyles, Typography } from '@material-ui/core';
+import { Button, Dialog, DialogTitle, MenuItem, TextField, Typography } from '@material-ui/core';
 import { CheckOutlined, CloseOutlined } from '@material-ui/icons';
 import { FILTER_OPTIONS, FILTER_CONJUNCTIONS } from '../constants/constants';
+import useStyles from '../styles/constants';
 
-const useStyles = makeStyles(theme => ({
-    container: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-evenly',
-        maxWidth: 285,
-    },
-    title: {
-        textAlign: 'center'
-    },
-    menu: {
-        margin: theme.spacing(1, 0),
-        width: 200,
-    },
-    search: {
-        width: '80%',
-        padding: theme.spacing(1, 1)
-    },
-    button: {
-        margin: theme.spacing(1)
-    },
-  }));
-
-function FilterDialog(props) {
-    const classes = useStyles(); 
+export default function FilterDialog(props) {
+    const classes = useStyles(props, 'buttons'); 
     const { filterOpen, filterOption, filterConjunction, filterQuery, error, isError, handleSearchQuery, handleSearchClick, onClose } = props;
-  
+
+    const generateDialogField = (name, value, label, children) => 
+        <TextField className={classes.menu}
+            select
+            label={label}
+            name={name}
+            value={value}
+            onChange={handleSearchQuery}
+            margin="normal">
+                {children}
+        </TextField>
+
     return (
       <Dialog onClose={onClose} open={filterOpen}>
         <DialogTitle className={classes.title}>Filter</DialogTitle>
         <div className={classes.container}>
-            <TextField className={classes.menu}
-                select
-                label="Content"
-                name="filterOption"
-                value={filterOption}
-                onChange={handleSearchQuery}
-                margin="normal">
-                {FILTER_OPTIONS.map((option, i) => (
-                    <MenuItem key={i} value={option}>
-                    {option}
-                    </MenuItem>
-                ))}
-            </TextField>
-            <TextField className={classes.menu}
-                select
-                label="And/Or"
-                name="filterConjunction"
-                value={filterConjunction}
-                onChange={handleSearchQuery}
-                margin="normal">
-                {FILTER_CONJUNCTIONS.map((option, i) => (
-                    <MenuItem key={i} value={option}>
-                    {option}
-                    </MenuItem>
-                ))}
-            </TextField>
-            <TextField className={classes.search}
+            {generateDialogField('filterOption', filterOption, 'Content', listOfOptions)}
+            {generateDialogField('filterConjunction', filterConjunction, 'And/Or', listOfConjunctions)}
+            <TextField className={classes.filterSearch}
                 placeholder="Search Term"
                 type="search"
                 name="filterQuery"
@@ -70,29 +35,37 @@ function FilterDialog(props) {
                 margin="dense"/>
         </div>
         <div className={classes.container}>
-        {(isError) && <Typography>{error}</Typography>}
+            {(isError) && <Typography>{error}</Typography>}
             <Button
                 variant="contained"
                 color="secondary"
                 className={classes.button}
                 startIcon={<CheckOutlined/>}
-                onClick={handleSearchClick} 
-            >
-                Search
+                onClick={handleSearchClick} >
+                Filter
             </Button>
             <Button
                 variant="contained"
                 color="secondary"
                 className={classes.button}
                 startIcon={<CloseOutlined />}
-                onClick={onClose}
-            >
+                onClick={onClose}>
                 Close
             </Button>
         </div>
-
       </Dialog>
     )
 }
 
-export default FilterDialog;
+
+const listOfOptions = FILTER_OPTIONS.map((option, i) => (
+    <MenuItem key={i} value={option}>
+        {option}
+    </MenuItem>
+));
+
+const listOfConjunctions = FILTER_CONJUNCTIONS.map((conjunction, i) => (
+    <MenuItem key={i} value={conjunction}>
+        {conjunction}
+    </MenuItem>
+));
