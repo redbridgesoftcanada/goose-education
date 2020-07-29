@@ -209,21 +209,21 @@ export default function GooseTips(props) {
                     open={Boolean(anchorOpen)} 
                     onClose={closeSort}/>
                 <AuthUserContext.Consumer>
-                    { authUser => authUser &&
+                    {authUser => 
                         <ArticleDialog  
-                        authUser={authUser} 
-                        history={history}
-                        articleOpen={tipOpen}
-                        article={selectedTip}
-                        onClose={closeTipDialog}/>
+                            authUser={authUser} 
+                            history={history}
+                            articleOpen={tipOpen}
+                            article={selectedTip}
+                            onClose={closeTipDialog}/>
                     }
                 </AuthUserContext.Consumer>
 
-                { gooseTips.length ? 
+                {gooseTips.length ? 
                     <Grid container>
                         {paginatedTips.map(tip => {
                             return (
-                                <Grid item xs={12} md={4} key={tip.id} className={classes.background}>
+                                <Grid item xs={12} sm={12} md={4} key={tip.id}>
                                     <div id={tip.id} onClick={openTipDialog} className={classes.item}>
                                         <img
                                             className={classes.image}
@@ -231,11 +231,10 @@ export default function GooseTips(props) {
                                             alt="tip-thumbnail"
                                         />
                                         <div className={classes.body}>
-                                            {(tip.views > 100) ? <Typography className={classes.badge}>Hot</Typography> : ''}
-                                            <Typography variant="body1" className={classes.articleTitle}>
+                                            <Typography className={classes.articleTitle}>
                                                 {tip.title}
                                             </Typography>
-                                            <Typography noWrap variant="body2" className={classes.articleDescription}>
+                                            <Typography noWrap className={classes.articleDescription}>
                                                 {tip.description}
                                             </Typography>
                                         </div>
@@ -246,13 +245,15 @@ export default function GooseTips(props) {
                     </Grid>
                     : 
                     <LinearProgress color='secondary'/>
-                    }
-                    <Pagination 
-                    totalPages={totalPages}
-                    currentPage={currentPage} 
-                    resourcesPerPage={tipsPerPage}
-                    handlePageChange={(event, newPage) => handlePageChange(newPage)}
-                    />
+                }
+
+                <Pagination 
+                totalPages={totalPages}
+                currentPage={currentPage} 
+                resourcesPerPage={tipsPerPage}
+                handlePageChange={(event, newPage) => handlePageChange(newPage)}
+                />
+
             </Container>
         </section>
     );

@@ -38,13 +38,19 @@ export const tipsStyles = props => {
     },
 
     articleTitle: {
-      fontWeight: 700,
+      ...theme.typography.subtitle2,
     },
 
     articleDescription: {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      width: '23em',
+      ...theme.typography.body2,
+      width: `${theme.spacing(5)}vh`,
+
+      [theme.breakpoints.between('sm', 'md')]: {
+        width: `${theme.spacing(4)}vh`
+      },
+      [theme.breakpoints.between('xs', 'sm')]: {
+        width: `${theme.spacing(6)}vh`
+      }
     },
 
     search: {
@@ -68,17 +74,6 @@ export const tipsStyles = props => {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
       marginRight: theme.spacing(1),
-    },
-
-    badge: {
-      backgroundColor: 'rgb(240, 150, 20)',
-      color: theme.palette.common.white,
-      padding: 3,
-      width: '4em',
-      fontSize: 12,
-      fontWeight: 600,
-      textAlign: 'center',
-      textTransform: 'uppercase',
     }
   }))(props)
 }
