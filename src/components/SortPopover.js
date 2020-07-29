@@ -1,8 +1,10 @@
 import React from 'react';
 import { ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
 import { ScheduleOutlined, PowerSettingsNewOutlined, VisibilityOutlined } from '@material-ui/icons';
+import useStyles from '../styles/constants';
 
-function SortPopover(props) { 
+export default function SortPopover(props) { 
+    const classes = useStyles(props, 'buttons');
     const { anchorEl, open, onClose } = props;
 
     return (
@@ -10,21 +12,20 @@ function SortPopover(props) {
             anchorEl={anchorEl}
             keepMounted
             open={open}
-            onClose={onClose}
-        >
-            <MenuItem id="reset" onClick={onClose}>
+            onClose={onClose}>
+            <MenuItem className={classes.popoverItem} id="reset" onClick={onClose}>
                 <ListItemIcon>
                     <PowerSettingsNewOutlined fontSize="small"/>
                 </ListItemIcon>
                 <ListItemText primary="Reset"/>
             </MenuItem>
-            <MenuItem id="date" onClick={onClose}>
+            <MenuItem className={classes.popoverItem} id="date" onClick={onClose}>
                 <ListItemIcon>
                     <ScheduleOutlined fontSize="small"/>
                 </ListItemIcon>
                 <ListItemText primary="Date"/>
             </MenuItem>
-            <MenuItem id="views" onClick={onClose}>
+            <MenuItem className={classes.popoverItem} id="views" onClick={onClose}>
                 <ListItemIcon>
                     <VisibilityOutlined fontSize="small"/>
                 </ListItemIcon>
@@ -33,5 +34,3 @@ function SortPopover(props) {
         </Menu>
     )
 }
-
-export default SortPopover;

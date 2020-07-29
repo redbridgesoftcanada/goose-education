@@ -1,45 +1,45 @@
 import React from 'react';
-import { Button, withStyles } from '@material-ui/core';
+import { Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { ScheduleOutlined, VisibilityOutlined, UnfoldMoreOutlined } from '@material-ui/icons';
+import useStyles from '../styles/constants/index';
 
-const styles = theme => ({
-    sortButton: {
-        float: 'left',
-        border: `2px solid ${theme.palette.primary.light}`,
-        marginRight: theme.spacing(1),
+export default function SortButton(props) {
+    const classes = useStyles(props, 'buttons');
+    const theme = useTheme();
 
-        "&:hover": {
-            backgroundColor: theme.palette.primary.light,
-            color: '#FFF'
-        }
-    },
-});
+    const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+    const { selectedAnchor, handleSortClick} = props;
 
-function Sort(props) {
-    const { classes, selectedAnchor, handleSortClick} = props;
-
-    const setStartIcon = () => {
+    const buttonProps = {};
+    const configButtonProps = () => {
         switch(selectedAnchor) {
             case 'date':
-                return <ScheduleOutlined/>;
+                buttonProps.startIcon = <ScheduleOutlined/>;
+                buttonProps.children = 'Date';
+                break;
+
             case 'views':
-                return <VisibilityOutlined/>;
+                buttonProps.startIcon = <VisibilityOutlined/>;
+                buttonProps.children = 'Views';
+                break; 
+
             default:
-                return <UnfoldMoreOutlined/>;
+                buttonProps.startIcon = <UnfoldMoreOutlined/>;
+                buttonProps.children = 'Sort';
         }
+        
+        if (smBreakpoint) buttonProps.children = '';
+        return buttonProps;
     }
 
     return (
         <Button
-            variant='outlined'
+            className={classes.root}
+            variant='contained'
             size='medium'
-            className={classes.sortButton}
+            color='secondary'
             onClick={handleSortClick}
-            startIcon={setStartIcon()}
-        >
-            {(selectedAnchor && selectedAnchor !== 'reset') ? selectedAnchor : 'Sort'}
-        </Button>
+            {...configButtonProps()}
+        />
     )
 }
-
-export default withStyles(styles)(Sort);

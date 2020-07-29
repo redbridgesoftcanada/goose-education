@@ -1,4 +1,5 @@
 import { appBarStyles } from './_appbar';
+import { buttonStyles } from './_buttons';
 import { pageBannerStyles } from './_pageBanner';
 import { pageBannerLayoutStyles } from './_pageBannerLayout';
 import { posterStyles } from './_poster';
@@ -6,6 +7,9 @@ import { footerStyles } from './_footer';
 
 const useStyles = (props, stylesheet) => {
   switch (stylesheet) {
+    case 'buttons':
+      return buttonStyles(props);
+
     case 'navbar':
     case 'headerBar':
       return appBarStyles(props, stylesheet);
