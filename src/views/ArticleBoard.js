@@ -1,8 +1,10 @@
-import React, { useEffect, useReducer } from 'react';
-import { Container, Grid, Link, Typography, withStyles } from '@material-ui/core';
-import { Switch, Route, Link as RouterLink, useRouteMatch } from "react-router-dom";
+import React, { Fragment, useEffect, useReducer } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import parse, { domToReact } from 'html-react-parser';
+import { CardContent, CardMedia, Container, Grid, Link, Typography } from '@material-ui/core';
+import { Switch, Route, Link as RouterLink, useRouteMatch, useHistory } from "react-router-dom";
 import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/_features';
-import parse from 'html-react-parser';
+// import parse from 'html-react-parser';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';
@@ -13,65 +15,7 @@ import SortPopover from '../components/SortPopover';
 import SearchField from '../components/SearchField';
 import Pagination from '../components/Pagination';
 import Article from '../views/Article';
-
-const styles = theme => ({
-    root: {
-        overflow: 'hidden',
-    },
-    image: {
-        display: 'block',
-        border: '0',
-        width: 'auto',
-        maxWidth: '100%',
-        height: 'auto',
-        margin: '0px auto',
-    },
-    item: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: theme.spacing(3, 1),
-        textAlign: 'left',
-        cursor: 'pointer',
-    },
-    body: {
-        display: 'flex',
-        flexDirection: 'column',
-        padding: theme.spacing(1, 0),
-    },
-    articleTitle: {
-        fontWeight: 700,
-        width: '18em',
-        '&:hover': {
-            color: theme.palette.secondary.main,
-        },
-    },
-    articleDescription: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        width: '20em',
-    },
-    search: {
-        float: 'right',
-        border: `2px solid ${theme.palette.secondary.main}`,
-        borderRadius: '5px',
-        paddingLeft: theme.spacing(1),
-    },
-    searchButton: {
-        color: theme.palette.common.white,
-        backgroundColor: theme.palette.secondary.main,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2)
-    },
-    filterButton: {
-        float: 'left',
-        color: theme.palette.primary.light,
-        border: `2px solid ${theme.palette.primary.light}`,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
-        marginRight: theme.spacing(1),
-    },
-});
+import { useStyles } from '../styles/networking';
 
 function toggleReducer(state, action) {
     const { type, payload } = action;
@@ -173,12 +117,16 @@ function toggleReducer(state, action) {
             return { ...state, currentPage }
                     
         default:
+            console.log('No matching dispatch type for ArticleBoard.')
+            return;
     }
 }
 
-function ArticleBoard(props) {
-    const { classes, history, listOfArticles } = props;
+export default function ArticleBoard(props) {
+    const classes = useStyles();
+    const history = useHistory();
     const match = useRouteMatch();
+    const { listOfArticles } = props;
 
     const INITIAL_STATE = {
         filteredArticles: [],   
@@ -227,21 +175,19 @@ function ArticleBoard(props) {
     }, [listOfArticles])
 
     return (
-        <section className={classes.root}>
-            <Container>
-                <Switch>
+        <Container className={classes.root}>
+            <Switch>
                 <Route path={`${match.path}/:articleID`}>
                     <AuthUserContext.Consumer>
                         {authUser => 
                             <Article 
                                 article={selectedArticle}
                                 authUser={authUser} 
-                                history={history}
-                                articleOpen={articleOpen} 
-                            /> 
+                                articleOpen={articleOpen}/> 
                         }
                     </AuthUserContext.Consumer>
                 </Route>
+                
                 <Route path={match.path}>
                     <AuthUserContext.Consumer>
                         {authUser => authUser &&
@@ -256,6 +202,7 @@ function ArticleBoard(props) {
                             </>
                         }
                     </AuthUserContext.Consumer>
+                    
                     <Filter 
                         isFilter={isFiltered} 
                         handleFilterClick={toggleFilterDialog} 
@@ -280,47 +227,47 @@ function ArticleBoard(props) {
                         open={Boolean(anchorOpen)} 
                         onClose={handleSelectedSort}/>
 
-                    <Grid container>
+                    <Grid container className={classes.board} spacing={1}>
                         {paginatedArticles.map(article => {
-                            const redirectPath = { pathname: `${match.path}/${article.id}`, state: { title: 'Networking' } }
+                            const redirectPath = { 
+                                pathname: `${match.path}/${article.id}`, 
+                                state: { title: 'Networking' } 
+                            }
                             return (
-                                <Grid key={article.id} item xs={12} md={3} className={classes.background}>
-                                    <div className={classes.item} id={article.id} onClick={handleSelectedArticle}>
-                                    <Link
-                                        color="inherit"
-                                        underline="none"
+                                <Grid item xs={12} sm={6} md={4} 
+                                    onClick={handleSelectedArticle}
+                                    key={article.id}
+                                    id={article.id}>
+                                    <Link className={classes.article}
                                         component={RouterLink} 
-                                        to={redirectPath}
-                                    >
-                                        <img
-                                            className={classes.image}
-                                            src={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)}
-                                            alt='article-thumbnail'
-                                        />
-                                        <div className={classes.body}>
-                                            <Typography variant='body1' className={classes.articleTitle} >
+                                        to={redirectPath}>
+                                        <CardMedia
+                                            className={classes.articleThumbnail}
+                                            image={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)}
+                                            title="article-thumbnail"/>
+                                        <CardContent>
+                                            <Typography className={classes.articleTitle} >
                                                 {article.title}
                                             </Typography>
-                                            <Typography component='div' noWrap variant='body2' className={classes.articleDescription}>
-                                                {parse(article.description)}
+                                            <Typography noWrap className={classes.articleDescription}>
+                                                {parse(article.description, {
+                                                    replace: ({ name, children }) => 
+                                                        (name === 'p') && <Fragment>{domToReact(children)}</Fragment>
+                                                })}
                                             </Typography>
-                                        </div>
+                                        </CardContent>
                                     </Link>
-                                    </div>
                                 </Grid>
-                        )})}
+                            )
+                        })}
                     </Grid>
                     <Pagination 
                         totalPages={totalPages}
                         currentPage={currentPage} 
                         resourcesPerPage={articlesPerPage}
-                        handlePageChange={(event, newPage) => handlePageChange(newPage)}
-                    />
-                    </Route>
-                </Switch>
-            </Container>
-        </section>
+                        handlePageChange={(event, newPage) => handlePageChange(newPage)}/>
+                </Route>
+            </Switch>
+        </Container>
     );
 }
-
-export default withStyles(styles)(ArticleBoard);

@@ -1,35 +1,77 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Grid, Paper, Tabs, Tab, makeStyles } from '@material-ui/core';
+import { Box, Card, CardContent, Grid, Tabs, Tab, Typography, useMediaQuery, useTheme } from '@material-ui/core';
 import withRoot from './withRoot';
 import { TAGS } from './constants/constants';
+import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
 import { DatabaseContext } from './components/database';
-import Typography from './components/onePirate/Typography';
+import MarkedTypography from './components/onePirate/Typography';
 import TabPanel from './components/TabPanel';
-import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import ArticleBoard from './views/ArticleBoard';
 import Poster from './components/Poster';
-import Footer from './views/Footer';
+import { useStyles } from './styles/networking';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-  },
-  title: {
-    marginTop: theme.spacing(7),
-    marginBottom: theme.spacing(2),
-  },
-  description: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(8),
-  },
-  board: {
-    marginTop: theme.spacing(4),
-  },
-  card: {
-    marginTop: 270
-  },
-}));
+function Networking(props) {
+  const classes = useStyles();
+  const { pageBanner, poster, posterCards, wrapper } = props;
+
+  const [ selectedTab, setSelectedTab ] = useState(props.location.state.selected);
+  
+  const theme = useTheme();
+  const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
+  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+  const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
+
+  const posterBody = {
+    title: poster.title,
+    subtitle: poster.subtitle,
+    caption: poster.caption,
+    other: createPosterCards(classes, posterCards)
+  }
+
+  return (
+    <>
+      {ResponsiveNavBars(mdBreakpoint)}
+      <PageBanner title={pageBanner.title} backgroundImage={pageBanner.image} layoutType='headerBanner'/>
+
+      <Box className={classes.header}>
+        <MarkedTypography variant={!xsBreakpoint ? "h3" : "h4"} marked="center" className={classes.title}>{wrapper.title}</MarkedTypography>
+        <Typography className={classes.description}>{wrapper.caption}</Typography>
+      </Box>
+
+      <Box>
+        {!xsBreakpoint &&
+          <Tabs
+            value={selectedTab}
+            onChange={(event, value) => setSelectedTab(value)}
+            textColor="secondary"
+            variant='fullWidth'
+          >
+            {TAGS.map(tab => {
+              return <Tab key={tab.toLowerCase()} label={tab}/> 
+            })}
+          </Tabs>
+        }
+
+        <DatabaseContext.Consumer>
+          {({ state }) => {
+            const tabArticles = state.taggedArticles[selectedTab];
+            return (
+              !xsBreakpoint ? 
+                createTabPanel(classes, selectedTab, tabArticles) 
+                : 
+                <ArticleBoard listOfArticles={tabArticles}/>
+            )}
+          }
+        </DatabaseContext.Consumer>
+      </Box>
+
+      <Poster body={posterBody} backgroundImage={poster.image} layoutType='vancouver_now'/>
+      
+      {ResponsiveFooters(smBreakpoint)}
+    </>
+  );
+}
 
 function createPosterCards(classes, cards) {
   const filteredCards = Object.values(cards).filter(card => typeof card !== 'string');
@@ -54,56 +96,16 @@ function createPosterCards(classes, cards) {
   )
 }
 
-function createTabPanel(selectedTab, history, articles) {
-  const tabArticles = articles[selectedTab];
+function createTabPanel(classes, selectedTab, tabArticles) {
   return (
-    <TabPanel value={selectedTab} index={selectedTab} key={selectedTab}>
-      {(tabArticles && tabArticles.length) ? 
-        <ArticleBoard listOfArticles={tabArticles} history={history} /> 
+    <TabPanel className={classes.panel} value={selectedTab} index={selectedTab} key={selectedTab}>
+      {tabArticles && tabArticles.length ? 
+        <ArticleBoard listOfArticles={tabArticles}/> 
         : 
-        <Typography variant='subtitle1'>There are currently no articles on this topic.</Typography> }
+        <Typography variant='subtitle1'>There are currently no articles on this topic.</Typography> 
+      }
     </TabPanel>
   )
-}
-
-function Networking(props) {
-  const classes = useStyles();
-
-  const [ selectedTab, setSelectedTab ] = useState(props.location.state.selected);
-  const { pageBanner, poster, posterCards, wrapper } = props;
-  
-  const posterBody = {
-    title: poster.title,
-    subtitle: poster.subtitle,
-    caption: poster.caption,
-    other: createPosterCards(classes, posterCards)
-  }
-
-  return (
-    <>
-      <NavBar />
-      <PageBanner title={pageBanner.title} backgroundImage={pageBanner.image} layoutType='headerBanner'/>
-      <Typography variant="h3" marked="center" className={classes.title}>{wrapper.title}</Typography>
-      <Typography variant="body1" marked="center" className={classes.description}>{wrapper.caption}</Typography>
-      <Paper className={classes.root}>
-        <Tabs
-          value={selectedTab}
-          onChange={(event, value) => setSelectedTab(value)}
-          textColor="secondary"
-          centered
-        >
-          {TAGS.map(tab => {
-            return <Tab key={tab.toLowerCase()} label={tab}/> 
-          })}
-        </Tabs>
-        <DatabaseContext.Consumer>
-          {context => createTabPanel(selectedTab, props.history, context.state.taggedArticles)}
-        </DatabaseContext.Consumer>
-      </Paper>
-      <Poster body={posterBody} backgroundImage={poster.image} layoutType='vancouver_now'/>
-      <Footer />
-    </>
-  );
 }
 
 export default withRoot(Networking);
