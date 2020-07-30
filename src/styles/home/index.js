@@ -22,5 +22,9 @@ export const useStyles = (props, stylesheet) => {
 
     case 'featureInstagram':
       return featureInstagramStyles(props);
+
+    default:
+      console.log('No matching stylesheet to load for Home page.');
+      return;
   }
 }
