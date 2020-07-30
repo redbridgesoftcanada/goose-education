@@ -61,21 +61,39 @@ function withFetching(Component) {
 
       switch(path) {
         case '/':
-          fetchSelectDocuments("location", "graphics", firebase, setState, path);
-          fetchSelectDocuments("featured", "schools", firebase, setState, '');
-          fetchSelectDocuments("featured", "articles", firebase, setState, '');
-          fetchSelectDocuments("featured", "tips", firebase, setState, '');
-          fetchUserMedia(setState);
+          if (!state.homeGraphics) {
+            fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          }
+          if (!state.featuredSchools.length) {
+            fetchSelectDocuments("featured", "schools", firebase, setState, '');
+          }
+          if (!state.featuredArticles.length) {
+            fetchSelectDocuments("featured", "articles", firebase, setState, '');
+          }
+          if (!state.featuredTips.length) {
+            fetchSelectDocuments("featured", "tips", firebase, setState, '');
+          }
+          if (!state.instagram.length) {
+            fetchUserMedia(setState);
+          }
           break;
         
         case '/goose':
-          fetchSelectDocuments("location", "graphics", firebase, setState, path);
-          fetchAllDocuments("tips", firebase, setState);
+          if (!state.gooseGraphics) {
+            fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          }
+          if (!state.gooseTips.length) {
+            fetchAllDocuments("tips", firebase, setState);
+          }
           break;
         
         case '/networking':
-          fetchSelectDocuments("location", "graphics", firebase, setState, path);
-          fetchAllDocuments("articles", firebase, setState);
+          if (!state.networkingGraphics) {
+            fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          }
+          if (!state.listOfArticles.length) {
+            fetchAllDocuments("articles", firebase, setState);
+          }
           break;
         
         case '/schools':
@@ -85,6 +103,7 @@ function withFetching(Component) {
 
         case '/studyabroad':
           fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          break;
 
         case '/services':
           fetchSelectDocuments("location", "graphics", firebase, setState, path);
@@ -127,7 +146,8 @@ function withFetching(Component) {
           break;
 
         default:
-          console.log('No path to fetch data!')
+          console.log('No path to fetch data!');
+          return;
       }
     }, [path]);
 
