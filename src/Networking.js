@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Card, CardContent, Grid, Tabs, Tab, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, Tabs, Tab, Typography, useMediaQuery, useTheme } from '@material-ui/core';
 import withRoot from './withRoot';
 import { TAGS } from './constants/constants';
 import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
@@ -26,7 +26,6 @@ function Networking(props) {
     title: poster.title,
     subtitle: poster.subtitle,
     caption: poster.caption,
-    other: createPosterCards(classes, posterCards)
   }
 
   return (
@@ -35,8 +34,8 @@ function Networking(props) {
       <PageBanner title={pageBanner.title} backgroundImage={pageBanner.image} layoutType='headerBanner'/>
 
       <Box className={classes.header}>
-        <MarkedTypography variant={!xsBreakpoint ? "h3" : "h4"} marked="center" className={classes.title}>{wrapper.title}</MarkedTypography>
-        <Typography className={classes.description}>{wrapper.caption}</Typography>
+        <MarkedTypography variant={!xsBreakpoint ? "h3" : "h4"} marked="center" className={classes.headerTitle}>{wrapper.title}</MarkedTypography>
+        <Typography className={classes.headerDescription}>{wrapper.caption}</Typography>
       </Box>
 
       <Box>
@@ -56,8 +55,7 @@ function Networking(props) {
         <DatabaseContext.Consumer>
           {({ state }) => {
             const tabArticles = state.taggedArticles[selectedTab];
-            return (
-              !xsBreakpoint ? 
+            return (!xsBreakpoint ? 
                 createTabPanel(classes, selectedTab, tabArticles) 
                 : 
                 <ArticleBoard listOfArticles={tabArticles}/>
@@ -66,34 +64,11 @@ function Networking(props) {
         </DatabaseContext.Consumer>
       </Box>
 
-      <Poster body={posterBody} backgroundImage={poster.image} layoutType='vancouver_now'/>
+      <Poster body={posterBody} backgroundImage={poster.image} posterCards={posterCards} layoutType='vancouver_now'/>
       
       {ResponsiveFooters(smBreakpoint)}
     </>
   );
-}
-
-function createPosterCards(classes, cards) {
-  const filteredCards = Object.values(cards).filter(card => typeof card !== 'string');
-
-  return (
-    <Grid container spacing={3} className={classes.card}>
-      <Grid item xs={false} md={3}/>
-      {filteredCards.map((card, i) => {
-        return (
-          <Grid item xs={12} md={3} key={i}>
-            <Card>
-                <CardContent>
-                  <Typography color="secondary">{card.subtitle}</Typography>
-                  <span className={classes.bullet}>•</span>
-                  <Typography variant="body2" component="p">{card.caption}</Typography>
-                </CardContent>
-            </Card>
-          </Grid>
-      )})}
-      <Grid item xs={false} md={3}/>
-    </Grid>
-  )
 }
 
 function createTabPanel(classes, selectedTab, tabArticles) {

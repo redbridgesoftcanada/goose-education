@@ -8,12 +8,12 @@ export const useStyles = props => {
       }
     },
     
-    title: {
+    headerTitle: {
       marginTop: theme.spacing(4),
       marginBottom: theme.spacing(2)
     },
 
-    description: {
+    headerDescription: {
       ...theme.typography.body1,
       marginTop: theme.spacing(3),
       marginBottom: theme.spacing(4),
@@ -23,7 +23,7 @@ export const useStyles = props => {
     },
 
     panel: {
-      margin: theme.spacing(3, 0)
+      marginTop: theme.spacing(3)
     },
 
     // A R T I C L E  B O A R D 
@@ -32,7 +32,7 @@ export const useStyles = props => {
     },
 
     board: {
-      margin: theme.spacing(7, 0)
+      marginTop: theme.spacing(7)
     },
 
     article: {
