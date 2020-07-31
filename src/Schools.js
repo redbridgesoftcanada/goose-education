@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Paper, Tabs, Tab, Typography, useMediaQuery, useTheme } from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
-import withRoot from './withRoot';
 import { AuthUserContext } from './components/session';
+import { DatabaseContext } from './components/database';
 import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
 import TabPanel from './components/TabPanel';
 import PageBanner from './views/PageBanner';
@@ -11,6 +11,7 @@ import ListOfSchools from './views/ListOfSchools';
 import HowToUse from './components/HowToUse';
 import SchoolInformation from './views/SchoolInformation';
 import SchoolApplication from './views/SchoolApplication';
+import withRoot from './withRoot';
 import { useStyles } from './styles/schools';
 
 function Schools(props) {
@@ -25,7 +26,7 @@ function Schools(props) {
     school: null
   });
 
-  const { listOfSchools, pageBanner, banner, posterTop, posterBottom } = props;
+  const { listOfSchools, posterTop, posterBottom } = props;
   const listOfSchoolNames = listOfSchools.map(school => school.title);
 
   // E V E N T  L I S T E N E R S
@@ -39,7 +40,13 @@ function Schools(props) {
   return (
     <>
       {ResponsiveNavBars(mdBreakpoint)}
-      <PageBanner title={pageBanner.title} backgroundImage={pageBanner.image} layoutType='headerBanner'/>
+      <DatabaseContext.Consumer>
+        {({ state: { schoolsGraphics: { schoolInfoPageBanner = {} } } = {} }) => 
+          <PageBanner 
+          layoutType='headerBanner'
+          title={schoolInfoPageBanner.title} 
+          backgroundImage={schoolInfoPageBanner.image}/>}
+      </DatabaseContext.Consumer>
       <Paper className={classes.root}>
           <Tabs
               textColor="secondary"
@@ -75,9 +82,11 @@ function Schools(props) {
               }
             </AuthUserContext.Consumer>
           </TabPanel>
-
       </Paper>
-      <HowToUse body={banner}/>
+      <DatabaseContext.Consumer>
+        {({ state: { schoolsGraphics: { schoolInfoBanner = {} } } = {} }) => 
+          <HowToUse body={schoolInfoBanner}/>}
+      </DatabaseContext.Consumer>
       {configPropsPoster(posterBottom, 'schools_bottom_poster')}
       {ResponsiveFooters(smBreakpoint)}
     </>

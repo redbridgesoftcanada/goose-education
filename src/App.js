@@ -63,13 +63,14 @@ function App() {
                     posterCards={state.networkingGraphics.networkingCards} 
                     wrapper={state.networkingGraphics.networkingWrapper}/>}/> }
                 
-                {state.schoolsGraphics && <Route path="/schools" render={props => 
-                  <Schools {...props} 
-                    listOfSchools={state.listOfSchools} 
-                    pageBanner={state.schoolsGraphics.schoolInfoPageBanner}
-                    banner={state.schoolsGraphics.schoolInfoBanner}
-                    posterTop={state.schoolsGraphics.schoolInfoPosterTop}
-                    posterBottom={state.schoolsGraphics.schoolInfoPosterBottom}/>}/>}
+                {state.schoolsGraphics && 
+                  <Route path="/schools" render={props => 
+                    <Schools 
+                      {...props} 
+                      listOfSchools={state.listOfSchools} 
+                      posterTop={state.schoolsGraphics.schoolInfoPosterTop}
+                      posterBottom={state.schoolsGraphics.schoolInfoPosterBottom}/>}
+                  />}
 
                 {state.studyabroadGraphics && <Route path="/studyabroad" render={props => 
                   <StudyAbroad {...props}
