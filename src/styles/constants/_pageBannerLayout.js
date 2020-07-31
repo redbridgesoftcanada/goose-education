@@ -28,7 +28,7 @@ export const pageBannerLayoutStyles = props => {
     },
 
     posterRoot: {
-      height: '45vh',
+      height: '60vh',
       minHeight: 205,
       display: 'flex',
     },

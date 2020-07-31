@@ -32,7 +32,6 @@ function generatePosterContent(classes, props, breakpoint) {
     [classes.customSubtitle]: isCustomPosters
   })
 
-
   if (isCustomPosters) {
     return (
       <ul className={classes.customContainer}>
