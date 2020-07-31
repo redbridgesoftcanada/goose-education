@@ -81,6 +81,49 @@ export const schoolInformationStyles = props => {
       fontWeight: 600,
       textAlign: 'center',
       textTransform: 'uppercase'
-    }
+    },
+
+    // H O W  T O  U S E
+    posterRoot: {
+      paddingTop: theme.spacing(4),
+      paddingBottom: theme.spacing(4),
+    },
+
+    posterGrid: {
+      alignContent: 'center',
+      alignItems: 'center'
+    },
+
+    posterTitle: {
+      ...theme.typography.h4,
+      color: theme.palette.secondary.main,
+      [theme.breakpoints.down('xs')]: {
+        ...theme.typography.h5,
+        fontWeight: 700,
+        color: theme.palette.secondary.main,
+      }
+    },
+
+    wrapper: {
+        display: 'flex',
+    },
+
+    posterBody: {
+      ...theme.typography.body1,
+      textAlign: 'left',
+      [theme.breakpoints.down('xs')]: {
+        ...theme.typography.body2
+      }
+    },
+
+    number: {
+      ...theme.typography.body1,
+      color: theme.palette.secondary.main,
+      marginRight: theme.spacing(1),
+      [theme.breakpoints.down('xs')]: {
+        ...theme.typography.body2,
+        color: theme.palette.secondary.main
+      }
+    },
   }))(props)
 }

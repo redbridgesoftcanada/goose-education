@@ -1,36 +1,25 @@
 import React from 'react';
-import { Container, Grid, Typography, withStyles } from '@material-ui/core';
+import { Container, Grid, Typography } from '@material-ui/core';
+import { useStyles } from '../styles/schools';
 
-const styles = theme => ({
-    root: {
-        paddingTop: theme.spacing(4),
-        paddingBottom: theme.spacing(4),
-    },
-    wrapper: {
-        display: 'flex',
-    },
-    number: {
-        marginRight: theme.spacing(1),
-    },
-});
-
-function HowToUse(props) {
-    const { classes, body } = props;
+export default function HowToUse(props) {
+    const classes = useStyles(props, 'schoolInformation');
     const circledIndexes = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'];
+    const { body } = props;
     const listOfText = body.caption.split('\n');
 
   return (
-    <Container className={classes.root}>
-        <Grid container alignContent="center" alignItems="center">
+    <Container className={classes.posterRoot}>
+        <Grid container className={classes.posterGrid}>
             <Grid item xs={12} md={6}>
-                <Typography color="secondary" variant="h4">{body.title}</Typography>
+                <Typography className={classes.posterTitle}>{body.title}</Typography>
             </Grid>
             <Grid item xs={12} md={6}>
                 {listOfText.map((text, i) => {
                     return (
                         <div className={classes.wrapper} key={i}>
-                            <Typography color="secondary" variant="body1" className={classes.number}>{circledIndexes[i]}</Typography>
-                            <Typography align="left" variant="body1">{text}</Typography>
+                            <Typography className={classes.number}>{circledIndexes[i]}</Typography>
+                            <Typography className={classes.posterBody}>{text}</Typography>
                         </div>
                     )
                 })}
@@ -39,5 +28,3 @@ function HowToUse(props) {
     </Container>
   );
 }
-
-export default withStyles(styles)(HowToUse);
