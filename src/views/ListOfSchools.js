@@ -1,77 +1,15 @@
-import React, { useState } from 'react';
-import { Link as RouterLink, useRouteMatch } from "react-router-dom";
-import { Container, Grid, Link, Typography, withStyles } from '@material-ui/core';
+import React, { useState, Fragment } from 'react';
+import { Link as RouterLink, useHistory, useRouteMatch } from "react-router-dom";
+import { CardMedia, Container, Grid, Link, Typography } from '@material-ui/core';
+import { createPagination } from '../constants/helpers/_features';
 import SearchField from '../components/SearchField';
 import Pagination from '../components/Pagination';
+import { useStyles } from '../styles/schools';
 
-const styles = theme => ({
-    root: {
-        overflow: 'hidden',
-        marginTop: '25px',
-    },
-    counter: {
-        float: 'left',
-    },
-    image: {
-        display: 'block',
-        border: '0',
-        width: 'auto',
-        maxWidth: '65%',
-        height: 'auto',
-        margin: '0px auto',
-    },
-    item: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: theme.spacing(3, 1),
-        textAlign: 'left',
-        cursor: 'pointer',
-    },
-    body: {
-        display: 'flex',
-        flexDirection: 'column',
-        padding: theme.spacing(1, 0),
-        '&:hover': {
-            color: theme.palette.secondary.main,
-        },
-    },
-    schoolTitle: {
-        fontWeight: 700,
-    },
-    search: {
-        float: 'right',
-        border: `2px solid ${theme.palette.secondary.main}`,
-        borderRadius: '5px',
-        paddingLeft: theme.spacing(1),
-    },
-    searchButton: {
-        color: theme.palette.common.white,
-        backgroundColor: theme.palette.secondary.main,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2)
-    },
-    filterButton: {
-        float: 'left',
-        color: theme.palette.primary.light,
-        border: `2px solid ${theme.palette.primary.light}`,
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
-        marginRight: theme.spacing(1),
-    },
-    badge: {
-        backgroundColor: theme.palette.secondary.main,
-        color: theme.palette.common.white,
-        padding: '3px',
-        width: '8em',
-        fontSize: '12px',
-        fontWeight: 600,
-        textAlign: 'center',
-        textTransform: 'uppercase'
-    },
-});
-
-function ListOfSchools(props) {
-    const { classes, history, handleSelectedSchool, listOfSchools } = props;
+export default function ListOfSchools(props) {
+    const { handleSelectedSchool, listOfSchools } = props;
+    const classes = useStyles(props, 'schoolInformation');
+    const history = useHistory();
     const match = useRouteMatch();
     
     const [ searchQuery, setSearchQuery ] = useState('');
@@ -80,75 +18,59 @@ function ListOfSchools(props) {
 
     const handlePageChange = (event, newPage) => setPagination({...pagination, currentPage: newPage});
 
-    const totalSchools = listOfSchools.length;
-    const totalPages = Math.ceil(totalSchools / schoolsPerPage);
-    const indexOfLastSchool = (currentPage * schoolsPerPage) + 1;
-    const indexOfFirstSchool = indexOfLastSchool - schoolsPerPage;
-    const paginatedSchools = (totalPages === 1) ? listOfSchools : listOfSchools.slice(indexOfFirstSchool, indexOfLastSchool);
+    const totalPages = Math.ceil(listOfSchools.length / schoolsPerPage);
+    const paginatedSchools = createPagination(listOfSchools, currentPage, schoolsPerPage, totalPages);
 
     return (
-        <section className={classes.root}>
+        <section className={classes.sectionRoot}>
             <Container>
-                <Typography variant="body2" className={classes.counter}>There are a total of <b>{listOfSchools.length}</b> schools.</Typography>
+                <Typography className={classes.counter}>There are a total of <b>{listOfSchools.length}</b> schools.</Typography>
                 <SearchField 
                     handleSearch={event => setSearchQuery(event.target.value)}
-                    handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {resources: listOfSchools} })}/>
-                <Grid container>
+                    handleSearchClick={() => 
+                        history.push({
+                            pathname:'/search', 
+                            search:`?query=${searchQuery}`, 
+                            state: { resources: listOfSchools} })}/>
+                <Grid container spacing={2} className={classes.grid}>
                     {paginatedSchools.map(school => {
+                        const redirectPath = {
+                            pathname: `${match.path}/${school.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
+                            state: {
+                                title: 'School Information',
+                                selected: 0,
+                            }
+                        }
                         return (
-                            <Grid item xs={12} md={12} key={school.id}>
-                                <div className={classes.item}>
-                                    <Grid item xs={3} md={3}>
-                                    <img
+                            <Fragment key={school.id}>
+                                <Grid item xs={4} md={3}>
+                                    <CardMedia
+                                        component='img'
                                         className={classes.image}
-                                        src={(school.image.includes('firebase')) ? school.image : require(`../assets/img/${school.image}`)}
-                                        alt='school-logo'
-                                    />
-                                    </Grid>
-                                    <Grid item xs={9} md={9} className={classes.body}>
-                                    <Link
+                                        image={(school.image.includes('firebase')) ? school.image : require(`../assets/img/${school.image}`)}/>
+                                </Grid>
+                                <Grid item xs={8} md={9} className={classes.school}>
+                                    <Link className={classes.schoolTitle} 
                                         id={school.id} 
-                                        color="inherit"
-                                        variant="h6"
-                                        underline="none"
-                                        className={classes.schoolTitle}
                                         component={RouterLink} 
                                         onClick={handleSelectedSchool}
-                                        to=
-                                        {{
-                                            pathname: `${match.path}/${school.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
-                                            state: {
-                                                title: 'School Information',
-                                                selected: 0,
-                                            }
-                                        }}
-                                        >
-                                            {school.title}
-                                        </Link>
+                                        to={redirectPath}
+                                    >
+                                        {school.title}
+                                    </Link>
 
-                                        {(school.recommendation) ? <Typography className={classes.badge}>Recommend</Typography> : ''}
+                                    {(school.recommendation) ? <Typography className={classes.badge}>Recommend</Typography> : ''}
 
-                                        <Link
-                                            id={school.id} 
-                                            color="inherit"
-                                            variant="body2"
-                                            underline="none"
-                                            component={RouterLink} 
-                                            onClick={handleSelectedSchool}
-                                            to=
-                                            {{
-                                                pathname: `${match.path}/${school.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
-                                                state: {
-                                                    title: 'School Information',
-                                                    selected: 0,
-                                                }
-                                            }}
-                                        >
-                                            {school.description}
-                                        </Link>
-                                    </Grid>
-                                </div>
-                            </Grid>
+                                    <Link className={classes.schoolDescription}
+                                        id={school.id} 
+                                        component={RouterLink} 
+                                        onClick={handleSelectedSchool}
+                                        to={redirectPath}
+                                    >
+                                        {school.description}
+                                    </Link>
+                                </Grid>
+                            </Fragment>
                         );
                     })}
                 </Grid>
@@ -162,5 +84,3 @@ function ListOfSchools(props) {
         </section>
     );
 }
-
-export default withStyles(styles)(ListOfSchools);
