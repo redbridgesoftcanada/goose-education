@@ -83,6 +83,29 @@ export const schoolInformationStyles = props => {
       textTransform: 'uppercase'
     },
 
+    // S E L E C T E D  S C H O O L
+    sectionHeader: {
+      ...theme.typography.h6,
+      marginTop: theme.spacing(3)
+    },
+
+    tableText: {
+      ...theme.typography.body2,
+      textAlign: 'center'
+    },
+
+    listText: {
+      ...theme.typography.body2
+    },
+
+    header: {
+      fontWeight: 600,
+    },
+
+    video: {
+      justifyContent: 'center',
+    },
+
     // H O W  T O  U S E
     posterRoot: {
       paddingTop: theme.spacing(4),
