@@ -69,11 +69,13 @@ function generateSitePageList(classes, sitePages, navMenu, navMenuHandler, navMa
         const isSubsectionOpen = navMenu[sPage];
         return (
             <Fragment key={i}>
-                {sPage === 'Networking' ? 
+                {sPage === 'Networking' || sPage === 'Study Abroad Services' ? 
                 <ListItem 
                     button 
                     component={RouterLink} 
-                    to={{ pathname: '/networking', state: { title: 'Networking', selected: 0 }}}>
+                    to={{ 
+                        pathname: sPage === 'Networking' ? '/networking' : '/studyabroad', 
+                        state: { title: sPage, selected: 0 }}}>
                     <ListItemText primary={sPage}/>
                 </ListItem>
                 :
