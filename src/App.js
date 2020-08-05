@@ -55,9 +55,14 @@ function App() {
           <DatabaseContext.Consumer>
             {({ state }) =>
               <>
-                {state.gooseGraphics && <Route path="/goose" render={props => <Goose {...props} pageBanner={state.gooseGraphics.goosePageBanner}/>}/> }
+                {state.gooseGraphics && <Route path="/goose" render={props => 
+                  <Goose 
+                    {...props} 
+                    pageBanner={state.gooseGraphics.goosePageBanner}/>}/> }
+
                 {state.networkingGraphics && <Route path="/networking" render={props => 
-                  <Networking {...props} 
+                  <Networking 
+                    {...props} 
                     pageBanner={state.networkingGraphics.networkingPageBanner} 
                     poster={state.networkingGraphics.networkingPoster}
                     posterCards={state.networkingGraphics.networkingCards} 
@@ -73,15 +78,13 @@ function App() {
                   />}
 
                 {state.studyabroadGraphics && <Route path="/studyabroad" render={props => 
-                  <StudyAbroad {...props}
-                    pageBanner={state.studyabroadGraphics.studyAbroadPageBanner} 
-                    poster={state.studyabroadGraphics.studyAbroadPoster}
-                    homestayBanner={state.studyabroadGraphics.homestayBanner}
-                    homestayProcessBanner={state.studyabroadGraphics.homestayBannerProcess}
-                    airportRideBanner={state.studyabroadGraphics.airportRideBanner}/>}/>}
+                  <StudyAbroad 
+                    {...props}
+                    pageBanner={state.studyabroadGraphics.studyAbroadPageBanner}/>}/>}
                 
                 {state.servicesGraphics && <Route path="/services" render={props => 
-                  <ServiceCentre {...props} 
+                  <ServiceCentre 
+                    {...props} 
                     listOfMessages={state.listOfMessages} 
                     listOfAnnouncements={state.listOfAnnouncements}
                     pageBanner={state.servicesGraphics.serviceCentrePageBanner}/>}/>}
