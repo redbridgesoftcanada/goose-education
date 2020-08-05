@@ -68,20 +68,18 @@ export const posterStyles = props => {
       textAlign: 'center',
       color: theme.palette.common.white,
       position: 'absolute',
-      marginTop: 130,
       width: '85%',
+    },
+
+    defaultCaption: {
+      marginTop: 130,
       [theme.breakpoints.down('sm')]: {
         display: 'none'
       }
     },
 
-    customCaption: {
-      ...theme.typography.body2,
-      textAlign: 'center',
-      color: theme.palette.common.white,
-      position: 'absolute',
+    customVanCaption: {
       marginTop: 170,
-      width: '85%',
       [theme.breakpoints.down('md')]: {
         marginTop: 200
       },
@@ -95,6 +93,13 @@ export const posterStyles = props => {
         display: 'block',
         marginTop: 10,
         width: '95%'
+      }
+    },
+
+    customStudyCaption: {
+      marginTop: 80,
+      [theme.breakpoints.down('xs')]: {
+        display: 'none'
       }
     },
 
