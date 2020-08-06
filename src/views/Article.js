@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
 import { withFirebase } from '../components/firebase';
-import { EditorValidator } from '../constants/customValidators';
+import { QuillValidator } from '../constants/customValidators';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
 import Comments from '../components/Comments';
@@ -265,7 +265,7 @@ function Article(props) {
             }
             <br/>
             <ValidatorForm className={classes.mt3} noValidate autoComplete="off" onSubmit={onSubmit}>
-                <EditorValidator 
+                <QuillValidator 
                 value={comment} 
                 onChange={handleComment}
                 validators={['isQuillEmpty']}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextValidator } from "react-material-ui-form-validator";
-import { EditorValidator, FileValidator, SelectValidator } from "./customValidators";
+import { QuillValidator, FileValidator, SelectValidator } from "./customValidators";
 import { OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio, RadioGroup, Select } from "@material-ui/core";
 
 // N O  V A L I D A T I O N
@@ -31,7 +31,7 @@ function defaultValueTextField(name, value, eventHandler, isMultiline) {
   )
 }
 
-function radioField(name, value, options, eventHandler, helperText) {
+function configRadioGroup(name, value, options, eventHandler, helperText) {
   // note. options needs to be an array of objects: {value, label}
   
   if (name === "type") {  // options = [SCHOOL_TYPES] (string) from SchoolsComposeForm;
@@ -86,7 +86,7 @@ function textValidator(name, value, eventHandler) {
 
 function richTextValidator(name, value, eventHandler) {
   return (
-    <EditorValidator
+    <QuillValidator
       defaultValue={value}
       onChange={value => eventHandler(name, value)}
       validators={["isQuillEmpty"]}
@@ -125,4 +125,4 @@ function selectValidator(name, value, options, eventHandler) {
   )
 }
 
-export { textField, radioField, selectField, textValidator, richTextValidator, fileValidator, selectValidator, defaultValueTextField }
+export { textField, configRadioGroup, selectField, textValidator, richTextValidator, fileValidator, selectValidator, defaultValueTextField }

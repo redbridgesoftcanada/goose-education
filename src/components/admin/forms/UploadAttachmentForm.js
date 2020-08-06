@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import { Button, CircularProgress, FormLabel, Input, MenuItem, TextField, makeStyles } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { EditorValidator, SelectValidator } from "../../../constants/customValidators";
+import { QuillValidator, SelectValidator } from "../../../constants/customValidators";
 import { withFirebase } from "../../firebase";
 import { TAGS } from '../../../constants/constants';
 
@@ -177,7 +177,7 @@ function UploadAttachmentForm(props) {
           onChange={handleTextInput}/>
 
         <FormLabel component="legend">Description</FormLabel>
-        <EditorValidator
+        <QuillValidator
           defaultValue={state.description}
           value={state.description} 
           onChange={value => handleRichTextInput("description", value)}

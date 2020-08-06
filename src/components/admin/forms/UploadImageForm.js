@@ -174,7 +174,7 @@ function UploadImageForm(props) {
         </div>
 
         <FormLabel component="legend">Goose Featured</FormLabel>
-        {COMPONENTS.radioField("isFeatured", state.isFeatured, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, `Display as a featured ${formType} on the home page.`)}
+        {COMPONENTS.configRadioGroup("isFeatured", state.isFeatured, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, `Display as a featured ${formType} on the home page.`)}
       </div>
 
       <Button className={classes.button} onClick={onDialogClose}>

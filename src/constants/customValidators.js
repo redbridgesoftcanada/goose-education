@@ -28,7 +28,7 @@ class SelectValidator extends ValidatorComponent {
   }
 }
 
-class EditorValidator extends ValidatorComponent {
+class QuillValidator extends ValidatorComponent {
   render() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
@@ -64,4 +64,4 @@ class FileValidator extends ValidatorComponent {
   }
 }
 
-export { SelectValidator, EditorValidator, FileValidator }
+export { SelectValidator, QuillValidator, FileValidator }

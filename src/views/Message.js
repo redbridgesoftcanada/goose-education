@@ -5,7 +5,7 @@ import { ValidatorForm } from 'react-material-ui-form-validator';
 import { format } from 'date-fns';
 import parse from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
-import { EditorValidator } from '../constants/customValidators';
+import { QuillValidator } from '../constants/customValidators';
 import { withFirebase } from '../components/firebase';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
@@ -278,7 +278,7 @@ function Message(props) {
             <br/>
             <div>
                 <ValidatorForm className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
-                    <EditorValidator 
+                    <QuillValidator 
                         {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
                         defaultValue={comment}
                         value={comment} 

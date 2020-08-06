@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import parse from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
 import { ValidatorForm } from 'react-material-ui-form-validator';
-import { EditorValidator } from '../constants/customValidators';
+import { QuillValidator } from '../constants/customValidators';
 import { withFirebase } from '../components/firebase';
 import Comments from '../components/Comments';
 import ComposeDialog from '../components/ComposeDialog';
@@ -276,7 +276,7 @@ function Announcement(props) {
             <br/>
             <div>
                 <ValidatorForm className={classes.mt3} noValidate autoComplete='off' onSubmit={onSubmit}>
-                    <EditorValidator 
+                    <QuillValidator 
                         {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
                         value={comment}
                         onChange={handleComment}

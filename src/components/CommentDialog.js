@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import { ValidatorForm } from 'react-material-ui-form-validator';
-import { EditorValidator } from '../constants/customValidators';
+import { QuillValidator } from '../constants/customValidators';
 
 export default function CommentDialog(props) {
   const { formType, firebase, selectedResource, prevComment, open, onClose } = props;
@@ -55,7 +55,7 @@ export default function CommentDialog(props) {
             <DialogTitle>Edit Comment</DialogTitle>
             <DialogContent>
               <ValidatorForm noValidate autoComplete='off' onSubmit={onSubmit}>
-                <EditorValidator 
+                <QuillValidator 
                 defaultValue={comment}
                 value={comment} 
                 onChange={setComment}

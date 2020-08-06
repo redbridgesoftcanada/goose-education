@@ -75,7 +75,7 @@ function generateFormContent(classes, state, dispatch) {
       {COMPONENTS.textField("title", state.title, handleTextInput, false)}
 
       <FormLabel component="legend">Institution Type</FormLabel>
-      {COMPONENTS.radioField("type", state.type, SCHOOL_TYPES, handleTextInput, "")}
+      {COMPONENTS.configRadioGroup("type", state.type, SCHOOL_TYPES, handleTextInput, "")}
 
       <FormLabel component="legend">Date of Establishment</FormLabel>
       {COMPONENTS.textField("dateOfEstablishment", state.dateOfEstablishment, handleTextInput, false)}
@@ -97,11 +97,11 @@ function generateFormContent(classes, state, dispatch) {
       <Grid container>
         <Grid item xs={3}>
           <FormLabel component="legend">Goose Recommended</FormLabel>
-          {COMPONENTS.radioField("recommendation", state.recommendation, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, "Display a 'recommended' badge for this institution.")}
+          {COMPONENTS.configRadioGroup("recommendation", state.recommendation, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, "Display a 'recommended' badge for this institution.")}
         </Grid>
         <Grid item xs={3}>
           <FormLabel component="legend">Featured</FormLabel>
-          {COMPONENTS.radioField("isFeatured", state.isFeatured, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, "Display this institution on the home page.")}
+          {COMPONENTS.configRadioGroup("isFeatured", state.isFeatured, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, "Display this institution on the home page.")}
         </Grid>
       </Grid>
       

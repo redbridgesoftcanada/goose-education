@@ -9,7 +9,7 @@ import { LoginLink } from "./LoginForm";
 import { useStyles } from '../styles/register';
 
 const steps = ['Terms of Service', 'Account Setup', 'Personal Information', 'Notifications'];
-const { customTextValidator, textValidator, checkboxField } = FormInputs;
+const { customTextField, textValidator, customCheckboxField } = FormInputs;
 
 function RegisterForm({ firebase }) {
   const classes = useStyles();
@@ -147,7 +147,7 @@ function RegisterForm({ firebase }) {
             <Typography className={classes.formTitle}>Please agree to the Terms of Service.</Typography>
             <Container>
               <FormGroup>
-                {checkboxField(allTermsAgreed, 'allTermsAgreed', 'Agree to All Terms', 'This includes agreements to all required and optional terms. You may choose to agree or disagree to individual terms. You may still use the service even if you do not agree to the optional terms.', handleTermsOfServiceFields)}
+                {customCheckboxField(allTermsAgreed, 'allTermsAgreed', 'Agree to All Terms', 'This includes agreements to all required and optional terms. You may choose to agree or disagree to individual terms. You may still use the service even if you do not agree to the optional terms.', handleTermsOfServiceFields)}
                 <List>
                   <ListItem disableGutters button onClick={triggerCollapse} id='termsAndConditions'>
                     <ListItemIcon>
@@ -194,28 +194,28 @@ function RegisterForm({ firebase }) {
         return (
           <ValidatorForm ref={accountFormRef} className={classes.root} onSubmit={onSubmit}>
             <Box>
-              {customTextValidator('username', username, handleAccountFields, {
+              {customTextField('username', username, handleAccountFields, {
                 type: 'text',
                 placeholder: 'Username', 
                 validators:['required'], 
                 errorMessages:['Cannot submit an empty username.']})}
             </Box>
             <Box>
-              {customTextValidator('email', email, handleAccountFields, {
+              {customTextField('email', email, handleAccountFields, {
                 type: 'email',
                 placeholder: 'Email',
                 validators:['required', 'isEmail'], 
                 errorMessages:['Cannot submit an empty email.', 'Please submit a valid email address.']})}
             </Box>
             <Box>
-              {customTextValidator('passwordOne', passwordOne, handleAccountFields, {
+              {customTextField('passwordOne', passwordOne, handleAccountFields, {
                 type: 'password',
                 placeholder: 'Password',
                 validators:['required', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})'], 
                 errorMessages:['Cannot submit an empty password.', 'Please choose a secure password (At least one lowercase, one uppercase, one numeric character, one special character. At least 8 characters long.']})}
             </Box>
             <Box>
-              {customTextValidator('passwordTwo', passwordTwo, handleAccountFields, {
+              {customTextField('passwordTwo', passwordTwo, handleAccountFields, {
                 type: 'password',
                 placeholder: 'Confirm password',
                 validators:['required', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})'], 
@@ -241,8 +241,8 @@ function RegisterForm({ firebase }) {
           <form className={classes.root} onSubmit={onSubmit}>
             <Container>
               <FormGroup>
-                {checkboxField(receiveEmails, 'receiveEmails', 'Receive Emails', 'I would like to receieve email notifications.', handleNotifications)}
-                {checkboxField(publicAccount, 'publicAccount', 'Public Account', 'Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.', handleNotifications)}
+                {customCheckboxField(receiveEmails, 'receiveEmails', 'Receive Emails', 'I would like to receieve email notifications.', handleNotifications)}
+                {customCheckboxField(publicAccount, 'publicAccount', 'Public Account', 'Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.', handleNotifications)}
               </FormGroup>
           </Container>
         </form>

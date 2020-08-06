@@ -2,7 +2,7 @@ import React, { Fragment, useState } from 'react';
 import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Grid, IconButton, Menu, MenuItem, withStyles } from '@material-ui/core';
 import { AccountCircleOutlined, LocalOfferOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined } from '@material-ui/icons';
 import { ValidatorForm } from 'react-material-ui-form-validator';
-import { EditorValidator } from '../constants/customValidators';
+import { QuillValidator } from '../constants/customValidators';
 import parse from 'html-react-parser';
 import { format } from 'date-fns';
 import Typography from '../components/onePirate/Typography';
@@ -193,7 +193,7 @@ function ArticleDialog(props) {
         <br/>
         <div>
           <ValidatorForm className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
-            <EditorValidator 
+            <QuillValidator 
               {...(!authUser ? { readOnly: true, placeholder:'Please Register or Login to Comment.' } : {} )}
               // defaultValue={comment}
               value={comment} 
