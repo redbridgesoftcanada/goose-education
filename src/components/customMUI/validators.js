@@ -1,16 +1,21 @@
 import React from 'react';
 import { ValidatorComponent } from 'react-form-validator-core';
-import { Input, Select, Typography } from '@material-ui/core';
+import { Input, RadioGroup, Select, Typography } from '@material-ui/core';
+import { KeyboardDatePicker,KeyboardDateTimePicker } from '@material-ui/pickers';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-const helperTextMUI = {
-  color: '#f44336',
-  fontSize: '0.75rem',
-  margin: '8px 14px 0',
+const errorStyles = {
+  color: '#f44336'
 }
 
-class SelectValidator extends ValidatorComponent {
+const errorText = {
+  fontSize: '0.75rem',
+  margin: '0 14px',
+  textAlign: 'left'
+}
+
+class SelectValidator extends ValidatorComponent {  
   render() {
     const { children, errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
@@ -24,11 +29,11 @@ class SelectValidator extends ValidatorComponent {
     const { isValid } = this.state;
     if (isValid) return null;
 
-    return <Typography style={helperTextMUI}>{this.getErrorMessage()}</Typography>
+    return <Typography>{this.getErrorMessage()}</Typography>
   }
 }
 
-class EditorValidator extends ValidatorComponent {
+class QuillValidator extends ValidatorComponent {
   render() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
@@ -37,11 +42,12 @@ class EditorValidator extends ValidatorComponent {
         {this.errorText()}
       </>
   )}
+  
   errorText() {
     const { isValid } = this.state;
     if (isValid) return null;
 
-    return <Typography style={helperTextMUI}>{this.getErrorMessage()}</Typography>
+    return <Typography>{this.getErrorMessage()}</Typography>
   }
 }
 
@@ -60,8 +66,66 @@ class FileValidator extends ValidatorComponent {
     const { isValid } = this.state;
     if (isValid) return null;
 
-    return <Typography style={helperTextMUI}>{this.getErrorMessage()}</Typography>
+    return <Typography>{this.getErrorMessage()}</Typography>
   }
 }
 
-export { SelectValidator, EditorValidator, FileValidator }
+class RadioGroupValidator extends ValidatorComponent {
+  render() {
+    const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
+    return (
+      <>
+        <RadioGroup {...rest}/>
+        {this.errorText()}
+      </>
+  )}
+
+  errorText() {
+    const { isValid } = this.state;
+    if (isValid) return null;
+
+    return (
+      <div style={errorStyles}>
+        <Typography style={errorText}>{this.getErrorMessage()}</Typography>
+      </div>
+    )
+  }
+}
+
+class DatePickerValidator extends ValidatorComponent {
+  render() {
+    const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
+    return (
+      <>
+        <KeyboardDatePicker {...rest}/>
+        {this.errorText()}
+      </>
+  )}
+
+  errorText() {
+    const { isValid } = this.state;
+    if (isValid) return null;
+
+    return <Typography>{this.getErrorMessage()}</Typography>
+  }
+}
+
+class DateTimePickerValidator extends ValidatorComponent {
+  render() {
+    const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
+    return (
+      <>
+        <KeyboardDateTimePicker {...rest}/>
+        {this.errorText()}
+      </>
+  )}
+
+  errorText() {
+    const { isValid } = this.state;
+    if (isValid) return null;
+
+    return <Typography>{this.getErrorMessage()}</Typography>
+  }
+}
+
+export { SelectValidator, QuillValidator, FileValidator, RadioGroupValidator, DatePickerValidator, DateTimePickerValidator }

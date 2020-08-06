@@ -4,6 +4,7 @@ import { pageBannerStyles } from './_pageBanner';
 import { pageBannerLayoutStyles } from './_pageBannerLayout';
 import { posterStyles } from './_poster';
 import { footerStyles } from './_footer';
+import { validationsStyles } from './_validations';
 
 const useStyles = (props, stylesheet) => {
   switch (stylesheet) {
@@ -25,6 +26,9 @@ const useStyles = (props, stylesheet) => {
     
     case 'footer': 
       return footerStyles(props);
+    
+    case 'validations': 
+      return validationsStyles();
   }
 }
 
