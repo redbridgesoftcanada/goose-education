@@ -6,6 +6,11 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 const errorStyles = {
+  border: '1px solid #f44336',
+  borderRadius: '4px'
+}
+
+const errorContainer = {
   color: '#f44336'
 }
 
@@ -16,7 +21,7 @@ const errorText = {
 }
 
 class SelectValidator extends ValidatorComponent {  
-  render() {
+  renderValidatorComponent() {
     const { children, errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
@@ -34,7 +39,7 @@ class SelectValidator extends ValidatorComponent {
 }
 
 class QuillValidator extends ValidatorComponent {
-  render() {
+  renderValidatorComponent() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
@@ -51,9 +56,8 @@ class QuillValidator extends ValidatorComponent {
   }
 }
 
-
 class FileValidator extends ValidatorComponent {
-  render() {
+  renderValidatorComponent() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
@@ -71,11 +75,13 @@ class FileValidator extends ValidatorComponent {
 }
 
 class RadioGroupValidator extends ValidatorComponent {
-  render() {
+  renderValidatorComponent() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
-        <RadioGroup {...rest}/>
+        <RadioGroup
+        {...!this.state.isValid && { style: errorStyles }}
+        {...rest}/>
         {this.errorText()}
       </>
   )}
@@ -85,7 +91,7 @@ class RadioGroupValidator extends ValidatorComponent {
     if (isValid) return null;
 
     return (
-      <div style={errorStyles}>
+      <div style={errorContainer}>
         <Typography style={errorText}>{this.getErrorMessage()}</Typography>
       </div>
     )
@@ -93,7 +99,7 @@ class RadioGroupValidator extends ValidatorComponent {
 }
 
 class DatePickerValidator extends ValidatorComponent {
-  render() {
+  renderValidatorComponent() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
@@ -111,7 +117,7 @@ class DatePickerValidator extends ValidatorComponent {
 }
 
 class DateTimePickerValidator extends ValidatorComponent {
-  render() {
+  renderValidatorComponent() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>

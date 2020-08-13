@@ -3,9 +3,16 @@ import { TextValidator } from "react-material-ui-form-validator";
 import { FormLabel, OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio, RadioGroup, Select, Checkbox } from "@material-ui/core";
 import { QuillValidator, FileValidator, SelectValidator, RadioGroupValidator, DatePickerValidator, DateTimePickerValidator } from "./validators";
 import { convertToSentenceCase } from '../../constants/helpers/_features';
-import useStyles from '../../styles/constants';
 
-const classes = useStyles({}, 'validations');
+const legendStyles = {
+  textAlign: 'left',
+  marginTop: '16px',
+  marginBottom: '8px'
+}
+
+const pickerStyles = {
+  width: '100%'
+}
 
 // N O  V A L I D A T I O N
 function textField(name, value, eventHandler, isMultiline) {
@@ -62,7 +69,7 @@ function customRadioGroup(name, value, options, onChangeHandler, label, helperTe
 
   return (
     <>
-      <FormLabel component="legend" className={classes.legend}>{label}</FormLabel>
+      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
       {helperText && <FormHelperText>{helperText}</FormHelperText>}
       <RadioGroup name={name} value={value} onChange={onChangeHandler}>
         {options.map((option, i) => (
@@ -206,7 +213,7 @@ function radioGroupValidator(name, value, options, eventHandler) {
 function customDatePicker(name, value, onChangeHandler, label, customProps) {
   return (
     <>
-      <FormLabel component="legend" className={classes.legend}>{label}</FormLabel>
+      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
       <DatePickerValidator
         variant="inline"
         format="MM/dd/yyyy"
@@ -222,7 +229,7 @@ function customDatePicker(name, value, onChangeHandler, label, customProps) {
 function customDateTimePicker(name, value, onChangeHandler, label, customProps) {
   return (
     <>
-      <FormLabel component="legend" className={classes.legend}>{label}</FormLabel>
+      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
       <DateTimePickerValidator
       variant="inline"
       format="MM/dd/yyyy HH:mm"
@@ -243,13 +250,12 @@ function TextField(props) {
   const { label, ...customProps } = props;
   return (
     <>
-      <FormLabel component="legend" className={classes.legend}>{label}</FormLabel>
+      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
       <TextValidator 
         fullWidth 
         variant="outlined" 
         InputLabelProps={{shrink: true}}
-        {...customProps}
-      />
+        {...customProps}/>
     </>
   )
 }
@@ -278,7 +284,7 @@ function CustomRadioGroup(props) {
   const { label, options, ...customProps } = props;
   return (
     <>
-      <FormLabel component="legend" className={classes.legend}>{label}</FormLabel>
+      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
       <RadioGroupValidator {...customProps}>
         {options.map((option, i) => 
           <FormControlLabel 
@@ -297,8 +303,7 @@ function CustomCheckbox(props) {
   return (
     <FormControlLabel
       label={label}
-      control={
-        <Checkbox size="small" {...customProps}/>}
+      control={<Checkbox size="small" {...customProps}/>}
     />
   )
       // {text && <FormHelperText>{text}</FormHelperText>}
@@ -308,12 +313,12 @@ function CustomDatePicker(props) {
   const { label, ...customProps } = props;
   return (
     <>
-      <FormLabel component="legend" className={classes.legend}>{label}</FormLabel>
+      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
       <DatePickerValidator
+        style={pickerStyles}
         variant="inline"
         format="MM/dd/yyyy"
-        {...customProps}
-        />
+        {...customProps}/>
     </>
   )
 }
