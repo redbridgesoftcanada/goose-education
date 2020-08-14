@@ -76,7 +76,7 @@ function Schools(props) {
           <TabPanel value={selected.tab} index={1}>
             <AuthUserContext.Consumer>
               {authUser => authUser ? 
-                <SchoolApplication authUser={authUser} listOfSchoolNames={listOfSchoolNames} /> 
+                <SchoolApplication authUser={authUser}/> 
                 : 
                 <Typography className={classes.applicationError}>Please Register or Login to Apply</Typography> 
               }
