@@ -1,9 +1,8 @@
 import React from 'react';
 import { Snackbar, Typography } from "@material-ui/core";
-import useStyles from '../styles/constants';
 
-export default function ErrorSnackbar(isOpen, onCloseHandler, errorMessage) {
-  const classes = useStyles({}, 'validations');
+export default function ErrorSnackbar(props) {
+  const { isOpen, onCloseHandler, errorMessage } = props;
   
   return (
     <Snackbar
@@ -11,9 +10,6 @@ export default function ErrorSnackbar(isOpen, onCloseHandler, errorMessage) {
       autoHideDuration={2000}
       onClose={onCloseHandler}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'left'}}
-      ContentProps={{classes: {root: classes.snackBar}}}
-      message={
-        <Typography className={classes.snackBarMessage}>{errorMessage}</Typography>}
-    />
+      message={<Typography>{errorMessage}</Typography>}/>
   )
 }
