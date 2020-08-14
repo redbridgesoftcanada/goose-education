@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Button, Typography } from "@material-ui/core";
-import { FormInputs }  from '../components/customMUI';
+import StyledValidators  from '../components/customMUI';
 import { withFirebase } from '../components/firebase';
 import { useStyles } from '../styles/forgotPassword';
 
@@ -12,7 +12,7 @@ const INITIAL_STATE = {
 
 function PasswordForgetForm({ firebase, form }) {
   const classes = useStyles();
-  const { firebaseValidator } = FormInputs;
+  const { firebaseValidator } = StyledValidators;
 
   const [ state, setState ] = useState({...INITIAL_STATE});
   const { email, error } = state;

@@ -4,7 +4,7 @@ import { Button, Grid, Typography } from '@material-ui/core';
 import { withFirebase } from '../components/firebase';
 import { RegisterLink } from './RegisterForm';
 import { PasswordForgetLink } from './ForgotPasswordForm';
-import { FormInputs }  from '../components/customMUI';
+import StyledValidators  from '../components/customMUI';
 import { useStyles } from '../styles/login';
 
 const INITIAL_STATE = {
@@ -15,7 +15,7 @@ const INITIAL_STATE = {
 
 function LoginForm(props) {
   const classes = useStyles(props);
-  const { firebaseValidator } = FormInputs;
+  const { firebaseValidator } = StyledValidators;
   const { firebase, history, loginForm } = props;
 
   const [ state, setState ] = useState({...INITIAL_STATE});

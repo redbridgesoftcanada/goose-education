@@ -8,7 +8,6 @@ export const schoolApplicationStyles = props => {
     },
 
     legend: {
-      fontSize: 14,
       textAlign: 'left',
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(1)

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ValidatorComponent } from 'react-form-validator-core';
 import { Input, RadioGroup, Select, Typography } from '@material-ui/core';
-import { KeyboardDatePicker,KeyboardDateTimePicker } from '@material-ui/pickers';
+import { DatePicker, KeyboardDatePicker,KeyboardDateTimePicker } from '@material-ui/pickers';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -25,7 +25,13 @@ class SelectValidator extends ValidatorComponent {
     const { children, errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
-        <Select {...rest}>{children}</Select>
+        <Select
+          displayEmpty
+          variant='outlined'
+          style={{width: '100%'}}
+          {...rest}>
+            {children}
+        </Select>
         {this.errorText()}
       </>
   )}
@@ -34,7 +40,11 @@ class SelectValidator extends ValidatorComponent {
     const { isValid } = this.state;
     if (isValid) return null;
 
-    return <Typography>{this.getErrorMessage()}</Typography>
+    return (
+      <div style={errorContainer}>
+        <Typography style={errorText}>{this.getErrorMessage()}</Typography>
+      </div>
+    )
   }
 }
 
@@ -43,7 +53,10 @@ class QuillValidator extends ValidatorComponent {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
-        <ReactQuill {...rest}/>
+        <ReactQuill 
+          validators={["isQuillEmpty"]}
+          errorMessages={["Cannot submit an empty post."]}
+          {...rest}/>
         {this.errorText()}
       </>
   )}
@@ -61,7 +74,12 @@ class FileValidator extends ValidatorComponent {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
-        <Input type="file" {...rest}/>
+        <Input 
+          type="file" 
+          disableUnderline
+          validators={["isRequiredUpload"]}
+          errorMessages={["Please upload an image."]} 
+          {...rest}/>
         {this.errorText()}
       </>
   )}
@@ -98,40 +116,4 @@ class RadioGroupValidator extends ValidatorComponent {
   }
 }
 
-class DatePickerValidator extends ValidatorComponent {
-  renderValidatorComponent() {
-    const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
-    return (
-      <>
-        <KeyboardDatePicker {...rest}/>
-        {this.errorText()}
-      </>
-  )}
-
-  errorText() {
-    const { isValid } = this.state;
-    if (isValid) return null;
-
-    return <Typography>{this.getErrorMessage()}</Typography>
-  }
-}
-
-class DateTimePickerValidator extends ValidatorComponent {
-  renderValidatorComponent() {
-    const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
-    return (
-      <>
-        <KeyboardDateTimePicker {...rest}/>
-        {this.errorText()}
-      </>
-  )}
-
-  errorText() {
-    const { isValid } = this.state;
-    if (isValid) return null;
-
-    return <Typography>{this.getErrorMessage()}</Typography>
-  }
-}
-
-export { SelectValidator, QuillValidator, FileValidator, RadioGroupValidator, DatePickerValidator, DateTimePickerValidator }
+export { SelectValidator, QuillValidator, FileValidator, RadioGroupValidator }

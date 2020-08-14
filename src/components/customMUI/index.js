@@ -1,5 +1,6 @@
 import NavLink from './navlink';
 import FlatMenu from './flatMenu';
-import * as FormInputs from './formInputs';
+import * as StyledValidators from './formInputs';
 
-export { NavLink, FlatMenu, FormInputs }
+export default StyledValidators;
+export { NavLink, FlatMenu }
