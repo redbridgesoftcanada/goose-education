@@ -1,45 +1,38 @@
 import React, { Fragment, useState } from 'react';
-import { useHistory } from "react-router-dom";
 import { Button, Container, FormLabel, Typography } from '@material-ui/core';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
 import { ValidatorForm } from "react-material-ui-form-validator";
-import { format } from 'date-fns';
+import { useHistory } from "react-router-dom";
+import DateFnsUtils from '@date-io/date-fns';
 import { STATUSES, PERSONAL_FIELDS, PROGRAM_FIELDS, ARRIVAL_FIELDS, OTHER_FIELDS } from '../constants/constants';
 import { convertToCamelCase, convertToTitleCase } from '../constants/helpers/_features';
+import { DatabaseContext } from '../components/database';
 import { withAuthorization } from '../components/session';
 import ErrorSnackbar from '../components/ErrorSnackbar';
-import * as StyledValidator from '../components/customMUI/formInputs';
-
-// import { textField, customCheckboxField, textValidator, selectValidator, radioGroupValidator } from '../components/customMUI/formInputs';
+import StyledValidators from '../components/customMUI';
 import { useStyles } from '../styles/schools';
 
-let INITIAL_STATE = { agreeToPrivacy: false }
-
-// configure INITIAL_STATE values for all form fields;
 const formFields = [ PERSONAL_FIELDS, OTHER_FIELDS[1], PROGRAM_FIELDS, OTHER_FIELDS[0], ARRIVAL_FIELDS[0], OTHER_FIELDS[2] ].flat();
+
+// configure initial values for all form fields in local state;
+let INITIAL_STATE = { agreeToPrivacy: false }
 configureFormDefaults(formFields);
 
 function SchoolApplication(props) {
   const classes = useStyles(props, 'schoolApplication');
   const history = useHistory();
-  const { authUser, firebase, listOfSchoolNames } = props;
+  const { authUser, firebase } = props;
 
   const [ userInput, setUserInput ] = useState(INITIAL_STATE);
-  const [ progress, setProgress ] = useState({ loading: false, error: false, message: null });
-
-  console.log(userInput)
+  const [ progress, setProgress ] = useState({ 
+    loading: false, 
+    error: false, 
+    message: null });
 
   const handleFormInput = e => {
     const field = e.currentTarget.name;
-    const input = e.currentTarget.value;
+    const input = (field !== 'agreeToPrivacy') ? e.currentTarget.value : e.currentTarget.checked;
     setUserInput(prevState => ({...prevState, [field]: input}));
-  }
-
-  const handleCheckboxInput = e => {
-    const field = e.currentTarget.name;
-    const checked = e.currentTarget.checked;
-    setUserInput(prevState => ({...prevState, [field]: checked}));
   }
 
   const handlePickerInput = (date, field) => {
@@ -74,13 +67,11 @@ function SchoolApplication(props) {
 
   return (
     <Container>
-
       {progress.error && 
         <ErrorSnackbar 
           isOpen={progress.error}
           onCloseHandler={() => setProgress({loading: false, error: false, message: null})}
-          errorMessage={progress.message}/>
-      }
+          errorMessage={progress.message}/>}
 
       <ValidatorForm className={classes.root} onSubmit={onSubmit}>
         {formFields.map(field => {
@@ -97,7 +88,7 @@ function SchoolApplication(props) {
 
           const validationRules = {
             validators: ['required', 'isQuillEmpty'],
-            errorMessages: ['required', '']
+            errorMessages: ['', '']
           }
 
           switch(field) {
@@ -108,10 +99,12 @@ function SchoolApplication(props) {
                 { value: "other", label: "Other" }
               ];
               
-              return <StyledValidator.CustomRadioGroup 
-                {...inputProps} 
-                {...validationRules}
-                options={options}/>
+              return (
+                <StyledValidators.CustomRadioGroup 
+                  {...inputProps} 
+                  {...validationRules}
+                  options={options}/>
+              );
             }
             
             case 'birthDate':
@@ -121,13 +114,12 @@ function SchoolApplication(props) {
                 <MuiPickersUtilsProvider utils={DateFnsUtils} key={field}>
                   <FormLabel component="legend" className={classes.legend}>{formLabel}</FormLabel>
                   <KeyboardDatePicker
-                  name={field}
-                  value={userInput[field]}
-                  onChange={date => handlePickerInput(date, field)}
-                  variant="inline"
-                  format="MM/dd/yyyy"
-                  {...(field !== "birthDate") && { disablePast: true }}
-                  />
+                    name={field}
+                    value={userInput[field]}
+                    onChange={date => handlePickerInput(date, field)}
+                    variant="inline"
+                    format="MM/dd/yyyy"
+                    {...field !== "birthDate" && { disablePast: true }}/>
                 </MuiPickersUtilsProvider>
               );
 
@@ -137,15 +129,34 @@ function SchoolApplication(props) {
                 { value: "no", label: "No" }
               ];
 
-              return <StyledValidator.CustomRadioGroup {...inputProps} options={options}/>
+              return (
+                <StyledValidators.CustomRadioGroup 
+                  {...inputProps} 
+                  {...validationRules}
+                  options={options}/>
+              );
             }
               
             case 'schoolName':
-              return <StyledValidator.CustomSelect {...inputProps} options={listOfSchoolNames}/>
+              return (
+                <Fragment key={field}>
+                  <FormLabel component="legend" className={classes.legend}>{formLabel}</FormLabel>
+                  <DatabaseContext.Consumer>
+                    {({ state }) => {
+                      const listOfSchoolNames = state.listOfSchools.map(school => school.title);
+                      return (
+                        <StyledValidators.CustomSelect 
+                          {...inputProps} 
+                          options={listOfSchoolNames}/>
+                      )}
+                    }
+                </DatabaseContext.Consumer>
+                </Fragment>
+              );
 
             case 'additionalRequests': 
               return (
-                <StyledValidator.TextField 
+                <StyledValidators.TextField 
                   {...inputProps}
                   multiline={true}
                   rows={5}/>
@@ -153,10 +164,9 @@ function SchoolApplication(props) {
 
             default:
               return (
-                <StyledValidator.TextField 
+                <StyledValidators.TextField 
                   {...inputProps} 
-                  {...validationRules}
-                />
+                  {...validationRules}/>
             )}
           })
         }
@@ -164,11 +174,12 @@ function SchoolApplication(props) {
         <Typography variant="h6">Privacy</Typography>
         <Typography align="left" variant="body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
         
-        <StyledValidator.CustomCheckbox 
+        <StyledValidators.CustomCheckbox 
           checked={userInput.agreeToPrivacy}
           name='agreeToPrivacy'
-          onChange={handleCheckboxInput}
+          onChange={handleFormInput}
           label={<Typography variant="body2">I agree to the Privacy Agreement.</Typography>}
+          additionalText=''
         />
 
         <Button variant="contained" color="secondary" type="submit">Submit Application</Button>
@@ -180,23 +191,13 @@ function configureFormDefaults(formFields) {
   formFields.map(field => {
     field = convertToCamelCase(field);
     if (field.includes('Date')) {
-      INITIAL_STATE = { ...INITIAL_STATE, [field]: format(Date.now(), 'MM/dd/yyyy') }
+      INITIAL_STATE = { ...INITIAL_STATE, [field]: null }
     } else {
       INITIAL_STATE = {...INITIAL_STATE, [field]: ''}
     }
     return INITIAL_STATE;
   });
 }
-
-// function toggleReducer(state, action) {
-//   const { type, payload } = action;
-//   const { name, value } = type;
-
-//   if (type === 'checkbox') return { ...state, [payload.name]: payload.checked }
-//   if (typeof type === 'string' && type.includes('Date')) return { ...state, [type]: payload }
-//   // if (type === 'submit') return { ...INITIAL_STATE }
-//   return { ...state, [name]: value }
-// }
 
 const condition = authUser => !!authUser;
 export default withAuthorization(condition)(SchoolApplication);

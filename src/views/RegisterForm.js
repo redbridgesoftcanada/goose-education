@@ -1,24 +1,29 @@
 import React, { useState, createRef } from "react";
 import { Link, useHistory, withRouter } from "react-router-dom";
 import { ValidatorForm } from "react-material-ui-form-validator";
-import { Box, Button, Collapse, Container, FormGroup, List, ListItem, ListItemIcon, ListItemText, Snackbar, Step, StepLabel, Stepper, Typography } from "@material-ui/core";
+import { Box, Button, Collapse, Container, FormGroup, List, ListItem, ListItemIcon, ListItemText, Step, StepLabel, Stepper, Typography } from "@material-ui/core";
 import { ChevronRightOutlined, ExpandMoreOutlined } from '@material-ui/icons';
-import { FormInputs } from '../components/customMUI';
+import { convertToTitleCase } from '../constants/helpers/_features';
+import ErrorSnackbar from '../components/ErrorSnackbar';
+import StyledValidators from '../components/customMUI';
 import { withFirebase } from "../components/firebase";
 import { LoginLink } from "./LoginForm";
 import { useStyles } from '../styles/register';
 
 const steps = ['Terms of Service', 'Account Setup', 'Personal Information', 'Notifications'];
-const { customTextField, textValidator, customCheckboxField } = FormInputs;
 
 function RegisterForm({ firebase }) {
   const classes = useStyles();
   const history = useHistory();
 
+  // references for step-by-step form validation (onNextValidation);
   const accountFormRef = createRef();
   const personalFormRef = createRef();
 
+  // separate state variables by form sections, active steps, and error management;
   const [ activeStep, setActiveStep ] = useState(0);
+  
+  const [ error, setError ] = useState({ exists: false, message: null });
 
   const [ termsOfService, setTermsOfService ] = useState({
     allTermsAgreed: false,
@@ -28,21 +33,21 @@ function RegisterForm({ firebase }) {
   const { allTermsAgreed, collapseOpenTC, collapseOpenCP } = termsOfService;
 
   const [ accountInfo, setAccountInfo ] = useState({
-    username: "",
-    email: "",
-    passwordOne: "",
-    passwordTwo: ""
+    username: '',
+    email: '',
+    passwordOne: '',
+    passwordTwo: ''
   });
   const { username, email, passwordOne, passwordTwo } = accountInfo;
 
   const [ personalInfo, setPersonalInfo ] = useState({
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    mobileNumber: "",
-    address: ""
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    mobileNumber: '',
+    address: ''
   });
-  const { firstName, lastName, phoneNumber, mobileNumber, address } = personalInfo;
+  const { firstName, lastName, phoneNumber, mobileNumber } = personalInfo;
 
   const [ notifications, setNotifications ] = useState({
     receiveEmails: true,
@@ -50,49 +55,42 @@ function RegisterForm({ firebase }) {
   });
   const { receiveEmails, publicAccount } = notifications;
 
-  const [ error, setError ] = useState({
-    exists: false,
-    message: null
-  });
+  const handleUserInput = (type, e) => {
+    const formField = e.target.name;
+    let input = e.target.value;
+    
+    switch (type) {
+      case 'termsOfService':
+        input = e.target.checked;
+        setTermsOfService(termsOfService => ({ ...termsOfService, [formField]: input }));
+      
+      case 'account':
+        setAccountInfo(accountInfo => ({ ...accountInfo, [formField]: input }));
 
-  const handleTermsOfServiceFields = event => {
-    const formField = event.target.name;
-    const userInput = event.target.checked;
-    setTermsOfService(termsOfService => ({...termsOfService, [formField]: userInput }));
+      case 'personal': 
+        setPersonalInfo(personalInfo => ({ ...personalInfo, [formField]: input }));
+      
+      case 'notifications': 
+        setNotifications(notifications => ({ ...notifications, [formField]: input }));
+    }
   }
 
-  const handleAccountFields = event => {
-    const field = event.target.name;
-    const input = event.target.value;
-    setAccountInfo(accountInfo => ({...accountInfo, [field]: input }))
-  }
-
-  const handlePersonalFields = event => {
-    const field = event.target.name;
-    const input = event.target.value;
-    setPersonalInfo(personalInfo => ({...personalInfo, [field]: input }))
-  }
-
-  const handleNotifications = event => {
-    const field = event.target.name;
-    const input = event.target.value;
-    setNotifications(notifications => ({...notifications, [field]: input }))
-  }
-
-  const triggerCollapse = event => {
-    if (event.currentTarget.id === 'termsAndConditions') {
+  const triggerCollapse = e => {
+    if (e.currentTarget.id === 'termsAndConditions') {
       setTermsOfService(termsOfService => ({...termsOfService, collapseOpenTC: !termsOfService.collapseOpenTC}))
     }
-    if (event.currentTarget.id === 'personalInfo') {
+    if (e.currentTarget.id === 'personalInfo') {
       setTermsOfService(termsOfService => ({...termsOfService, collapseOpenCP: !termsOfService.collapseOpenCP}))
     }
   }
 
-  const onNext = () => {
+  const onNextValidation = () => {
     switch (activeStep) {
       case 0:
         if (!allTermsAgreed) {
-          setError({exists: true, message: "Please agree to the terms and conditions."});
+          setError({ 
+            exists: true, 
+            message: 'Please agree to the terms and conditions.' });
         } else if (allTermsAgreed) {
           setActiveStep(activeStep + 1);
         }
@@ -102,7 +100,9 @@ function RegisterForm({ firebase }) {
       if (accountFormRef.current) {
         accountFormRef.current.isFormValid(false).then(isValid => {
           if (passwordOne !== passwordTwo) {
-            setError({exists: true, message: "Passwords do not match."});
+            setError({
+              exists: true, 
+              message: 'Passwords do not match.' });
           } else if (passwordOne === passwordTwo && isValid){
             setActiveStep(activeStep + 1);
           }
@@ -119,7 +119,14 @@ function RegisterForm({ firebase }) {
         });
       }
       break;
+
+      default:
+        console.log('Missing activeStep case for Register Form.');
+        setError({
+          exists: true, 
+          message: 'Sorry, it looks like something went wrong.' });
     }
+
   }
 
   const onSubmit = event => {
@@ -141,15 +148,21 @@ function RegisterForm({ firebase }) {
   const getStepContent = step => {
     switch (step) {
       case 0:
-        const { allTermsAgreed, gooseTermsAndConditions, openTermsAndConditionsDialog, collectionPersonalInfo, gooseAlerts } = termsOfService;
         return (
           <form className={classes.root} onSubmit={onSubmit}>
             <Typography className={classes.formTitle}>Please agree to the Terms of Service.</Typography>
             <Container>
               <FormGroup>
-                {customCheckboxField(allTermsAgreed, 'allTermsAgreed', 'Agree to All Terms', 'This includes agreements to all required and optional terms. You may choose to agree or disagree to individual terms. You may still use the service even if you do not agree to the optional terms.', handleTermsOfServiceFields)}
+                <StyledValidators.CustomCheckbox
+                  checked={allTermsAgreed}
+                  name='allTermsAgreed'
+                  onChange={e => handleUserInput('termsOfService', e)}
+                  label='All Terms Agreed'
+                  additionalText='This includes agreements to all required and optional terms. You may choose to agree or disagree to individual terms. You may still use the service even if you do not agree to the optional terms.'
+                />
+
                 <List>
-                  <ListItem disableGutters button onClick={triggerCollapse} id='termsAndConditions'>
+                  <ListItem id='termsAndConditions' disableGutters button onClick={triggerCollapse}>
                     <ListItemIcon>
                       {collapseOpenTC ? <ExpandMoreOutlined/> : <ChevronRightOutlined/>}
                     </ListItemIcon>
@@ -174,65 +187,73 @@ function RegisterForm({ firebase }) {
                       Collection and Use of Personal Information
                     </ListItemText>
                   </ListItem>
+
+                  <Collapse in={collapseOpenCP} timeout="auto" unmountOnExit>
+                    <List>
+                      <ListItem>
+                        <ListItemText>Information</ListItemText>
+                      </ListItem>
+                    </List>
+                  </Collapse>
                 </List>
-
-                <Collapse in={collapseOpenCP} timeout="auto" unmountOnExit>
-                  <List>
-                    <ListItem>
-                      <ListItemText>Information</ListItemText>
-                    </ListItem>
-                  </List>
-                </Collapse>
-
               </FormGroup>
             </Container>
           </form>
         );
 
-      case 1:
-        const { username, email, passwordOne, passwordTwo } = accountInfo;
+      case 1: {
         return (
           <ValidatorForm ref={accountFormRef} className={classes.root} onSubmit={onSubmit}>
-            <Box>
-              {customTextField('username', username, handleAccountFields, {
-                type: 'text',
-                placeholder: 'Username', 
-                validators:['required'], 
-                errorMessages:['Cannot submit an empty username.']})}
-            </Box>
-            <Box>
-              {customTextField('email', email, handleAccountFields, {
-                type: 'email',
-                placeholder: 'Email',
-                validators:['required', 'isEmail'], 
-                errorMessages:['Cannot submit an empty email.', 'Please submit a valid email address.']})}
-            </Box>
-            <Box>
-              {customTextField('passwordOne', passwordOne, handleAccountFields, {
-                type: 'password',
-                placeholder: 'Password',
-                validators:['required', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})'], 
-                errorMessages:['Cannot submit an empty password.', 'Please choose a secure password (At least one lowercase, one uppercase, one numeric character, one special character. At least 8 characters long.']})}
-            </Box>
-            <Box>
-              {customTextField('passwordTwo', passwordTwo, handleAccountFields, {
-                type: 'password',
-                placeholder: 'Confirm password',
-                validators:['required', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})'], 
-                errorMessages:['Cannot submit an empty password.', 'Please choose a secure password (At least one lowercase, one uppercase, one numeric character, one special character. At least 8 characters long.']})}
-            </Box>
+            {Object.keys(accountInfo).map(acctField => {
+              const isEmail = acctField.includes('email');
+              const isPassword = acctField.includes('password');
+              const valRules = { validators: ['required'], errorMessages: [''] }
+              const eValRules = { validators: ['required', 'isEmail'], errorMessages: ['', ''] }
+              const pwValRules = { 
+                validators: ['required', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})'], 
+                errorMessages: ['', 'Please choose a secure password (At least one lowercase, one uppercase, one numeric character, one special character. At least 8 characters long.)'] 
+              }
+
+              const inputType = isPassword ? 'password' : 'text';
+              const validationRules = isEmail ? eValRules : isPassword ? pwValRules : valRules;
+
+              const inputProps = {
+                type: inputType,
+                name: acctField,
+                value: accountInfo[acctField],
+                placeholder: convertToTitleCase(acctField),
+                onChange: e => handleUserInput('account', e),
+                ...validationRules
+              }
+
+              return <StyledValidators.TextField {...inputProps}/>
+            })}
           </ValidatorForm>
         );
+      }
 
       case 2:
-        const { firstName, lastName, phoneNumber, mobileNumber, address } = personalInfo;
         return (
           <ValidatorForm ref={personalFormRef} className={classes.root} onSubmit={onSubmit}>
-            <Box>{textValidator('firstName', firstName, handlePersonalFields, {type: 'text', placeholder: 'First Name'})}</Box>
-            <Box>{textValidator('lastName', lastName, handlePersonalFields, {type: 'text', placeholder: 'Last Name'})}</Box>
-            <Box>{textValidator('phoneNumber', phoneNumber, handlePersonalFields, {type: 'tel', placeholder: 'Phone Number'})}</Box>
-            <Box>{textValidator('mobileNumber', mobileNumber, handlePersonalFields, {type: 'tel', placeholder: 'Mobile Number'})}</Box>
-            <Box>{textValidator('address', address, handlePersonalFields, {type: 'text', placeholder: 'Address'})}</Box>
+            {Object.keys(personalInfo).map(perField => {
+              const isPhoneNumber = perField.includes('Number');
+              const valRules = { validators: ['required'], errorMessages: [''] }
+              const phValRules = { validators: ['required', 'isNumber'], errorMessages: ['', ''] }
+
+              const inputType = isPhoneNumber ? 'tel' : 'text';
+              const validationRules = isPhoneNumber ? phValRules : valRules;
+
+              const inputProps = {
+                type: inputType,
+                name: perField,
+                value: personalInfo[perField],
+                placeholder: convertToTitleCase(perField),
+                onChange: e => handleUserInput('personal', e),
+                ...validationRules
+              }
+
+              return <StyledValidators.TextField {...inputProps}/>
+            })}
           </ValidatorForm>
         );
 
@@ -241,8 +262,20 @@ function RegisterForm({ firebase }) {
           <form className={classes.root} onSubmit={onSubmit}>
             <Container>
               <FormGroup>
-                {customCheckboxField(receiveEmails, 'receiveEmails', 'Receive Emails', 'I would like to receieve email notifications.', handleNotifications)}
-                {customCheckboxField(publicAccount, 'publicAccount', 'Public Account', 'Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.', handleNotifications)}
+                <StyledValidators.CustomCheckbox
+                  name='receiveEmails'
+                  value={receiveEmails}
+                  onChange={e => handleUserInput('notification', e)}
+                  label='Receive Emails'
+                  additionalText='I would like to receieve email notifications.'
+                />
+                <StyledValidators.CustomCheckbox
+                  name='publicAccount'
+                  value={publicAccount}
+                  onChange={e => handleUserInput('notification', e)}
+                  label='Public Account'
+                  additionalText='Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.'
+                />
               </FormGroup>
           </Container>
         </form>
@@ -257,15 +290,12 @@ function RegisterForm({ firebase }) {
   return (
     <>
       {error.exists && 
-        <Snackbar
-          open={error.exists}
-          autoHideDuration={2000}
-          onClose={() => setError({ exists: false, message: null })}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'left'}}
+        <ErrorSnackbar 
+          isOpen={error.exists}
+          onCloseHandler={() => setError({ exists: false, message: null })}
           ContentProps={{classes: {root: classes.snackBar}}}
-          message={<Typography className={classes.error}>{error.message}</Typography>}
-        />
-      }
+          errorMessage={error.message}/>}
+
       <Typography className={classes.formTitle}>Create a New Account</Typography>
       <Stepper activeStep={activeStep} alternativeLabel>
         {steps.map(label => (
@@ -275,12 +305,12 @@ function RegisterForm({ firebase }) {
         ))}
       </Stepper>
       {getStepContent(activeStep)}
-      {getStepButtons(classes.stepButtons, activeStep, setActiveStep, onNext)}
+      {getStepButtons(classes.stepButtons, activeStep, setActiveStep, onNextValidation)}
       <LoginLink/>
     </>
 )}
 
-const getStepButtons = (stepButtonsStyle, activeStep, setActiveStep, onNext) => {
+const getStepButtons = (stepButtonsStyle, activeStep, setActiveStep, onNextValidation) => {
   return (
     <Box className={stepButtonsStyle}>
       <Button
@@ -300,7 +330,7 @@ const getStepButtons = (stepButtonsStyle, activeStep, setActiveStep, onNext) => 
       <Button
         variant="contained" 
         color="secondary"
-        onClick={() => onNext()}>
+        onClick={() => onNextValidation()}>
         Next
       </Button>
     }
