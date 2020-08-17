@@ -67,6 +67,23 @@ export const buttonStyles = props => {
     button: {
       margin: theme.spacing(1)
     },
+  
+    toolTipHeader: {
+      marginTop: theme.spacing(8)
+    },
+
+    toolTipButton: {
+      width: 55,
+      height: 55,
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.common.black,
+      marginRight: theme.spacing(1),
+      "&:hover": {
+        backgroundColor: "transparent",
+        color: theme.palette.secondary.main,
+        fill: theme.palette.secondary.main
+      }
+    },
 
   }))(props);
 }
