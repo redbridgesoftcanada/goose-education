@@ -1,9 +1,7 @@
-import React, { Fragment, useState, useReducer } from 'react';
+import React, { useState, useReducer } from 'react';
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import { Button, Container, Typography } from '@material-ui/core';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
 import { withAuthorization } from '../components/session';
 import { PERSONAL_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS, OTHER_FIELDS } from '../constants/constants';
 import { convertToCamelCase, convertToTitleCase } from '../constants/helpers/_features';
@@ -104,36 +102,28 @@ function StudyAbroadServiceApplication(props) {
             case 'departureFlightDate': {
               inputProps.minDate = (field === "departureFlightDate") ? state.arrivalFlightDate : '';
               return (
-                <MuiPickersUtilsProvider utils={DateFnsUtils} key={field}>
-                  <StyledValidators.CustomDatePicker {...inputProps}/>
-                </MuiPickersUtilsProvider>
-              );
-            }
+                <StyledValidators.CustomDatePicker {...inputProps}/>
+            )}
             
             case 'birthDate':
             case 'homestayStartDate':
             case 'homestayEndDate':
-              
-              // const customProps = {};
-              // if (field !== "birthDate") {
-              //   customProps.disablePast = true;
-                
-              //   if (field === "homestayStartDate") {
-              //     customProps.minDate = state.arrivalFlightDate;
-              //   }
-              //   if (field === "homestayEndDate") {
-              //     customProps.minDate = state.homestayStartDate;
-              //   }
-
-              // } else if (field === "birthDate") {
-              //   customProps.validators = ['required'];
-              //   customProps.errorMessages = ['Please select an option.'];
-              // }
+              if (field !== "birthDate") {
+                inputProps.disablePast = true;
+                if (field === "homestayStartDate") {
+                  inputProps.minDate = state.arrivalFlightDate;
+                }
+                if (field === "homestayEndDate") {
+                  inputProps.minDate = state.homestayStartDate;
+                }
+              }
 
               return (
-                <MuiPickersUtilsProvider utils={DateFnsUtils} key={field}>
-                  <StyledValidators.CustomDatePicker {...inputProps}/>
-                </MuiPickersUtilsProvider>);
+                <StyledValidators.CustomDatePicker
+                  {...inputProps}
+                  {...field === 'birthDate' && validationRules}
+                />
+              );
 
             case 'additionalRequests': 
               return (
@@ -181,8 +171,12 @@ function configureFormFields(match) {
 
   formFields.map(field => {
     field = convertToCamelCase(field);
-    // return INITIAL_STATE = {...INITIAL_STATE, [field]: ''}
-    return INITIAL_STATE = field.includes('Date') ? {...INITIAL_STATE, [field]: Date.now()} : {...INITIAL_STATE, [field]: ''}
+    if (field.includes('Date')) {
+      INITIAL_STATE = { ...INITIAL_STATE, [field]: null }
+    } else {
+      INITIAL_STATE = {...INITIAL_STATE, [field]: ''}
+    }
+    return INITIAL_STATE;
   });
 }
 

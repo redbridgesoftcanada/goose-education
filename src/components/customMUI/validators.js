@@ -1,7 +1,7 @@
 import React from 'react';
 import { ValidatorComponent } from 'react-form-validator-core';
 import { Input, RadioGroup, Select, Typography } from '@material-ui/core';
-import { DatePicker, KeyboardDatePicker,KeyboardDateTimePicker } from '@material-ui/pickers';
+import { KeyboardDatePicker, KeyboardDateTimePicker } from '@material-ui/pickers';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -116,4 +116,15 @@ class RadioGroupValidator extends ValidatorComponent {
   }
 }
 
-export { SelectValidator, QuillValidator, FileValidator, RadioGroupValidator }
+class DatePickValidator extends ValidatorComponent {
+  renderValidatorComponent() {
+    const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
+    return (
+      <KeyboardDatePicker
+        variant="inline"
+        format="MM/dd/yyyy"
+        {...rest}/>
+  )}
+}
+
+export { SelectValidator, QuillValidator, FileValidator, RadioGroupValidator, DatePickValidator }

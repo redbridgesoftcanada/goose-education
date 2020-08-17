@@ -1,16 +1,14 @@
 import React from 'react';
 import { TextValidator } from "react-material-ui-form-validator";
 import { FormLabel, OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio, Checkbox } from "@material-ui/core";
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import { QuillValidator, FileValidator, SelectValidator, RadioGroupValidator, DatePickValidator } from "./validators";
 
 const legendStyles = {
   textAlign: 'left',
   marginTop: '16px',
   marginBottom: '8px'
-}
-
-const pickerStyles = {
-  width: '100%'
 }
 
 function firebaseValidator(type, name, value, placeholder, eventHandler, error) {
@@ -109,5 +107,15 @@ function CustomCheckbox(props) {
   )
 }
 
+function CustomDatePicker(props) {
+  const { label, ...customProps } = props;
+  return (
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
+      <DatePickValidator {...customProps}/>
+    </MuiPickersUtilsProvider>
+  )
+}
+
 export { richTextValidator, fileValidator, firebaseValidator,
-TextField, CustomSelect, CustomRadioGroup, CustomCheckbox }
+TextField, CustomSelect, CustomRadioGroup, CustomCheckbox, CustomDatePicker }
