@@ -1,55 +1,51 @@
 import React, { useState } from 'react';
-import { Paper, Tabs, Tab, makeStyles} from '@material-ui/core';
+import { Paper, Tabs, Tab, useMediaQuery, useTheme } from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
-import withRoot from './withRoot';
+import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
 import { AuthUserContext } from './components/session';
 import TabPanel from './components/TabPanel';
-import NavBar from './views/NavBar';
 import PageBanner from './views/PageBanner';
 import AnnouncementBoard from './views/AnnouncementBoard';
 import Announcement from './views/Announcement';
 import MessageBoard from './views/MessageBoard';
 import Message from './views/Message';
-import Footer from './views/Footer';
-
-const useStyles = makeStyles(theme => ({
-    root: {
-      flexGrow: 1,
-      backgroundColor: theme.palette.background.paper,
-    },
-}));
+import withRoot from './withRoot';
 
 function ServiceCentre(props) {
-  const classes = useStyles();
   const match = useRouteMatch();
-  
-  const INITIAL_STATE = { 
-    tab: props.location.state.tab, 
+  const theme = useTheme();
+  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+  const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
+  const { listOfAnnouncements, listOfMessages, pageBanner } = props;
+
+  const [ selected, setSelected ] = useState({
+    tab: props.location.state ? props.location.state.tab : 0, 
     announce: null, 
     message: null 
-  }
-  const [ selected, setSelected ] = useState(INITIAL_STATE);
-  const { listOfAnnouncements, listOfMessages, pageBanner } = props;
+  });
 
   // E V E N T  L I S T E N E R S
   const handleTabChange = newTab => setSelected(prevState => ({ ...prevState, tab: newTab }));
   
-  const setSelectedAnnounce = event => {
-    const selectedAnnounce = listOfAnnouncements.find(announce => announce.id.toString() === event.currentTarget.id);
+  const setSelectedAnnounce = e => {
+    const selectedAnnounce = listOfAnnouncements.find(announce => announce.id.toString() === e.currentTarget.id);
     setSelected(prevState => ({ ...prevState, announce: selectedAnnounce }));
   }
 
-  const setSelectedMessage = event => {
-    const selectedMessage = listOfMessages.find(message => message.id.toString() === event.currentTarget.id);
+  const setSelectedMessage = e => {
+    const selectedMessage = listOfMessages.find(message => message.id.toString() === e.currentTarget.id);
     setSelected(prevState => ({ ...prevState, message: selectedMessage }));
   }
 
   return (
     <>
-      <NavBar/>
+      {ResponsiveNavBars(mdBreakpoint)}
       <PageBanner title={pageBanner.title} backgroundImage={pageBanner.image} layoutType='headerBanner'/>
-      <Paper className={classes.root}>
-        <Tabs textColor="secondary" variant="fullWidth" centered
+      <Paper>
+        <Tabs 
+          centered
+          textColor="secondary" 
+          variant="fullWidth" 
           value={selected.tab}
           onChange={(event, newValue) => handleTabChange(newValue)}>
             <Tab label="Announcements"/>
@@ -60,11 +56,16 @@ function ServiceCentre(props) {
           <Switch>
             <Route path={`${match.path}/announcement/:announcementID`}>
               <AuthUserContext.Consumer>
-                {authUser => <Announcement history={props.history} authUser={authUser} selectedAnnounce={selected.announce} /> }
+                {authUser => 
+                  <Announcement 
+                    authUser={authUser} 
+                    selectedAnnounce={selected.announce} />}
               </AuthUserContext.Consumer>
             </Route>
             <Route path={match.path}>
-              <AnnouncementBoard listOfAnnouncements={listOfAnnouncements} setAnnounce={setSelectedAnnounce}/>
+              <AnnouncementBoard 
+                listOfAnnouncements={listOfAnnouncements} 
+                setAnnounce={setSelectedAnnounce}/>
             </Route>
           </Switch>
         </TabPanel>
@@ -73,16 +74,22 @@ function ServiceCentre(props) {
           <Switch>
             <Route path={`${match.path}/message/:messageID`}>
               <AuthUserContext.Consumer>
-                {authUser => <Message history={props.history} authUser={authUser} selectedMessage={selected.message}/> }
+                {authUser => 
+                  <Message 
+                    history={props.history} 
+                    authUser={authUser} 
+                    selectedMessage={selected.message}/>}
               </AuthUserContext.Consumer>
             </Route>
             <Route path={match.path}>
-              <MessageBoard listOfMessages={listOfMessages} setMessage={setSelectedMessage}/>
+              <MessageBoard 
+                listOfMessages={listOfMessages} 
+                setMessage={setSelectedMessage}/>
             </Route>
           </Switch>
         </TabPanel>
       </Paper>
-      <Footer/>
+      {ResponsiveFooters(smBreakpoint)}
     </>
   )
 }
