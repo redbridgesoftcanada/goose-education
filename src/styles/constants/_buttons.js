@@ -51,21 +51,21 @@ export const buttonStyles = props => {
     },
 
     title: {
-        textAlign: 'center'
+      textAlign: 'center'
     },
 
     menu: {
-        margin: theme.spacing(1, 0),
-        width: 200,
+      margin: theme.spacing(1, 0),
+      width: 200,
     },
 
     filterSearch: {
-        width: '80%',
-        padding: theme.spacing(1, 1)
+      width: '80%',
+      padding: theme.spacing(1, 1)
     },
 
     button: {
-        margin: theme.spacing(1)
+      margin: theme.spacing(1)
     },
 
   }))(props);

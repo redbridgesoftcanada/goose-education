@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { FilterList, HighlightOffOutlined } from '@material-ui/icons';
-import useStyles from '../styles/constants/index';
+import useStyles from '../styles/constants';
 
 export default function FilterButton(props) {
     const classes = useStyles(props, 'buttons');
