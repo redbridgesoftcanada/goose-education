@@ -53,10 +53,11 @@ class QuillValidator extends ValidatorComponent {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
-        <ReactQuill 
-          validators={["isQuillEmpty"]}
-          errorMessages={["Cannot submit an empty post."]}
-          {...rest}/>
+        <ReactQuill
+          validators={['isQuillEmpty']}
+          errorMessages={['']}
+          {...rest}
+        />
         {this.errorText()}
       </>
   )}
