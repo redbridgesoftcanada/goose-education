@@ -27,7 +27,6 @@ function Schools(props) {
   });
 
   const { listOfSchools, posterTop, posterBottom } = props;
-  const listOfSchoolNames = listOfSchools.map(school => school.title);
 
   // E V E N T  L I S T E N E R S
   const handleTabChange = newTab => setSelected(prevState => ({ ...prevState, tab: newTab }));
@@ -43,9 +42,9 @@ function Schools(props) {
       <DatabaseContext.Consumer>
         {({ state: { schoolsGraphics: { schoolInfoPageBanner = {} } } = {} }) => 
           <PageBanner 
-          layoutType='headerBanner'
-          title={schoolInfoPageBanner.title} 
-          backgroundImage={schoolInfoPageBanner.image}/>}
+            layoutType='headerBanner'
+            title={schoolInfoPageBanner.title} 
+            backgroundImage={schoolInfoPageBanner.image}/>}
       </DatabaseContext.Consumer>
       <Paper className={classes.root}>
           <Tabs
@@ -66,9 +65,14 @@ function Schools(props) {
               </Route>
               <Route path={match.path}>
                 {configPropsPoster(posterTop, 'schools_top_poster')}
-                <ListOfSchools
-                  listOfSchools={listOfSchools} 
-                  handleSelectedSchool={handleSelectedSchool}/>
+
+                <DatabaseContext.Consumer>
+                  {({ state }) => 
+                    <ListOfSchools
+                      listOfSchools={state.listOfSchools} 
+                      handleSelectedSchool={handleSelectedSchool}/>
+                  }
+                </DatabaseContext.Consumer>
               </Route>
             </Switch>
           </TabPanel>
