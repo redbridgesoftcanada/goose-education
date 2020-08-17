@@ -28,7 +28,7 @@ function App() {
   useEffect(() => {
     // custom validation to check if <ReactQuill> component is empty - or - is only HTML tags (accessible as 'isQuillEmpty' rule)
     ValidatorForm.addValidationRule('isQuillEmpty', value => {
-        if (value && value.replace(/<(.|\n)*?>/g, '').trim().length === 0) return false;
+        if (!value || value.replace(/<(.|\n)*?>/g, '').trim().length === 0) return false;
         return true;
     });
 
@@ -55,18 +55,22 @@ function App() {
           <DatabaseContext.Consumer>
             {({ state }) =>
               <>
-                {state.gooseGraphics && <Route path="/goose" render={props => 
-                  <Goose 
-                    {...props} 
-                    pageBanner={state.gooseGraphics.goosePageBanner}/>}/> }
+                {state.gooseGraphics && 
+                  <Route path="/goose" render={props => 
+                    <Goose 
+                      {...props} 
+                      pageBanner={state.gooseGraphics.goosePageBanner}/>}
+                  />}
 
-                {state.networkingGraphics && <Route path="/networking" render={props => 
-                  <Networking 
-                    {...props} 
-                    pageBanner={state.networkingGraphics.networkingPageBanner} 
-                    poster={state.networkingGraphics.networkingPoster}
-                    posterCards={state.networkingGraphics.networkingCards} 
-                    wrapper={state.networkingGraphics.networkingWrapper}/>}/> }
+                {state.networkingGraphics && 
+                  <Route path="/networking" render={props => 
+                    <Networking 
+                      {...props} 
+                      pageBanner={state.networkingGraphics.networkingPageBanner} 
+                      poster={state.networkingGraphics.networkingPoster}
+                      posterCards={state.networkingGraphics.networkingCards} 
+                      wrapper={state.networkingGraphics.networkingWrapper}/>}
+                  />}
                 
                 {state.schoolsGraphics && 
                   <Route path="/schools" render={props => 
@@ -77,17 +81,21 @@ function App() {
                       posterBottom={state.schoolsGraphics.schoolInfoPosterBottom}/>}
                   />}
 
-                {state.studyabroadGraphics && <Route path="/studyabroad" render={props => 
-                  <StudyAbroad 
-                    {...props}
-                    pageBanner={state.studyabroadGraphics.studyAbroadPageBanner}/>}/>}
+                {state.studyabroadGraphics && 
+                  <Route path="/studyabroad" render={props => 
+                    <StudyAbroad 
+                      {...props}
+                      pageBanner={state.studyabroadGraphics.studyAbroadPageBanner}/>}
+                  />}
                 
-                {state.servicesGraphics && <Route path="/services" render={props => 
-                  <ServiceCentre 
-                    {...props} 
-                    listOfMessages={state.listOfMessages} 
-                    listOfAnnouncements={state.listOfAnnouncements}
-                    pageBanner={state.servicesGraphics.serviceCentrePageBanner}/>}/>}
+                {state.servicesGraphics && 
+                  <Route path="/services" render={props => 
+                    <ServiceCentre 
+                      {...props} 
+                      listOfMessages={state.listOfMessages} 
+                      listOfAnnouncements={state.listOfAnnouncements}
+                      pageBanner={state.servicesGraphics.serviceCentrePageBanner}/>}
+                  />}
               </>
             }
           </DatabaseContext.Consumer>
