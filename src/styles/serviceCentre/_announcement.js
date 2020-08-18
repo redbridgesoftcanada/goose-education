@@ -2,38 +2,6 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const announcementStyles = props => {
   return makeStyles(theme => ({
-    mt3: {
-      marginTop: theme.spacing(3),
-    },
-
-    title: {
-      ...theme.typography.h6,
-      textAlign: 'left'
-    },
-
-    pr1: {
-      ...theme.typography.body2,
-      paddingRight: theme.spacing(1),
-    },
-
-    meta: {
-      background: theme.palette.secondary.light,
-      color: 'rgba(0, 0, 0, 0.54)',
-      opacity: 0.9,
-      paddingBottom: theme.spacing(5),
-    },
-
-    left: {
-      float: 'left',
-      display: 'flex',
-      justifyContent: 'space-evenly'
-    },
-
-    right: {
-      float: 'right',
-      display: 'flex',
-    },
-
     image: {
       display: 'block',
       border: '0',
@@ -42,11 +10,64 @@ export const announcementStyles = props => {
       height: 'auto',
     },
 
-    description: {
+    // single announcement
+    title: {
+      ...theme.typography.h6,
+      marginTop: theme.spacing(3),
+      textAlign: 'left'
+    },
+
+    metaContainer: {
+      padding: theme.spacing(1, 0),
+      flexDirection: 'row'
+    },
+
+    metaLeft: {
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start'
+    },
+
+    metaRight: {
+      justifyContent: 'flex-end',
+      alignItems: 'flex-start'
+    },
+
+    announceContainer: {
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    },
+
+    announceActions: {
+      marginTop: theme.spacing(2),
+    },
+
+    announceButtons: {
+      '&:hover': {
+        backgroundColor: 'transparent',
+        color: theme.palette.secondary.main,
+      }
+    },
+
+    announceSocialButtons: {
+      paddingTop: 0,
+      '&:hover': {
+        backgroundColor: 'transparent',
+        color: theme.palette.secondary.main,
+      }
+    },
+
+    metaText: {
+      ...theme.typography.caption
+    },
+
+    commentHeader: {
       ...theme.typography.body1,
       textAlign: 'left',
-      marginTop: theme.spacing(2),
-      paddingBottom: theme.spacing(5),
-    }
+      marginTop: theme.spacing(2)
+    },
+
+    commentButton: {
+      marginBottom: theme.spacing(1)
+    },
   }))(props);
 }
