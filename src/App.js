@@ -56,45 +56,50 @@ function App() {
             {({ state }) =>
               <>
                 {state.gooseGraphics && 
-                  <Route path="/goose" render={props => 
-                    <Goose 
-                      {...props} 
-                      pageBanner={state.gooseGraphics.goosePageBanner}/>}
+                  <Route path="/goose" 
+                    render={props => 
+                      <Goose 
+                        {...props} 
+                        pageBanner={state.gooseGraphics.goosePageBanner}/>}
                   />}
 
                 {state.networkingGraphics && 
-                  <Route path="/networking" render={props => 
-                    <Networking 
-                      {...props} 
-                      pageBanner={state.networkingGraphics.networkingPageBanner} 
-                      poster={state.networkingGraphics.networkingPoster}
-                      posterCards={state.networkingGraphics.networkingCards} 
-                      wrapper={state.networkingGraphics.networkingWrapper}/>}
+                  <Route path="/networking" 
+                    render={props => 
+                      <Networking 
+                        {...props} 
+                        pageBanner={state.networkingGraphics.networkingPageBanner} 
+                        poster={state.networkingGraphics.networkingPoster}
+                        posterCards={state.networkingGraphics.networkingCards} 
+                        wrapper={state.networkingGraphics.networkingWrapper}/>}
                   />}
                 
                 {state.schoolsGraphics && 
-                  <Route path="/schools" render={props => 
-                    <Schools 
-                      {...props} 
-                      listOfSchools={state.listOfSchools} 
-                      posterTop={state.schoolsGraphics.schoolInfoPosterTop}
-                      posterBottom={state.schoolsGraphics.schoolInfoPosterBottom}/>}
+                  <Route path="/schools" 
+                    render={props => 
+                      <Schools 
+                        {...props} 
+                        listOfSchools={state.listOfSchools} 
+                        posterTop={state.schoolsGraphics.schoolInfoPosterTop}
+                        posterBottom={state.schoolsGraphics.schoolInfoPosterBottom}/>}
                   />}
 
                 {state.studyabroadGraphics && 
-                  <Route path="/studyabroad" render={props => 
-                    <StudyAbroad 
-                      {...props}
-                      pageBanner={state.studyabroadGraphics.studyAbroadPageBanner}/>}
-                  />}
+                  <Route path="/studyabroad" 
+                    render={props => 
+                      <StudyAbroad 
+                        {...props}
+                        pageBanner={state.studyabroadGraphics.studyAbroadPageBanner}/>}
+                />}
                 
                 {state.servicesGraphics && 
-                  <Route path="/services" render={props => 
-                    <ServiceCentre 
-                      {...props} 
-                      listOfMessages={state.listOfMessages} 
-                      listOfAnnouncements={state.listOfAnnouncements}
-                      pageBanner={state.servicesGraphics.serviceCentrePageBanner}/>}
+                  <Route path="/services" 
+                    render={props => 
+                      <ServiceCentre 
+                        {...props} 
+                        listOfMessages={state.listOfMessages} 
+                        listOfAnnouncements={state.listOfAnnouncements}
+                        pageBanner={state.servicesGraphics.serviceCentrePageBanner}/>}
                   />}
               </>
             }
