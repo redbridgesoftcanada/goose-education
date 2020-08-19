@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
-import { format } from 'date-fns';
+import { format, compareDesc } from 'date-fns';
 import { AuthUserContext } from '../components/session';
 import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/_features';
 import Compose from '../components/ComposeButton';
@@ -63,41 +63,41 @@ export default function AnnouncementBoard(props) {
     return (
         <Container>
             <SocialMediaButtons title={title} description={description}/>
-            <div>
-                <AuthUserContext.Consumer>
-                    {authUser => (authUser && authUser.roles['admin']) &&
-                        <>
-                            <Compose handleComposeClick={toggleComposeDialog}/> 
-                            <ComposeDialog
-                                isEdit={false}
-                                authUser={authUser} 
-                                composeType='announce'
-                                composeOpen={composeOpen} 
-                                onClose={toggleComposeDialog} />
-                        </>
-                    }
-                </AuthUserContext.Consumer>
-                
-                <Filter  
-                    isFilter={isFiltered} 
-                    handleFilterClick={toggleFilterDialog} 
-                    handleFilterReset={resetFilter}/>
-                
-                <FilterDialog  
-                    {...filterProps}
-                    handleSearchQuery={handleFilterQuery}
-                    handleSearchClick={handleFilterSearch} 
-                    onClose={toggleFilterDialog}/>
+            
+            <AuthUserContext.Consumer>
+                {authUser => (authUser && authUser.roles['admin']) &&
+                    <>
+                        <Compose handleComposeClick={toggleComposeDialog}/> 
+                        <ComposeDialog
+                            isEdit={false}
+                            authUser={authUser} 
+                            composeType='announce'
+                            composeOpen={composeOpen} 
+                            onClose={toggleComposeDialog} />
+                    </>
+                }
+            </AuthUserContext.Consumer>
+            
+            <Filter  
+                isFilter={isFiltered} 
+                handleFilterClick={toggleFilterDialog} 
+                handleFilterReset={resetFilter}/>
+            
+            <FilterDialog  
+                {...filterProps}
+                handleSearchQuery={handleFilterQuery}
+                handleSearchClick={handleFilterSearch} 
+                onClose={toggleFilterDialog}/>
 
-                <Sort 
-                    selectedAnchor={selectedAnchor}
-                    handleSortClick={openSortPopover}/>
+            <Sort 
+                selectedAnchor={selectedAnchor}
+                handleSortClick={openSortPopover}/>
 
-                <SortPopover
-                    anchorEl={anchorOpen} 
-                    open={Boolean(anchorOpen)} 
-                    onClose={handleSelectedSort}/>
-            </div>
+            <SortPopover
+                anchorEl={anchorOpen} 
+                open={Boolean(anchorOpen)} 
+                onClose={handleSelectedSort}/>
+
             <Table>
                 <TableHead>
                     <TableRow>
@@ -122,7 +122,7 @@ export default function AnnouncementBoard(props) {
                                     </Link>
                                 </TableCell>
                                 <TableCell align='center'>{announce.authorDisplayName}</TableCell>
-                                <TableCell align='center'> {(announce.updatedAt > announce.createdAt) ? format(announce.updatedAt, 'yyyy-MM-dd') : format(announce.createdAt, 'yyyy-MM-dd')}</TableCell>
+                                <TableCell align='center'>  {format([announce.createdAt, announce.updatedAt].sort(compareDesc).pop(), 'P')}</TableCell>
                             </TableRow>
                         );
                     })}

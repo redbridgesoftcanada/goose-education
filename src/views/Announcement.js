@@ -39,7 +39,7 @@ function Announcement(props) {
 
     const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
     const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS' });
-    const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });
+    const handleComment = e => dispatch({ type:'NEW_COMMENT', payload: e.currentTarget.value });
     const handleDeleteConfirmation = event => (event.currentTarget.id) ? dispatch({ type:'CONFIRM_DELETE', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
     const handleEdit = event => (event.currentTarget.id) ? dispatch({ type: 'EDIT_CONTENT', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
     const handleCollapse = e => {
@@ -51,8 +51,6 @@ function Announcement(props) {
     const commentsProps = { 
         formType: 'announcement', 
         selectedResource: selectedAnnounce, 
-        classes, 
-        firebase, 
         commentAnchor, 
         commentAnchorOpen, 
         commentDialogOpen, 
@@ -82,7 +80,6 @@ function Announcement(props) {
         event.preventDefault();
     }
     
-
     return (
         <Container>
             <Typography className={classes.title}>{selectedAnnounce.title}</Typography>
@@ -267,7 +264,8 @@ function toggleReducer(state, action) {
             return { 
                 ...state, 
                 [confirmKey]: !state[confirmKey],
-                ...(!state[confirmKey]) && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
+                ...(!state[confirmKey]) && { editAnchor: null, commentAnchor: null }   
+                // synchronize closing the EDIT/DELETE menu in the background
             }
         
         case 'EDIT_CONTENT':
@@ -275,7 +273,8 @@ function toggleReducer(state, action) {
             return { 
                 ...state, 
                 [dialogKey]: !state[dialogKey],
-                ...(!state[dialogKey]) && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
+                ...(!state[dialogKey]) && { editAnchor: null, commentAnchor: null }   
+                // synchronize closing the EDIT/DELETE menu in the background
             }
         
         case 'RESET_ACTIONS': {

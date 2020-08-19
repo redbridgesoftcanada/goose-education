@@ -1,5 +1,6 @@
 import { appBarStyles } from './_appbar';
 import { buttonStyles } from './_buttons';
+import { commentStyles } from './_comments';
 import { pageBannerStyles } from './_pageBanner';
 import { pageBannerLayoutStyles } from './_pageBannerLayout';
 import { posterStyles } from './_poster';
@@ -9,6 +10,9 @@ const useStyles = (props, stylesheet) => {
   switch (stylesheet) {
     case 'buttons':
       return buttonStyles(props);
+
+    case 'comments':
+      return commentStyles(props);
 
     case 'navbar':
     case 'headerBar':

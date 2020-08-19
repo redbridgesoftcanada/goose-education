@@ -1,13 +1,16 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { MoreVertOutlined } from '@material-ui/icons';
-import { format } from 'date-fns';
+import { format, compareDesc } from 'date-fns';
 import parse from 'html-react-parser';
+import { withFirebase } from '../components/firebase';
 import CommentDialog from '../components/CommentDialog';
 import DeleteConfirmation from '../components/DeleteConfirmation';
+import useStyles from '../styles/constants';
 
-export default function Comments(props) {
-  const { classes, comment, isCommentOwner, firebase, formType, openPostActions, closePostActions, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, selectedResource, handleEdit, handleDeleteConfirmation, resetAllActions } = props;
+function Comments(props) {
+  const classes = useStyles(props, 'comments');
+  const { comment, isCommentOwner, firebase, formType, openPostActions, closePostActions, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, selectedResource, handleEdit, handleDeleteConfirmation, resetAllActions } = props;
 
   const handleCommentDelete = id => {
     let collectionRef;
@@ -41,44 +44,58 @@ export default function Comments(props) {
   }
 
   return (
-    <Fragment>
-      <div className={classes.left}>
-        <Typography variant='body2' align='left' color='secondary'>{comment.authorDisplayName}</Typography>
-      </div>
-      <div className={classes.right}>
-        <Typography variant='body2' align='left'>
-            {(comment.updatedAt > comment.createdAt) ? format(comment.updatedAt, 'Pp') : format(comment.createdAt, 'Pp')}
-        </Typography>
-      </div>
-      <br/>
-      <Grid container spacing={1} justify='space-between'>
-        <Grid item xs={11}>
-            <Typography component='span' variant='body2' align='left'>{parse(comment.description)}</Typography>
+    <>
+      <Grid container className={classes.container}>
+        <Grid container item xs={6} className={classes.fsContainer}>
+          <Typography className={classes.metaAuthor} color='secondary'>{comment.authorDisplayName}</Typography>
         </Grid>
-        
-        {/* EDIT & DELETE FEATURE FOR COMMENT OWNER */}
-        {isCommentOwner &&
-        <>
-          <Grid item>
-              <IconButton id='comment' onClick={openPostActions}>
-                  <MoreVertOutlined/>
-              </IconButton>
-              <Menu
-                  keepMounted
-                  anchorEl={commentAnchor}
-                  open={commentAnchorOpen}
-                  onClose={closePostActions}
-              >
-                  <MenuItem id='comment' onClick={handleEdit}>Edit comment</MenuItem>
-                  <MenuItem id='comment' onClick={handleDeleteConfirmation}>Delete comment</MenuItem>
-              </Menu>
-          </Grid>
 
-          <CommentDialog formType={formType} firebase={firebase} selectedResource={selectedResource} prevComment={comment} open={commentDialogOpen} onClose={resetAllActions}/>
-          <DeleteConfirmation deleteType='comment' open={commentConfirmOpen} handleDelete={() => handleCommentDelete(comment.id)} onClose={handleDeleteConfirmation}/>
-        </>
-        }
+        <Grid container item xs={6} className={classes.feContainer}>
+          <Typography className={classes.metaDate}>
+            {format([comment.createdAt, comment.updatedAt].sort(compareDesc).pop(), 'Pp')}
+          </Typography>
+        </Grid>
+
+        <Grid container item xs={11} className={classes.fsContainer}>
+          <Typography className={classes.commentText}>{parse(comment.description)}</Typography>
+        </Grid>
+
+        <Grid container item xs={1} className={classes.feContainer}>
+          <IconButton id='comment' onClick={openPostActions}>
+            <MoreVertOutlined fontSize='small'/>
+          </IconButton>
+        </Grid>
       </Grid>
-    </Fragment>
+
+      {/* Conditional Components - Edit + Delete Features */}
+      {isCommentOwner &&
+        <>
+          <Menu
+              keepMounted
+              anchorEl={commentAnchor}
+              open={commentAnchorOpen}
+              onClose={closePostActions}>
+              <MenuItem id='comment' onClick={handleEdit}>Edit Comment</MenuItem>
+              <MenuItem id='comment' onClick={handleDeleteConfirmation}>Delete Comment</MenuItem>
+          </Menu>
+
+          <CommentDialog 
+            formType={formType}
+            firebase={firebase} 
+            selectedResource={selectedResource} 
+            prevComment={comment} 
+            open={commentDialogOpen} 
+            onClose={resetAllActions}/>
+              
+          <DeleteConfirmation 
+            deleteType='comment' 
+            open={commentConfirmOpen} 
+            handleDelete={() => handleCommentDelete(comment.id)} 
+            onClose={handleDeleteConfirmation}/>
+        </>
+      }
+    </>
   )
 }
+
+export default withFirebase(Comments);
