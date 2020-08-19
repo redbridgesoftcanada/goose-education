@@ -11,10 +11,10 @@ import Comments from '../components/Comments';
 import ComposeDialog from '../components/ComposeDialog';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import StyledValidators from '../components/customMUI';
-import useStyles from '../styles/serviceCentre';
+import useStyles from '../styles/serviceCentre.js';
 
 function Announcement(props) {
-    const classes = useStyles(props, 'announcement');
+    const classes = useStyles(props);
     const history = useHistory();
     const theme = useTheme();
     const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
@@ -112,7 +112,7 @@ function Announcement(props) {
 
             {!xsBreakpoint ?
             <>
-                <Typography>{parse(selectedAnnounce.description)}</Typography>
+                {parse(selectedAnnounce.description)}
 
                 {isLoggedInAdmin &&
                     <Grid container className={classes.announceActions}>
@@ -136,15 +136,18 @@ function Announcement(props) {
             </> 
             : 
             <Grid container className={classes.announceContainer}>
-                <Grid item xs={9}>
-                    <Typography>{parse(selectedAnnounce.description)}</Typography>
-                </Grid>
-
-                <Grid item>
-                    <IconButton id='announce' onClick={openPostActions}>
-                        <MoreVertOutlined/>
-                    </IconButton>
-                </Grid>
+                {!isLoggedInAdmin ? 
+                    <Grid item>{parse(selectedAnnounce.description)}</Grid>
+                :
+                <>
+                    <Grid item xs={9}>{parse(selectedAnnounce.description)}</Grid>
+                    <Grid item>
+                        <IconButton id='announce' onClick={openPostActions}>
+                            <MoreVertOutlined/>
+                        </IconButton>
+                    </Grid>
+                </>
+                }
             </Grid>
             }
 

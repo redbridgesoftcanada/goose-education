@@ -6,7 +6,7 @@ export default function StudyAbroadCounselling(classes) {
   return (
     <Button className={classes.navlinkItem}>
       <NavLink 
-        to={{pathname: '/services', state: { selected: 1 }}}
+        to={{pathname: '/services', state: { tab: 1 }}}
         label='Study Abroad Counselling'/>
     </Button>
 )};

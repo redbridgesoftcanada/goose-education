@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const announcementStyles = props => {
+const useStyles = props => {
   return makeStyles(theme => ({
     image: {
       display: 'block',
@@ -10,7 +10,6 @@ export const announcementStyles = props => {
       height: 'auto',
     },
 
-    // single announcement
     title: {
       ...theme.typography.h6,
       marginTop: theme.spacing(3),
@@ -71,3 +70,5 @@ export const announcementStyles = props => {
     },
   }))(props);
 }
+
+export default useStyles;

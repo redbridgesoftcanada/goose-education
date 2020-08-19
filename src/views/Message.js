@@ -1,51 +1,223 @@
 import React, { useReducer } from 'react';
-import { Box, Button, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, withStyles } from '@material-ui/core';
-import { AccountCircleOutlined, ChatBubbleOutlineOutlined, VisibilityOutlined, ScheduleOutlined, MoreVertOutlined, DescriptionOutlined, LanguageOutlined, Facebook, Instagram, RoomOutlined } from '@material-ui/icons';
+import { Button, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+import { AccountCircleOutlined, ChatBubbleOutlineOutlined, ScheduleOutlined, MoreVertOutlined, LanguageOutlined, Facebook, Instagram, RoomOutlined, EditOutlined, DeleteOutline } from '@material-ui/icons';
+import { useHistory } from "react-router-dom";
 import { ValidatorForm } from 'react-material-ui-form-validator';
-import { format } from 'date-fns';
+import { format, compareDesc } from 'date-fns';
 import parse from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
-import { QuillValidator } from '../constants/customValidators';
 import { withFirebase } from '../components/firebase';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
+import StyledValidators from '../components/customMUI';
 import Comments from '../components/Comments';
+import useStyles from '../styles/serviceCentre.js';
 
-const styles = theme => ({
-    mt3: {
-        marginTop: theme.spacing(3),
-    },
-    pr1: {
-        paddingRight: theme.spacing(1),
-    },
-    meta: {
-      background: theme.palette.secondary.light,
-      color: 'rgba(0, 0, 0, 0.54)',
-      opacity: 0.9,
-    },
-    left: {
-      float: 'left',
-      display: 'flex',
-      justifyContent: 'space-evenly'
-    },
-    right: {
-      float: 'right',
-      display: 'flex',
-    },
-    image: {
-      display: 'block',
-      border: '0',
-      width: '100%',
-      maxWidth: '100%',
-      height: 'auto',
-    },
-    link: {
-        cursor: 'pointer',
-        '&:hover': {
-            color: theme.palette.secondary.main,
-        },
+function Message(props) {
+    const classes = useStyles(props);
+    const history = useHistory();
+    const theme = useTheme();
+    const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
+    const { authUser, firebase, selectedMessage } = props;
+    
+    const INITIAL_STATE = {
+        comment: '',
+        commentAnchor: null,
+        commentCollapseOpen: false,
+        commentDialogOpen: false,
+        commentConfirmOpen: false,
+        editAnchor: null,
+        editDialogOpen: false,
+        editConfirmOpen: false
     }
-});
+
+    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+    const { comment, commentAnchor, commentCollapseOpen, commentDialogOpen, commentConfirmOpen, editAnchor, editConfirmOpen, editDialogOpen } = state;
+    const commentAnchorOpen = Boolean(commentAnchor);
+    const editAnchorOpen = Boolean(editAnchor);
+    
+    const redirectPath = () => history.push({ pathname: '/services', state: { title: 'Service Centre', selected: 1 }});
+    const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
+    const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS' });
+    const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });
+    const handleDeleteConfirmation = event => (event.currentTarget.id) ? dispatch({ type:'CONFIRM_DELETE', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
+    const handleEdit = event => (event.currentTarget.id) ? dispatch({ type: 'EDIT_CONTENT', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
+    const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
+    const handleCollapse = e => {
+        dispatch({ type: 'TRIGGER_COLLAPSE' })
+    }
+    const handleMessageDelete = () => firebase.deleteMessage(selectedMessage.id).then(() => redirectPath());
+
+    const commentsProps = { formType: 'message', classes, firebase, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, openPostActions, closePostActions, handleEdit, handleDeleteConfirmation, resetAllActions, selectedResource: selectedMessage }
+
+    let isMessageOwner;
+    if (!selectedMessage) {
+      return null;
+    } else {
+      isMessageOwner = (authUser.uid === selectedMessage.authorID);
+    }
+
+    const onCommentSubmit = event => {
+        firebase.message(selectedMessage.id).update({ 
+            'comments': firebase.updateArray().arrayUnion({
+                id: uuidv4(),
+                authorDisplayName: authUser.displayName,
+                authorID: authUser.uid,
+                description: comment,
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+        })}).then(() => { 
+            handleComment('');
+            redirectPath();
+           })
+        // .catch(error => dispatch({ type: 'error', payload: error }))
+        event.preventDefault();
+    }
+
+    return (
+        <Container>
+            <Typography className={classes.title}>{selectedMessage.title}</Typography>
+
+            <Grid container className={classes.metaContainer}>
+                <Grid container item xs={7} sm={6} spacing={1} className={classes.metaLeft}>
+                    <Grid item><AccountCircleOutlined fontSize='small'/></Grid>
+                    <Grid item>
+                        <Typography className={classes.metaText}>{selectedMessage.authorDisplayName}</Typography>
+                    </Grid>
+
+                    <Grid item><ChatBubbleOutlineOutlined fontSize='small'/></Grid>
+                    <Grid item>
+                        <Typography className={classes.metaText}>{selectedMessage.comments.length}</Typography>
+                    </Grid>
+                    
+                    {selectedMessage.link1 && generateLinks(classes, selectedMessage.link1)}
+                    {selectedMessage.link2 && generateLinks(classes, selectedMessage.link2)}
+                </Grid>
+
+                <Grid container item xs={5} sm={6} spacing={1} className={classes.metaRight}>
+                    <Grid item><ScheduleOutlined fontSize='small'/></Grid>
+                    <Grid item>
+                        <Typography className={classes.metaText}>
+                            {format([selectedMessage.createdAt, selectedMessage.updatedAt].sort(compareDesc).pop(), 'P')}
+                        </Typography>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+            {!xsBreakpoint ?
+            <>
+                {parse(selectedMessage.description)}
+
+                {isMessageOwner &&
+                    <Grid container className={classes.announceActions}>
+                        <Grid item sm={4}>
+                            <Button onClick={handleCollapse} fullWidth className={classes.announceButtons}>
+                                <ChatBubbleOutlineOutlined/>
+                            </Button>
+                        </Grid>
+                        <Grid item sm={4}>
+                            <Button id='message' onClick={handleEdit} fullWidth className={classes.announceButtons}>
+                                <EditOutlined/>
+                            </Button>
+                        </Grid>
+                        <Grid item sm={4}>
+                            <Button id='message' onClick={handleDeleteConfirmation} fullWidth className={classes.announceButtons}>
+                                <DeleteOutline/>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                }
+            </> 
+            : 
+            <Grid container className={classes.announceContainer}>
+                {!isMessageOwner ? 
+                <Grid item>{parse(selectedMessage.description)}</Grid> 
+                :
+                <>
+                    <Grid item xs={9}>{parse(selectedMessage.description)}</Grid>
+                    <Grid item>
+                        <IconButton id='message' onClick={openPostActions}>
+                            <MoreVertOutlined/>
+                        </IconButton>
+                    </Grid>
+                </>
+                }
+            </Grid>
+            }
+
+            {/* Conditional Components - Edit + Delete Features */}
+            <Menu
+                keepMounted
+                anchorEl={editAnchor}
+                open={editAnchorOpen}
+                onClose={closePostActions}>
+                <MenuItem id='message' onClick={handleEdit}>Edit</MenuItem>
+                <MenuItem id='message' onClick={handleDeleteConfirmation}>Delete</MenuItem>
+            </Menu>
+
+             <ComposeDialog
+                isEdit={true}
+                article={selectedMessage}
+                authUser={authUser} 
+                composeType='message'
+                composeOpen={editDialogOpen} 
+                onClose={resetAllActions}/>
+            
+            <DeleteConfirmation 
+                deleteType='message' 
+                open={editConfirmOpen} 
+                handleDelete={handleMessageDelete} 
+                onClose={handleDeleteConfirmation}/>
+
+            <Divider light/>
+
+            <Typography className={classes.commentHeader}>
+                {selectedMessage.comments.length} Comments
+            </Typography>
+
+            {!xsBreakpoint && isMessageOwner ? 
+            <Collapse in={commentCollapseOpen} timeout="auto" unmountOnExit>
+                <ValidatorForm onSubmit={onCommentSubmit}>
+                    <StyledValidators.TextField
+                        multiline
+                        rows={5}
+                        value={comment}
+                        onChange={handleComment}
+                        validators={['isQuillEmpty']}
+                        errorMessages={['']}/>
+                    <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+                </ValidatorForm>
+            </Collapse>
+            :
+            <ValidatorForm onSubmit={onCommentSubmit}>
+                <StyledValidators.TextField
+                    multiline
+                    rows={5}
+                    value={comment}
+                    onChange={handleComment}
+                    validators={['isQuillEmpty']}
+                    errorMessages={['']}/>
+                <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+            </ValidatorForm>
+            }
+
+            {selectedMessage.comments.length ? 
+                selectedMessage.comments.map((comment, i) => {
+                    const isCommentOwner = authUser.uid === comment.authorID;
+                    return (
+                        <Comments 
+                            key={i}  
+                            comment={comment} 
+                            isCommentOwner={isCommentOwner} 
+                            {...commentsProps}/> 
+                    );
+                })
+            :
+                <Typography>There are currently no comments.</Typography> 
+            }
+        </Container>
+    )
+}
 
 function generateLinks(classes, link) {
     const isFacebook = link.includes('facebook');
@@ -53,8 +225,8 @@ function generateLinks(classes, link) {
     const isMaps = link.includes('map');
 
     return (
-        <Grid container className={classes.link} spacing={1} onClick={() => window.open(link, "_blank")}>
-            <Grid item>
+        <Grid item>
+            <IconButton className={classes.announceSocialButtons} onClick={() => window.open(link, "_blank")}>
                 {isFacebook ? <Facebook fontSize='small'/> 
                 :
                 isInstagram ? <Instagram fontSize='small'/>
@@ -62,10 +234,7 @@ function generateLinks(classes, link) {
                 isMaps ? <RoomOutlined fontSize='small'/>
                 :
                 <LanguageOutlined fontSize='small'/>}
-            </Grid>
-            <Grid item>
-                <Typography variant='body2'>{link}</Typography>
-            </Grid>
+            </IconButton>
         </Grid>
     );
 }
@@ -84,6 +253,8 @@ function toggleReducer(state, action) {
         case 'CLOSE_ACTIONS':
             return { ...state, editAnchor: null, commentAnchor: null }
         
+            case 'TRIGGER_COLLAPSE':
+                return { ...state, commentCollapseOpen: !state.commentCollapseOpen}
         case 'CONFIRM_DELETE':
             const confirmKey = (payload.id === 'message') ? 'editConfirmOpen' : 'commentConfirmOpen';
             return { 
@@ -116,180 +287,4 @@ function toggleReducer(state, action) {
     }
 }
 
-function Message(props) {
-    const { authUser, classes, firebase, history, selectedMessage } = props;
-    
-    const INITIAL_STATE = {
-        comment: '',
-        commentAnchor: null,
-        commentDialogOpen: false,
-        commentConfirmOpen: false,
-        editAnchor: null,
-        editDialogOpen: false,
-        editConfirmOpen: false
-    }
-
-    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { comment, commentAnchor, commentDialogOpen, commentConfirmOpen, editAnchor, editConfirmOpen, editDialogOpen } = state;
-    const commentAnchorOpen = Boolean(commentAnchor);
-    const editAnchorOpen = Boolean(editAnchor);
-    
-    const redirectPath = () => history.push({ pathname: '/services', state: { title: 'Service Centre', selected: 1 }});
-    const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
-    const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS' });
-    const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });
-    const handleDeleteConfirmation = event => (event.currentTarget.id) ? dispatch({ type:'CONFIRM_DELETE', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
-    const handleEdit = event => (event.currentTarget.id) ? dispatch({ type: 'EDIT_CONTENT', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
-    const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
-    const handleMessageDelete = () => firebase.deleteMessage(selectedMessage.id).then(() => redirectPath());
-
-    const commentsProps = { formType: 'message', classes, firebase, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, openPostActions, closePostActions, handleEdit, handleDeleteConfirmation, resetAllActions, selectedResource: selectedMessage }
-
-    let isMessageOwner;
-    if (!selectedMessage) {
-      return null;
-    } else {
-      isMessageOwner = (authUser.uid === selectedMessage.authorID);
-    }
-
-    const onSubmit = event => {
-        firebase.message(selectedMessage.id).update({ 
-            'comments': firebase.updateArray().arrayUnion({
-                id: uuidv4(),
-                authorDisplayName: authUser.displayName,
-                authorID: authUser.uid,
-                description: comment,
-                createdAt: Date.now(),
-                updatedAt: Date.now()
-        })}).then(() => { 
-            handleComment('');
-            redirectPath();
-           })
-        // .catch(error => dispatch({ type: 'error', payload: error }))
-        event.preventDefault();
-    }
-
-    return (
-        <Container className={classes.root}>
-            <Typography variant='h6' align='left'>{selectedMessage.title}</Typography>
-
-            {/* M E T A D A T A [author, tag, number of comments, number of views, date created/updated] */}
-            <Box px={3} py={2} pb={4} className={classes.meta}>
-                <Box className={classes.left}>
-                    <Grid container spacing={1}>
-                        <Grid item >
-                            <AccountCircleOutlined/>
-                        </Grid>
-                        <Grid item>
-                            <Typography variant='body2' className={classes.pr1}>{selectedMessage.authorDisplayName}</Typography>
-                        </Grid>
-                        <Grid item>
-                            <ChatBubbleOutlineOutlined/>
-                        </Grid>
-                        <Grid item>
-                            <Typography variant='body2' className={classes.pr1}>{selectedMessage.comments.length}</Typography>
-                        </Grid>
-                        <Grid item >
-                            <VisibilityOutlined/>
-                        </Grid>
-                        <Grid item>
-                            <Typography variant='body2' className={classes.pr1}>{selectedMessage.views}</Typography>
-                        </Grid>
-                        {selectedMessage.attachments &&
-                        <>
-                            <Grid item >
-                                <DescriptionOutlined/>
-                            </Grid>
-                            <Grid item>
-                                <Typography variant='body2' className={classes.pr1}>File(s) Attached</Typography>
-                            </Grid>
-                        </>
-                        }
-                    </Grid>
-                </Box>
-
-                <Box className={classes.right}>
-                    <Grid container spacing={1}>
-                        <Grid item>
-                            <ScheduleOutlined/>
-                        </Grid>
-                        <Grid item>
-                            <Typography variant='body2'>{(selectedMessage.updatedAt > selectedMessage.createdAt) ? format(selectedMessage.updatedAt, 'Pp') : format(selectedMessage.createdAt, 'Pp')}</Typography>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Box>
-            
-            {/* C O N T E N T */}
-            <Grid container justify='space-between'>
-                <Grid item xs={11}>
-                    <Typography component='span' variant='body2' align='left' className={classes.mt3}>
-                        {parse(selectedMessage.description)}
-                    </Typography>
-                </Grid>
-
-                <Grid item>
-                    {isMessageOwner &&
-                    <>
-                        <IconButton id='message' onClick={openPostActions}>
-                            <MoreVertOutlined/>
-                        </IconButton>
-                        <Menu
-                            keepMounted
-                            anchorEl={editAnchor}
-                            open={editAnchorOpen}
-                            onClose={closePostActions}
-                        >
-                            {selectedMessage.attachments && <MenuItem onClick={()=> window.open(selectedMessage.attachments, "_blank")}>Download attachment(s)</MenuItem>}
-                            <MenuItem id='message' onClick={handleEdit}>Edit message</MenuItem>
-                            <MenuItem id='message' onClick={handleDeleteConfirmation}>Delete message</MenuItem>
-                        </Menu>
-        
-                        {/* E D I T  &  D E L E T E  F E A T U R E */}
-                        <ComposeDialog
-                            isEdit={true}
-                            article={selectedMessage}
-                            authUser={authUser} 
-                            composeType='message'
-                            composeOpen={editDialogOpen} 
-                            onClose={resetAllActions} 
-                        />
-
-                        <DeleteConfirmation deleteType='message' open={editConfirmOpen} handleDelete={handleMessageDelete} onClose={handleDeleteConfirmation}/>
-                    </>
-                    }
-                </Grid>
-            </Grid>
-
-            {selectedMessage.link1 && generateLinks(classes, selectedMessage.link1)}
-            {selectedMessage.link2 && generateLinks(classes, selectedMessage.link2)} 
-
-            <Divider light/>
-
-            {/* C O M M E N T S */}
-            <Typography variant='body1' align='left' className={classes.mt3}>
-                {selectedMessage ? selectedMessage.comments.length : ''} Comments
-            </Typography>
-            {selectedMessage && selectedMessage.comments.length ? selectedMessage.comments.map((comment, i) => {
-                const isCommentOwner = (!authUser) ? false : authUser.uid === comment.authorID;
-                return <Comments key={i} comment={comment} isCommentOwner={isCommentOwner} {...commentsProps} /> 
-            })
-            : <Typography>There are currently no comments.</Typography> }
-            <br/>
-            <div>
-                <ValidatorForm className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
-                    <QuillValidator 
-                        {...(!authUser ? {readOnly: true, placeholder:'Please Register or Login to Comment.'} : {} )}
-                        defaultValue={comment}
-                        value={comment} 
-                        onChange={handleComment}
-                        validators={['isQuillEmpty']}
-                        errorMessages={['Cannot submit an empty post.']}/>
-                    <Button disabled={!authUser} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-                </ValidatorForm>
-            </div>
-        </Container>
-    )
-}
-
-export default withStyles(styles)(withFirebase(Message));
+export default withFirebase(Message);

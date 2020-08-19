@@ -76,7 +76,6 @@ function ServiceCentre(props) {
               <AuthUserContext.Consumer>
                 {authUser => 
                   <Message 
-                    history={props.history} 
                     authUser={authUser} 
                     selectedMessage={selected.message}/>}
               </AuthUserContext.Consumer>
