@@ -4,7 +4,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 export default function DeleteConfirmation(props) {
     const { deleteType, open, handleDelete, onClose } = props;
 
-    let title, content;
+    let [title, content] = ['', ''];
     switch (deleteType) {
         case 'article':
             title = 'Delete this post?';
@@ -41,11 +41,14 @@ export default function DeleteConfirmation(props) {
             content = 'Deleted announcements cannot be recovered.';
             break;    
 
-        default:
+        case 'comment': 
             title = 'Delete this comment?';
             content = 'Deleted comments cannot be recovered.';
+            break;
         
-        return title, content;
+        default:
+        
+        return [title, content];
     }
 
     return (
