@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link as RouterLink } from "react-router-dom";
-import { useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { MuiThemeBreakpoints } from '../constants/constants';
 import Button from '../components/onePirate/Button';
 import MarkedTypography from '../components/onePirate/Typography';
 import PageBannerLayout from './PageBannerLayout';
@@ -9,12 +8,11 @@ import useStyles from '../styles/constants';
 
 function PageBanner(props) {
   const classes = useStyles(props, 'pageBanner');
+  const xsBreakpoint = MuiThemeBreakpoints().xs;
+  const smBreakpoint = MuiThemeBreakpoints().sm;
+
   const { backgroundImage, title, layoutType } = props;
   
-  const theme = useTheme();
-  const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
-  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
-
   return (
     <>
       <PageBannerLayout backgroundClassName={classes.background} layoutType={layoutType}>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Paper, Tabs, Tab, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { Paper, Tabs, Tab, Typography } from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { AuthUserContext } from './components/session';
 import { DatabaseContext } from './components/database';
@@ -16,13 +16,10 @@ import { useStyles } from './styles/schools';
 
 function Schools(props) {
   const classes = useStyles(props, 'schoolInformation');
-  const theme = useTheme();
   const match = useRouteMatch();
-  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
-  const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
 
   const [ selected, setSelected ] = useState({
-    tab: props.location.selected ? props.location.selected.tab : 0,
+    tab: 0,
     school: null
   });
 
@@ -36,9 +33,15 @@ function Schools(props) {
     setSelected(prevState => ({ ...prevState, school: selectedSchool }));
   }
 
+  useEffect(() => {
+    const tabValue = (props.location.state) ? props.location.state.tab : 0;
+    setSelected(prevState => ({...prevState, tab: tabValue }))
+  }, [props.location.state])
+
+
   return (
     <>
-      {ResponsiveNavBars(mdBreakpoint)}
+      <ResponsiveNavBars/>
       <DatabaseContext.Consumer>
         {({ state: { schoolsGraphics: { schoolInfoPageBanner = {} } } = {} }) => 
           <PageBanner 
@@ -92,7 +95,7 @@ function Schools(props) {
           <HowToUse body={schoolInfoBanner}/>}
       </DatabaseContext.Consumer>
       {configPropsPoster(posterBottom, 'schools_bottom_poster')}
-      {ResponsiveFooters(smBreakpoint)}
+      <ResponsiveFooters/>
     </>
   )
 }

@@ -4,20 +4,20 @@ import CondenseFooter from "./CondenseFooter";
 import Footer from './Footer';
 import NavBar from './NavBar';
 import NavDrawer from './NavDrawer';
+import { MuiThemeBreakpoints } from '../../constants/constants';
 
-function ResponsiveNavBars(breakpoint) {
-  return (
-    !breakpoint ? <NavBar/> : <CondenseAppBar/>
-  )
+function ResponsiveNavBars() {;
+  const mdBkpt = MuiThemeBreakpoints().md;
+  
+  return !mdBkpt ? <NavBar/> : <CondenseAppBar/>
 }
 
-function ResponsiveFooters(breakpoint) {
+function ResponsiveFooters() {
+  const smBkpt = MuiThemeBreakpoints().sm;
   const { footerLeft, footerRight } = JSON.parse(localStorage.getItem('footer'));
   const props = { leftWrapper: footerLeft, rightWrapper: footerRight }
 
-  return (
-    !breakpoint ? <Footer {...props}/> : <CondenseFooter {...props}/>
-  )
+  return !smBkpt ? <Footer {...props}/> : <CondenseFooter {...props}/>
 }
 
 export { ResponsiveNavBars, ResponsiveFooters, NavDrawer };

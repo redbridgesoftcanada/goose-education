@@ -1,12 +1,14 @@
 import React, { Fragment } from 'react';
 import clsx from "clsx";
 import { Container, Grid } from '@material-ui/core';
+import { MuiThemeBreakpoints } from '../constants/constants';
 import MarkedTypography from '../components/onePirate/Typography';
 import useStyles from '../styles/goose';
 
 export default function GoosePlatform(props) {
     const classes = useStyles(props, 'studyAbroad');
-    const { breakpoint, graphics } = props;
+    const smBreakpoint = MuiThemeBreakpoints().sm;
+    const { graphics } = props;
 
     const filteredGraphics = Object.values(graphics).filter(graphic => typeof graphic !== 'string');
     filteredGraphics.sort((a, b) => {
@@ -35,7 +37,7 @@ export default function GoosePlatform(props) {
 
                     return (
                         <Fragment key={i}>
-                            {!breakpoint ?
+                            {!smBreakpoint ?
                                 <Grid item md={3} className={wrapperStyle}>
                                     <div className={clsx(isBehind && classes.behind)}>
                                         <div className={cardStyle}>

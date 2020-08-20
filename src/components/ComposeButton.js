@@ -1,12 +1,12 @@
 import React from 'react';
-import { Button, useMediaQuery, useTheme } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import CreateIcon from '@material-ui/icons/Create';
+import { MuiThemeBreakpoints } from '../constants/constants';
 import useStyles from '../styles/constants';
 
 function Compose(props) {
     const classes = useStyles(props, 'buttons');
-    const theme = useTheme();
-    const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
+    const xsBreakpoint = MuiThemeBreakpoints().xs;
     const { handleComposeClick } = props;
 
     return (

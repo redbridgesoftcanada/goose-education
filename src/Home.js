@@ -1,7 +1,7 @@
 import React from 'react';
 import withRoot from './withRoot';
-import { useMediaQuery, useTheme } from '@material-ui/core';
 import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
+import { MuiThemeBreakpoints } from './constants/constants';
 import { DatabaseContext } from './components/database';
 import FeatureCarousel from './components/FeatureCarousel';
 import FeatureArticles from './components/FeatureArticles';
@@ -11,16 +11,13 @@ import NavButtonBase from './components/NavButtonBase';
 import PageBanner from './views/PageBanner';
 
 function Home() {
-  const theme = useTheme();
-  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
-  const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
-  const rangeBreakpoint = useMediaQuery(theme.breakpoints.between('xs', 'md'));
+  const rangeBreakpoint = MuiThemeBreakpoints().range;
 
   return (
     <DatabaseContext.Consumer>
       {({ state }) => state.homeGraphics &&
         <>
-          {ResponsiveNavBars(mdBreakpoint)}
+          <ResponsiveNavBars/>
           <PageBanner 
             title={state.homeGraphics.homePoster.title} 
             caption={state.homeGraphics.homePoster.subtitle} 
@@ -40,7 +37,7 @@ function Home() {
             title={state.homeGraphics.homeInstagram.title}
             instagram={state.instagram}/>
           
-          {ResponsiveFooters(smBreakpoint)}
+          <ResponsiveFooters/>
         </>
       }
     </DatabaseContext.Consumer>

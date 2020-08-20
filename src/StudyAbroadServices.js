@@ -1,29 +1,24 @@
 import React from 'react';
 import { Switch, Route, Link as RouterLink, useRouteMatch } from "react-router-dom";
-import { Box, Button, Card, CardActions, CardHeader, Grid, Paper, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, Button, Card, CardActions, CardHeader, Grid, Paper, Typography } from '@material-ui/core';
 import withRoot from './withRoot';
-import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
+import { MuiThemeBreakpoints } from './constants/constants';
 import { AuthUserContext } from './components/session';
 import { DatabaseContext } from './components/database';
 import Poster from './components/Poster';
 import HomestayProcess from './components/HomestayProcess';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import StudyAbroadServiceApplication from './views/StudyAbroadServiceApplication';
 import { useStyles } from './styles/studyAbroad';
 
 function StudyAbroadServices(props) {
-    const classes = useStyles(props, 'studyAbroadInformation');
-    
+    const classes = useStyles(props, 'studyAbroadInformation'); 
     const match = useRouteMatch();
-    
-    const theme = useTheme();
-    
-    const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
-    const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
-    const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
+    const xsBreakpoint = MuiThemeBreakpoints().xs;
 
     return (
         <>
-            {ResponsiveNavBars(mdBreakpoint)}
+            <ResponsiveNavBars/>
             <Paper>
                 <Switch>
                     <Route path={`${match.path}/homestay`}>
@@ -67,7 +62,7 @@ function StudyAbroadServices(props) {
                         <HomestayProcess body={homestayBannerProcess}/>}
                 </DatabaseContext.Consumer>
             </Paper>
-            {ResponsiveFooters(smBreakpoint)}
+            <ResponsiveFooters/>
         </>
     )
 }

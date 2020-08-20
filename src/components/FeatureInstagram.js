@@ -1,16 +1,15 @@
 import React from 'react';
-import { CardMedia, CardContent, Container, Typography, useTheme } from '@material-ui/core';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { CardMedia, CardContent, Container, Typography } from '@material-ui/core';
 import Carousel from '@brainhubeu/react-carousel';
+import { MuiThemeBreakpoints } from '../constants/constants';
 import { useStyles } from '../styles/home';
 
 export default function FeatureInstagram(props) {
   const classes = useStyles(props, 'featureInstagram');
   const { instagram, title } = props;
 
-  const theme = useTheme();
-  const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
-  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+  const smBreakpoint = MuiThemeBreakpoints().sm;
+  const mdBreakpoint = MuiThemeBreakpoints().md;
 
   let slidesConfig = { };
   if (smBreakpoint) {

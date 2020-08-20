@@ -1,11 +1,12 @@
 import React, { useReducer } from 'react';
-import { Button, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+import { Button, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, ScheduleOutlined, MoreVertOutlined, Facebook, Instagram, RoomOutlined, LanguageOutlined, EditOutlined, DeleteOutline } from '@material-ui/icons';
 import { useHistory } from "react-router-dom";
 import { format, compareDesc } from 'date-fns';
 import parse from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
 import { ValidatorForm } from 'react-material-ui-form-validator';
+import { MuiThemeBreakpoints } from '../constants/constants';
 import { withFirebase } from '../components/firebase';
 import Comments from '../components/Comments';
 import ComposeDialog from '../components/ComposeDialog';
@@ -16,8 +17,7 @@ import useStyles from '../styles/serviceCentre.js';
 function Announcement(props) {
     const classes = useStyles(props);
     const history = useHistory();
-    const theme = useTheme();
-    const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
+    const xsBreakpoint = MuiThemeBreakpoints().xs;
     const { authUser, firebase, selectedAnnounce } = props;
 
     const INITIAL_STATE = {
@@ -209,7 +209,7 @@ function Announcement(props) {
 
             {selectedAnnounce.comments.length ? 
                 selectedAnnounce.comments.map((comment, i) => {
-                    const isCommentOwner = authUser.uid === comment.authorID;
+                    const isCommentOwner = authUser && authUser.uid === comment.authorID;
                     return (
                         <Comments 
                             key={i}  

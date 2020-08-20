@@ -1,11 +1,12 @@
 import React, { useReducer } from 'react';
-import { Button, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+import { Button, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, ScheduleOutlined, MoreVertOutlined, LanguageOutlined, Facebook, Instagram, RoomOutlined, EditOutlined, DeleteOutline } from '@material-ui/icons';
 import { useHistory } from "react-router-dom";
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { format, compareDesc } from 'date-fns';
 import parse from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
+import { MuiThemeBreakpoints } from '../constants/constants';
 import { withFirebase } from '../components/firebase';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
@@ -16,8 +17,7 @@ import useStyles from '../styles/serviceCentre.js';
 function Message(props) {
     const classes = useStyles(props);
     const history = useHistory();
-    const theme = useTheme();
-    const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
+    const xsBreakpoint = MuiThemeBreakpoints().xs;
     const { authUser, firebase, selectedMessage } = props;
     
     const INITIAL_STATE = {

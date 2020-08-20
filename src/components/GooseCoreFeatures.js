@@ -1,10 +1,12 @@
 import React from 'react';
 import { Container, Grid, Typography } from '@material-ui/core';
+import { MuiThemeBreakpoints } from '../constants/constants';
 import useStyles from '../styles/goose';
 
 export default function CoreFeatures(props) {
-    const classes = useStyles(props, 'studyAbroad')
-    const { breakpoint, graphics } = props;
+    const classes = useStyles(props, 'studyAbroad');
+    const smBreakpoint = MuiThemeBreakpoints().sm;
+    const { graphics } = props;
 
     return (
         <section className={classes.container}>
@@ -16,7 +18,7 @@ export default function CoreFeatures(props) {
             </Typography>
             <Container>
                 <Grid container spacing={3}>
-                    {!breakpoint && <Grid item xs={12} md={2}></Grid>}
+                    {!smBreakpoint && <Grid item xs={12} md={2}></Grid>}
                     <Grid item xs={12} md={4}>
                         <img className={classes.image}
                             src={require("../assets/img/mm01_01.png")}
@@ -33,7 +35,7 @@ export default function CoreFeatures(props) {
                         <Typography variant="h6">{graphics.GFB2.title}</Typography>
                         <Typography variant="body2">{graphics.GFB2.caption}</Typography>
                     </Grid>
-                    {!breakpoint && <Grid item xs={12} md={2}></Grid>}
+                    {!smBreakpoint && <Grid item xs={12} md={2}></Grid>}
                 </Grid>
             </Container>
             <Container>

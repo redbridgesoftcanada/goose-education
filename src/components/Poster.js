@@ -1,17 +1,17 @@
 import React from 'react';
 import clsx from 'clsx';
-import { Link as RouterLink, useRouteMatch } from "react-router-dom";
-import { Button, Card, CardContent, Grid, Typography, useTheme, useMediaQuery } from '@material-ui/core/';
+import { useRouteMatch } from "react-router-dom";
+import { Card, CardContent, Grid, Typography } from '@material-ui/core/';
+import { MuiThemeBreakpoints } from '../constants/constants';
 import MarkedTypography from '../components/onePirate/Typography';
 import PageBannerLayout from '../views/PageBannerLayout';
 import useStyles from '../styles/constants';
 
 export default function Poster(props) {
-  const theme = useTheme();
-  const match = useRouteMatch();
   const classes = useStyles(props, 'poster');
+  const match = useRouteMatch();
   const { backgroundImage, layoutType } = props;
-  const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
+  const xsBreakpoint = MuiThemeBreakpoints().xs;
 
   return (
     <section className={classes.background}>

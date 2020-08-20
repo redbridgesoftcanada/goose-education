@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Box, Tabs, Tab, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, Tabs, Tab, Typography } from '@material-ui/core';
 import withRoot from './withRoot';
-import { TAGS } from './constants/constants';
-import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
+import { TAGS, MuiThemeBreakpoints } from './constants/constants';
 import { DatabaseContext } from './components/database';
 import MarkedTypography from './components/onePirate/Typography';
 import TabPanel from './components/TabPanel';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import PageBanner from './views/PageBanner';
 import ArticleBoard from './views/ArticleBoard';
 import Poster from './components/Poster';
@@ -13,24 +13,20 @@ import { useStyles } from './styles/networking';
 
 function Networking(props) {
   const classes = useStyles();
-  const { pageBanner, poster, posterCards, wrapper } = props;
+  const xsBreakpoint = MuiThemeBreakpoints().xs;
 
+  const { pageBanner, poster, posterCards, wrapper } = props;
   const [ selectedTab, setSelectedTab ] = useState(props.location.state.selected);
-  
-  const theme = useTheme();
-  const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
-  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
-  const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
 
   const posterBody = {
     title: poster.title,
     subtitle: poster.subtitle,
     caption: poster.caption,
   }
-
+  
   return (
     <>
-      {ResponsiveNavBars(mdBreakpoint)}
+      <ResponsiveNavBars/>
       <PageBanner title={pageBanner.title} backgroundImage={pageBanner.image} layoutType='headerBanner'/>
 
       <Box className={classes.header}>
@@ -66,7 +62,7 @@ function Networking(props) {
 
       <Poster body={posterBody} backgroundImage={poster.image} posterCards={posterCards} layoutType='vancouver_now'/>
       
-      {ResponsiveFooters(smBreakpoint)}
+      <ResponsiveFooters/>
     </>
   );
 }

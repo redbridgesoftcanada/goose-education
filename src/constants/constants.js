@@ -1,3 +1,5 @@
+import { useMediaQuery, useTheme } from '@material-ui/core';
+
 const STATUSES = ['Submitted', 'Pending Review', 'Tuition Required', 'Approved'];
 
 const TAGS = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
@@ -26,4 +28,16 @@ const OTHER_FIELDS = ['insurance', 'visa', 'additional_requests'];
 
 const SCHOOL_TYPES = ['ESL', 'Junior College', 'Private Institution', 'Technical & Vocational', 'University'];
 
-export { STATUSES, TAGS, ADMIN_PAGES, NAV_PAGES, FILTER_OPTIONS, FILTER_CONJUNCTIONS, SCHOOL_TYPES, PERSONAL_FIELDS, PROGRAM_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS, OTHER_FIELDS }
+// B R E A K P O I N T S
+const MuiThemeBreakpoints = () => {
+  const theme = useTheme();
+  const xs = useMediaQuery(theme.breakpoints.down('xs'));
+  const sm = useMediaQuery(theme.breakpoints.down('sm'));
+  const md = useMediaQuery(theme.breakpoints.down('md'));
+  const lg = useMediaQuery(theme.breakpoints.down('lg'));
+  const range = useMediaQuery(theme.breakpoints.between('xs', 'md'));
+
+  return { xs, sm, md, lg, range };
+}
+
+export { STATUSES, TAGS, ADMIN_PAGES, NAV_PAGES, FILTER_OPTIONS, FILTER_CONJUNCTIONS, SCHOOL_TYPES, PERSONAL_FIELDS, PROGRAM_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS, OTHER_FIELDS, MuiThemeBreakpoints }

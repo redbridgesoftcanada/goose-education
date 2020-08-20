@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Tabs, Tab, useTheme, useMediaQuery } from '@material-ui/core';
+import { Paper, Tabs, Tab } from '@material-ui/core';
 import withRoot from './withRoot';
 import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import TabPanel from './components/TabPanel';
@@ -12,10 +12,7 @@ import GooseTips from './views/GooseTips';
 import useStyles from './styles/goose';
 
 function GooseEdu(props) {
-  const theme = useTheme();
   const classes = useStyles(props, 'studyAbroad');
-  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
-  const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
 
   // opening the corresponding tab content on Goose Study Abroad (/abroad) page from React Router props.
   const [value, setValue] = useState(props.location.state.selected);
@@ -27,7 +24,7 @@ function GooseEdu(props) {
 
   return (
       <>
-        {ResponsiveNavBars(mdBreakpoint)}
+        <ResponsiveNavBars/>
         <PageBanner title={props.pageBanner.title} backgroundImage={props.pageBanner.image} layoutType='headerBanner'/>
         <Paper className={classes.root}>
           <Tabs
@@ -48,10 +45,8 @@ function GooseEdu(props) {
                       body={state.gooseGraphics.goosePoster} 
                       backgroundImage={state.gooseGraphics.goosePoster.image} layoutType='goose_edu'/>
                     <GooseCoreFeatures 
-                      breakpoint={smBreakpoint}
                       graphics={state.gooseGraphics.gooseFeatureBoard}/>
                     <GoosePlatform 
-                      breakpoint={smBreakpoint}
                       graphics={state.gooseGraphics.gooseCards}/>
                   </TabPanel>
 
@@ -62,7 +57,7 @@ function GooseEdu(props) {
               }
             </DatabaseContext.Consumer>
           </Paper>
-        {ResponsiveFooters(smBreakpoint)}
+        <ResponsiveFooters/>
       </>
   )
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Tabs, Tab, useMediaQuery, useTheme } from '@material-ui/core';
+import { Paper, Tabs, Tab } from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import { AuthUserContext } from './components/session';
@@ -14,9 +14,6 @@ import withRoot from './withRoot';
 function ServiceCentre(props) {
   const match = useRouteMatch();
   const { listOfAnnouncements, listOfMessages, pageBanner } = props;
-  const theme = useTheme();
-  const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
-  const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
 
   const [ selected, setSelected ] = useState({
     tab: 0, 
@@ -42,7 +39,7 @@ function ServiceCentre(props) {
 
   return (
     <>
-      {ResponsiveNavBars(mdBreakpoint)}
+      <ResponsiveNavBars/>
       <PageBanner title={pageBanner.title} backgroundImage={pageBanner.image} layoutType='headerBanner'/>
       <Paper>
         <Tabs 
@@ -91,7 +88,7 @@ function ServiceCentre(props) {
           </Switch>
         </TabPanel>
       </Paper>
-      {ResponsiveFooters(smBreakpoint)}
+      <ResponsiveFooters/>
     </>
   )
 }

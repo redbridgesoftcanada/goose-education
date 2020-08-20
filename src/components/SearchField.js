@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Button, Collapse, InputAdornment, Input, useMediaQuery, useTheme } from '@material-ui/core';
+import { Button, Collapse, InputAdornment, Input } from '@material-ui/core';
 import { SearchOutlined } from '@material-ui/icons';
+import { MuiThemeBreakpoints } from '../constants/constants';
 import useStyles from '../styles/constants';
 
 export default function SearchField(props) {
     const classes = useStyles(props, 'buttons');
-    const { handleSearch, handleSearchClick } = props;
+    const xsBreakpoint = MuiThemeBreakpoints().xs;
 
-    const theme = useTheme();
-    const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
+    const { handleSearch, handleSearchClick } = props;
 
     const [ open, setOpen ] = useState(false);
     const triggerCollapse = () => setOpen(open => !open);

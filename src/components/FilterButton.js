@@ -1,12 +1,12 @@
 import React from 'react';
-import { Button, useMediaQuery, useTheme } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { FilterList, HighlightOffOutlined } from '@material-ui/icons';
+import { MuiThemeBreakpoints } from '../constants/constants';
 import useStyles from '../styles/constants';
 
 export default function FilterButton(props) {
     const classes = useStyles(props, 'buttons');
-    const theme = useTheme();
-    const xsBreakpoint = useMediaQuery(theme.breakpoints.down('xs'));
+    const xsBreakpoint = MuiThemeBreakpoints().xs;
     const { isFilter, handleFilterClick, handleFilterReset } = props;
 
     const notFiltered = {
