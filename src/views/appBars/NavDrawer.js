@@ -69,11 +69,13 @@ function generateSitePageList(classes, sitePages, navMenu, navMenuHandler, navMa
         const isSubsectionOpen = navMenu[sPage];
         return (
             <Fragment key={i}>
-                {sPage === 'Networking' ? 
+                {sPage === 'Networking' || sPage === 'Study Abroad Services' ? 
                 <ListItem 
                     button 
                     component={RouterLink} 
-                    to={{ pathname: '/networking', state: { title: 'Networking', selected: 0 }}}>
+                    to={{ 
+                        pathname: sPage === 'Networking' ? '/networking' : '/studyabroad', 
+                        state: { title: sPage, tab: 0 }}}>
                     <ListItemText primary={sPage}/>
                 </ListItem>
                 :
@@ -124,7 +126,7 @@ function configPageSubsections(sitePage, configPages, section) {
                 state: {
                     title: 'Goose Study Abroad',
                     ...(section && {
-                        selected: (section === 'Goose Study Abroad') ? 0 : 1 })
+                        tab: (section === 'Goose Study Abroad') ? 0 : 1 })
                 }
             }
             break;
@@ -136,18 +138,7 @@ function configPageSubsections(sitePage, configPages, section) {
                 state: {
                   title: 'School Information',
                   ...(section && {
-                    selected: (section === 'School Information') ? 0 : 1 })
-                }
-            }
-            break;
-        case 'Study Abroad Services':
-            config.subsections = ['Homestay', 'Airport Ride'];
-            config.path = {
-                pathname: '/studyabroad', 
-                state: {
-                  title: 'Study Abroad',
-                  ...(section && {
-                    selected: (section === 'Homestay') ? 0 : 1 })
+                    tab: (section === 'School Information') ? 0 : 1 })
                 }
             }
             break;
@@ -158,7 +149,7 @@ function configPageSubsections(sitePage, configPages, section) {
                 state: {
                   title: 'Service Centre',
                   ...(section && {
-                    selected: (section === 'Announcements') ? 0 : 1 })
+                    tab: (section === 'Announcements') ? 0 : 1 })
                 }
             }
             break;

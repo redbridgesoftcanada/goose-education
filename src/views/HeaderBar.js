@@ -7,7 +7,7 @@ import { ReactComponent as Naver } from '../assets/img/icon_blog.svg';
 import { AuthUserContext } from '../components/session';
 import { DatabaseContext } from '../components/database';
 import * as NAVLINKS from '../components/navlinks';
-import NavDrawer from './NavDrawer';
+import NavDrawer from './appBars/NavDrawer';
 import useStyles from '../styles/constants';
 
 function HeaderBar(props) {
