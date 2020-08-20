@@ -3,7 +3,7 @@ import withRoot from './withRoot';
 import { Grid, useTheme, useMediaQuery} from '@material-ui/core';
 import { DatabaseContext } from './components/database';
 import { CondenseAppBar, CondenseFooter, NavBar, Footer } from './views/appBars';
-import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import RegisterForm from './views/RegisterForm';
 import { useStyles } from './styles/register';
 

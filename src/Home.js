@@ -1,7 +1,7 @@
 import React from 'react';
 import withRoot from './withRoot';
 import { useMediaQuery, useTheme } from '@material-ui/core';
-import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import { DatabaseContext } from './components/database';
 import FeatureCarousel from './components/FeatureCarousel';
 import FeatureArticles from './components/FeatureArticles';

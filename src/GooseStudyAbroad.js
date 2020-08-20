@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Paper, Tabs, Tab, useTheme, useMediaQuery } from '@material-ui/core';
 import withRoot from './withRoot';
-import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import TabPanel from './components/TabPanel';
 import { DatabaseContext } from './components/database';
 import GooseCoreFeatures from './components/GooseCoreFeatures';

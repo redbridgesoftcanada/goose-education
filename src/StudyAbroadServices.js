@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route, Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { Box, Button, Card, CardActions, CardHeader, Grid, Paper, Typography, useMediaQuery, useTheme } from '@material-ui/core';
 import withRoot from './withRoot';
-import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import { AuthUserContext } from './components/session';
 import { DatabaseContext } from './components/database';
 import Poster from './components/Poster';

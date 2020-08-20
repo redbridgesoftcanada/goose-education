@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Tabs, Tab, Typography, useMediaQuery, useTheme } from '@material-ui/core';
 import withRoot from './withRoot';
 import { TAGS } from './constants/constants';
-import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import { DatabaseContext } from './components/database';
 import MarkedTypography from './components/onePirate/Typography';
 import TabPanel from './components/TabPanel';

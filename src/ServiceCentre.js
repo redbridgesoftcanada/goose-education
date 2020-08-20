@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Paper, Tabs, Tab, useMediaQuery, useTheme } from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
-import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import { AuthUserContext } from './components/session';
 import TabPanel from './components/TabPanel';
 import PageBanner from './views/PageBanner';
@@ -13,18 +13,17 @@ import withRoot from './withRoot';
 
 function ServiceCentre(props) {
   const match = useRouteMatch();
+  const { listOfAnnouncements, listOfMessages, pageBanner } = props;
   const theme = useTheme();
   const smBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
   const mdBreakpoint = useMediaQuery(theme.breakpoints.down('md'));
-  const { listOfAnnouncements, listOfMessages, pageBanner } = props;
 
   const [ selected, setSelected ] = useState({
-    tab: props.location.state ? props.location.state.tab : 0, 
+    tab: 0, 
     announce: null, 
     message: null 
   });
 
-  // E V E N T  L I S T E N E R S
   const handleTabChange = newTab => setSelected(prevState => ({ ...prevState, tab: newTab }));
   
   const setSelectedAnnounce = e => {
@@ -36,6 +35,10 @@ function ServiceCentre(props) {
     const selectedMessage = listOfMessages.find(message => message.id.toString() === e.currentTarget.id);
     setSelected(prevState => ({ ...prevState, message: selectedMessage }));
   }
+
+  useEffect(() => {
+    setSelected(prevState => ({...prevState, tab: props.location.state.tab}))
+  }, [props.location.state.tab])
 
   return (
     <>

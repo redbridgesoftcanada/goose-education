@@ -3,7 +3,7 @@ import { Paper, Tabs, Tab, Typography, useMediaQuery, useTheme } from '@material
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { AuthUserContext } from './components/session';
 import { DatabaseContext } from './components/database';
-import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import TabPanel from './components/TabPanel';
 import PageBanner from './views/PageBanner';
 import Poster from './components/Poster';

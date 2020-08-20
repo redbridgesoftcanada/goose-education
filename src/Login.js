@@ -2,7 +2,7 @@ import React from 'react';
 import withRoot from './withRoot';
 import { Grid, useTheme, useMediaQuery} from '@material-ui/core';
 import { DatabaseContext } from './components/database';
-import { ResponsiveNavBars, ResponsiveFooters } from './constants/responsiveAppBars';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import LoginForm from './views/LoginForm';
 import { useStyles } from './styles/login';
 
