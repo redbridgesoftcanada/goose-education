@@ -1,49 +1,28 @@
 import React, { useState } from 'react';
-import { Button, Checkbox, FormControlLabel, FormHelperText, FormLabel,
-  TextField, Typography, makeStyles } from "@material-ui/core";
+import { Button, Container, FormGroup } from "@material-ui/core";
 import { withAuthorization } from '../components/session';
+import { ValidatorForm } from 'react-material-ui-form-validator';
+import StyledValidators from '../components/customMUI';
+import { convertToSentenceCase } from '../constants/helpers/_features';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    "& .MuiTextField-root": {
-      margin: theme.spacing(1),
-      width: 500,
-    },
-  },
-
-  formField: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-
-}));
-
-const profileForm = ['first_name', 'last_name', 'username', 'email', 'phone_number', 'mobile_number', 'receive_emails', 'receive_SMS', 'public_account'];
-
-const EditProfileFormBase = (props) => {
-  const classes = useStyles();
+const EditProfileForm = (props) => {
   const { authUser, firebase, profile } = props;
+  let { lastSignInTime, roles, ...profileForm } = profile;
+  profileForm = Object.keys(profileForm).sort();
 
-  const INITIAL_STATE = {
-    ...profile,
-    error: null
-  };
+  const [ state, setState ] = useState({...profile});
+  const [ error, setError ] = useState({ exists: false, message: null });
 
-  const [ state, setState ] = useState({...INITIAL_STATE});
+  const { username, email } = state;
 
-  const { username, email, error } = state;
-  const isInvalid = email === '';
-
-  const onChange = event => {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-
-    setState({ ...state, [name]: value });
+  const onChange = e => {
+    const formField = e.target.name;
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setState({ ...state, [formField]: value });
   }
 
   const onSubmit = event => {
-    const { error, ...profileForm } = state;
+    const profileForm = state;
 
     firebase.user(authUser.uid).update({...profileForm})
     .then(authUser => {
@@ -54,64 +33,68 @@ const EditProfileFormBase = (props) => {
       });
     })
     .catch(error => setState(error));
-  
     event.preventDefault();
   }
 
   return (
-    <>
-      {/* { isSaved && 
-        <Snackbar
-          open={isSaved}
-          autoHideDuration={1000}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'left'}}
-          message={<Typography variant='subtitle2'>Profile Saved.</Typography>}
-        />
-      } */}
-    <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
-      { profileForm.map((field, i) => {
-          let camelCaseField = field.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
-          let capitalizedField = field.replace(/(?:_| |\b)(\w)/g, function($1){return $1.toUpperCase().replace('_',' ');});
-          let specializedCamelCaseField = field.replace(/_/g, "");
-          switch(field) {
-            case 'receive_SMS':
-            case 'receive_emails':
-            case 'public_account':
-              return (
-                <div key={i} className={classes.formField}>
-                  <FormControlLabel
-                  control={<Checkbox {...(field === 'receive_SMS' ? { defaultChecked: state[specializedCamelCaseField], name: specializedCamelCaseField } : { defaultChecked: state[camelCaseField], name: camelCaseField })}
-                  onChange={onChange} 
-                  />}
-                  label={capitalizedField}
-                  />
-                  <FormHelperText>
-                    { field === 'public_account' ? 'Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.' : 
-                    field === 'receive_emails' ? 'I would like to receive email notifications.' : 
-                    'I would like to receive SMS notifications. Additional charges may apply from your service provider.' }
-                  </FormHelperText>
-                </div>
-              );
-            
-            default:
-              return (
-                <div key={i} className={classes.formField}>
-                  <FormLabel>{capitalizedField}</FormLabel>
-                  <TextField type="text" variant="outlined" fullWidth InputLabelProps={{ shrink: true }} 
-                  name={camelCaseField}
-                  defaultValue={state[camelCaseField]}
-                  onChange={onChange}/>
-                </div>
-              );
-          }
-      })}
+    <Container>
+      <ValidatorForm onSubmit={onSubmit}>
+        {profileForm.map((formField, i) => {
+          const isNumberInput = formField.includes('Number');
+          
+          const inputType = isNumberInput ? 'tel' : formField === 'email' ? 'email' : 'text';
 
-      <Button variant="contained" color="secondary" disabled={isInvalid} type="submit">Submit</Button>
-      {error && <Typography variant="subtitle1">{error.message}</Typography>}
-    </form>
-    </>
+          const valRules = { validators: ['required'], errorMessages: [''] }
+          const phValRules = { validators: ['required', 'isNumber'], errorMessages: ['', ''] }
+          const validationRules = isNumberInput ? phValRules : valRules;
+
+          const inputProps = {
+            key: i,
+            type: inputType,
+            label: convertToSentenceCase(formField),
+            name: formField,
+            defaultValue: state[formField],
+            value: state[formField],
+            onChange: onChange,
+            ...validationRules
+          }
+
+        if (formField === 'receiveEmails' || formField === 'publicAccount') {
+          const emailHelperText = 'I would like to receieve email notifications.';
+          const publicHelperText = 'Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.';
+          return (
+            <Container key={i}>
+              <FormGroup>
+                <StyledValidators.CustomCheckbox
+                  key={i}
+                  checked={state[formField]}
+                  name={formField}
+                  onChange={onChange}
+                  label={convertToSentenceCase(formField)}
+                  additionalText={formField === 'receiveEmails' ? emailHelperText : publicHelperText}
+                />
+              </FormGroup>
+            </Container>
+          )
+        } else if (formField === 'receiveSMS') {
+          return;
+        }
+        
+        return <StyledValidators.TextField {...inputProps}/>
+      })}
+  
+        <Button 
+          fullWidth
+          variant="contained" 
+          color="secondary" 
+          type="submit">
+            Save Changes
+        </Button>
+
+      </ValidatorForm>
+    </Container>
   )
 }
 
 const condition = authUser => !!authUser;
-export default withAuthorization(condition)(EditProfileFormBase);
+export default withAuthorization(condition)(EditProfileForm);
