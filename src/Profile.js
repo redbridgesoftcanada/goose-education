@@ -15,13 +15,14 @@ function Profile() {
           <DatabaseContext.Consumer>
             {({ state }) => 
               <>
-                <UserProfile 
-                  authUser={authUser} 
-                  profile={state.profile}/>
-                  
-                <UserApplicationHistory 
-                  authUser={authUser} 
-                  applications={state.schoolApplication}/>
+                {state.profile &&
+                  <UserProfile 
+                    authUser={authUser} 
+                    profile={state.profile}/>}
+
+                  <UserApplicationHistory 
+                    authUser={authUser} 
+                    applications={state.schoolApplication}/>
               </>
             }
           </DatabaseContext.Consumer>

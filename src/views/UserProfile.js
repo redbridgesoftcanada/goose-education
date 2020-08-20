@@ -1,60 +1,43 @@
 import React from 'react';
-import { Container, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
+import { Avatar, Box, Button, Typography } from '@material-ui/core';
+import { Link as RouterLink } from "react-router-dom";
 import { withAuthorization } from '../components/session';
-import EditProfile from '../components/navlinks/_editProfile';
-
-// const styles = theme => {
-// };
+import useStyles from '../styles/profile';
 
 function UserProfile(props) {
-  let user;
-  if (props.profile) {
-    user = props.profile;
-  }
-  const authUser = props.authUser;
+  const classes = useStyles();
+  const { authUser, profile } = props;
   const { lastSignInTime, creationTime } = authUser.metadata;
+
   const options = { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
   const formattedSignInTime = new Date(lastSignInTime).toLocaleDateString('en', options);
   const formattedCreationTime = new Date(creationTime).toLocaleDateString('en', options);
 
   return (
     <>
-      <Typography variant='h4'>My Page</Typography>
-      <EditProfile/>
-      <br/>
-      <Container>
-        <Typography variant='h5'>My Info</Typography>
-        <Table>
-          <TableHead></TableHead>
-          <TableBody>
+      <Box my={3} className={classes.avatarContainer}>
+        <Avatar className={classes.avatar}>G</Avatar>
+      </Box>
+      <Typography variant='h4'>{profile.username}</Typography>
+      <Box my={1}>
+        <Typography variant='h6'>{profile.firstName} {profile.lastName}</Typography>
+        <Typography variant='body1'>{profile.email}</Typography>
+      </Box>
+      <Box my={1} px={2}>
+        <Typography variant='body2'>Last Logged In: {formattedSignInTime}</Typography>
+        <Typography variant='body2'>Member Since: {formattedCreationTime}</Typography>
+      </Box>
 
-            <TableRow>
-              <TableCell>Contact</TableCell>
-              <TableCell align="right"></TableCell>
-            </TableRow>
-
-            <TableRow>
-              <TableCell>Email</TableCell>
-              <TableCell align="right">{user && user.email}</TableCell>
-            </TableRow>
-
-            <TableRow>
-              <TableCell>Last Logged In</TableCell>
-              <TableCell align="right">{formattedSignInTime}</TableCell>
-            </TableRow>
-
-            <TableRow>
-              <TableCell>Member Since</TableCell>
-              <TableCell align="right">{formattedCreationTime}</TableCell>
-            </TableRow>
-
-          </TableBody>
-        </Table>
-      </Container>
+      <Button 
+        variant='outlined'
+        size='small'
+        component={RouterLink}
+        to='/profile/edit'>
+        Edit
+      </Button>
     </>
   );
 }
 
 const condition = authUser => !!authUser;
 export default withAuthorization(condition)(UserProfile);
-// export default withStyles(styles)(UserProfile);
