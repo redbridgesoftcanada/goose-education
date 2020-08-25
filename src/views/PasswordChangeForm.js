@@ -1,20 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withFirebase } from '../components/firebase';
-import { Button, FormLabel, TextField, makeStyles } from '@material-ui/core';
-
-const useStyles = makeStyles(theme => ({
-    root: {
-        "& .MuiTextField-root": {
-          margin: theme.spacing(1),
-          width: 500,
-        },
-    },
-
-    formField: {
-        display: 'flex',
-        alignItems: 'center'
-    },
-}));
+import { Button, Container } from '@material-ui/core';
+import { ValidatorForm } from 'react-material-ui-form-validator';
+import StyledValidators from '../components/customMUI';
+import useStyles from '../styles/profile';
 
 const INITIAL_STATE = {
     passwordOne: '',
@@ -24,49 +13,64 @@ const INITIAL_STATE = {
 
 function PasswordChangeForm(props) {
     const classes = useStyles();
-    const [ state, setState ] = useState({...INITIAL_STATE});
-    const { passwordOne, passwordTwo, error } = state;
-
-    // Firebase error objects have a message property by default, but only shown when there is an actual error using conditional rendering.
-    const isInvalid = passwordOne !== passwordTwo || passwordOne === '';
+    const [ state, setState ] = useState({
+        passwordOne: '',
+        passwordTwo: ''
+    });
+    const [ error, setError ] = useState(null);
 
     const onChange = event => setState({...state, [event.target.name]: event.target.value});
     const onSubmit = event => {
-        props.firebase.doPasswordUpdate(passwordOne)
+        props.firebase.doPasswordUpdate(state.passwordOne)
         .then(() => setState({ ...INITIAL_STATE }))
         .catch(error => setState({ error }));
         event.preventDefault();
     }
 
+    useEffect(() => {
+        ValidatorForm.addValidationRule('isPasswordMatch', value => {
+            if (value !== state.passwordOne) {
+                return false;
+            }
+            return true;
+        });
+
+        // (optional cleanup mechanism for effects) - remove rule when not needed;
+        return () => ValidatorForm.removeValidationRule('isPasswordMatch');
+    });
+
     return (
-        <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
-            <div className={classes.formField}>
-                <FormLabel>New Password</FormLabel>
-                <TextField
-                    color="secondary"
-                    variant="outlined"
-                    name="passwordOne"
-                    value={passwordOne}
+        <Container>
+            <ValidatorForm onSubmit={onSubmit}>
+                <StyledValidators.TextField
+                    type='password'
+                    name='passwordOne'
+                    value={state.passwordOne}
                     onChange={onChange}
-                    type="password"
-                />
-            </div>
+                    label='New Password'
+                    validators={['required', 'isQuillEmpty', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})']}
+                    errorMessages={['', '', 'Please choose a secure password (At least one lowercase, one uppercase, one numeric character. At least 8 characters long.)']}/>
 
-            <div className={classes.formField}>
-                <FormLabel>Confirm New Password</FormLabel>
-                <TextField
-                    color="secondary"
-                    variant="outlined"
-                    name="passwordTwo"
-                    value={passwordTwo}
+                <StyledValidators.TextField
+                    type='password'
+                    name='passwordTwo'
+                    value={state.passwordTwo}
                     onChange={onChange}
-                    type="password"
-                />
-            </div>
+                    label='Confirm New Password'
+                    validators={['required', 'isQuillEmpty', 'isPasswordMatch']}
+                    errorMessages={['', '', '']}/>
 
-            <Button variant="contained" disabled={isInvalid} type="submit">Reset My Password</Button>
-            {error && <p>{error.message}</p>}
-        </form>
+                <Button 
+                    className={classes.submitButton}
+                    fullWidth
+                    variant="contained" 
+                    color="secondary" 
+                    type="submit">
+                    Reset My Password
+                </Button>
+
+            </ValidatorForm>
+        </Container>
     );
 
 }

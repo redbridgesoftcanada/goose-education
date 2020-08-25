@@ -4,8 +4,10 @@ import { withAuthorization } from '../components/session';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import StyledValidators from '../components/customMUI';
 import { convertToSentenceCase } from '../constants/helpers/_features';
+import useStyles from '../styles/profile';
 
 const EditProfileForm = (props) => {
+  const classes = useStyles();
   const { authUser, firebase, profile } = props;
   let { lastSignInTime, roles, ...profileForm } = profile;
   profileForm = Object.keys(profileForm).sort();
@@ -83,7 +85,8 @@ const EditProfileForm = (props) => {
         return <StyledValidators.TextField {...inputProps}/>
       })}
   
-        <Button 
+        <Button
+          className={classes.submitButton}
           fullWidth
           variant="contained" 
           color="secondary" 
