@@ -210,8 +210,8 @@ function RegisterForm({ firebase }) {
               const valRules = { validators: ['required'], errorMessages: [''] }
               const eValRules = { validators: ['required', 'isEmail'], errorMessages: ['', ''] }
               const pwValRules = { 
-                validators: ['required', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})'], 
-                errorMessages: ['', 'Please choose a secure password (At least one lowercase, one uppercase, one numeric character, one special character. At least 8 characters long.)'] 
+                validators: ['required', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})'], 
+                errorMessages: ['', 'Please choose a secure password (At least one lowercase, one uppercase, one numeric character. At least 8 characters long.)'] 
               }
 
               const inputType = isPassword ? 'password' : 'text';
