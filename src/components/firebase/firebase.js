@@ -32,6 +32,7 @@ class Firebase {
     this.db = app.firestore();
     this.storage = app.storage();
     this.fieldValue = app.firestore.FieldValue;
+    this.firebase = app.auth;
   }
 
   // A U T H  U S E R  M E R G E  W I T H  F I R E S T O R E  D O C U M E N T
@@ -64,7 +65,28 @@ class Firebase {
   doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password);
   doSignOut = () => this.auth.signOut();
   doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
-  doPasswordUpdate = password => this.auth.currentUser.updatePassword(password);
+  
+  changeAccountPassword = (providedPassword, newPassword, setNotification) => {
+
+    if (providedPassword === newPassword) {
+      setNotification('Old and new passwords match - no changes have been saved');
+      return;
+    }
+
+    const user = this.auth.currentUser;
+
+    // Firebase: security-sensitive actions require to re-authenticate the user by getting new sign-in credentials;
+    const credentials = this.firebase.EmailAuthProvider.credential(
+      user.email,
+      providedPassword
+    );
+    
+    user.reauthenticateWithCredential(credentials).then(() => {
+      user.updatePassword(newPassword)
+    })
+    .catch(error => { setNotification(error.message) })
+  }
+  
 
   // U N I V E R S A L  C O L L E C T I O N  R E F E R E N C E
   collectionRef = collId => this.db.collection(collId);

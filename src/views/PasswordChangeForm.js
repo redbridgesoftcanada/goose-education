@@ -1,38 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { withFirebase } from '../components/firebase';
 import { Button, Container } from '@material-ui/core';
 import { ValidatorForm } from 'react-material-ui-form-validator';
+import { withFirebase } from '../components/firebase';
 import StyledValidators from '../components/customMUI';
+import Snackbar from '../components/ErrorSnackbar';
 import useStyles from '../styles/profile';
 
-const INITIAL_STATE = {
-    passwordOne: '',
-    passwordTwo: '',
-    error: null,
-};
-
 function PasswordChangeForm(props) {
-    const classes = useStyles();
+    const { firebase } = props;
     const [ state, setState ] = useState({
+        prevPassword: '',
         passwordOne: '',
         passwordTwo: ''
     });
-    const [ error, setError ] = useState(null);
+    const [ notification, setNotification ] = useState(null);
 
-    const onChange = event => setState({...state, [event.target.name]: event.target.value});
-    const onSubmit = event => {
-        props.firebase.doPasswordUpdate(state.passwordOne)
-        .then(() => setState({ ...INITIAL_STATE }))
-        .catch(error => setState({ error }));
-        event.preventDefault();
+    const onChange = e => setState({...state, [e.target.name]: e.target.value});
+
+    const onSubmit = e => {
+        firebase.changeAccountPassword(state.prevPassword, state.passwordOne, setNotification)
+        .then(() => {
+            setNotification('New password saved!');
+            setState({
+                prevPassword: '',
+                passwordOne: '',
+                passwordTwo: ''
+            });
+        })
+        e.preventDefault();
     }
+
+    const classes = useStyles();
 
     useEffect(() => {
         ValidatorForm.addValidationRule('isPasswordMatch', value => {
-            if (value !== state.passwordOne) {
-                return false;
-            }
-            return true;
+            return value !== state.passwordOne ? false : true
         });
 
         // (optional cleanup mechanism for effects) - remove rule when not needed;
@@ -41,7 +43,23 @@ function PasswordChangeForm(props) {
 
     return (
         <Container>
+            {notification && 
+                <Snackbar 
+                isOpen={!!notification}
+                onCloseHandler={() => setNotification(null)}
+                errorMessage={notification}/>
+            }
+
             <ValidatorForm onSubmit={onSubmit}>
+                <StyledValidators.TextField
+                    type='password'
+                    name='prevPassword'
+                    value={state.prevPassword}
+                    onChange={onChange}
+                    label='Old Password'
+                    validators={['required', 'isQuillEmpty']}
+                    errorMessages={['', '']}/>
+                
                 <StyledValidators.TextField
                     type='password'
                     name='passwordOne'
@@ -68,7 +86,6 @@ function PasswordChangeForm(props) {
                     type="submit">
                     Reset My Password
                 </Button>
-
             </ValidatorForm>
         </Container>
     );
