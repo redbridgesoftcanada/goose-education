@@ -3,132 +3,18 @@
 
 import React, { useReducer } from "react";
 import clsx from "clsx";
-import { AppBar, Badge, Box, Button, Container, Divider, Drawer, Grid, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Paper, Snackbar,  Toolbar, Typography, makeStyles } from "@material-ui/core";
-import { ChevronLeft, Menu as MenuIcon, Notifications, Dashboard, People, Layers, Assignment, AirplanemodeActive, Home, School, Settings, QuestionAnswer, NewReleases, Description, LiveHelp } from "@material-ui/icons";
+import { AppBar, Box, Button, Container, Divider, Drawer, Grid, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Paper, Snackbar,  Toolbar, Typography } from "@material-ui/core";
+import { ChevronLeft, Menu as MenuIcon, Dashboard, People, Layers, AirplanemodeActive, Home, School, Settings, QuestionAnswer, NewReleases, Description, LiveHelp } from "@material-ui/icons";
 import { DatabaseContext } from '../components/database';
 import { ADMIN_PAGES } from "../constants/constants";
 import { convertToSentenceCase } from "../constants/helpers/_features";
-import ChartTemplate from "../components/material-ui/ChartTemplate";
-import PreviewTemplate from "../components/material-ui/PreviewTemplate";
-import TableTemplate from "../components/material-ui/TableTemplate";
+import ChartTemplate from "../components/admin/ChartTemplate";
+import PreviewTemplate from "../components/admin/PreviewTemplate";
+import TableTemplate from "../components/admin/TableTemplate";
 import AdminComposeDialog from '../components/admin/AdminComposeDialog';
-
-const drawerWidth = 260;
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-  },
-  toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
-  },
-  toolbarIcon: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: "0 8px",
-    ...theme.mixins.toolbar,
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {
-    marginRight: 36,
-  },
-  menuButtonHidden: {
-    display: "none",
-  },
-  title: {
-    flexGrow: 1,
-  },
-  drawerPaper: {
-    position: "relative",
-    whiteSpace: "nowrap",
-    width: drawerWidth,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerPaperClose: {
-    overflowX: "hidden",
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    width: theme.spacing(6),
-    [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(8),
-    },
-  },
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    height: "100vh",
-    overflow: "auto",
-  },
-  container: {
-    paddingTop: theme.spacing(5),
-    paddingBottom: theme.spacing(4),
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-  },
-  fixedHeight: {
-    height: 240,
-  },
-}));
-
-function toggleReducer(state, action) {
-  const { type, payload } = action;
-
-  switch(type) {
-    case "TOGGLE_DRAWER":
-      return { ...state, drawerOpen: !state.drawerOpen }
-    
-    case "TOGGLE_CONTENT":
-      return { ...state, selectedContent: payload }
-
-    case 'TOGGLE_COMPOSE_DIALOG':
-      return {...state, composeDialogOpen: !state.composeDialogOpen}  
-
-    case "COMPOSE_ANCHOR":
-      return { ...state, composeMenuAnchor: payload }
-
-    case "COMPOSE_FORM":
-      const selectedMenu = payload.id;
-      if (selectedMenu) {
-        // set composeForm property for <AdminComposeDialog> component
-        return { ...state, composeFormType: selectedMenu, composeDialogOpen: true, composeMenuAnchor: null }  
-      } else {
-        // nothing chosen;
-        return { ...state, composeFormType: null, composeDialogOpen: false, composeMenuAnchor: null }
-      }
-
-    case 'SNACKBAR_OPEN':
-      return {...state, snackbarOpen: !state.snackbarOpen, snackbarMessage: payload}      
-  
-    default:
-      console.log("No matching reducer type in Admin Dashboard.");
-  }
-}
+import { useStyles } from '../styles/adminDashboard';
 
 export default function AdminDashboard() {
-  // S T A T E
   const INITIAL_STATE = {
     drawerOpen: true,
     selectedContent: ADMIN_PAGES[0],
@@ -149,7 +35,6 @@ export default function AdminDashboard() {
   const setComposeForm = event => dispatch({type: "COMPOSE_FORM", payload: event.currentTarget});
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
 
-  // S T Y L I N G 
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
@@ -188,13 +73,6 @@ export default function AdminDashboard() {
           </Menu>
 
           <AdminComposeDialog formType={state.composeFormType} isEdit={false} open={state.composeDialogOpen} onClose={toggleComposeDialog} setSnackbarMessage={setSnackbarMessage}/>
-
-          {/* N O T I F I C A T I O N S */}
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <Notifications />
-            </Badge>
-          </IconButton>
 
           <Snackbar
             anchorOrigin={{
@@ -250,7 +128,6 @@ export default function AdminDashboard() {
                 </Paper>
               </Grid>
             }
-
             </Grid>
           </Container>
         <Box pt={4}>
@@ -261,7 +138,40 @@ export default function AdminDashboard() {
   );
 }
 
-// H E L P E R  F U N C T I O N S
+function toggleReducer(state, action) {
+  const { type, payload } = action;
+
+  switch(type) {
+    case "TOGGLE_DRAWER":
+      return { ...state, drawerOpen: !state.drawerOpen }
+    
+    case "TOGGLE_CONTENT":
+      return { ...state, selectedContent: payload }
+
+    case 'TOGGLE_COMPOSE_DIALOG':
+      return {...state, composeDialogOpen: !state.composeDialogOpen}  
+
+    case "COMPOSE_ANCHOR":
+      return { ...state, composeMenuAnchor: payload }
+
+    case "COMPOSE_FORM":
+      const selectedMenu = payload.id;
+      if (selectedMenu) {
+        // set composeForm property for <AdminComposeDialog> component
+        return { ...state, composeFormType: selectedMenu, composeDialogOpen: true, composeMenuAnchor: null }  
+      } else {
+        // nothing chosen;
+        return { ...state, composeFormType: null, composeDialogOpen: false, composeMenuAnchor: null }
+      }
+
+    case 'SNACKBAR_OPEN':
+      return {...state, snackbarOpen: !state.snackbarOpen, snackbarMessage: payload}      
+  
+    default:
+      console.log("No matching reducer type in Admin Dashboard.");
+  }
+}
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
