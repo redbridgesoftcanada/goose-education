@@ -22,12 +22,13 @@ export const useStyles = props => {
       maxHeight: '16vh'
     },
 
-    // C O N T E N T 
+    // F O R M
     formTitle: {
       ...theme.typography.h4,
       marginBottom: theme.spacing(2),
       [theme.breakpoints.down('xs')]: {
-        ...theme.typography.h6
+        ...theme.typography.h5,
+        fontWeight: 600
       }
     },
 
@@ -61,19 +62,9 @@ export const useStyles = props => {
       display: 'inline-flex'
     },
 
-    error: {
-      ...theme.typography.body2,
-      color: theme.palette.secondary.main
-    },
-
     divider: {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(1),
-    },
-
-    snackBar: {
-      backgroundColor: theme.palette.common.white,
-      color: theme.palette.secondary.main
-    },
+    }
   }))(props);
 }

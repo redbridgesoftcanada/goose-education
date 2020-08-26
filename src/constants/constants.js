@@ -1,5 +1,7 @@
 import { useMediaQuery, useTheme } from '@material-ui/core';
 
+const REGISTER_FORMS = ['Terms of Service', 'Account Setup', 'Personal Information'];
+
 const STATUSES = ['Submitted', 'Pending Review', 'Tuition Required', 'Approved'];
 
 const TAGS = ['All', 'Shopping', 'Weather', 'Event', 'Restaurant', 'Traffic', 'Sale', 'Scenery', 'Other'];
@@ -40,4 +42,4 @@ const MuiThemeBreakpoints = () => {
   return { xs, sm, md, lg, range };
 }
 
-export { STATUSES, TAGS, ADMIN_PAGES, NAV_PAGES, FILTER_OPTIONS, FILTER_CONJUNCTIONS, SCHOOL_TYPES, PERSONAL_FIELDS, PROGRAM_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS, OTHER_FIELDS, MuiThemeBreakpoints }
+export { REGISTER_FORMS, STATUSES, TAGS, ADMIN_PAGES, NAV_PAGES, FILTER_OPTIONS, FILTER_CONJUNCTIONS, SCHOOL_TYPES, PERSONAL_FIELDS, PROGRAM_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS, OTHER_FIELDS, MuiThemeBreakpoints }
