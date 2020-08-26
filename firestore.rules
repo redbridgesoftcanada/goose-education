@@ -63,7 +63,7 @@ service cloud.firestore {
     }
 
     match /users/{user} {
-      allow read;
+      allow read, create;
       allow update: if isLoggedIn() && request.auth.uid == user;
       allow delete: if isLoggedInAndAdmin();
     }
