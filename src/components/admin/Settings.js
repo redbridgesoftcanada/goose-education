@@ -1,25 +1,32 @@
 import React, { Fragment, useState } from "react";
-import { Button, Collapse, Table, TableBody, TableCell, TableHead, TableRow, TextField } from "@material-ui/core";
+import { Box, Button, CardMedia, Collapse, Grid, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@material-ui/core";
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import { defaultValueTextField } from '../../constants/helpers-admin';
+import { convertToSentenceCase } from '../../constants/helpers/_features';
+import TabPanel from '../../components/TabPanel';
+import StyledValidators from '../../components/customMUI';
 import { withFirebase } from "../../components/firebase";
 
-const multiGraphicsIds = ['gooseCards', 'gooseFeatureBoard', 'homeFeatureBoard', 'homestayBannerProcess', 'networkingCards'];
+const multiGraphicsIds = ['footerLeft', 'footerRight', 'gooseCards', 'gooseFeatureBoard', 'homeFeatureBoard', 'homestayBannerProcess', 'networkingCards'];
 
 function Settings(props) {
-  const { listOfGraphics, firebase, snackbarMessage } = props;
+  const { listOfGraphics, listOfImages, firebase, snackbarMessage } = props;
 
-  const INITIAL_OPEN = {
+  const [ input, setInput ] = useState({});
+  const [ open, setOpen ] = useState({
+    tab: 0,
+    footerLeft: false,
+    footerRight: false,
     gooseCards: false,
     gooseFeatureBoard: false,
     homeFeatureBoard: false,
     homestayBannerProcess: false,
     networkingCards: false,
-  }
-  const [ open, setOpen ] = useState(INITIAL_OPEN);
-  const [ input, setInput ] = useState({});
+  });
 
-  // E V E N T  L I S T E N E R S
+  const handleTab = selectedTab => {
+    setOpen(prevState => ({...prevState, tab: selectedTab}));
+  }
+
   const handleOpen = event => {
     const selectedCollapseComponent = event.currentTarget.id;
     setOpen(prevState => ({...prevState, [selectedCollapseComponent]: !open[selectedCollapseComponent]}));
@@ -30,13 +37,17 @@ function Settings(props) {
     const inputRef = event.currentTarget.id;
     const inputValue = event.currentTarget.value;
     const inputType = type;
+    
     setInput(prevState => ({...prevState, [inputCategory]: {inputRef, inputValue, inputType}}));
   }
 
   const handleSave = () => {
     const checkForInputs = Object.keys(input).length !== 0;
     if (checkForInputs) {
-      createBatchUpdates(firebase, input, snackbarMessage);
+      createBatchUpdates(firebase, input, snackbarMessage)
+      .then(() => 
+        snackbarMessage("Changes saved! Please refresh to see changes on Goose."),
+        setInput({}));
     } else {
       snackbarMessage("Nothing to save - no changes have been made.");
     }
@@ -44,92 +55,180 @@ function Settings(props) {
 
   return (
     <>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Location</TableCell>
-            <TableCell align="center">Title</TableCell>
-            <TableCell align="center">Subtitle</TableCell>
-            <TableCell align="center">Caption</TableCell>
-            <TableCell align="center">Image</TableCell>
-            <TableCell/>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {generateSettingInputFields(listOfGraphics, open, handleOpen, handleTextInput)}
-        </TableBody>
-      </Table>
-      <Button fullWidth variant="contained" color="secondary" onClick={handleSave}>Save</Button>
+      <Tabs 
+        centered 
+        value={open.tab}
+        onChange={(event, newValue) => handleTab(newValue)}
+      >
+        <Tab label={'Page Content'}/>
+        <Tab label={'Images'}/>
+      </Tabs>
+
+      <TabPanel value={open.tab} index={0}>
+        {createMediaContentTable(listOfGraphics, open, handleOpen, handleTextInput, handleSave)}
+      </TabPanel>
+
+      <TabPanel value={open.tab} index={1}>
+        {createImagesTable(listOfImages, handleTextInput, handleSave)}
+      </TabPanel>
     </>
   )
 }
 
-// H E L P E R  F U N C T I O N S
-const generateSettingInputFields = (listOfGraphics, openState, handleOpenListener, handleTextListener) => {
-  return listOfGraphics.map((graphic, i) => {
-    const checkForMultiGraphics = multiGraphicsIds.some(id => graphic.id.includes(id));
+const createMediaContentTable = (listOfGraphics, collapseState, collapseListener, changeListener, onSave) => {
+  return (
+    <Box mx={3} my={2}>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell colSpan={6}>Location</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {listOfGraphics.map(graphic => {
+              const checkForMultiGraphics = multiGraphicsIds.some(id => graphic.id.includes(id));
+              if (!checkForMultiGraphics) {
+                return createMediaRow(graphic, changeListener)
+              } else {
+                return createNestedMediaRow(graphic, collapseState, collapseListener, changeListener)
+              }
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-    if (checkForMultiGraphics) {
-      return (
-        <Fragment key={i}>
-          <TableRow hover id={graphic.id} onClick={handleOpenListener}>
-            <TableCell>{graphic.id}</TableCell>
-            <TableCell/>
-            <TableCell/>
-            <TableCell/>
-            <TableCell/>
-            <TableCell>{openState[graphic.id] ? <KeyboardArrowUp/> : <KeyboardArrowDown/>}</TableCell>
-          </TableRow>
+      <Button 
+        fullWidth 
+        variant="contained" 
+        color="secondary"
+        onClick={onSave}>
+          Save
+      </Button>
 
-          <TableRow>
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={1}/>
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
-              <Collapse in={openState[graphic.id]} timeout="auto" unmountOnExit>
-                {Object.values(graphic).map((innerGraphic, i) => {
-                  const multiIds = JSON.stringify({"outer": graphic.id, "inner": innerGraphic.id});
-                  if (typeof innerGraphic !== 'string') {
-                    return (
-                      <Table key={i}>
-                        <TableBody>
-                          <TableRow>
-                            {templateInputFields(multiIds, innerGraphic.title, innerGraphic.subtitle, innerGraphic.caption, innerGraphic.image, handleTextListener)}
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                  )}
-                })}
-              </Collapse>
-            </TableCell>
-          </TableRow>
-        </Fragment>
-      )
-    } else {
-      return (
-        <TableRow key={i} hover>
-          <TableCell>{graphic.id}</TableCell>
-          {templateInputFields(graphic.id, graphic.title, graphic.subtitle, graphic.caption, graphic.image, handleTextListener)}
-          <TableCell/>
-        </TableRow>
-    )}
-  });
+    </Box>
+  )
 }
 
-const templateInputFields = (id, title, subtitle, caption, image, handleTextListener) => {
-  const checkMultiIds = id.includes('{');
+const createMediaRow = (graphic, changeListener) => {
+  const checkMultiIds = graphic.id.includes('{');
   if (checkMultiIds) {
-    id = JSON.parse(id);
+    graphic.id = JSON.parse(graphic.id);
   }
-  const disabledInput = <TextField disabled variant="filled" color="secondary"/>;
-  return (
-    <>
-      <TableCell>{title ? defaultValueTextField(id, title, event => handleTextListener(event, 'title'), false) : disabledInput}</TableCell>
-      <TableCell>{subtitle ? defaultValueTextField(id, subtitle, event => handleTextListener(event, 'subtitle'), true) : disabledInput}</TableCell>
-      <TableCell>{caption ? defaultValueTextField(id, caption, event => handleTextListener(event, 'caption'), true) : disabledInput}</TableCell>
-      <TableCell>{image ? defaultValueTextField(id, image, event => handleTextListener(event, 'image'), false) : disabledInput}</TableCell>
-    </>
-)}
 
-const createBatchUpdates = async (firebase, inputState, snackbarMessageListener) => {
+  const editableFields = Object.entries(graphic).reduce((a, [k, v]) => (k !== 'image' && k !== 'location' && v ? (a[k] = v, a) : a), {});
+
+  return (
+    <TableRow hover key={editableFields.id}>
+      <TableCell>{editableFields.id}</TableCell>
+      <TableCell colSpan={5}>
+        {Object.keys(editableFields).map(field => {
+          if (!field || field === 'id') {
+            return;
+          } else {
+            return (
+              <StyledValidators.AdminTextField
+                key={editableFields.id + '-' + field}
+                name={editableFields.id}
+                defaultValue={editableFields[field]}
+                onChange={event => changeListener(event, field)}
+              />
+            )
+          }
+        })}
+      </TableCell>
+    </TableRow>
+  )
+}
+
+const createNestedMediaRow = (graphic, collapseState, collapseListener, changeListener) => {
+  const nestedGraphics = Object.entries(graphic).reduce((a, [k, v]) => (typeof v !== 'string' ? (a[k] = v, a) : a), {});
+
+  return (
+    <Fragment key={graphic.id}>
+      <TableRow hover id={graphic.id} onClick={collapseListener}>
+        <TableCell>{graphic.id}</TableCell>
+        <TableCell colSpan={4} align='right'>
+          {collapseState[graphic.id] ? <KeyboardArrowUp/> : <KeyboardArrowDown/>}
+        </TableCell>
+      </TableRow>
+
+      <TableRow>
+        <TableCell padding='none' colSpan={6} style={{ paddingLeft: 40 }}>
+          <Collapse in={collapseState[graphic.id]} timeout="auto" unmountOnExit>
+            
+            {Object.values(nestedGraphics).map((nGraphic, i) => {
+
+              const multiIds = JSON.stringify({outer: graphic.id, inner: nGraphic.id});
+
+                return (
+                  <Table key={i}>
+                    <TableBody>
+                      {Object.keys(nGraphic).map(field => {
+                        if (!nGraphic[field] || field === 'id') {
+                          return;
+                        } else {
+                          return (
+                            <StyledValidators.AdminTextField
+                              key={nGraphic.id + '-' + field}
+                              name={multiIds}
+                              defaultValue={nGraphic[field]}
+                              onChange={event => changeListener(event, field)}
+                            />
+                          )
+                        }
+                      })}
+                    </TableBody>
+                  </Table>
+              )})}
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </Fragment>
+  )
+}
+
+const createImagesTable = (listOfImages, changeListener, onSave) => {
+  return (
+    <Box mx={3} my={2}>
+      <Grid container spacing={3} justify='center' alignItems='center'>
+        {listOfImages.map(image => {
+          return (
+            <>
+              <Grid item xs={6}>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  image={image.url}
+                />
+              </Grid>
+              
+              <Grid item xs={6}>
+                <Typography align="left" variant="h6">{convertToSentenceCase(image.id)}</Typography>
+                <StyledValidators.AdminTextField
+                  name={image.id}
+                  defaultValue={image.url}
+                  onChange={event => changeListener(event, 'image')}/>
+              </Grid>
+            </>
+          )
+        })}
+      </Grid>
+
+      <Button 
+        fullWidth 
+        variant="contained" 
+        color="secondary"
+        onClick={onSave}>
+          Save
+      </Button>
+
+    </Box>
+  )
+}
+
+
+const createBatchUpdates = async (firebase, inputState) => {
   let batch = firebase.batch();
   await Object.keys(inputState).map(key => {
     let inputCategory = key;
@@ -142,9 +241,7 @@ const createBatchUpdates = async (firebase, inputState, snackbarMessageListener)
       batch.update(docRef, {[inputType]: inputValue});
     }
   });
-  batch.commit().then(function () {
-    snackbarMessageListener("Changes successfully saved.");
-  });
+  batch.commit();
 }
 
 export default withFirebase(Settings);
