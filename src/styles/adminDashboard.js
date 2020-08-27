@@ -77,10 +77,6 @@ export const useStyles = makeStyles(theme => ({
       overflow: "auto",
     },
 
-    container: {
-      paddingTop: theme.spacing(5)
-    },
-
     paper: {
       padding: theme.spacing(2),
       display: "flex",
@@ -89,7 +85,14 @@ export const useStyles = makeStyles(theme => ({
     },
 
     fixedHeight: {
-      height: 240,
+      height: 325,
+      [theme.breakpoints.down('sm')]: {
+        height: 250
+      }
     },
+
+    seeMore: {
+      marginTop: theme.spacing(3),
+    }
 
   }))

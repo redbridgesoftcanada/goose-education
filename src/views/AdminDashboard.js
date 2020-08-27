@@ -3,7 +3,7 @@
 
 import React, { useReducer } from "react";
 import clsx from "clsx";
-import { AppBar, Box, Button, Container, Divider, Drawer, Grid, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Paper, Snackbar,  Toolbar, Typography } from "@material-ui/core";
+import { AppBar, Box, Button, Divider, Drawer, Grid, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Paper, Snackbar,  Toolbar, Typography } from "@material-ui/core";
 import { ChevronLeft, Menu as MenuIcon, Dashboard, People, Layers, AirplanemodeActive, Home, School, Settings, QuestionAnswer, NewReleases, Description, LiveHelp } from "@material-ui/icons";
 import { DatabaseContext } from '../components/database';
 import { ADMIN_PAGES } from "../constants/constants";
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
 
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
+          <Box pt={5} mx={5}>
             <Grid container spacing={3}>
             
             {state.selectedContent === "Overview" ?
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
               </Grid>
             }
             </Grid>
-          </Container>
+          </Box>
         <Box pt={4}>
           <Copyright />
         </Box>
@@ -218,14 +218,14 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
   return (
     <>
       {/* APPLICATIONS: [Submitted, Pending Review, Tuition Required, Approved] */}
-      <Grid item xs={12} md={6} lg={6}>
+      <Grid item xs={12} sm={12} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
           <ChartTemplate chart='bar' data={charts[1]}/>
         </Paper>
       </Grid>
 
       {/* SCHOOLS: Total number of applications per school */}
-      <Grid item xs={12} md={6} lg={6}>
+      <Grid item xs={12} sm={12} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
           <ChartTemplate chart='pie' data={charts[2]}/>
         </Paper>
@@ -233,7 +233,7 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
 
 
       {/* AIRPORT & HOMESTAY APPLICATIONS: Totals For Each */}
-      <Grid item xs={12} md={6} lg={6}>
+      <Grid item xs={12} sm={12} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
           <ChartTemplate chart='bar' data={charts[0]}/>
         </Paper>
@@ -241,7 +241,7 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
 
 
       {/* MESSAGES: Display as preview with username and some content */}
-      <Grid item xs={12} md={6} lg={6}>
+      <Grid item xs={12} sm={12} md={6} lg={6}>
         <Paper className={fixedHeightPaper}>
           <PreviewTemplate title="recent messages" data={messages}/>
         </Paper>
