@@ -1,149 +1,23 @@
 import React, { useEffect, useReducer } from "react";
 import { ValidatorForm } from "react-material-ui-form-validator";
-import { Button, CircularProgress, DialogContentText, Divider, FormHelperText, FormLabel, Grid, Input, makeStyles } from "@material-ui/core";
+import { Avatar, Box, Button, CircularProgress, FormHelperText, Grid, makeStyles } from "@material-ui/core";
 import { withFirebase } from "../../firebase";
-import * as COMPONENTS from "../../../constants/helpers-admin";
 import { SCHOOL_TYPES } from "../../../constants/constants";
+import StyledValidators from "../../customMUI";
+import { convertToSentenceCase } from '../../../constants/helpers/_features';
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    width: "100%",
-  },
-  divider: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3)
-  },
   button: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
-  large: {
+
+  avatar: {
     width: theme.spacing(18),
     height: theme.spacing(18),
   },
+
 }));
-
-function toggleReducer(state, action) {
-  const { type, payload } = action;
-  
-  switch(type) {
-    case "RESET_STATE":
-      const initialState = payload;
-      return {...initialState}
-
-    case "EDIT_STATE":
-      const prepopulateForm = payload;
-      return {...prepopulateForm, isEdit: true, isLoading: false}
-    
-    case "INIT_SAVE":
-      return {...state, isLoading: true}
-
-    case "TEXT_INPUT": {
-      const inputField = payload.name;
-      const inputValue = payload.value;
-      return {...state, [inputField]: inputValue}
-    }
-    
-    case "RICH_TEXT_INPUT": {
-      const inputField = payload.name;
-      const inputValue = payload.value;
-      return {...state, [inputField]: inputValue}
-    }
-
-    case "FILE_UPLOAD":
-      const uploadFile = payload;
-      if (!uploadFile) {
-        return {...state, image: []}
-      }
-      return {...state, image: uploadFile}
-    
-    default:
-      console.log("Not a valid dispatch type for SchoolsComposeForm.")
-  }
-}
-
-function generateFormContent(classes, state, dispatch) {
-
-  const handleTextInput = event => dispatch({type: "TEXT_INPUT", payload: event.target});
-  const handleFileUpload = event => dispatch({type: "FILE_UPLOAD", payload: event.target.files[0]});
-
-  return (
-    <>
-      <DialogContentText variant="subtitle1">General Information</DialogContentText>
-
-      <FormLabel component="legend">Title</FormLabel>
-      {COMPONENTS.textField("title", state.title, handleTextInput, false)}
-
-      <FormLabel component="legend">Institution Type</FormLabel>
-      {COMPONENTS.configRadioGroup("type", state.type, SCHOOL_TYPES, handleTextInput, "")}
-
-      <FormLabel component="legend">Date of Establishment</FormLabel>
-      {COMPONENTS.textField("dateOfEstablishment", state.dateOfEstablishment, handleTextInput, false)}
-
-      <FormLabel component="legend">Location</FormLabel>
-      {COMPONENTS.textField("location", state.location, handleTextInput, false)}
-      
-      <FormLabel component="legend">Institution Website</FormLabel>
-      {COMPONENTS.textField("url", state.url, handleTextInput, false)}
-
-      <FormLabel component="legend">Image</FormLabel>
-      {state.image &&
-        <img alt={`${state.title} logo`} src={(state.image.includes('firebase')) ? state.image : require(`../../../assets/img/${state.image}`)} className={classes.large} />
-      }
-      <div>
-        <Input type="file" disableUnderline onChange={handleFileUpload}/>
-      </div>
-      
-      <Grid container>
-        <Grid item xs={3}>
-          <FormLabel component="legend">Goose Recommended</FormLabel>
-          {COMPONENTS.configRadioGroup("recommendation", state.recommendation, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, "Display a 'recommended' badge for this institution.")}
-        </Grid>
-        <Grid item xs={3}>
-          <FormLabel component="legend">Featured</FormLabel>
-          {COMPONENTS.configRadioGroup("isFeatured", state.isFeatured, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, "Display this institution on the home page.")}
-        </Grid>
-      </Grid>
-      
-      <Divider variant="middle" className={classes.divider}/>
-
-      <DialogContentText variant="subtitle1">School Information</DialogContentText>
-      
-      <FormLabel component="legend">Introduction</FormLabel>
-      {COMPONENTS.textField("description", state.description, handleTextInput, true)}
-
-      <FormLabel component="legend">Features</FormLabel>
-      {COMPONENTS.textField("features", state.features, handleTextInput, true)}
-
-      <FormLabel component="legend">Programs</FormLabel>
-      {COMPONENTS.textField("program", state.program, handleTextInput, true)}
-
-      <FormLabel component="legend">Expenses</FormLabel>
-      {COMPONENTS.textField("expenses", state.expenses, handleTextInput, true)}
-
-      <FormLabel component="legend">Number of Students</FormLabel>
-      {COMPONENTS.textField("numberOfStudents", state.numberOfStudents, handleTextInput, false)}
-
-      <Divider variant="middle" className={classes.divider}/>
-
-      <DialogContentText variant="subtitle1">School Guide</DialogContentText>
-
-      <FormLabel component="legend">Opening Process</FormLabel>
-      {COMPONENTS.textField("openingProcess", state.openingProcess, handleTextInput, true)}
-
-      <FormLabel component="legend">Accommodations</FormLabel>
-      {COMPONENTS.textField("accommodation", state.accommodation, handleTextInput, true)}
-
-      <FormLabel component="legend">Embedded Google Maps</FormLabel>
-      <FormHelperText>Open Google Maps Address → Share → Embed a map</FormHelperText>
-      {COMPONENTS.textField("googleUrl", state.googleUrl, handleTextInput, false)}
-
-      <FormLabel component="legend">Embedded YouTube</FormLabel>
-      <FormHelperText>Open YouTube Video → Share → Embed</FormHelperText>
-      {COMPONENTS.textField("youtubeUrl", state.youtubeUrl, handleTextInput, false)}
-    </>
-  );
-}
 
 function SchoolsComposeForm(props) {
   const classes = useStyles();
@@ -153,14 +27,12 @@ function SchoolsComposeForm(props) {
   const INITIAL_STATE = {
     isEdit: false,
     isLoading: false,
-    image: "",
     title: "",
     type: "",
     location: "",
     url: "",
+    image: "",
     dateOfEstablishment: "",
-    recommendation: false,
-    isFeatured: false,
     description: "",
     features: "",
     program: "",
@@ -170,6 +42,8 @@ function SchoolsComposeForm(props) {
     accommodation: "",
     googleUrl: "",
     youtubeUrl: [],
+    recommendation: false,
+    isFeatured: false,
   }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
   
@@ -217,16 +91,169 @@ function SchoolsComposeForm(props) {
 
   return (
     <ValidatorForm onSubmit={onSubmit}>
+      
       {generateFormContent(classes, state, dispatch)}
-      <div>
-        <Button onClick={onDialogClose} className={classes.button}>
+      
+      <Box display='flex' justifyContent='center'>
+        <Button 
+          size='large'
+          onClick={onDialogClose} 
+          className={classes.button}>
           Cancel
         </Button>
-        <Button type="submit" color="secondary" autoFocus className={classes.button}>
+        <Button 
+          type="submit" 
+          size='large'
+          color="secondary" 
+          autoFocus 
+          className={classes.button}>
           {state.isLoading ? <CircularProgress /> : "Save"}
         </Button>
-      </div>
+      </Box>
+
     </ValidatorForm>
+  );
+}
+
+function toggleReducer(state, action) {
+  const { type, payload } = action;
+  
+  switch(type) {
+    case "RESET_STATE":
+      const initialState = payload;
+      return {...initialState}
+
+    case "EDIT_STATE":
+      const prepopulateForm = payload;
+      const { id, createdAt, updatedAt, ...schoolFormFields } = prepopulateForm;
+      return {...schoolFormFields, isEdit: true, isLoading: false}
+    
+    case "INIT_SAVE":
+      return {...state, isLoading: true}
+
+    case "TEXT_INPUT": {
+      const inputField = payload.name;
+      const inputValue = payload.value;
+      return {...state, [inputField]: inputValue}
+    }
+    
+    case "RICH_TEXT_INPUT": {
+      const inputField = payload.name;
+      const inputValue = payload.value;
+      return {...state, [inputField]: inputValue}
+    }
+
+    case "FILE_UPLOAD":
+      const uploadFile = payload;
+      if (!uploadFile) {
+        return {...state, image: []}
+      }
+      return {...state, image: uploadFile}
+    
+    default:
+      console.log("Not a valid dispatch type for SchoolsComposeForm.")
+  }
+}
+
+function generateFormContent(classes, state, dispatch) {
+
+  const handleTextInput = event => dispatch({type: "TEXT_INPUT", payload: event.target});
+  const handleFileUpload = event => dispatch({type: "FILE_UPLOAD", payload: event.target.files[0]});
+
+  const { isEdit, isLoading, ...schoolFormFields } = state;
+
+  return (
+    <>
+      {Object.entries(schoolFormFields).map(([name, value]) => {
+        
+        const inputProps = {
+          key: name,
+          name,
+          value,
+          label: convertToSentenceCase(name),
+          onChange: (value !== 'image') ? handleTextInput : handleFileUpload
+        }
+
+        let customComponent;
+        switch(name) {
+          case 'type':
+            customComponent = 
+              <StyledValidators.CustomSelect
+                {...inputProps}
+                label='Institution Type'
+                options={SCHOOL_TYPES}
+              />
+            break;
+
+
+          case 'recommendation':
+          case 'isFeatured': {
+            if (name === 'recommendation') {
+              inputProps.label = 'Goose Recommended';
+              inputProps.helperText = "Display a 'recommended' badge for this institution.";
+            } else if (name === 'isFeatured') {
+              inputProps.label = 'Featured';
+              inputProps.helperText = 'Display this institution on the home page.';
+            }
+
+            customComponent = 
+              <StyledValidators.CustomRadioGroup
+                {...inputProps}
+                options={["Yes", "No"]}
+              />
+            }
+            break;
+
+          case 'image': { 
+            customComponent = 
+              <Grid container>
+                {value &&
+                  <Grid item xs={12}>
+                    <Avatar
+                      className={classes.avatar}
+                      imgProps={{style: { objectFit: 'contain' }}}
+                      alt='School Icon or Logo'
+                      variant='rounded' 
+                      src={(value.includes('firebase')) ? value : require(`../../../assets/img/${value}`)}/>
+                  </Grid>
+                }
+
+                <Grid item>
+                  <StyledValidators.FileUpload {...inputProps}/>
+                </Grid>
+
+              </Grid>
+            }
+            break;
+          
+          default: {
+            let customHelperText;
+            if (name === 'url') {
+              inputProps.label = 'Website';
+            }
+
+            if (name === 'googleUrl') {
+              customHelperText = 'Open Google Maps Address → Share → Embed a map';
+              inputProps.label = 'Embedded Google Maps';
+            }
+
+            if (name === 'youtubeUrl') {
+              customHelperText = 'Open YouTube Video → Share → Embed';
+              inputProps.label = 'Embedded YouTube Videos';
+            }
+
+            customComponent = 
+              <>
+                <StyledValidators.TextField {...inputProps} />
+                <FormHelperText>{customHelperText}</FormHelperText>
+              </>
+            }
+            break;
+        }
+
+        return customComponent;
+      })}
+    </>
   );
 }
 

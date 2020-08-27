@@ -38,12 +38,16 @@ function richTextValidator(name, value, eventHandler) {
   )
 }
 
-function fileValidator(name, value, eventHandler) {
+function FileUpload(props) {
+  const { label, ...customProps } = props;
   return (
-    <FileValidator
-      name={name}
-      value={value}
-      onChange={eventHandler}/>
+    <>
+      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
+      <FileValidator
+        {...customProps}
+        validators={["isRequiredUpload"]}
+        errorMessages={["Please upload an image."]} />
+    </>
   )
 }
 
@@ -78,15 +82,18 @@ function AdminTextField(props) {
 function CustomSelect(props) {
   const { options, ...customProps } = props;
   return (
-    <SelectValidator
-      {...customProps}>
-        <MenuItem value="" disabled>Select One</MenuItem>
-        {options.map((option, i) => 
-          <MenuItem key={i} name={option} value={option}>
-            {option}
-          </MenuItem>
-        )}
-    </SelectValidator>
+    <>
+      {props.label && <FormLabel component="legend" style={legendStyles}>{props.label}</FormLabel>}
+      <SelectValidator
+        {...customProps}>
+          <MenuItem value="" disabled>Select One</MenuItem>
+          {options.map((option, i) => 
+            <MenuItem key={i} name={option} value={option}>
+              {option}
+            </MenuItem>
+          )}
+      </SelectValidator>
+    </>
   )
 }
 
@@ -95,13 +102,14 @@ function CustomRadioGroup(props) {
   return (
     <>
       <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
+      {props.helperText && <FormHelperText>{props.helperText}</FormHelperText>}
       <RadioGroupValidator {...customProps}>
         {options.map((option, i) => 
           <FormControlLabel 
             key={i} 
             control={<Radio/>} 
-            value={option.value} 
-            label={option.label}/>
+            value={option.value || option} 
+            label={option.label || option}/>
         )}
       </RadioGroupValidator>
     </>
@@ -131,5 +139,5 @@ function CustomDatePicker(props) {
   )
 }
 
-export { richTextValidator, fileValidator, firebaseValidator, AdminTextField,
+export { richTextValidator, FileUpload, firebaseValidator, AdminTextField,
 TextField, CustomSelect, CustomRadioGroup, CustomCheckbox, CustomDatePicker }
