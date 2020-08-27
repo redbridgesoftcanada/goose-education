@@ -61,6 +61,20 @@ function TextField(props) {
   )
 }
 
+
+function AdminTextField(props) {
+  const configMultiId = (typeof props.name !== 'string') ? 
+     { name: props.name.outer, id: props.name.inner } : { name: props.name }
+
+  return (
+    <OutlinedInput
+      fullWidth
+      {...props}
+      {...configMultiId}
+    />
+  )
+}
+
 function CustomSelect(props) {
   const { options, ...customProps } = props;
   return (
@@ -117,5 +131,5 @@ function CustomDatePicker(props) {
   )
 }
 
-export { richTextValidator, fileValidator, firebaseValidator,
+export { richTextValidator, fileValidator, firebaseValidator, AdminTextField,
 TextField, CustomSelect, CustomRadioGroup, CustomCheckbox, CustomDatePicker }
