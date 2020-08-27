@@ -21,7 +21,7 @@ const errorText = {
 }
 
 class SelectValidator extends ValidatorComponent {  
-  renderValidatorComponent() {
+  render() {
     const { children, errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
@@ -71,15 +71,13 @@ class QuillValidator extends ValidatorComponent {
 }
 
 class FileValidator extends ValidatorComponent {
-  renderValidatorComponent() {
+  render() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
         <Input 
           type="file" 
           disableUnderline
-          validators={["isRequiredUpload"]}
-          errorMessages={["Please upload an image."]} 
           {...rest}/>
         {this.errorText()}
       </>
@@ -94,7 +92,7 @@ class FileValidator extends ValidatorComponent {
 }
 
 class RadioGroupValidator extends ValidatorComponent {
-  renderValidatorComponent() {
+  render() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
