@@ -19,44 +19,34 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
+const INITIAL_STATE = {
+  isEdit: false,
+  isLoading: false,
+  title: "",
+  type: "",
+  location: "",
+  url: "",
+  image: "",
+  dateOfEstablishment: "",
+  description: "",
+  features: "",
+  program: "",
+  expenses: "",
+  numberOfStudents: "",
+  openingProcess: "",
+  accommodation: "",
+  googleUrl: "",
+  youtubeUrl: [],
+  recommendation: false,
+  isFeatured: false,
+}
+
 function SchoolsComposeForm(props) {
   const classes = useStyles();
   const { dialogOpen, onDialogClose, setSnackbarMessage, firebase } = props;
 
-  // S T A T E
-  const INITIAL_STATE = {
-    isEdit: false,
-    isLoading: false,
-    title: "",
-    type: "",
-    location: "",
-    url: "",
-    image: "",
-    dateOfEstablishment: "",
-    description: "",
-    features: "",
-    program: "",
-    expenses: "",
-    numberOfStudents: "",
-    openingProcess: "",
-    accommodation: "",
-    googleUrl: "",
-    youtubeUrl: [],
-    recommendation: false,
-    isFeatured: false,
-  }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  
-  useEffect(() => {
-    const prevContent = props.prevContent;
-    if (prevContent) {
-      dispatch({type:"EDIT_STATE", payload: prevContent});
-    } else {
-      dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
-    }
-  }, [dialogOpen]);
 
-  // D I S P A T C H  M E T H O D S
   const onSubmit = event => {
     dispatch({type: "INIT_SAVE"});
     
@@ -89,6 +79,15 @@ function SchoolsComposeForm(props) {
     });
   }
 
+  useEffect(() => {
+    const prevContent = props.prevContent;
+    if (prevContent) {
+      dispatch({ type:"EDIT_STATE", payload: prevContent });
+    } else {
+      dispatch({ type:"RESET_STATE" });
+    }
+  }, [dialogOpen]);
+
   return (
     <ValidatorForm onSubmit={onSubmit}>
       
@@ -113,46 +112,6 @@ function SchoolsComposeForm(props) {
 
     </ValidatorForm>
   );
-}
-
-function toggleReducer(state, action) {
-  const { type, payload } = action;
-  
-  switch(type) {
-    case "RESET_STATE":
-      const initialState = payload;
-      return {...initialState}
-
-    case "EDIT_STATE":
-      const prepopulateForm = payload;
-      const { id, createdAt, updatedAt, ...schoolFormFields } = prepopulateForm;
-      return {...schoolFormFields, isEdit: true, isLoading: false}
-    
-    case "INIT_SAVE":
-      return {...state, isLoading: true}
-
-    case "TEXT_INPUT": {
-      const inputField = payload.name;
-      const inputValue = payload.value;
-      return {...state, [inputField]: inputValue}
-    }
-    
-    case "RICH_TEXT_INPUT": {
-      const inputField = payload.name;
-      const inputValue = payload.value;
-      return {...state, [inputField]: inputValue}
-    }
-
-    case "FILE_UPLOAD":
-      const uploadFile = payload;
-      if (!uploadFile) {
-        return {...state, image: []}
-      }
-      return {...state, image: uploadFile}
-    
-    default:
-      console.log("Not a valid dispatch type for SchoolsComposeForm.")
-  }
 }
 
 function generateFormContent(classes, state, dispatch) {
@@ -204,7 +163,7 @@ function generateFormContent(classes, state, dispatch) {
             }
             break;
 
-          case 'image': { 
+          case 'image': {
             customComponent = 
               <Grid container>
                 {value &&
@@ -212,9 +171,10 @@ function generateFormContent(classes, state, dispatch) {
                     <Avatar
                       className={classes.avatar}
                       imgProps={{style: { objectFit: 'contain' }}}
-                      alt='School Icon or Logo'
+                      alt='S'
                       variant='rounded' 
-                      src={(value.includes('firebase')) ? value : require(`../../../assets/img/${value}`)}/>
+                      src={
+                        value.includes('firebase') ? value : value.includes('fakepath') ? null : require(`../../../assets/img/${value}`)}/>
                   </Grid>
                 }
 
@@ -255,6 +215,47 @@ function generateFormContent(classes, state, dispatch) {
       })}
     </>
   );
+}
+
+function toggleReducer(state, action) {
+  const { type, payload } = action;
+  
+  switch(type) {
+    case "RESET_STATE":
+      return { ...INITIAL_STATE }
+
+    case "EDIT_STATE":
+      const prepopulateForm = payload;
+      const { id, createdAt, updatedAt, ...schoolFormFields } = prepopulateForm;
+
+      
+      return {...schoolFormFields, isEdit: true, isLoading: false}
+    
+    case "INIT_SAVE":
+      return {...state, isLoading: true}
+
+    case "TEXT_INPUT": {
+      const inputField = payload.name;
+      const inputValue = payload.value;
+      return {...state, [inputField]: inputValue}
+    }
+    
+    case "RICH_TEXT_INPUT": {
+      const inputField = payload.name;
+      const inputValue = payload.value;
+      return {...state, [inputField]: inputValue}
+    }
+
+    case "FILE_UPLOAD":
+      const uploadFile = payload;
+      if (!uploadFile) {
+        return {...state, image: []}
+      }
+      return {...state, image: uploadFile}
+    
+    default:
+      console.log("Not a valid dispatch type for SchoolsComposeForm.")
+  }
 }
 
 export default withFirebase(SchoolsComposeForm);
