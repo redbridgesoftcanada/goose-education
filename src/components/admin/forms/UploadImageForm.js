@@ -21,45 +21,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function toggleReducer(state, action) {
-  const { type, payload } = action;
-  
-  switch(type) {
-    case "RESET_STATE":
-      const initialState = payload;
-      return {...initialState}
-
-    case "EDIT_STATE":
-      const { upload, ...prepopulateForm } = payload;
-      return {...prepopulateForm, isEdit: true, isLoading: false, upload: ""}
-    
-    case "INIT_SAVE":
-      return {...state, isLoading: true}
-
-    case "TEXT_INPUT": {
-      const inputField = payload.name;
-      const inputValue = payload.value;
-      return {...state, [inputField]: inputValue}
-    }
-    
-    case "RICH_TEXT_INPUT": {
-      const inputField = payload.name;
-      const inputValue = payload.value;
-      return {...state, [inputField]: inputValue}
-    }
-
-    case "FILE_UPLOAD":
-      const uploadFile = payload;
-      if (!uploadFile) {
-        return {...state, upload: []}
-      }
-      return {...state, upload: uploadFile}
-    
-    default:
-      console.log("Not a valid dispatch type for Admin Articles Compose Form.")
-  }
-}
-
 function UploadImageForm(props) {
   const classes = useStyles();
   const { dialogOpen, onDialogClose, setSnackbarMessage, firebase, formType } = props;
@@ -153,7 +114,7 @@ function UploadImageForm(props) {
         }
 
         <FormLabel component="legend">Description</FormLabel>
-        {COMPONENTS.richTextValidator("description", state.description, handleRichTextInput)}
+        {COMPONENTS.RichTextField("description", state.description, handleRichTextInput)}
 
         {formType === "article" && 
           <>
@@ -187,6 +148,45 @@ function UploadImageForm(props) {
 
     </ValidatorForm>
   );
+}
+
+function toggleReducer(state, action) {
+  const { type, payload } = action;
+  
+  switch(type) {
+    case "RESET_STATE":
+      const initialState = payload;
+      return {...initialState}
+
+    case "EDIT_STATE":
+      const { upload, ...prepopulateForm } = payload;
+      return {...prepopulateForm, isEdit: true, isLoading: false, upload: ""}
+    
+    case "INIT_SAVE":
+      return {...state, isLoading: true}
+
+    case "TEXT_INPUT": {
+      const inputField = payload.name;
+      const inputValue = payload.value;
+      return {...state, [inputField]: inputValue}
+    }
+    
+    case "RICH_TEXT_INPUT": {
+      const inputField = payload.name;
+      const inputValue = payload.value;
+      return {...state, [inputField]: inputValue}
+    }
+
+    case "FILE_UPLOAD":
+      const uploadFile = payload;
+      if (!uploadFile) {
+        return {...state, upload: []}
+      }
+      return {...state, upload: uploadFile}
+    
+    default:
+      console.log("Not a valid dispatch type for Admin Articles Compose Form.")
+  }
 }
 
 export default withFirebase(UploadImageForm);

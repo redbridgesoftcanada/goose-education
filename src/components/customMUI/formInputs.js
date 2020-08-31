@@ -30,11 +30,12 @@ function firebaseValidator(type, name, value, placeholder, eventHandler, error) 
   )
 }
 
-function richTextValidator(name, value, eventHandler) {
+function RichTextField(props) {
   return (
-    <QuillValidator
-      defaultValue={value}
-      onChange={value => eventHandler(name, value)}/>
+    <QuillValidator 
+      {...props}
+      validators={['required', 'isQuillEmpty']}
+      errorMessages={['', '']}/>
   )
 }
 
@@ -139,5 +140,5 @@ function CustomDatePicker(props) {
   )
 }
 
-export { richTextValidator, FileUpload, firebaseValidator, AdminTextField,
+export { RichTextField, FileUpload, firebaseValidator, AdminTextField,
 TextField, CustomSelect, CustomRadioGroup, CustomCheckbox, CustomDatePicker }
