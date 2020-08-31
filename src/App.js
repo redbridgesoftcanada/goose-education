@@ -28,7 +28,7 @@ function App() {
   useEffect(() => {
     // custom validation to check if <ReactQuill> component is empty - or - is only HTML tags (accessible as 'isQuillEmpty' rule)
     ValidatorForm.addValidationRule('isQuillEmpty', value => {
-        if (!value || value.replace(/<(.|\n)*?>/g, '').trim().length === 0) return false;
+        if (!value || (typeof value === 'string' && value.replace(/<(.|\n)*?>/g, '').trim().length === 0)) return false;
         return true;
     });
 
