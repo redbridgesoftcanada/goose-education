@@ -42,9 +42,7 @@ function Announcement(props) {
     const handleComment = e => dispatch({ type:'NEW_COMMENT', payload: e.currentTarget.value });
     const handleDeleteConfirmation = event => (event.currentTarget.id) ? dispatch({ type:'CONFIRM_DELETE', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
     const handleEdit = event => (event.currentTarget.id) ? dispatch({ type: 'EDIT_CONTENT', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
-    const handleCollapse = e => {
-        dispatch({ type: 'TRIGGER_COLLAPSE' })
-    }
+    const handleCollapse = () => { dispatch({ type: 'TRIGGER_COLLAPSE' })}
     const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
     const handleAnnounceDelete = () => firebase.deleteArticle(selectedAnnounce.id).then(() => redirectPath());
 

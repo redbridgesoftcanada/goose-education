@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useReducer } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import parse, { domToReact } from 'html-react-parser';
 import { CardContent, CardMedia, Container, Grid, Link, Typography } from '@material-ui/core';
 import { Switch, Route, Link as RouterLink, useRouteMatch, useHistory } from "react-router-dom";

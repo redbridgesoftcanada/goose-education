@@ -68,6 +68,12 @@ const useStyles = props => {
     commentButton: {
       marginBottom: theme.spacing(1)
     },
+
+    articleImage: {
+      height: 350,
+      backgroundPosition:'center', 
+      backgroundSize:'contain',
+    },
   }))(props);
 }
 
