@@ -1,8 +1,8 @@
 import React from 'react';
 import { AppBar, Grid, Link, Toolbar } from '@material-ui/core';
 import { Link as RouterLink } from "react-router-dom";
-import HeaderBar from '../HeaderBar';
 import * as NAVLINKS from '../../components/navlinks';
+import HeaderBar from '../HeaderBar';
 import useStyles from '../../styles/constants';
 
 export default function NavBar(props) {
@@ -28,6 +28,7 @@ export default function NavBar(props) {
               {NAVLINKS.Networking(classes)}
               {NAVLINKS.SchoolInformation(classes)}
               {NAVLINKS.StudyAbroadServices(classes)}
+              {/* note. ↓ pages conditionally display if user is logged in (authUser)*/}
               {NAVLINKS.ServiceCentre(classes)}
               {NAVLINKS.StudyAbroadCounselling(classes)}
             </Grid>

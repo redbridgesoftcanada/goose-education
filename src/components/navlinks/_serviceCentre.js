@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, MenuItem } from '@material-ui/core';
 import { FlatMenu, NavLink } from '../customMUI';
+import { AuthUserContext } from '../session';
 
 export default function ServiceCentre(classes) {
   const [ anchorEl, setAnchorEl ] = useState(null);
@@ -8,29 +9,33 @@ export default function ServiceCentre(classes) {
   const handleClose = () => setAnchorEl(null);
 
   return (
-    <>
-      <Button onMouseOver={handleClick}>Service Centre</Button>
-      <FlatMenu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        MenuListProps={{ 
-          onClick: handleClose, 
-          onMouseLeave: handleClose,
-        }}>
-          
-        <MenuItem className={classes.navlinkItem}>
-          <NavLink 
-            to={{ pathname: '/services', state: { tab: 0 }}}
-            label='Announcements'/>
-        </MenuItem>
+    <AuthUserContext.Consumer>
+      {authUser => authUser && 
+      <>
+        <Button onMouseOver={handleClick}>Service Centre</Button>
+        <FlatMenu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          MenuListProps={{ 
+            onClick: handleClose, 
+            onMouseLeave: handleClose,
+          }}>
+            
+          <MenuItem className={classes.navlinkItem}>
+            <NavLink 
+              to={{ pathname: '/services', state: { tab: 0 }}}
+              label='Announcements'/>
+          </MenuItem>
 
-        <MenuItem className={classes.navlinkItem}>
-          <NavLink 
-            to= {{ pathname: '/services', state: { tab: 1 } }}
-            label='Message Board'/>
-        </MenuItem>
-      </FlatMenu>
-    </>
+          <MenuItem className={classes.navlinkItem}>
+            <NavLink 
+              to= {{ pathname: '/services', state: { tab: 1 } }}
+              label='Message Board'/>
+          </MenuItem>
+        </FlatMenu>
+      </>
+      }
+    </AuthUserContext.Consumer>
   );
 };
