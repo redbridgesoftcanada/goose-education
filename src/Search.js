@@ -3,13 +3,12 @@ import { format } from 'date-fns';
 import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, LocalOfferOutlined, ScheduleOutlined } from '@material-ui/icons';
 import withRoot from './withRoot';
+import { createPagination, singleFilterQuery, multipleFilterQuery } from './constants/helpers/_features';
 import { AuthUserContext } from './components/session';
 import ArticleDialog from './components/ArticleDialog';
 import SearchBar from './components/SearchBar';
 import Pagination from './components/Pagination';
-import { createPagination, singleFilterQuery, multipleFilterQuery } from './constants/helpers/_features';
-import NavBar from './views/NavBar';
-import Footer from './views/Footer';
+import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -98,7 +97,7 @@ function Search(props) {
 
   return (
     <>
-      <NavBar />
+      <ResponsiveNavBars/>
       <SearchBar classes={classes} searchProps={{...state}} handleSearchQuery={handleSearchQuery} />
       <Container>
         <Typography align="left" variant="h6">My Search Results</Typography>
@@ -156,7 +155,7 @@ function Search(props) {
       </AuthUserContext.Consumer>
       <Pagination totalPages={totalPages} currentPage={currentPage} resourcesPerPage={resourcesPerPage} handlePageChange={handlePageChange}/>
       </Container>
-      <Footer />
+      <ResponsiveFooters/>
     </>
   );
 }
