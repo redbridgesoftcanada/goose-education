@@ -1,41 +1,9 @@
 import React, { useEffect, useReducer } from 'react';
-import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormLabel, Input } from '@material-ui/core';
+import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, Input } from '@material-ui/core';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { TAGS } from '../constants/constants';
-import { textField, textValidator, richTextValidator, fileValidator, selectValidator } from '../constants/helpers-admin';
+import StyledValidators from '../components/customMUI';
 import { withAuthorization } from '../components/session';
-
-function toggleReducer(state, action) {
-  const { type, payload } = action;
-  
-  switch(type) {
-    case 'EDIT_FORM':
-      const { composeType, isEdit, prevContent } = payload;
-      if (composeType === 'article') {
-        const { image, ...prepopulateForm } = prevContent;
-        return { ...prepopulateForm, isEdit, isLoading: false, uploads: [] }
-      
-      } else if (composeType === 'message' || composeType === 'announce') {
-        const { attachments, ...prepopulateForm } = prevContent;
-        return { ...prepopulateForm, isEdit, isLoading: false, uploads: [] }
-      }
-
-    case 'INITIALIZE_SAVE':
-      return { ...state, isLoading: true }
-
-    case 'RICH_TEXT':
-      return { ...state, description: payload }
-
-    case 'FILE_UPLOAD':
-      const uploadFile = payload;
-      return (!uploadFile) ? { ...state, uploads: [] } : { ...state, uploads: uploadFile };
-
-    default:
-      const inputField = payload.name;
-      const inputValue = payload.value;
-      return { ...state, [inputField]: inputValue }
-  }
-}
 
 function ComposeDialogBase(props) {
   const INITIAL_STATE = {
@@ -51,6 +19,7 @@ function ComposeDialogBase(props) {
   }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
   const { isEdit, isLoading, title, tag, description, instagramURL, link1, link2, uploads } = state;
+
   const { authUser, firebase, history, composeOpen, onClose, composeType } = props;
   
   const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'EDIT_FORM', payload: { composeType, isEdit, prevContent }});
@@ -157,34 +126,66 @@ function ComposeDialogBase(props) {
       <DialogTitle>{generateDialogTitle(isEdit, composeType)}</DialogTitle>
       <DialogContent>
         <ValidatorForm onSubmit={onSubmit}>
-          <FormLabel component="legend">Title</FormLabel>
-          {textValidator("title", title, handleFormFields)}
+      
+          <StyledValidators.TextField
+            name='title'
+            value={title}
+            label='Title'
+            onChange={handleFormFields}
+            validators={['required']}
+            errorMessages={['']}
+          />
 
           {(composeType === 'article' || composeType === 'announce') &&
-            <>
-              <FormLabel component="legend">Tag</FormLabel>
-              {selectValidator("tag", tag, TAGS.slice(1), handleFormFields)}
-            </>
+            <StyledValidators.CustomSelect
+              name='tag'
+              {...tag && { value: tag }}
+              options={TAGS.slice(1)}
+              label='Category'
+              onChange={handleFormFields}
+            />
           }
 
           {composeType === 'article' &&
-            <>
-              <FormLabel component="legend">Instagram</FormLabel>
-              {textValidator("instagramURL", instagramURL, handleFormFields)}
-            </>
+            <StyledValidators.TextField
+              name='instagramURL'
+              value={instagramURL}
+              label='Instagram'
+              onChange={handleFormFields}
+            />
           }
 
-          {richTextValidator("description", description, handleRichText)}
+          <br/>
+          <StyledValidators.RichTextField
+            name='description'
+            value={description}
+            defaultValue={description}
+            onChange={handleRichText}
+          />
 
-          <FormLabel component="legend">Link #1</FormLabel>
-          {textField("link1", link1, handleFormFields, false)}
+          <StyledValidators.TextField
+            name='link1'
+            value={link1}
+            label='Link #1'
+            onChange={handleFormFields}
+          />
 
-          <FormLabel component="legend">Link #2</FormLabel>
-          {textField("link2", link2, handleFormFields, false)}
+          <StyledValidators.TextField
+            name='link2'
+            value={link2}
+            label='Link #2'
+            onChange={handleFormFields}
+          />
 
-          <FormLabel component="legend">Uploads</FormLabel>
-          {composeType === 'article' ?
-            fileValidator("file", uploads, handleFileUpload) : <Input type="file" disableUnderline onChange={handleFileUpload}/>
+          {composeType === 'article' ? 
+            <StyledValidators.FileUpload
+              name='file'
+              value={uploads}
+              label='Uploads'
+              onChange={handleFileUpload}
+            />
+            :
+            <Input type="file" disableUnderline onChange={handleFileUpload}/>
           }
 
           <Button variant="contained" color="secondary" fullWidth type="submit">
@@ -218,8 +219,38 @@ function generateDialogTitle(isEdit, composeType) {
   }
 }
 
-// const composeDialog = withStyles(styles)(ComposeDialogBase);
-const composeDialog = ComposeDialogBase;
+function toggleReducer(state, action) {
+  const { type, payload } = action;
+  
+  switch(type) {
+    case 'EDIT_FORM':
+      const { composeType, isEdit, prevContent } = payload;
+      if (composeType === 'article') {
+        const { image, ...prepopulateForm } = prevContent;
+        return { ...prepopulateForm, isEdit, isLoading: false, uploads: [] }
+      
+      } else if (composeType === 'message' || composeType === 'announce') {
+        const { attachments, ...prepopulateForm } = prevContent;
+        return { ...prepopulateForm, isEdit, isLoading: false, uploads: [] }
+      }
+
+    case 'INITIALIZE_SAVE':
+      return { ...state, isLoading: true }
+
+    case 'RICH_TEXT':
+      return { ...state, description: payload }
+
+    case 'FILE_UPLOAD':
+      const uploadFile = payload;
+      return (!uploadFile) ? { ...state, uploads: [] } : { ...state, uploads: uploadFile };
+
+    default:
+      const inputField = payload.name;
+      const inputValue = payload.value;
+      return { ...state, [inputField]: inputValue }
+  }
+}
+
 const condition = authUser => !!authUser;
 
-export default withAuthorization(condition)(composeDialog);
+export default withAuthorization(condition)(ComposeDialogBase);
