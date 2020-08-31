@@ -18,14 +18,10 @@ function Schools(props) {
   const classes = useStyles(props, 'schoolInformation');
   const match = useRouteMatch();
 
-  const [ selected, setSelected ] = useState({
-    tab: 0,
-    school: null
-  });
+  const [ selected, setSelected ] = useState({ tab: 0, school: null });
 
   const { listOfSchools, posterTop, posterBottom } = props;
 
-  // E V E N T  L I S T E N E R S
   const handleTabChange = newTab => setSelected(prevState => ({ ...prevState, tab: newTab }));
   
   const handleSelectedSchool = event => {
@@ -34,10 +30,8 @@ function Schools(props) {
   }
 
   useEffect(() => {
-    const tabValue = (props.location.state) ? props.location.state.tab : 0;
-    setSelected(prevState => ({...prevState, tab: tabValue }))
-  }, [props.location.state])
-
+    setSelected(prevState => ({...prevState, tab: props.location.state.selected }))
+  }, [props.location.state.selected])
 
   return (
     <>

@@ -20,13 +20,13 @@ export default function SchoolInformation(classes) {
         }}>
         <MenuItem className={classes.navlinkItem}>
           <NavLink 
-            to={{ pathname: '/schools', selected: { tab: 0 }}}
+            to={{ pathname: '/schools', state: { selected: 0 }}}
             label='School Information'/>
         </MenuItem>
         
         <MenuItem className={classes.navlinkItem}>
           <NavLink 
-            to={{ pathname: '/schools', selected: { tab: 1 } }}
+            to={{ pathname: '/schools', state: { selected: 1 } }}
             label='School Application'/>
         </MenuItem>
       </FlatMenu>
