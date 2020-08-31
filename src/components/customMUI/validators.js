@@ -21,14 +21,15 @@ const errorText = {
 }
 
 class SelectValidator extends ValidatorComponent {  
-  render() {
+  renderValidatorComponent() {
     const { children, errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
         <Select
           displayEmpty
           variant='outlined'
-          style={{width: '100%'}}
+          {...!this.state.isValid && { style: errorStyles }}
+          style={{ width: '100%'}}
           {...rest}>
             {children}
         </Select>
@@ -54,9 +55,8 @@ class QuillValidator extends ValidatorComponent {
     return (
       <>
         <ReactQuill
-          validators={['isQuillEmpty']}
-          errorMessages={['']}
           {...rest}
+          {...!this.state.isValid && { style: errorStyles }}
         />
         {this.errorText()}
       </>
@@ -66,12 +66,16 @@ class QuillValidator extends ValidatorComponent {
     const { isValid } = this.state;
     if (isValid) return null;
 
-    return <Typography>{this.getErrorMessage()}</Typography>
+    return (
+      <div style={errorContainer}>
+        <Typography style={errorText}>{this.getErrorMessage()}</Typography>
+      </div>
+    )
   }
 }
 
 class FileValidator extends ValidatorComponent {
-  render() {
+  renderValidatorComponent() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
@@ -87,12 +91,16 @@ class FileValidator extends ValidatorComponent {
     const { isValid } = this.state;
     if (isValid) return null;
 
-    return <Typography>{this.getErrorMessage()}</Typography>
+    return (
+      <div style={errorContainer}>
+        <Typography style={errorText}>{this.getErrorMessage()}</Typography>
+      </div>
+    )
   }
 }
 
 class RadioGroupValidator extends ValidatorComponent {
-  render() {
+  renderValidatorComponent() {
     const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
       <>
