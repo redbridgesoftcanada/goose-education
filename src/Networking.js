@@ -16,7 +16,7 @@ function Networking(props) {
   const xsBreakpoint = MuiThemeBreakpoints().xs;
 
   const { pageBanner, poster, posterCards, wrapper } = props;
-  const [ selectedTab, setSelectedTab ] = useState(props.location.state.selected);
+  const [ selectedTab, setSelectedTab ] = useState(0);
 
   const posterBody = {
     title: poster.title,
