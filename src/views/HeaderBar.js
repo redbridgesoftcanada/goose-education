@@ -44,7 +44,7 @@ function HeaderBar(props) {
                             </IconButton>
                         </Grid>
 
-                        <Grid item className={classes.search}>
+                        {/* <Grid item className={classes.search}>
                             <TextField
                                 onChange={event => setQuery(event.target.value)}
                                 onKeyDown={handleSearch}
@@ -60,7 +60,7 @@ function HeaderBar(props) {
                                     )}
                                 }
                             />
-                        </Grid>
+                        </Grid> */}
                     </Grid>
 
                     <Grid item>
