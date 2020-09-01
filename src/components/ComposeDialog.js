@@ -24,7 +24,7 @@ function ComposeDialogBase(props) {
   
   const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'EDIT_FORM', payload: { composeType, isEdit, prevContent }});
   const handleFormFields = event => dispatch({ payload:event.target });
-  const handleRichText = (name, value) => dispatch({ type:'RICH_TEXT', payload:value });
+  const handleRichText = htmlString => dispatch({ type:'RICH_TEXT', payload: htmlString });
   const handleFileUpload = event => dispatch({ type:'FILE_UPLOAD', payload:event.target.files[0] });
 
   const onSubmit = event => {
@@ -116,6 +116,11 @@ function ComposeDialogBase(props) {
   }
 
   useEffect(() => {
+
+    ValidatorForm.addValidationRule('isSelected', value => {
+      return !!value;
+  });
+
     const { composeType, isEdit } = props;
     const prevContent = props.article;
     prevContent && configureEditForm(composeType, isEdit, prevContent);
@@ -139,10 +144,12 @@ function ComposeDialogBase(props) {
           {(composeType === 'article' || composeType === 'announce') &&
             <StyledValidators.CustomSelect
               name='tag'
-              {...tag && { value: tag }}
+              value={tag}
               options={TAGS.slice(1)}
               label='Category'
               onChange={handleFormFields}
+              validators={['isSelected']}
+              errorMessages={['']}
             />
           }
 
@@ -188,9 +195,15 @@ function ComposeDialogBase(props) {
             <Input type="file" disableUnderline onChange={handleFileUpload}/>
           }
 
-          <Button variant="contained" color="secondary" fullWidth type="submit">
-          {isLoading ? <CircularProgress /> : 'Submit'}
+          <br/>
+          <Button 
+            type="submit"
+            variant="contained" 
+            color="secondary" 
+            fullWidth >
+            {isLoading ? <CircularProgress /> : 'Submit'}
           </Button>
+
         </ValidatorForm>
       </DialogContent>
     </Dialog>
