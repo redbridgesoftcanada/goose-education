@@ -36,7 +36,7 @@ function Message(props) {
     const commentAnchorOpen = Boolean(commentAnchor);
     const editAnchorOpen = Boolean(editAnchor);
     
-    const redirectPath = () => history.push({ pathname: '/services', state: { title: 'Service Centre', selected: 1 }});
+    const redirectPath = () => history.push({ pathname: '/services', state: { title: 'Service Centre', tab: 1 }});
     const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
     const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS' });
     const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });

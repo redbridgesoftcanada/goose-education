@@ -34,7 +34,9 @@ function ServiceCentre(props) {
   }
 
   useEffect(() => {
-    setSelected(prevState => ({...prevState, tab: props.location.state.tab}))
+    if (props.location.state.tab) {
+      setSelected(prevState => ({...prevState, tab: props.location.state.tab}))
+    }
   }, [props.location.state.tab])
 
   return (
