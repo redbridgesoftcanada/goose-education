@@ -1,6 +1,6 @@
 import React from 'react';
 import { ValidatorComponent } from 'react-form-validator-core';
-import { Input, RadioGroup, Select, Typography } from '@material-ui/core';
+import { FormControl, FormHelperText, Input, RadioGroup, Select, Typography } from '@material-ui/core';
 import { KeyboardDatePicker, KeyboardDateTimePicker } from '@material-ui/pickers';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -20,33 +20,30 @@ const errorText = {
   textAlign: 'left'
 }
 
+const CustomError = ({ children }) => {
+  return (
+    <div style={errorContainer}>
+      <Typography style={errorText}>{children}</Typography>
+    </div>
+  )
+}
+
 class SelectValidator extends ValidatorComponent {  
   renderValidatorComponent() {
     const { children, errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
     return (
-      <>
+      <FormControl
+        style={{ width: '100%'}}
+        {...!this.state.isValid && { error: true }}>
         <Select
           displayEmpty
           variant='outlined'
-          {...!this.state.isValid && { style: errorStyles }}
-          style={{ width: '100%'}}
           {...rest}>
             {children}
         </Select>
-        {this.errorText()}
-      </>
+        <FormHelperText>{this.getErrorMessage()}</FormHelperText>
+      </FormControl>
   )}
-
-  errorText() {
-    const { isValid } = this.state;
-    if (isValid) return null;
-
-    return (
-      <div style={errorContainer}>
-        <Typography style={errorText}>{this.getErrorMessage()}</Typography>
-      </div>
-    )
-  }
 }
 
 class QuillValidator extends ValidatorComponent {
@@ -66,11 +63,7 @@ class QuillValidator extends ValidatorComponent {
     const { isValid } = this.state;
     if (isValid) return null;
 
-    return (
-      <div style={errorContainer}>
-        <Typography style={errorText}>{this.getErrorMessage()}</Typography>
-      </div>
-    )
+    return <CustomError>{this.getErrorMessage()}</CustomError>
   }
 }
 
@@ -91,11 +84,7 @@ class FileValidator extends ValidatorComponent {
     const { isValid } = this.state;
     if (isValid) return null;
 
-    return (
-      <div style={errorContainer}>
-        <Typography style={errorText}>{this.getErrorMessage()}</Typography>
-      </div>
-    )
+    return <CustomError>{this.getErrorMessage()}</CustomError>
   }
 }
 
@@ -115,11 +104,7 @@ class RadioGroupValidator extends ValidatorComponent {
     const { isValid } = this.state;
     if (isValid) return null;
 
-    return (
-      <div style={errorContainer}>
-        <Typography style={errorText}>{this.getErrorMessage()}</Typography>
-      </div>
-    )
+    return <CustomError>{this.getErrorMessage()}</CustomError>
   }
 }
 

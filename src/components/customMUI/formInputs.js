@@ -11,6 +11,10 @@ const legendStyles = {
   marginBottom: '8px'
 }
 
+const CustomLabel = ({ children }) => {
+  return <FormLabel component="legend" style={legendStyles}>{children}</FormLabel>
+}
+
 function firebaseValidator(type, name, value, placeholder, eventHandler, error) {
   const checkError = error => {
     if (error.code.includes("email") || error.code.includes("argument")) {
@@ -43,7 +47,7 @@ function FileUpload(props) {
   const { label, ...customProps } = props;
   return (
     <>
-      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
+      <CustomLabel>{label}</CustomLabel>
       <FileValidator
         {...customProps}
         validators={["isRequiredUpload"]}
@@ -56,7 +60,7 @@ function TextField(props) {
   const { label, ...customProps } = props;
   return (
     <>
-      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
+      <CustomLabel>{label}</CustomLabel>
       <TextValidator 
         fullWidth 
         variant="outlined" 
@@ -84,10 +88,10 @@ function CustomSelect(props) {
   const { options, ...customProps } = props;
   return (
     <>
-      {props.label && <FormLabel component="legend" style={legendStyles}>{props.label}</FormLabel>}
+      {props.label && <CustomLabel>{props.label}</CustomLabel>}
       <SelectValidator
         {...customProps}>
-          <MenuItem value="" disabled>Select One</MenuItem>
+          <MenuItem value="none" disabled>Select One</MenuItem>
           {options.map((option, i) => 
             <MenuItem key={i} name={option} value={option}>
               {option}
@@ -102,7 +106,7 @@ function CustomRadioGroup(props) {
   const { label, options, ...customProps } = props;
   return (
     <>
-      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
+      <CustomLabel>{label}</CustomLabel>
       {props.helperText && <FormHelperText>{props.helperText}</FormHelperText>}
       <RadioGroupValidator {...customProps}>
         {options.map((option, i) => 
@@ -134,7 +138,7 @@ function CustomDatePicker(props) {
   const { label, ...customProps } = props;
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <FormLabel component="legend" style={legendStyles}>{label}</FormLabel>
+      <CustomLabel>{label}</CustomLabel>
       <DatePickValidator {...customProps}/>
     </MuiPickersUtilsProvider>
   )
