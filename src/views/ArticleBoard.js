@@ -1,9 +1,8 @@
 import React, { Fragment, useEffect, useReducer } from 'react';
 import parse, { domToReact } from 'html-react-parser';
 import { CardContent, CardMedia, Container, Grid, Link, Typography } from '@material-ui/core';
-import { Switch, Route, Link as RouterLink, useRouteMatch, useHistory } from "react-router-dom";
+import { Switch, Redirect, Route, Link as RouterLink, useRouteMatch, useHistory, useLocation } from "react-router-dom";
 import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/_features';
-// import parse from 'html-react-parser';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';
@@ -98,14 +97,10 @@ function toggleReducer(state, action) {
                     error: 'Sorry, no matches found!'
                 }
             }
-        
+
         case 'SELECTED_ARTICLE':
             const selectedArticle = payload.listOfArticles.find(article => article.id.toString() === payload.selected.id);
-            return { 
-                ...state, 
-                articleOpen: true, 
-                selectedArticle
-            }
+            return { ...state, selectedArticle }
         
         case 'SEARCH_QUERY':
             const searchQuery = payload.value;
@@ -125,12 +120,12 @@ export default function ArticleBoard(props) {
     const classes = useStyles();
     const history = useHistory();
     const match = useRouteMatch();
+    const location = useLocation();
     const { listOfArticles } = props;
 
     const INITIAL_STATE = {
         filteredArticles: [],   
         selectedArticle: null,
-        articleOpen: false,
         composeOpen: false,   
         anchorOpen: null,     
         selectedAnchor: '',
@@ -146,7 +141,7 @@ export default function ArticleBoard(props) {
     }
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { filteredArticles, articleOpen, selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, searchQuery, currentPage, articlesPerPage, error, isError } = state;
+    const { filteredArticles, selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, searchQuery, currentPage, articlesPerPage, error, isError } = state;
     const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
 
     const totalPages = Math.ceil(filteredArticles.length/articlesPerPage);
@@ -170,19 +165,43 @@ export default function ArticleBoard(props) {
     const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: listOfArticles });
 
     useEffect(() => {
+        if (location.state.article) {
+            dispatch({ type: 'SELECTED_ARTICLE', payload: { selected: location.state.article, listOfArticles }});
+        }
+
         dispatch({ type:'LOAD_ARTICLES', payload: listOfArticles });
     }, [listOfArticles])
 
     return (
         <Container className={classes.root}>
             <Switch>
+
+                {selectedArticle &&
+                <>
+                    <Redirect to={{                   
+                        pathname: `${match.path}/${selectedArticle.id}`, 
+                        state: {
+                            title: 'Networking',
+                            selected: 0
+                        }
+                    }}/>
+
+                    <AuthUserContext.Consumer>
+                        {authUser => 
+                            <Article 
+                                article={selectedArticle}
+                                authUser={authUser}/> 
+                        }
+                    </AuthUserContext.Consumer>
+                </>
+                }
+
                 <Route path={`${match.path}/:articleID`}>
                     <AuthUserContext.Consumer>
                         {authUser => 
                             <Article 
                                 article={selectedArticle}
-                                authUser={authUser} 
-                                articleOpen={articleOpen}/> 
+                                authUser={authUser}/> 
                         }
                     </AuthUserContext.Consumer>
                 </Route>
