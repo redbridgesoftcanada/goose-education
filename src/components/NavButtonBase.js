@@ -8,8 +8,7 @@ export default function NavButtonBase(props) {
   
   const { graphics } = props;
   delete graphics['location'];  
-  // remove identifier key-value pair ({location: /home}) 
-  // to be able to map through the graphics data;
+  // remove identifier key-value pair ({location: /home});
   const graphicsArr = Object.values(graphics); 
   
   const [ redirectPath, setRedirectPath ] = useState({});
@@ -50,37 +49,24 @@ export default function NavButtonBase(props) {
   }
 
   return (
+    Object.keys(redirectPath).length ?
+    <Redirect push to={redirectPath}/> 
+    :
     <Box className={classes.root}>
       {graphicsArr.map((graphic, i) => (
         <ButtonBase key={i}
           className={classes.buttonBase}
           style={{ width: (i === 0) ? '37%' : (i === 1) ? '18%' : '22.5%' }}
         >
-          <div
-            className={classes.imageSrc}
-            style={{ backgroundImage: `url(${graphic.image})` }}
-          />
+          <div className={classes.imageSrc} style={{ backgroundImage: `url(${graphic.image})` }}/>
           <div className={classes.imageBackdrop} />
-          <div 
-            className={classes.imageButton} 
-            id={graphic.title} 
-            onClick={assignRedirectPath}
-          >
-            {(Object.entries(redirectPath).length) ? 
-              <Redirect push to={redirectPath}/> 
-              : 
-              <Typography
-                className={classes.imageTitle}
-                component="span"
-              >
-                {graphic.title}
-                <div className={classes.imageMarked} />
-              </Typography>
-            }
-            <Typography
-              className={classes.imageDescription}
-              component="span"
-            >
+          <div className={classes.imageButton} id={graphic.title} onClick={assignRedirectPath}>
+            <Typography className={classes.imageTitle} component="span">
+              {graphic.title}
+              <div className={classes.imageMarked} />
+            </Typography>
+
+            <Typography className={classes.imageDescription} component="span">
               {graphic.caption}
               <div className={classes.imageMarked} />
             </Typography>
