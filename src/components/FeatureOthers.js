@@ -16,7 +16,7 @@ export default function FeatureOthers(props) {
             case 'school_information':
                 setRedirectPath({
                     pathname: '/schools', 
-                    state: { title: 'School Information', tab: 0 }
+                    state: { title: 'School Information', selected: 0 }
                 });
                 break;
         
@@ -30,13 +30,16 @@ export default function FeatureOthers(props) {
             default:
                 const selectedSchool = previewSchools.find(school => school.id.toString() === event.currentTarget.id);
                 setRedirectPath({
-                    pathname: `/schools/${selectedSchool.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
+                    pathname: `/schools`, 
                     state: { title: 'School Information', selected: 0, selectedSchool }
                 });
         }
     }
 
     return (
+        Object.keys(redirectPath).length ? 
+        <Redirect push to={redirectPath}/>
+        :
         <section className={classes.root}>
             <Grid container>
                 {generateFeatureSchools(classes, whiteWrapperText, previewSchools, redirectPath, handleClick)}
@@ -48,18 +51,15 @@ export default function FeatureOthers(props) {
 
 function generateFeatureSchools(classes, customText, previewSchools, redirectPath, clickHandler) {
     return (
+        // Object.keys(redirectPath).length ? 
+        // <Redirect push to={redirectPath}/>
+        // :
         <Grid item xs={12} md={6}>
             <div className={classes.header}>
-                <Typography className={classes.titleLeft}>
-                    {customText.title}
-                </Typography>
-                {(Object.entries(redirectPath).length) ? 
-                    <Redirect push to={redirectPath}/>
-                    :
-                    <IconButton id='school_information' className={classes.button} onClick={clickHandler}>
-                        <AddIcon />
-                    </IconButton>
-                }
+                <Typography className={classes.titleLeft}>{customText.title}</Typography>
+                <IconButton id='school_information' className={classes.button} onClick={clickHandler}>
+                    <AddIcon />
+                </IconButton>
             </div>
 
             <Grid item xs={12} md={12} className={classes.container}>
@@ -71,17 +71,17 @@ function generateFeatureSchools(classes, customText, previewSchools, redirectPat
                                 src={(school.image.includes('firebase')) ? school.image : require(`../assets/img/${school.image}`)}
                                 alt="school logo" />
                             <div id={school.id} className={classes.description} onClick={clickHandler}>
-                            { (Object.entries(redirectPath).length) ? 
+                            {/* { (Object.entries(redirectPath).length) ? 
                                 <Redirect push to={redirectPath}/>
                                 :
-                                <>
+                                <> */}
                                     <Typography variant="subtitle1">{school.title}</Typography>
                                     <Typography variant="body2">{school.features}</Typography>
                                     <Typography variant="body2">
                                         {(school.updatedAt > school.createdAt) ? format(school.updatedAt, 'yyyy-MM-dd') : format(school.createdAt, 'yyyy-MM-dd')}
                                     </Typography>
-                                </>
-                            }
+                                {/* </>
+                            } */}
                             </div>
                         </div>
                     )
@@ -98,13 +98,13 @@ function generateFeatureTips(classes, customText, previewTips, redirectPath, cli
                 <Typography className={classes.titleRight}>
                     {customText.title}
                 </Typography>
-                { (Object.entries(redirectPath).length) ? 
+                {/* { (Object.entries(redirectPath).length) ? 
                     <Redirect push to={redirectPath}/>
-                    :
+                    : */}
                     <IconButton id='goose_tips' className={classes.buttonWhite} onClick={clickHandler}>
                         <AddIcon />
                     </IconButton>
-                }
+                {/* } */}
             </div>
             <Grid item xs={12} md={12} className={classes.container} >
                 {previewTips.map(tip => {
@@ -115,9 +115,9 @@ function generateFeatureTips(classes, customText, previewTips, redirectPath, cli
                                 src={(tip.image.includes('firebase')) ? tip.image : require(`../assets/img/${tip.image}`)}
                                 alt="tip thumbnail" />
                             <div id='goose_tips' className={classes.description} onClick={clickHandler}>
-                                {Object.entries(redirectPath).length ? 
+                                {/* {Object.entries(redirectPath).length ? 
                                     <Redirect push to={redirectPath}/>
-                                    :
+                                    : */}
                                     <div>
                                         <Typography variant="subtitle1">{tip.title}</Typography>
                                         <Typography variant="body2">{tip.description}</Typography>
@@ -125,7 +125,7 @@ function generateFeatureTips(classes, customText, previewTips, redirectPath, cli
                                             {(tip.updatedAt > tip.createdAt) ? format(tip.updatedAt, 'yyyy-MM-dd') : format(tip.createdAt, 'yyyy-MM-dd')}
                                         </Typography>
                                     </div>
-                                }
+                                {/* } */}
                             </div>
                         </div>
                     )
