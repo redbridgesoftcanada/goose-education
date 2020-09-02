@@ -20,31 +20,29 @@ export default function FeatureCarousel(props) {
             });
         } else {
             const selectedSchool = featuredSchools.find(school => school.id.toString() === event.currentTarget.id);
-                setRedirectPath({
-                    pathname: `/schools/${selectedSchool.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
-                    state: { title: 'School Information', selected: 0, selectedSchool }
-                });
+            setRedirectPath({
+                pathname: `/schools`, 
+                state: { title: 'School Information', selected: 0, selectedSchool }
+            });
         }
     };
 
     return (
+        Object.keys(redirectPath).length ? 
+        <Redirect push to={redirectPath}/>
+        :
         <Card className={classes.featureCard}>
             <CardHeader
                 title="School Information"
                 titleTypographyProps={{ style: { fontWeight:700 }}}
                 action={
-                    (Object.entries(redirectPath).length) ? 
-                    <Redirect push to={redirectPath}/>
-                    :
-                    <IconButton id='School Information' onClick={handleClick}>
-                      <AddIcon />
-                    </IconButton>
+                    <IconButton id='School Information' onClick={handleClick}><AddIcon/></IconButton>
                 }
             />
             <Carousel infinite autoPlay={5000}>
                 {featuredSchools.map(school => {
                     return (
-                        <div key={school.id}>
+                        <div key={school.id}> 
                             <CardMedia
                                 className={classes.media}
                                 image={require(`../assets/img/${school.image}`)}
