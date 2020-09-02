@@ -80,7 +80,7 @@ function Copyright(props) {
   return (
     <>
       {props.title}
-      <Link color="inherit">{props.subtitle}</Link>
+      {props.subtitle}
       {' '}
       {props.caption}
     </>
