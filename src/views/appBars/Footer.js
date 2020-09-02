@@ -13,30 +13,6 @@ export default function FooterBar(props) {
     rightWrapper: { FR1, FR2, FR3, FR4, FR5 } 
   } = props;
   
-  const handleIconClick = (event) => {
-    switch(event.currentTarget.id) {
-      case 'instagram':
-        window.open(FR1, '_blank');
-      break;
-
-      case 'facebook':
-        window.open(FR2, '_blank');
-      break;
-
-      case 'kakao':
-        window.open(FR3, '_blank');
-      break;
-
-      case 'naver':
-        window.open(FR4, '_blank');
-      break;
-
-      default:
-        console.log(`No redirect link for ${event.currentTarget.id} in Footer.`)
-        return;
-    }
-  }
-
   return (
     <Grid component='footer' container className={classes.root}>
       <Grid container item className={classes.leftWrapper}>
@@ -69,18 +45,10 @@ export default function FooterBar(props) {
 
       <Grid container item className={classes.rightWrapper}>
         <Grid item>
-          <IconButton className={classes.icon} color='inherit' id='instagram' onClick={handleIconClick}>
-            <Instagram/>
-          </IconButton>
-          <IconButton className={classes.icon} color='inherit' id='facebook' onClick={handleIconClick}>
-            <Facebook/>
-          </IconButton>
-          <IconButton className={classes.icon} id='kakao' onClick={handleIconClick}>
-            <Kakao/>
-          </IconButton>
-          <IconButton className={classes.icon} id='naver' onClick={handleIconClick}>
-            <Naver/>
-          </IconButton>
+          <IconButton className={classes.icon} color='inherit' href={FR1.image} target="_blank"><Instagram/></IconButton>
+          <IconButton className={classes.icon} color='inherit' href={FR2.image} target="_blank"><Facebook/></IconButton>
+          <IconButton className={classes.icon} href={FR3.image} target="_blank"><Kakao/></IconButton>
+          <IconButton className={classes.icon} href={FR4.image} target="_blank"><Naver/></IconButton>
         </Grid>
 
         <Grid item className={classes.copyright}>

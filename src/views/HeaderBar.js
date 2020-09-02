@@ -12,21 +12,25 @@ import useStyles from '../styles/constants';
 
 function HeaderBar(props) {
     const classes = useStyles(props, 'headerBar');
+    const { footerRight } = JSON.parse(localStorage.getItem('footer'));
+    const { FR1, FR2, FR3, FR4 } = footerRight;
+
     const [ drawer, setDrawerOpen ] = useState(false);
     const [ searchQuery, setQuery ] = useState('');
     
     const history = useHistory();
-    const handleSearch = event => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            history.push({ 
-                pathname:'/search', 
-                search:`?query=${searchQuery}`, 
-                state: {...props, resources: []} 
-            });
-            console.log('Empty array being sent as resources in HeaderBar.')
-        }
-    }
+
+    // const handleSearch = event => {
+    //     if (event.key === 'Enter') {
+    //         event.preventDefault();
+    //         history.push({ 
+    //             pathname:'/search', 
+    //             search:`?query=${searchQuery}`, 
+    //             state: {...props, resources: []} 
+    //         });
+    //         console.log('Empty array being sent as resources in HeaderBar.')
+    //     }
+    // }
 
     return (
         <AppBar className={classes.appBar} elevation={0}>
@@ -34,12 +38,12 @@ function HeaderBar(props) {
                 <Grid container className={classes.container}>
                     <Grid item>
                         <Grid item className={classes.iconButtons}>
-                            <IconButton className={classes.icon}><Instagram/></IconButton>
-                            <IconButton className={classes.icon}><Facebook/></IconButton>
-                            <IconButton className={classes.icon}>
+                            <IconButton className={classes.icon} href={FR1.image} target="_blank"><Instagram/></IconButton>
+                            <IconButton className={classes.icon} href={FR2.image} target="_blank"><Facebook/></IconButton>
+                            <IconButton className={classes.icon} href={FR3.image} target="_blank">
                                 <Kakao className={classes.customKakao}/>
                             </IconButton>
-                            <IconButton className={classes.icon}>
+                            <IconButton className={classes.icon} href={FR4.image} target="_blank">
                                 <Naver className={classes.customNaver}/>
                             </IconButton>
                         </Grid>
