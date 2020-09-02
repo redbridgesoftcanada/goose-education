@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Paper, Tabs, Tab, Typography } from '@material-ui/core';
-import { Switch, Route, useRouteMatch } from "react-router-dom";
+import { Switch, Redirect, Route, useRouteMatch } from "react-router-dom";
 import { AuthUserContext } from './components/session';
 import { DatabaseContext } from './components/database';
 import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
@@ -30,8 +30,11 @@ function Schools(props) {
   }
 
   useEffect(() => {
+    if (props.location.state.selectedSchool) {
+      setSelected(prevState => ({...prevState, tab: props.location.state.selected, school: props.location.state.selectedSchool }))
+    }
     setSelected(prevState => ({...prevState, tab: props.location.state.selected }))
-  }, [props.location.state.selected])
+  }, [props.location.state])
 
   return (
     <>
@@ -57,12 +60,26 @@ function Schools(props) {
 
           <TabPanel value={selected.tab} index={0}>
             <Switch>
+
+              {props.location.state.selectedSchool && 
+                // redirects to /:schoolID if selectedSchool exists (FeatureCarousel)
+                <Redirect to={{                   
+                  pathname: `${match.path}/${props.location.state.selectedSchool.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
+                  state: {
+                      title: 'School Information',
+                      selected: 0,
+                      school: props.location.state.selectedSchool
+                    }
+                  }
+                }/>
+              }
+              
               <Route path={`${match.path}/:schoolID`}>
                 <SchoolInformation selectedSchool={selected.school} />
               </Route>
+
               <Route path={match.path}>
                 {configPropsPoster(posterTop, 'schools_top_poster')}
-
                 <DatabaseContext.Consumer>
                   {({ state }) => 
                     <ListOfSchools
