@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, Link as RouterLink, useRouteMatch } from "react-router-dom";
+import { Switch, Route, Link as RouterLink, useRouteMatch, useLocation } from "react-router-dom";
 import { Box, Button, Card, CardActions, CardHeader, Grid, Paper, Typography } from '@material-ui/core';
 import withRoot from './withRoot';
 import { MuiThemeBreakpoints } from './constants/constants';
@@ -14,6 +14,7 @@ import { useStyles } from './styles/studyAbroad';
 function StudyAbroadServices(props) {
     const classes = useStyles(props, 'studyAbroadInformation'); 
     const match = useRouteMatch();
+    const location = useLocation();
     const xsBreakpoint = MuiThemeBreakpoints().xs;
 
     return (
@@ -21,21 +22,15 @@ function StudyAbroadServices(props) {
             <ResponsiveNavBars/>
             <Paper>
                 <Switch>
-                    <Route path={`${match.path}/homestay`}>
+                    <Route path={[`${match.path}/homestay`, `${match.path}/airport`]}>
                         <AuthUserContext.Consumer>
                             {authUser => authUser ? 
                                 <StudyAbroadServiceApplication authUser={authUser} /> 
                                 : 
-                                <Typography variant="h5">Please Register or Login to Apply</Typography> }
-                        </AuthUserContext.Consumer>
-                    </Route>
-
-                    <Route path={`${match.path}/airport`}>
-                        <AuthUserContext.Consumer>
-                            { authUser => authUser ? 
-                                <StudyAbroadServiceApplication authUser={authUser} /> 
-                                : 
-                                <Typography variant="h5">Please Register or Login to Apply</Typography> 
+                                <Box py={10}>
+                                    <Typography variant='h4'>{location.pathname.includes('homestay') ? 'Homestay Application' : 'Airport Ride Application'}</Typography>
+                                    <Typography variant='h5'>Please Register or Login to Apply</Typography> 
+                                </Box>
                             }
                         </AuthUserContext.Consumer>
                     </Route>
@@ -47,8 +42,8 @@ function StudyAbroadServices(props) {
                                     <Poster body={studyabroadGraphics.studyAbroadPoster} backgroundImage={studyabroadGraphics.studyAbroadPoster.image} layoutType='study_abroad'/>
                                     <Grid container spacing={1} className={classes.cardContainer}>
                                         {!xsBreakpoint && <Grid item sm={1} md={2}/>}
-                                        {generateHelperCards(classes, studyabroadGraphics.homestayBanner.title, studyabroadGraphics.homestayBanner.caption, match.path)}
-                                        {generateHelperCards(classes, studyabroadGraphics.airportRideBanner.title, studyabroadGraphics.airportRideBanner.caption, match.path)}
+                                        {generateHelperCards(classes, studyabroadGraphics.homestayBanner.title, studyabroadGraphics.homestayBanner.caption, match.path, xsBreakpoint)}
+                                        {generateHelperCards(classes, studyabroadGraphics.airportRideBanner.title, studyabroadGraphics.airportRideBanner.caption, match.path, xsBreakpoint)}
                                         {!xsBreakpoint && <Grid item sm={1} md={2}/>}
                                     </Grid>
                                 </Box>
@@ -67,7 +62,7 @@ function StudyAbroadServices(props) {
     )
 }
 
-function generateHelperCards(classes, title, caption, path) {
+function generateHelperCards(classes, title, caption, path, breakpoint) {
     const redirectPath = title.includes('Homestay') ? `${path}/homestay` : `${path}/airport`;
 
     return (
@@ -76,9 +71,11 @@ function generateHelperCards(classes, title, caption, path) {
                 <CardHeader
                     className={classes.cardHeader}
                     title={title}
-                    subheader={caption}
                     titleTypographyProps={{className: classes.cardTitle}}
-                    subheaderTypographyProps={{className: classes.cardCaption}}
+                    {...!breakpoint && {
+                        subheader:caption,
+                        subheaderTypographyProps: {className: classes.cardCaption}
+                    }}
                 />
                 <CardActions className={classes.applyButton}>
                     <Button 
@@ -86,7 +83,7 @@ function generateHelperCards(classes, title, caption, path) {
                         size="medium"
                         component={RouterLink} 
                         to={redirectPath}>
-                            Apply For {title}
+                            Apply Here
                     </Button>
                 </CardActions>
             </Card>
