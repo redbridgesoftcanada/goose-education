@@ -31,27 +31,23 @@ export default function SearchField(props) {
         />
 
     return (
-        <>
-            {xsBreakpoint ?
-                <>
-                    <Button
-                        className={classes.condenseSearch}
-                        variant="contained"
-                        color="secondary"
-                        onClick={triggerCollapse}
-                        startIcon={<SearchOutlined/>}/>
+        xsBreakpoint ?
+            <>
+                <Button className={classes.condenseSearch}
+                    variant="contained"
+                    color="secondary"
+                    onClick={triggerCollapse}
+                    startIcon={<SearchOutlined/>}/>
 
-                    <Collapse 
-                        className={classes.condenseContainer} 
-                        in={open} 
-                        timeout="auto" 
-                        unmountOnExit>
-                            {searchInput}
-                    </Collapse>
-                </>
-                :
-                searchInput
-            }
-        </>
+                <Collapse className={classes.condenseContainer} 
+                    in={open} 
+                    timeout="auto" 
+                    unmountOnExit>
+                        {searchInput}
+                </Collapse>
+            </>
+            :
+            searchInput
+        
     )
 }
