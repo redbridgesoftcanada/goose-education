@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Container, Grid, LinearProgress, Typography } from '@material-ui/core';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { Box, CardMedia, CardContent, Container, Grid, Typography } from '@material-ui/core';
 import MarkedTypography from '../components/onePirate/Typography';
 import { AuthUserContext } from '../components/session';
 import FilterButton from '../components/FilterButton';
@@ -176,7 +176,7 @@ export default function GooseTips(props) {
     // P A G I N A T I O N 
     const totalPages = Math.ceil(gooseTips.length / tipsPerPage);
     const paginatedTips = createPagination(gooseTips, currentPage, tipsPerPage, totalPages);
-    const handlePageChange = (newPage) => dispatch({ type:'CHANGE_PAGE', payload: newPage });
+    const handlePageChange = newPage => dispatch({ type:'CHANGE_PAGE', payload: newPage });
 
 
     // listen for changes to props gooseTips and update local state
@@ -185,76 +185,75 @@ export default function GooseTips(props) {
     }, [props.tips])
     
     return (
-        <section className={classes.root}>
-            <Container>
-                <MarkedTypography variant="h3" marked="center" className={classes.title}>Goose Tips</MarkedTypography>
-                <FilterButton 
-                    isFilter={isFiltered} 
-                    handleFilterClick={toggleFilterDialog} 
-                    handleFilterReset={resetFilter}/>
-                <SortButton 
-                    selectedAnchor={selectedAnchor}
-                    handleSortClick={openSort}/>
-                <SearchField 
-                    handleSearch={createSearch}
-                    handleSearchClick={() => history.push(redirectPath)}/>
-                <FilterDialog
-                    {...filterProps}
-                    handleSearchQuery={createFilterQuery}
-                    handleSearchClick={handleFilterQuery} 
-                    onClose={toggleFilterDialog} 
-                />
-                <SortPopover 
-                    anchorEl={anchorOpen} 
-                    open={Boolean(anchorOpen)} 
-                    onClose={closeSort}/>
-                <AuthUserContext.Consumer>
-                    {authUser => 
-                        <ArticleDialog  
-                            authUser={authUser} 
-                            history={history}
-                            articleOpen={tipOpen}
-                            article={selectedTip}
-                            onClose={closeTipDialog}/>
+        <Container>
+            <MarkedTypography variant="h3" marked="center" className={classes.title}>Goose Tips</MarkedTypography>
+           
+            <FilterButton 
+                isFilter={isFiltered} 
+                handleFilterClick={toggleFilterDialog} 
+                handleFilterReset={resetFilter}/>
+           
+            <SortButton 
+                selectedAnchor={selectedAnchor}
+                handleSortClick={openSort}/>
+           
+            <SearchField 
+                handleSearch={createSearch}
+                handleSearchClick={() => history.push(redirectPath)}/>
+           
+            <FilterDialog
+                {...filterProps}
+                handleSearchQuery={createFilterQuery}
+                handleSearchClick={handleFilterQuery} 
+                onClose={toggleFilterDialog} 
+            />
+           
+            <SortPopover 
+                anchorEl={anchorOpen} 
+                open={Boolean(anchorOpen)} 
+                onClose={closeSort}/>
+
+
+            <ArticleDialog  
+                articleOpen={tipOpen}
+                article={selectedTip}
+                onClose={closeTipDialog}/>
+
+            {gooseTips.length ? 
+                <Grid container spacing={1} className={classes.board}>
+                    {paginatedTips.map(tip => {
+                        return (
+                            <Grid item xs={12} sm={6} md={4} key={tip.id}>
+                                <Box className={classes.tip} id={tip.id} onClick={openTipDialog}>
+                                    <CardMedia
+                                        className={classes.tipThumbnail}
+                                        image={(tip.image.includes('firebase')) ? tip.image : require(`../assets/img/${tip.image}`)}
+                                        title='Goose tip thumbnail'
+                                    />
+                                    <CardContent>
+                                        <Typography variant='subtitle2'>
+                                            {tip.title}
+                                        </Typography>
+                                        <Typography noWrap variant='body2'>
+                                            {tip.description}
+                                        </Typography>
+                                    </CardContent>
+                                </Box>
+                            </Grid>
+                        )}) 
                     }
-                </AuthUserContext.Consumer>
+                </Grid>
+                : 
+                <Typography>There are no tips at this time. Please check again at a later time.</Typography>
+            }
 
-                {gooseTips.length ? 
-                    <Grid container>
-                        {paginatedTips.map(tip => {
-                            return (
-                                <Grid item xs={12} sm={12} md={4} key={tip.id}>
-                                    <div id={tip.id} onClick={openTipDialog} className={classes.item}>
-                                        <img
-                                            className={classes.image}
-                                            src={(tip.image.includes('firebase')) ? tip.image : require(`../assets/img/${tip.image}`)}
-                                            alt="tip-thumbnail"
-                                        />
-                                        <div className={classes.body}>
-                                            <Typography className={classes.articleTitle}>
-                                                {tip.title}
-                                            </Typography>
-                                            <Typography noWrap className={classes.articleDescription}>
-                                                {tip.description}
-                                            </Typography>
-                                        </div>
-                                    </div>
-                                </Grid>
-                            )
-                        }) }
-                    </Grid>
-                    : 
-                    <LinearProgress color='secondary'/>
-                }
+            <Pagination 
+            totalPages={totalPages}
+            currentPage={currentPage} 
+            resourcesPerPage={tipsPerPage}
+            handlePageChange={(event, newPage) => handlePageChange(newPage)}
+            />
 
-                <Pagination 
-                totalPages={totalPages}
-                currentPage={currentPage} 
-                resourcesPerPage={tipsPerPage}
-                handlePageChange={(event, newPage) => handlePageChange(newPage)}
-                />
-
-            </Container>
-        </section>
+        </Container>
     );
 }
