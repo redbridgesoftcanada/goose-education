@@ -235,7 +235,7 @@ function RegisterForm(props) {
       <Stepper activeStep={activeStep} alternativeLabel>
         {REGISTER_FORMS.map(label => (
           <Step key={label}>
-            <StepLabel>{label}</StepLabel>
+            <StepLabel StepIconProps={{classes: {active: classes.stepActive, completed: classes.stepCompleted} }}>{label}</StepLabel>
           </Step>
         ))}
       </Stepper>

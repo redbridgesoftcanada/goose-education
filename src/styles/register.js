@@ -32,6 +32,15 @@ export const useStyles = props => {
       }
     },
 
+    stepActive: {
+      border: `1px ${theme.palette.secondary.main} solid`,
+      borderRadius: theme.spacing(2)
+    },
+
+    stepCompleted: {
+      color: `${theme.palette.secondary.main} !important`
+    },
+
     stepButtons: {
       marginBottom: theme.spacing(1)
     },
