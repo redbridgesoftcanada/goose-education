@@ -160,7 +160,7 @@ export default function GooseTips(props) {
     const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER' });
     const createFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload:event.target });
     const handleFilterQuery = () => dispatch({ type:'FILTER_TIPS', payload: gooseTips });
-    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: gooseTips });
+    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: props.tips });
 
     // S o r t
     const openSort = event => dispatch({ type:'OPEN_SORT', payload: event.currentTarget });
