@@ -3,7 +3,7 @@ import { Link as RouterLink, withRouter } from "react-router-dom";
 import { Button, CardMedia, Collapse, Container, List, ListItem, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import parse from 'html-react-parser';
-import { convertToTitleCase } from '../constants/helpers/_features';
+import { convertToSentenceCase } from '../constants/helpers/_features';
 import { useStyles } from '../styles/schools';
 
 const defaultMessage = "Please contact us for any further information."
@@ -19,6 +19,7 @@ function SchoolInformation(props) {
         expenses: true,
         details: true,
         media: true,
+        location: true,
     });
 
     const handleClick = event => {
@@ -93,18 +94,14 @@ function SchoolInformation(props) {
                                 </Table>
                             </TableContainer>
                         </ListItem>
-                        <ListItem>
-                            <ListItemText 
-                                primary={`Embedded Google Maps: ${selectedSchool.googleUrl ? selectedSchool.googleUrl : ''}`}
-                                primaryTypographyProps={{className: classes.listText}}>
-                            </ListItemText>
-                        </ListItem>
                     </List>
                 </Collapse>
             </List>
 
             <Typography className={classes.sectionHeader}>School Guide</Typography>
                 <List component="nav">
+                    {generateCollapseList(classes, 'googleMaps', open.location, selectedSchool.googleUrl, handleClick)}
+
                     {generateCollapseList(classes, 'media', open.media, selectedSchool.youtubeUrl, handleClick)}
                 </List>
                 <Button
@@ -135,6 +132,11 @@ function generateCollapseList(classes, id, isOpen, content, clickListener){
             </ListItem>
             )
         })
+    } else if (id === 'googleMaps') {
+        collapseChildren =
+            <ListItem className={classes.video}>
+                {parse(content)}
+            </ListItem>
     } else {
         collapseChildren = 
             <ListItem>
@@ -152,7 +154,7 @@ function generateCollapseList(classes, id, isOpen, content, clickListener){
                 id={id}
                 onClick={clickListener}>
                 <ListItemText 
-                    primary={(id !== 'intro') ? convertToTitleCase(id) : 'Introduction'} 
+                    primary={(id !== 'intro') ? convertToSentenceCase(id) : 'Introduction'} 
                     primaryTypographyProps={{className: classes.header}} />
                 {isOpen ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
