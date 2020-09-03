@@ -25,12 +25,12 @@ export default function SortPopover(props) {
                 </ListItemIcon>
                 <ListItemText primary="Date"/>
             </MenuItem>
-            <MenuItem className={classes.popoverItem} id="views" onClick={onClose}>
+            {/* <MenuItem className={classes.popoverItem} id="views" onClick={onClose}>
                 <ListItemIcon>
                     <VisibilityOutlined fontSize="small"/>
                 </ListItemIcon>
                 <ListItemText primary="Views"/>
-            </MenuItem>
+            </MenuItem> */}
         </Menu>
     )
 }

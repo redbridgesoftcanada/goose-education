@@ -17,10 +17,10 @@ export default function SortButton(props) {
                 buttonProps.children = 'Date';
                 break;
 
-            case 'views':
-                buttonProps.startIcon = <VisibilityOutlined/>;
-                buttonProps.children = 'Views';
-                break; 
+            // case 'views':
+            //     buttonProps.startIcon = <VisibilityOutlined/>;
+            //     buttonProps.children = 'Views';
+            //     break; 
 
             default:
                 buttonProps.startIcon = <UnfoldMoreOutlined/>;
