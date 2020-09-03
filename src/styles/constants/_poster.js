@@ -24,12 +24,17 @@ export const posterStyles = props => {
     },
 
     customTitle: {
+      ...theme.typography.h2,
       color: theme.palette.common.white,
-      position: 'block',
       marginTop: theme.spacing(8),
-      marginBottom: theme.spacing(2),
+      marginBottom: theme.spacing(1),
+      [theme.breakpoints.down('sm')]: {
+        ...theme.typography.h4,
+        color: theme.palette.common.white,
+        marginTop: theme.spacing(7),
+      },
       [theme.breakpoints.down('xs')]: {
-        marginTop: 20,
+        marginTop: theme.spacing(2),
         marginBottom: 0
       }
     },
@@ -51,13 +56,13 @@ export const posterStyles = props => {
 
     customSubtitle: {
       ...theme.typography.subtitle2,
-      marginTop: theme.spacing(3),
-      [theme.breakpoints.down('sm')]: {
+      marginTop: theme.spacing(5),
+      [theme.breakpoints.up('sm')]: {
         display: 'none'
       },
       [theme.breakpoints.down('xs')]: {
         display: 'block',
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing(4),
         position: 'inherit',
         width: '100%'
       }
@@ -79,10 +84,6 @@ export const posterStyles = props => {
     },
 
     customVanCaption: {
-      marginTop: 170,
-      [theme.breakpoints.down('md')]: {
-        marginTop: 200
-      },
       [theme.breakpoints.down('sm')]: {
         display: 'none'
       },
@@ -111,7 +112,7 @@ export const posterStyles = props => {
 
     cardTitle: {
       color: theme.palette.secondary.main,
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down('md')]: {
         fontSize: 14
       }
     },

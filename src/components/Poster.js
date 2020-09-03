@@ -1,6 +1,5 @@
 import React from 'react';
 import clsx from 'clsx';
-import { useRouteMatch } from "react-router-dom";
 import { Card, CardContent, Grid, Typography } from '@material-ui/core/';
 import { MuiThemeBreakpoints } from '../constants/constants';
 import MarkedTypography from '../components/onePirate/Typography';
@@ -9,7 +8,6 @@ import useStyles from '../styles/constants';
 
 export default function Poster(props) {
   const classes = useStyles(props, 'poster');
-  const match = useRouteMatch();
   const { backgroundImage, layoutType } = props;
   const xsBreakpoint = MuiThemeBreakpoints().xs;
 
@@ -18,13 +16,13 @@ export default function Poster(props) {
       <PageBannerLayout backgroundClassName={classes.background} layoutType={layoutType}>
         {/* Increase the network loading priority of the background image. */}
         <img style={{display:'none'}} src={backgroundImage} alt='header background banner'/>
-        {generatePosterContent(classes, props, xsBreakpoint, match.path)}
+        {generatePosterContent(classes, props, xsBreakpoint)}
       </PageBannerLayout>
     </section>
   );
 }
 
-function generatePosterContent(classes, props, breakpoint, path) {
+function generatePosterContent(classes, props, breakpoint) {
   const { body, layoutType } = props;
   const isCustomPosters = layoutType === 'vancouver_now' || layoutType === 'study_abroad';
 
@@ -74,10 +72,10 @@ function createPosterCards(classes, cards) {
 
   return (
     <Grid className={classes.posterCards} container spacing={2}>
-      <Grid item xs={false} md={1}/>
+      <Grid item xs={false} sm={1} md={1}/>
       {filteredCards.map((card, i) => {
         return (
-          <Grid item xs={12} md={5} key={i}>
+          <Grid item xs={12} sm={5} md={5} key={i}>
             <Card>
               <CardContent>
                 <Typography className={classes.cardTitle}>{card.subtitle}</Typography>
@@ -87,7 +85,7 @@ function createPosterCards(classes, cards) {
             </Card>
           </Grid>
       )})}
-      <Grid item xs={false} md={1}/>
+      <Grid item xs={false} sm={1} md={1}/>
     </Grid>
   )
 }
