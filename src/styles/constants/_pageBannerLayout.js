@@ -74,9 +74,16 @@ export const pageBannerLayoutStyles = props => {
       maxWidth: 'inherit',
     },
 
-    customContainer: {
+    customVancouverNow: {
       ...flexContainerStyles, 
       marginTop: 0,
+      maxWidth: 'inherit',
+    },
+
+    customStudyAbroad: {
+      ...flexContainerStyles, 
+      marginTop: 0,
+      marginBottom: theme.spacing(30),
       maxWidth: 'inherit',
     },
 

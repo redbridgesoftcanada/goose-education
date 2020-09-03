@@ -9,22 +9,24 @@ function PageBannerLayout(props) {
 
   const isPageBanner = props.layoutType === 'pageBanner';
   const isHeaderBanner = props.layoutType === 'headerBanner';
-  const isCustomLayout = props.layoutType === 'vancouver_now';
-  const isPoster = !isPageBanner && !isHeaderBanner && !isCustomLayout
+  const isCustomVancouverNow = props.layoutType === 'vancouver_now';
+  const isCustomStudyAbroad = props.layoutType === 'study_abroad';
+  const isPoster = !isPageBanner && !isHeaderBanner && !isCustomVancouverNow;
 
   const rootStyle = clsx({
     [classes.root]: true,
     [classes.pageRoot]: isPageBanner,
     [classes.headerRoot]: isHeaderBanner,
-    [classes.customRoot]: isCustomLayout,
-    [classes.posterRoot]: isPoster
+    [classes.customRoot]: isCustomVancouverNow,
+    [classes.posterRoot]: isPoster || isCustomStudyAbroad
   });
 
   const containerStyle = clsx({
     [classes.defaultContainer]: !isPageBanner,
     [classes.pageContainer]: isPageBanner,
     [classes.posterContainer]: isPoster,
-    [classes.customContainer]: isCustomLayout
+    [classes.customVancouverNow]: isCustomVancouverNow,
+    [classes.customStudyAbroad]: isCustomStudyAbroad
   })
   
   return (

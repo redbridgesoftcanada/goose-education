@@ -7,11 +7,8 @@ export const studyAbroadInformationStyles = props => {
     },
     
     cardContainer: {
-      top: '60%',
-      position: 'absolute',
-      [theme.breakpoints.down('xs')]: {
-       top: '50%' 
-      }
+      top: '50%',
+      position: 'absolute'
     },
 
     cardHeader: {
