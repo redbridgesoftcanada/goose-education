@@ -177,23 +177,24 @@ export default function ArticleBoard(props) {
             <Switch>
 
                 {selectedArticle &&
-                <>
-                    <Redirect to={{                   
-                        pathname: `${match.path}/${selectedArticle.id}`, 
-                        state: {
-                            title: 'Networking',
-                            selected: 0
-                        }
-                    }}/>
-
                     <AuthUserContext.Consumer>
-                        {authUser => 
+                    {authUser => 
+                        <>
+                            <Redirect to={{                   
+                                pathname: `${match.path}/${selectedArticle.id}`, 
+                                state: {
+                                    title: 'Networking',
+                                    selected: 0
+                                }
+                            }}/>
+
                             <Article 
-                                article={selectedArticle}
-                                authUser={authUser}/> 
+                                authUser={authUser}
+                                article={selectedArticle} 
+                            /> 
+                        </>
                         }
                     </AuthUserContext.Consumer>
-                </>
                 }
 
                 <Route path={`${match.path}/:articleID`}>

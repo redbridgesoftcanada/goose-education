@@ -54,8 +54,8 @@ class Firebase {
           next(authUser);
 
         });
-      } else {
-        fallback();
+      // } else {
+      //   fallback();
       }
     }) 
   }

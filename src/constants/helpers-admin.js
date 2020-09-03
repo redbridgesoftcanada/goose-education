@@ -84,7 +84,7 @@ function textValidator(name, value, eventHandler) {
   )
 }
 
-function richTextValidator(name, value, eventHandler) {
+function RichTextField(name, value, eventHandler) {
   return (
     <QuillValidator
       defaultValue={value}
@@ -125,4 +125,4 @@ function selectValidator(name, value, options, eventHandler) {
   )
 }
 
-export { textField, configRadioGroup, selectField, textValidator, richTextValidator, fileValidator, selectValidator, defaultValueTextField }
+export { textField, configRadioGroup, selectField, textValidator, RichTextField, fileValidator, selectValidator, defaultValueTextField }

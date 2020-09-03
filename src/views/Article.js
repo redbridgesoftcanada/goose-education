@@ -1,5 +1,5 @@
-import React, { useReducer } from 'react';
-import { Button, CardMedia, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
+import React, { useReducer, useEffect } from 'react';
+import { Box, Button, CardMedia, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, ScheduleOutlined, MoreVertOutlined, Facebook, Instagram, RoomOutlined, LanguageOutlined, EditOutlined, DeleteOutline } from '@material-ui/icons';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import parse from 'html-react-parser';
@@ -12,7 +12,7 @@ import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
 import Comments from '../components/Comments';
 import { useHistory } from 'react-router-dom';
-import useStyles from '../styles/serviceCentre.js';
+import useStyles from '../styles/serviceCentre';
 
 const INITIAL_STATE = {
     comment: '',
@@ -26,7 +26,7 @@ const INITIAL_STATE = {
 }
 
 function Article(props) {
-    const classes = useStyles(props);
+    const classes = useStyles();
     const history = useHistory();
     const xsBreakpoint = MuiThemeBreakpoints().xs;
     const { article, authUser, firebase } = props;
@@ -37,15 +37,15 @@ function Article(props) {
     const editAnchorOpen = Boolean(editAnchor);
     const isArticleOwner = (!authUser) ? false : authUser.uid === article.authorID;
 
-    const redirectPath = () => history.push({ pathname: '/networking', state: { title: 'Networking', selected: 0 } });
     const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
     const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS' });
     const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });
     const handleDeleteConfirmation = event => (event.currentTarget.id) ? dispatch({ type:'CONFIRM_DELETE', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
     const handleEdit = event => dispatch({ type: 'EDIT_CONTENT', payload: event.currentTarget });
     const handleCollapse = () => { dispatch({ type: 'TRIGGER_COLLAPSE' })}
+    const handleRedirect = () => history.push({ pathname: '/networking', state: { title: 'Networking', selected: 0 } });
+    const handleArticleDelete = () => firebase.deleteArticle(article.id).then(() => handleRedirect());
     const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
-    const handleArticleDelete = () => firebase.deleteArticle(article.id).then(() => redirectPath());
 
     const commentsProps = { 
         formType: 'article', 
@@ -73,7 +73,7 @@ function Article(props) {
         }) 
       }).then(() => { 
         handleComment('');
-        redirectPath();
+        handleRedirect();
     });
       // .catch(error => dispatch({ type: 'error', payload: error }))
       event.preventDefault();
@@ -117,7 +117,7 @@ function Article(props) {
             
             {!xsBreakpoint ?
             <>
-                {parse(article.description)}
+                <Box py={3}>{parse(article.description)}</Box>
 
                 {isArticleOwner &&
                     <Grid container className={classes.announceActions}>
@@ -186,8 +186,21 @@ function Article(props) {
                 {article.comments.length} Comments
             </Typography>
 
-            {!xsBreakpoint && isArticleOwner ? 
-            <Collapse in={commentCollapseOpen} timeout="auto" unmountOnExit>
+            {!authUser ? 
+                <Typography>Please login/register to post comments.</Typography>
+                :
+                !xsBreakpoint && isArticleOwner ? 
+                <Collapse in={commentCollapseOpen} timeout="auto" unmountOnExit>
+                    <ValidatorForm onSubmit={onCommentSubmit}>
+                        <StyledValidators.TextField
+                            multiline
+                            rows={5}
+                            value={comment}
+                            onChange={handleComment}/>
+                        <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+                    </ValidatorForm>
+                </Collapse>
+                :
                 <ValidatorForm onSubmit={onCommentSubmit}>
                     <StyledValidators.TextField
                         multiline
@@ -196,19 +209,9 @@ function Article(props) {
                         onChange={handleComment}/>
                     <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
                 </ValidatorForm>
-            </Collapse>
-            :
-            <ValidatorForm onSubmit={onCommentSubmit}>
-                <StyledValidators.TextField
-                    multiline
-                    rows={5}
-                    value={comment}
-                    onChange={handleComment}/>
-                <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-            </ValidatorForm>
             }
 
-            {article.comments.length ? 
+            {!!article.comments.length &&
                 article.comments.map((comment, i) => {
                     const isCommentOwner = authUser && authUser.uid === comment.authorID;
                     return (
@@ -219,8 +222,6 @@ function Article(props) {
                             {...commentsProps}/> 
                     );
                 })
-            :
-                <Typography>There are currently no comments.</Typography> 
             }
         </Container>
     )
