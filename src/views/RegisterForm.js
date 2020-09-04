@@ -17,6 +17,7 @@ function RegisterForm(props) {
   const history = useHistory();
 
   // references for step-by-step form validation (onNextValidation);
+  const termsOfServiceFormRef = createRef();
   const accountFormRef = createRef();
   const personalFormRef = createRef();
 
@@ -84,10 +85,10 @@ function RegisterForm(props) {
   const onNextValidation = () => {
     switch (activeStep) {
       case 0:
-        if (!allTermsAgreed) {
-          setNotification('Please agree to the terms and conditions.');
-        } else if (allTermsAgreed) {
-          setActiveStep(activeStep + 1);
+        if (termsOfServiceFormRef.current) {
+          termsOfServiceFormRef.current.isFormValid(false).then(isValid => {
+            isValid && setActiveStep(activeStep + 1);
+          });
         }
         break;
         
@@ -138,56 +139,57 @@ function RegisterForm(props) {
     switch (step) {
       case 0:
         return (
-          <form className={classes.root} onSubmit={onSubmit}>
+          <ValidatorForm ref={termsOfServiceFormRef} className={classes.root} onSubmit={onSubmit}>
             <Container>
-              <FormGroup>
-                <StyledValidators.CustomCheckbox
-                  checked={allTermsAgreed}
-                  name='allTermsAgreed'
-                  onChange={e => handleUserInput('termsOfService', e)}
-                  label='All Terms Agreed'
-                  additionalText='This includes agreements to all required and optional terms. You may choose to agree or disagree to individual terms. You may still use the service even if you do not agree to the optional terms.'
-                />
+              <StyledValidators.CustomCheckbox
+                checked={allTermsAgreed}
+                value={allTermsAgreed}
+                name='allTermsAgreed'
+                onChange={e => handleUserInput('termsOfService', e)}
+                label='All Terms Agreed'
+                additionalText='This includes agreements to all required and optional terms. You may choose to agree or disagree to individual terms. You may still use the service even if you do not agree to the optional terms.'
+                validators={['isChecked']}
+                errorMessages={['']}
+              />
 
-                <List>
-                  <ListItem id='termsAndConditions' disableGutters button onClick={triggerCollapse}>
-                    <ListItemIcon>
-                      {collapseOpenTC ? <ExpandMoreOutlined/> : <ChevronRightOutlined/>}
-                    </ListItemIcon>
-                    <ListItemText>
-                      Goose Terms and Conditions
-                    </ListItemText>
-                  </ListItem>
+              <List>
+                <ListItem id='termsAndConditions' disableGutters button onClick={triggerCollapse}>
+                  <ListItemIcon>
+                    {collapseOpenTC ? <ExpandMoreOutlined/> : <ChevronRightOutlined/>}
+                  </ListItemIcon>
+                  <ListItemText>
+                    Goose Terms and Conditions
+                  </ListItemText>
+                </ListItem>
 
-                  <Collapse in={collapseOpenTC} timeout="auto" unmountOnExit>
-                    <List>
-                      <ListItem>
-                        <ListItemText></ListItemText>
-                      </ListItem>
-                    </List>
-                  </Collapse>
+                <Collapse in={collapseOpenTC} timeout="auto" unmountOnExit>
+                  <List>
+                    <ListItem>
+                      <ListItemText></ListItemText>
+                    </ListItem>
+                  </List>
+                </Collapse>
 
-                  <ListItem id='personalInfo' disableGutters button onClick={triggerCollapse}>
-                    <ListItemIcon>
-                      {collapseOpenCP ? <ExpandMoreOutlined/> : <ChevronRightOutlined/>}
-                    </ListItemIcon>
-                    <ListItemText>
-                      Collection and Use of Personal Information
-                    </ListItemText>
-                  </ListItem>
+                <ListItem id='personalInfo' disableGutters button onClick={triggerCollapse}>
+                  <ListItemIcon>
+                    {collapseOpenCP ? <ExpandMoreOutlined/> : <ChevronRightOutlined/>}
+                  </ListItemIcon>
+                  <ListItemText>
+                    Collection and Use of Personal Information
+                  </ListItemText>
+                </ListItem>
 
-                  <Collapse in={collapseOpenCP} timeout="auto" unmountOnExit>
-                    <List>
-                      <ListItem>
-                        <ListItemText></ListItemText>
-                      </ListItem>
-                    </List>
-                  </Collapse>
-                </List>
-              </FormGroup>
+                <Collapse in={collapseOpenCP} timeout="auto" unmountOnExit>
+                  <List>
+                    <ListItem>
+                      <ListItemText></ListItemText>
+                    </ListItem>
+                  </List>
+                </Collapse>
+              </List>
             </Container>
             {getStepButtons(classes.stepButtons, activeStep, setActiveStep, onNextValidation)}
-          </form>
+          </ValidatorForm>
         );
 
       case 1: {
@@ -217,6 +219,8 @@ function RegisterForm(props) {
     ValidatorForm.addValidationRule('isPasswordMatch', value => {
       return value !== passwordOne ? false : true
     });
+
+    ValidatorForm.addValidationRule('isChecked', value => !!value);
 
     // (optional cleanup mechanism for effects) - remove rule when not needed;
     return () => ValidatorForm.removeValidationRule('isPasswordMatch');
