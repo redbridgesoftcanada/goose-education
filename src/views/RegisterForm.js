@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createRef } from "react";
 import { Link, useHistory, withRouter } from "react-router-dom";
 import { ValidatorForm } from "react-material-ui-form-validator";
-import { Box, Button, Collapse, Container, FormGroup, List, ListItem, ListItemIcon, ListItemText, Step, StepLabel, Stepper, Typography } from "@material-ui/core";
+import { Box, Button, Collapse, Container, List, ListItem, ListItemIcon, ListItemText, Step, StepLabel, Stepper, Typography } from "@material-ui/core";
 import { ChevronRightOutlined, ExpandMoreOutlined } from '@material-ui/icons';
 import { REGISTER_FORMS } from '../constants/constants';
 import { convertToSentenceCase } from '../constants/helpers/_features';
@@ -216,14 +216,14 @@ function RegisterForm(props) {
   }
 
   useEffect(() => {
-    ValidatorForm.addValidationRule('isPasswordMatch', value => {
-      return value !== passwordOne ? false : true
-    });
-
-    ValidatorForm.addValidationRule('isChecked', value => !!value);
-
+    ValidatorForm.addValidationRule('isPasswordMatch', value => value === passwordOne);
     // (optional cleanup mechanism for effects) - remove rule when not needed;
     return () => ValidatorForm.removeValidationRule('isPasswordMatch');
+  });
+
+  useEffect(() => {
+    ValidatorForm.addValidationRule('isChecked', value => !!value);
+    return () => ValidatorForm.removeValidationRule('isChecked');
   });
 
   return (
@@ -258,8 +258,8 @@ const createAccountForm = (accountState, changeHandler) => {
       customProps = {
         type: 'password',
         placeholder: 'Password',
-        validators: ['required', 'matchRegexp:^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})'],
-        errorMessages: ['', 'Please choose a secure password (At least one lowercase, one uppercase, one numeric character. At least 8 characters long.)']
+        validators: ['required', 'isQuillEmpty'],
+        errorMessages: ['', '']
       }
 
     } else if (formField === 'passwordTwo') {
@@ -274,8 +274,8 @@ const createAccountForm = (accountState, changeHandler) => {
       customProps = {
         type: 'text',
         placeholder: convertToSentenceCase(formField),
-        validators: (formField === 'email') ? ['required', 'isEmail'] : ['required'],
-        errorMessages: ['', '']
+        validators: (formField === 'email') ? ['required', 'isEmail', 'isQuillEmpty'] : ['required', 'isQuillEmpty'],
+        errorMessages: ['', '', '']
       }
     }
 
@@ -293,9 +293,8 @@ const createAccountForm = (accountState, changeHandler) => {
 const createPersonalForm = (personalState, changeHandler) => {
   return Object.keys(personalState).map((formField, i) => {
     // config props and validations for <StyledValidators.TextField/> component;
-    const isPhoneNumber = formField.includes('Number');
-    const valRules = { validators: ['required'], errorMessages: [''] }
-    const phValRules = { validators: ['required', 'isNumber'], errorMessages: ['', ''] }
+    const valRules = { validators: ['required', 'isQuillEmpty'], errorMessages: ['', ''] }
+    const phValRules = { validators: ['required', 'isQuillEmpty', 'isNumber'], errorMessages: ['', '', ''] }
 
     return (
       <StyledValidators.TextField
@@ -304,7 +303,7 @@ const createPersonalForm = (personalState, changeHandler) => {
         value={personalState[formField]}
         placeholder={convertToSentenceCase(formField)}
         onChange={e => changeHandler('personal', e)}
-        {...isPhoneNumber ? 
+        {...formField.includes('Number') ? 
           { type: 'tel', ...phValRules } : { type: 'text', ...valRules } 
         }/>
     );
