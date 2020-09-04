@@ -1,13 +1,14 @@
 import React from 'react';
 import { ValidatorComponent } from 'react-form-validator-core';
-import { FormControl, FormHelperText, Input, RadioGroup, Select, Typography } from '@material-ui/core';
+import { Checkbox, FormControl, FormControlLabel, FormHelperText, Input, RadioGroup, Select, Typography } from '@material-ui/core';
 import { KeyboardDatePicker, KeyboardDateTimePicker } from '@material-ui/pickers';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 const errorStyles = {
   border: '1px solid #f44336',
-  borderRadius: '4px'
+  borderRadius: '4px',
+  padding: '8px'
 }
 
 const errorContainer = {
@@ -119,4 +120,21 @@ class DatePickValidator extends ValidatorComponent {
   )}
 }
 
-export { SelectValidator, QuillValidator, FileValidator, RadioGroupValidator, DatePickValidator }
+class CheckboxValidator extends ValidatorComponent {  
+  renderValidatorComponent() {
+    const { children, errorMessages, validators, requiredError, validatorListener, value, label, ...rest } = this.props;
+    return (
+      <FormControl 
+        style={{ float: 'left' }}
+        {...!this.state.isValid && { style: { ...errorStyles, float: 'left' } }}>
+        <FormControlLabel 
+          label={label}
+          control={<Checkbox size="small" {...rest}/>}
+        />
+        {children}
+        <FormHelperText>{this.getErrorMessage()}</FormHelperText>
+      </FormControl>
+  )}
+}
+
+export { SelectValidator, QuillValidator, FileValidator, RadioGroupValidator, DatePickValidator, CheckboxValidator }

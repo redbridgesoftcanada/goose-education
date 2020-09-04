@@ -3,7 +3,7 @@ import { TextValidator } from "react-material-ui-form-validator";
 import { FormLabel, OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio, Checkbox } from "@material-ui/core";
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { QuillValidator, FileValidator, SelectValidator, RadioGroupValidator, DatePickValidator } from "./validators";
+import { QuillValidator, FileValidator, SelectValidator, RadioGroupValidator, DatePickValidator, CheckboxValidator } from "./validators";
 
 const legendStyles = {
   textAlign: 'left',
@@ -122,15 +122,11 @@ function CustomRadioGroup(props) {
 }
 
 function CustomCheckbox(props) {
-  const { label, additionalText, ...customProps } = props;
+  const { additionalText, ...customProps } = props;
   return (
-    <>
-      <FormControlLabel
-        label={label}
-        control={<Checkbox size="small" {...customProps}/>}
-      />
+    <CheckboxValidator {...customProps}>
       {additionalText && <FormHelperText>{additionalText}</FormHelperText>}
-    </>
+    </CheckboxValidator>
   )
 }
 
