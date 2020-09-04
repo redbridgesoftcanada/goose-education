@@ -15,7 +15,8 @@ const CustomLabel = ({ children }) => {
   return <FormLabel component="legend" style={legendStyles}>{children}</FormLabel>
 }
 
-function firebaseValidator(type, name, value, placeholder, eventHandler, error) {
+function AuthLoginField(props) {
+  const { error, ...customProps } = props;
   const checkError = error => {
     if (error.code.includes("email") || error.code.includes("argument")) {
       return true;
@@ -23,14 +24,14 @@ function firebaseValidator(type, name, value, placeholder, eventHandler, error) 
   }
 
   return (
-    <OutlinedInput
-      type={type}
-      name={name}
-      value={value}
-      placeholder={placeholder}
-      onChange={eventHandler}
+    <TextValidator 
+      fullWidth 
+      variant="outlined" 
+      InputLabelProps={{shrink: true}}
       error={error && checkError(error)}
-    />
+      validators={['required', 'isQuillEmpty']}
+      errorMessages={['', '']}
+      {...customProps}/>
   )
 }
 
@@ -140,5 +141,5 @@ function CustomDatePicker(props) {
   )
 }
 
-export { RichTextField, FileUpload, firebaseValidator, AdminTextField,
+export { RichTextField, FileUpload, AuthLoginField, AdminTextField,
 TextField, CustomSelect, CustomRadioGroup, CustomCheckbox, CustomDatePicker }

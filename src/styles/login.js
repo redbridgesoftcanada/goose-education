@@ -44,7 +44,7 @@ export const useStyles = props => {
 
     error: {
       ...theme.typography.body2,
-      color: theme.palette.secondary.main
+      color: '#f44336'
     },
 
     submitButton: {

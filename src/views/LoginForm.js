@@ -1,30 +1,22 @@
 import React, { useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Button, Grid, Typography } from '@material-ui/core';
+import { ValidatorForm } from 'react-material-ui-form-validator';
 import { withFirebase } from '../components/firebase';
 import { RegisterLink } from './RegisterForm';
 import { PasswordForgetLink } from './ForgotPasswordForm';
 import StyledValidators  from '../components/customMUI';
 import { useStyles } from '../styles/login';
 
-const INITIAL_STATE = {
-  email: '',
-  password: '',
-  error: null,
-};
-
 function LoginForm(props) {
   const classes = useStyles(props);
-  const { firebaseValidator } = StyledValidators;
   const { firebase, history, loginForm } = props;
 
-  const [ state, setState ] = useState({...INITIAL_STATE});
-  const { email, password, error } = state;
+  const [ loginCred, setLoginCred ] = useState({ email: '', password: '' });
+  const [ error, setError ] = useState(null);
+  const { email, password } = loginCred;
 
-  const onChange = event => setState({
-    ...state,
-    error: null,
-    [event.target.name]: event.target.value});
+  const onChange = event => setLoginCred(prevLoginCred => ({ ...prevLoginCred, [event.target.name]: event.target.value}));
 
   const onSubmit = event => {
     firebase.doSignInWithEmailAndPassword(email, password)
@@ -34,10 +26,13 @@ function LoginForm(props) {
       return firebase.user(user.uid).set({lastSignInTime}, {merge: true});
     })
     .then(() => {
-      setState({...INITIAL_STATE});
+      setLoginCred({ email: '', password: '' });
       history.push('/');
     })
-    .catch(error => setState({error}));
+    .catch(error => 
+      setError(error),
+      setLoginCred({ email: '', password: '' })
+    );
     
     event.preventDefault();
   }
@@ -45,17 +40,31 @@ function LoginForm(props) {
   return (
     <>
       <Typography className={classes.formTitle}>{loginForm.title}</Typography>
-      <form className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
+      <ValidatorForm className={classes.root} noValidate autoComplete='off' onSubmit={onSubmit}>
         <Grid container spacing={2} className={classes.formFields}>
           <Grid item>
-            {firebaseValidator('text', 'email', email, 'Email Address', onChange, error)}
+            <StyledValidators.AuthLoginField
+              type='text'
+              name='email'
+              value={email}
+              label='Email Address'
+              onChange={onChange}
+              error={error}/>
           </Grid>
 
           <Grid item>
-            {firebaseValidator('password', 'password', password, 'Password', onChange, error)}
+            <StyledValidators.AuthLoginField
+              type='password'
+              name='password'
+              value={password}
+              label='Password'
+              onChange={onChange}
+              error={error}/>
           </Grid>
         </Grid>
+
         {error && <Typography className={classes.error}>{error.message}</Typography>}
+        
         <Button
           className={classes.submitButton}
           variant="contained" 
@@ -65,7 +74,7 @@ function LoginForm(props) {
         >
           {loginForm.caption}
         </Button>
-      </form>
+      </ValidatorForm>
       <PasswordForgetLink forgotLinkStyle={classes.forgotLink}/>
       <br/><br/>
       <RegisterLink registerLinkStyle={classes.registerLink}/>
