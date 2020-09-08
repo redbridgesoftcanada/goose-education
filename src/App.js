@@ -31,11 +31,6 @@ function App() {
         if (!value || (typeof value === 'string' && value.replace(/<(.|\n)*?>/g, '').trim().length === 0)) return false;
         return true;
     });
-
-    ValidatorForm.addValidationRule("isRequiredUpload", value => {
-      if (!value || value.length === 0) return false;
-      return true;
-    });
   }, []);
 
   return (

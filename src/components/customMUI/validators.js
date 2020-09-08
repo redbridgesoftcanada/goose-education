@@ -76,6 +76,7 @@ class FileValidator extends ValidatorComponent {
         <Input 
           type="file" 
           disableUnderline
+          {...!this.state.isValid && { style: { ...errorStyles, width: '100%' } }}
           {...rest}/>
         {this.errorText()}
       </>

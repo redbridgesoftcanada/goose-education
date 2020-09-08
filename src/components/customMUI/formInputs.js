@@ -49,10 +49,7 @@ function FileUpload(props) {
   return (
     <>
       <CustomLabel>{label}</CustomLabel>
-      <FileValidator
-        {...customProps}
-        validators={["isRequiredUpload"]}
-        errorMessages={["Please upload an image."]} />
+      <FileValidator {...customProps}/>
     </>
   )
 }

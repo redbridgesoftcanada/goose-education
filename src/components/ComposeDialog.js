@@ -5,22 +5,23 @@ import { TAGS } from '../constants/constants';
 import StyledValidators from '../components/customMUI';
 import { withAuthorization } from '../components/session';
 
+const INITIAL_STATE = {
+  isEdit: false,
+  isLoading: false,
+  title: '',
+  description: '',
+  tag: '',
+  instagramURL: '',
+  link1: '',
+  link2: '',
+  uploads: []
+}
+
 function ComposeDialogBase(props) {
-  const INITIAL_STATE = {
-    isEdit: false,
-    isLoading: false,
-    title: '',
-    description: '',
-    tag: '',
-    instagramURL: '',
-    link1: '',
-    link2: '',
-    uploads: []
-  }
+  const { authUser, firebase, history, composeOpen, onClose, composeType } = props;
+  
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
   const { isEdit, isLoading, title, tag, description, instagramURL, link1, link2, uploads } = state;
-
-  const { authUser, firebase, history, composeOpen, onClose, composeType } = props;
   
   const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'EDIT_FORM', payload: { composeType, isEdit, prevContent }});
   const handleFormFields = event => dispatch({ payload:event.target });
@@ -116,11 +117,21 @@ function ComposeDialogBase(props) {
   }
 
   useEffect(() => {
+    ValidatorForm.addValidationRule('isSelected', value => !!value);
+    // (optional cleanup mechanism for effects) - remove rule when not needed;
+    return () => ValidatorForm.removeValidationRule('isSelected');
+  }, []);
 
-    ValidatorForm.addValidationRule('isSelected', value => {
-      return !!value;
+
+  useEffect(() => {
+    ValidatorForm.addValidationRule("isRequiredUpload", value => {
+      if (!value || value.length === 0) return false;
+      return true;
+    });
+    return () => ValidatorForm.removeValidationRule('isRequiredUpload');
   });
 
+  useEffect(() => {
     const { composeType, isEdit } = props;
     const prevContent = props.article;
     prevContent && configureEditForm(composeType, isEdit, prevContent);
@@ -137,8 +148,8 @@ function ComposeDialogBase(props) {
             value={title}
             label='Title'
             onChange={handleFormFields}
-            validators={['required']}
-            errorMessages={['']}
+            validators={['required', 'isQuillEmpty']}
+            errorMessages={['', '']}
           />
 
           {(composeType === 'article' || composeType === 'announce') &&
@@ -188,8 +199,10 @@ function ComposeDialogBase(props) {
             <StyledValidators.FileUpload
               name='file'
               value={uploads}
-              label='Uploads'
+              label='Image'
               onChange={handleFileUpload}
+              validators={['isRequiredUpload', 'allowedExtensions:image/png,image/jpeg,image/jpg']}
+              errorMessages={['', '']}
             />
             :
             <Input type="file" disableUnderline onChange={handleFileUpload}/>
