@@ -1,5 +1,5 @@
 import React, { useReducer, useEffect } from 'react';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import { Box, CardMedia, CardContent, Container, Grid, Typography } from '@material-ui/core';
 import MarkedTypography from '../components/onePirate/Typography';
 import { AuthUserContext } from '../components/session';
@@ -123,6 +123,7 @@ function toggleReducer(state, action) {
 export default function GooseTips(props) {
     const classes = useStyles(props, 'tips');
     const history = useHistory();
+    const location = useLocation();
     
     const INITIAL_STATE = {
         gooseTips: [],
@@ -151,7 +152,7 @@ export default function GooseTips(props) {
     const redirectPath = {
         pathname:'/search', 
         search: `?query=${searchQuery}`, 
-        state: {...state, resources: gooseTips} 
+        state: {...state, category: 'Tips', resources: gooseTips} 
     }
 
     // E V E N T  L I S T E N E R S
@@ -183,6 +184,10 @@ export default function GooseTips(props) {
     useEffect(() => {
         dispatch({ type:'DEFAULT_TIPS', payload: props.tips });
     }, [props.tips])
+
+    useEffect(() => {
+        location.state.selectedTip && dispatch({ type:'OPEN_TIP', payload: location.state.selectedTip });
+    }, [location.state.selectedTip])
     
     return (
         <Container>

@@ -31,7 +31,7 @@ export default function ListOfSchools(props) {
                         history.push({
                             pathname:'/search', 
                             search:`?query=${searchQuery}`, 
-                            state: { resources: listOfSchools} })}/>
+                            state: { resources: listOfSchools, category: 'Schools' } })}/>
                 <Grid container spacing={2} className={classes.grid}>
                     {paginatedSchools.map(school => {
                         const redirectPath = {

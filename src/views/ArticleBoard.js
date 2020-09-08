@@ -233,7 +233,7 @@ export default function ArticleBoard(props) {
 
                     <SearchField 
                         handleSearch={handleSearchQuery}
-                        handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, resources: listOfArticles} })}/>
+                        handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, category: 'Networking', resources: listOfArticles} })}/>
 
                     <FilterDialog
                         {...filterProps}

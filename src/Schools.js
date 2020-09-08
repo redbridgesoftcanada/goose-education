@@ -62,7 +62,7 @@ function Schools(props) {
             <Switch>
 
               {props.location.state.selectedSchool && 
-                // redirects to /:schoolID if selectedSchool exists (FeatureCarousel)
+                // redirects to /:schoolID if selectedSchool exists (FeatureCarousel, Search Query)
                 <Redirect to={{                   
                   pathname: `${match.path}/${props.location.state.selectedSchool.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
                   state: {
