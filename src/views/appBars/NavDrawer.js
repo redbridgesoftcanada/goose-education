@@ -18,7 +18,7 @@ export default function NavDrawer(props) {
     }
 
     const isAdmin = authUser.roles['admin'];
-    const userPages = isAdmin ? ['Dashboard'] : ['My Page', 'Change Information', 'Delete Account'];
+    const userPages = isAdmin ? ['Dashboard'] : ['My Page', 'Change Information'];
     const sitePages = NAV_PAGES.slice(1);
 
     return (
