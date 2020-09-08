@@ -26,34 +26,39 @@ export default function FeatureOthers(props) {
                     state: { title: 'Goose Tips', selected: 1 }
                 });
                 break;
-            
+
             default:
                 const selectedSchool = previewSchools.find(school => school.id.toString() === event.currentTarget.id);
-                setRedirectPath({
-                    pathname: `/schools`, 
-                    state: { title: 'School Information', selected: 0, selectedSchool }
-                });
+                const selectedTip = previewTips.find(tip => tip.id.toString() === event.currentTarget.id);
+                if (selectedSchool) {
+                    setRedirectPath({
+                        pathname: `/schools`, 
+                        state: { title: 'School Information', selected: 0, selectedSchool }
+                    });
+                } else if (selectedTip) {
+                    setRedirectPath({
+                        pathname: `/goose`, 
+                        state: { title: 'Goose Tips', selected: 1, selectedTip }
+                    });
+                }
         }
     }
 
     return (
         Object.keys(redirectPath).length ? 
-        <Redirect push to={redirectPath}/>
-        :
-        <section className={classes.root}>
-            <Grid container>
-                {generateFeatureSchools(classes, whiteWrapperText, previewSchools, redirectPath, handleClick)}
-                {generateFeatureTips(classes, redWrapperText, previewTips, redirectPath, handleClick)}
-            </Grid>
-        </section>
+            <Redirect push to={redirectPath}/>
+            :
+            <section className={classes.root}>
+                <Grid container>
+                    {generateFeatureSchools(classes, whiteWrapperText, previewSchools, handleClick)}
+                    {generateFeatureTips(classes, redWrapperText, previewTips, handleClick)}
+                </Grid>
+            </section>
     );
 }
 
-function generateFeatureSchools(classes, customText, previewSchools, redirectPath, clickHandler) {
+function generateFeatureSchools(classes, customText, previewSchools, clickHandler) {
     return (
-        // Object.keys(redirectPath).length ? 
-        // <Redirect push to={redirectPath}/>
-        // :
         <Grid item xs={12} md={6}>
             <div className={classes.header}>
                 <Typography className={classes.titleLeft}>{customText.title}</Typography>
@@ -71,17 +76,11 @@ function generateFeatureSchools(classes, customText, previewSchools, redirectPat
                                 src={(school.image.includes('firebase')) ? school.image : require(`../assets/img/${school.image}`)}
                                 alt="school logo" />
                             <div id={school.id} className={classes.description} onClick={clickHandler}>
-                            {/* { (Object.entries(redirectPath).length) ? 
-                                <Redirect push to={redirectPath}/>
-                                :
-                                <> */}
-                                    <Typography variant="subtitle1">{school.title}</Typography>
-                                    <Typography variant="body2">{school.features}</Typography>
-                                    <Typography variant="body2">
-                                        {(school.updatedAt > school.createdAt) ? format(school.updatedAt, 'yyyy-MM-dd') : format(school.createdAt, 'yyyy-MM-dd')}
-                                    </Typography>
-                                {/* </>
-                            } */}
+                                <Typography variant="subtitle1">{school.title}</Typography>
+                                <Typography variant="body2">{school.features}</Typography>
+                                <Typography variant="body2">
+                                    {(school.updatedAt > school.createdAt) ? format(school.updatedAt, 'yyyy-MM-dd') : format(school.createdAt, 'yyyy-MM-dd')}
+                                </Typography>
                             </div>
                         </div>
                     )
@@ -91,20 +90,16 @@ function generateFeatureSchools(classes, customText, previewSchools, redirectPat
     )
 }
 
-function generateFeatureTips(classes, customText, previewTips, redirectPath, clickHandler) {
+function generateFeatureTips(classes, customText, previewTips, clickHandler) {
     return (
         <Grid item xs={12} md={6} className={classes.rightBackground}>
             <div className={classes.header}>
                 <Typography className={classes.titleRight}>
                     {customText.title}
                 </Typography>
-                {/* { (Object.entries(redirectPath).length) ? 
-                    <Redirect push to={redirectPath}/>
-                    : */}
                     <IconButton id='goose_tips' className={classes.buttonWhite} onClick={clickHandler}>
                         <AddIcon />
                     </IconButton>
-                {/* } */}
             </div>
             <Grid item xs={12} md={12} className={classes.container} >
                 {previewTips.map(tip => {
@@ -114,18 +109,14 @@ function generateFeatureTips(classes, customText, previewTips, redirectPath, cli
                                 className={classes.image}
                                 src={(tip.image.includes('firebase')) ? tip.image : require(`../assets/img/${tip.image}`)}
                                 alt="tip thumbnail" />
-                            <div id='goose_tips' className={classes.description} onClick={clickHandler}>
-                                {/* {Object.entries(redirectPath).length ? 
-                                    <Redirect push to={redirectPath}/>
-                                    : */}
-                                    <div>
-                                        <Typography variant="subtitle1">{tip.title}</Typography>
-                                        <Typography variant="body2">{tip.description}</Typography>
-                                        <Typography variant="body2">
-                                            {(tip.updatedAt > tip.createdAt) ? format(tip.updatedAt, 'yyyy-MM-dd') : format(tip.createdAt, 'yyyy-MM-dd')}
-                                        </Typography>
-                                    </div>
-                                {/* } */}
+                            <div id={tip.id} className={classes.description} onClick={clickHandler}>
+                                <div>
+                                    <Typography variant="subtitle1">{tip.title}</Typography>
+                                    <Typography variant="body2">{tip.description}</Typography>
+                                    <Typography variant="body2">
+                                        {(tip.updatedAt > tip.createdAt) ? format(tip.updatedAt, 'yyyy-MM-dd') : format(tip.createdAt, 'yyyy-MM-dd')}
+                                    </Typography>
+                                </div>
                             </div>
                         </div>
                     )
