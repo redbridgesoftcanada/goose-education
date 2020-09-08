@@ -16,7 +16,7 @@ function LoginForm(props) {
   const [ error, setError ] = useState(null);
   const { email, password } = loginCred;
 
-  const onChange = event => setLoginCred(prevLoginCred => ({ ...prevLoginCred, [event.target.name]: event.target.value}));
+  const onChange = event => setLoginCred(({ ...loginCred, [event.target.name]: event.target.value}));
 
   const onSubmit = event => {
     firebase.doSignInWithEmailAndPassword(email, password)
