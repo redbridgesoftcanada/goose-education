@@ -75,7 +75,7 @@ function generateSitePageList(classes, sitePages, navMenu, navMenuHandler, navMa
                     component={RouterLink} 
                     to={{ 
                         pathname: sPage === 'Networking' ? '/networking' : '/studyabroad', 
-                        state: { title: sPage, tab: 0 }}}>
+                        state: { title: sPage, selected: 0 }}}>
                     <ListItemText primary={sPage}/>
                 </ListItem>
                 :
@@ -126,7 +126,7 @@ function configPageSubsections(sitePage, configPages, section) {
                 state: {
                     title: 'Goose Study Abroad',
                     ...(section && {
-                        tab: (section === 'Goose Study Abroad') ? 0 : 1 })
+                        selected: (section === 'Goose Study Abroad') ? 0 : 1 })
                 }
             }
             break;
@@ -138,7 +138,7 @@ function configPageSubsections(sitePage, configPages, section) {
                 state: {
                   title: 'School Information',
                   ...(section && {
-                    tab: (section === 'School Information') ? 0 : 1 })
+                    selected: (section === 'School Information') ? 0 : 1 })
                 }
             }
             break;
