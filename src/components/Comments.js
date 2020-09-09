@@ -10,7 +10,7 @@ import useStyles from '../styles/constants';
 
 function Comments(props) {
   const classes = useStyles(props, 'comments');
-  const { comment, isCommentOwner, firebase, formType, openPostActions, closePostActions, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, selectedResource, handleEdit, handleDeleteConfirmation, resetAllActions } = props;
+  const { comment, selectedComment, isCommentOwner, firebase, formType, openPostActions, closePostActions, commentAnchor, commentAnchorOpen, commentConfirmOpen, selectedResource, handleEdit, handleDeleteConfirmation, resetAllActions } = props;
 
   const handleCommentDelete = id => {
     let collectionRef;
@@ -32,13 +32,13 @@ function Comments(props) {
 
     firebase.transaction(t => {
       return t.get(collectionRef).then(doc => {
-          const commentsArr = doc.data().comments;
+        const commentsArr = doc.data().comments;
 
-          const filteredCommentsArr = commentsArr.filter(comment => {
-          return comment.id !== id
-          });
+        const filteredCommentsArr = commentsArr.filter(comment => {
+        return comment.id !== id
+        });
 
-          t.update(collectionRef, { comments: filteredCommentsArr });
+        t.update(collectionRef, { comments: filteredCommentsArr });
       })})
       .then(() => resetAllActions());
   }
@@ -57,7 +57,16 @@ function Comments(props) {
         </Grid>
 
         <Grid container item xs={11} className={classes.fsContainer}>
-          <Typography className={classes.commentText}>{parse(comment.description)}</Typography>
+          {!selectedComment || selectedComment !== comment.id ? 
+            <Typography className={classes.commentText}>{parse(comment.description)}</Typography>
+            :
+            selectedComment === comment.id &&
+            <CommentDialog 
+              formType={formType}
+              selectedResource={selectedResource} 
+              prevComment={comment} 
+              onClose={resetAllActions}/>
+          }
         </Grid>
 
         <Grid container item xs={1} className={classes.feContainer}>
@@ -75,17 +84,9 @@ function Comments(props) {
               anchorEl={commentAnchor}
               open={commentAnchorOpen}
               onClose={closePostActions}>
-              <MenuItem id='comment' onClick={handleEdit}>Edit Comment</MenuItem>
+              <MenuItem id={comment.id} onClick={handleEdit}>Edit Comment</MenuItem>
               <MenuItem id='comment' onClick={handleDeleteConfirmation}>Delete Comment</MenuItem>
           </Menu>
-
-          <CommentDialog 
-            formType={formType}
-            firebase={firebase} 
-            selectedResource={selectedResource} 
-            prevComment={comment} 
-            open={commentDialogOpen} 
-            onClose={resetAllActions}/>
               
           <DeleteConfirmation 
             deleteType='comment' 

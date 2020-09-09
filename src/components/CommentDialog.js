@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { ValidatorForm } from 'react-material-ui-form-validator';
-import { QuillValidator } from '../constants/customValidators';
+import { withFirebase } from '../components/firebase';
+import StyledValidators from '../components/customMUI';
 
-export default function CommentDialog(props) {
-  const { formType, firebase, selectedResource, prevComment, open, onClose } = props;
+function CommentDialog(props) {
+  const { formType, firebase, selectedResource, prevComment, onClose } = props;
 
-  const [comment, setComment] = useState(prevComment.description);
+  const [ comment, setComment ] = useState(prevComment.description);
   
   const onSubmit = event => {
 
@@ -51,22 +52,16 @@ export default function CommentDialog(props) {
   }
 
     return (
-        <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Edit Comment</DialogTitle>
-            <DialogContent>
-              <ValidatorForm noValidate autoComplete='off' onSubmit={onSubmit}>
-                <QuillValidator 
-                defaultValue={comment}
-                value={comment} 
-                onChange={setComment}
-                validators={['isQuillEmpty']}
-                errorMessages={['Cannot submit an empty comment.']}/>
-              </ValidatorForm>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose}>CANCEL</Button>
-                <Button onClick={onSubmit} color="secondary">SAVE</Button>
-            </DialogActions>
-        </Dialog>
+      <ValidatorForm onSubmit={onSubmit}>
+        <StyledValidators.TextField
+          value={comment}
+          onChange={event => setComment(event.currentTarget.value)}
+          validators={['isQuillEmpty']}
+          errorMessages={['']}/>
+        <Button onClick={onClose}>CANCEL</Button>
+        <Button onClick={onSubmit} color="secondary">SAVE</Button>
+      </ValidatorForm>
     );
 }
+
+export default withFirebase(CommentDialog);
