@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useState, useReducer } from 'react';
 import { Box, Button, CardMedia, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, ScheduleOutlined, MoreVertOutlined, Facebook, Instagram, RoomOutlined, LanguageOutlined, EditOutlined, DeleteOutline } from '@material-ui/icons';
 import { ValidatorForm } from 'react-material-ui-form-validator';
@@ -11,6 +11,7 @@ import StyledValidators from '../components/customMUI';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
 import Comments from '../components/Comments';
+import ErrorSnackbar from '../components/ErrorSnackbar';
 import { useHistory } from 'react-router-dom';
 import useStyles from '../styles/serviceCentre';
 
@@ -31,6 +32,7 @@ function Article(props) {
     const xsBreakpoint = MuiThemeBreakpoints().xs;
     const { article, authUser, firebase } = props;
 
+    const [ error, setError ] = useState(null);
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
     const { comment, commentAnchor, commentCollapseOpen, commentDialogOpen, commentConfirmOpen, editAnchor, editConfirmOpen, editDialogOpen } = state;
     const commentAnchorOpen = Boolean(commentAnchor);
@@ -39,13 +41,13 @@ function Article(props) {
 
     const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
     const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS' });
-    const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });
+    const handleComment = event => dispatch({ type:'NEW_COMMENT', payload: event.currentTarget.value });
     const handleDeleteConfirmation = event => (event.currentTarget.id) ? dispatch({ type:'CONFIRM_DELETE', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
     const handleEdit = event => dispatch({ type: 'EDIT_CONTENT', payload: event.currentTarget });
     const handleCollapse = () => { dispatch({ type: 'TRIGGER_COLLAPSE' })}
+    const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
     const handleRedirect = () => history.push({ pathname: '/networking', state: { title: 'Networking', selected: 0 } });
     const handleArticleDelete = () => firebase.deleteArticle(article.id).then(() => handleRedirect());
-    const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
 
     const commentsProps = { 
         formType: 'article', 
@@ -63,24 +65,42 @@ function Article(props) {
   
     const onCommentSubmit = event => {
       firebase.article(article.id).update({ 
-        "comments": firebase.updateArray().arrayUnion({
-            id: uuidv4(),
-            authorDisplayName: authUser.displayName,
-            authorID: authUser.uid,
-            description: comment,
-            createdAt: Date.now(),
-            updatedAt: Date.now()
-        }) 
-      }).then(() => { 
-        handleComment('');
-        handleRedirect();
-    });
-      // .catch(error => dispatch({ type: 'error', payload: error }))
+            "comments": firebase.updateArray().arrayUnion({
+                id: uuidv4(),
+                authorDisplayName: authUser.displayName,
+                authorID: authUser.uid,
+                description: comment,
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            }) 
+        }).then(() => { 
+            resetAllActions();
+            handleRedirect();
+        }).catch(error => setError(error));
       event.preventDefault();
     }
 
+    const CommentFormField = 
+        <ValidatorForm onSubmit={onCommentSubmit}>
+            <StyledValidators.TextField
+                multiline
+                rows={5}
+                value={comment}
+                onChange={handleComment}
+                validators={['isQuillEmpty']}
+                errorMessages={['']}/>
+            <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+        </ValidatorForm>
+
     return (
         <Container>
+            {error && 
+                <ErrorSnackbar 
+                isOpen={!!error}
+                onCloseHandler={() => setError(null)}
+                errorMessage={error}/>
+            }
+
             <Typography className={classes.title}>{article.title}</Typography>
             <Grid container className={classes.metaContainer}>
                 <Grid container item xs={7} sm={6} spacing={1} className={classes.metaLeft}>
@@ -116,44 +136,44 @@ function Article(props) {
                 image={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)}/>
             
             {!xsBreakpoint ?
-            <>
-                <Box py={3}>{parse(article.description)}</Box>
-
-                {isArticleOwner &&
-                    <Grid container className={classes.announceActions}>
-                        <Grid item sm={4}>
-                            <Button onClick={handleCollapse} fullWidth className={classes.announceButtons}>
-                                <ChatBubbleOutlineOutlined/>
-                            </Button>
-                        </Grid>
-                        <Grid item sm={4}>
-                            <Button id='article' onClick={handleEdit} fullWidth className={classes.announceButtons}>
-                                <EditOutlined/>
-                            </Button>
-                        </Grid>
-                        <Grid item sm={4}>
-                            <Button id='article' onClick={handleDeleteConfirmation} fullWidth className={classes.announceButtons}>
-                                <DeleteOutline/>
-                            </Button>
-                        </Grid>
-                    </Grid>
-                }
-            </> 
-            : 
-            <Grid container className={classes.announceContainer}>
-                {!isArticleOwner ? 
-                    <Grid item>{parse(article.description)}</Grid>
-                :
                 <>
-                    <Grid item xs={9}>{parse(article.description)}</Grid>
-                    <Grid item>
-                        <IconButton id='article' onClick={openPostActions}>
-                            <MoreVertOutlined/>
-                        </IconButton>
-                    </Grid>
-                </>
-                }
-            </Grid>
+                    <Box py={3}>{parse(article.description)}</Box>
+
+                    {isArticleOwner &&
+                        <Grid container className={classes.announceActions}>
+                            <Grid item sm={4}>
+                                <Button onClick={handleCollapse} fullWidth className={classes.announceButtons}>
+                                    <ChatBubbleOutlineOutlined/>
+                                </Button>
+                            </Grid>
+                            <Grid item sm={4}>
+                                <Button id='article' onClick={handleEdit} fullWidth className={classes.announceButtons}>
+                                    <EditOutlined/>
+                                </Button>
+                            </Grid>
+                            <Grid item sm={4}>
+                                <Button id='article' onClick={handleDeleteConfirmation} fullWidth className={classes.announceButtons}>
+                                    <DeleteOutline/>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    }
+                </> 
+                : 
+                <Grid container className={classes.announceContainer}>
+                    {!isArticleOwner ? 
+                        <Grid item>{parse(article.description)}</Grid>
+                        :
+                        <>
+                            <Grid item xs={9}>{parse(article.description)}</Grid>
+                            <Grid item>
+                                <IconButton id='article' onClick={openPostActions}>
+                                    <MoreVertOutlined/>
+                                </IconButton>
+                            </Grid>
+                        </>
+                    }
+                </Grid>
             }
 
             {/* Conditional Components - Edit + Delete Features */}
@@ -186,33 +206,19 @@ function Article(props) {
                 {article.comments.length} Comments
             </Typography>
 
-            {!authUser ? 
+            {
+                !authUser ? 
                 <Typography>Please login/register to post comments.</Typography>
                 :
                 !xsBreakpoint && isArticleOwner ? 
                 <Collapse in={commentCollapseOpen} timeout="auto" unmountOnExit>
-                    <ValidatorForm onSubmit={onCommentSubmit}>
-                        <StyledValidators.TextField
-                            multiline
-                            rows={5}
-                            value={comment}
-                            onChange={handleComment}/>
-                        <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-                    </ValidatorForm>
+                    {CommentFormField}
                 </Collapse>
                 :
-                <ValidatorForm onSubmit={onCommentSubmit}>
-                    <StyledValidators.TextField
-                        multiline
-                        rows={5}
-                        value={comment}
-                        onChange={handleComment}/>
-                    <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-                </ValidatorForm>
+                CommentFormField
             }
 
-            {!!article.comments.length &&
-                article.comments.map((comment, i) => {
+            {!!article.comments.length && article.comments.map((comment, i) => {
                     const isCommentOwner = authUser && authUser.uid === comment.authorID;
                     return (
                         <Comments 
@@ -281,15 +287,7 @@ function toggleReducer(state, action) {
             }
         
         case 'RESET_ACTIONS': {
-            return { 
-                ...state, 
-                commentAnchor: null,
-                commentConfirmOpen: false,
-                commentDialogOpen: false,
-                editAnchor: null,
-                editConfirmOpen: false,
-                editDialogOpen: false
-            }
+            return { ...INITIAL_STATE }
         }
 
         default:
