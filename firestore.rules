@@ -7,11 +7,11 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isLoggedInAndOwner() {
+    function isOwner() {
       return isLoggedIn() && request.auth.uid == resource.data.authorID;
     }
 
-    function isLoggedInAndAdmin() {
+    function isAdmin() {
       return isLoggedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.roles.admin == true;
     }
 
@@ -44,58 +44,60 @@ service cloud.firestore {
 
     match /graphics/{graphic} {
       allow read;
-      allow update: if isLoggedInAndAdmin();
+      allow write: if isAdmin();
     } 
 
     match /schools/{school} {
       allow read;
-      allow write: if isLoggedInAndAdmin();
+      allow write: if isAdmin();
     }
 
     match /announcements/{announcement} {
       allow read;
-      allow write: if isLoggedInAndAdmin() && contentIsValid();
+      allow create: if isAdmin() && contentIsValid(); 
+      allow update: if isLoggedIn();
+      allow delete: if isAdmin();
     }
 
     match /tips/{tip} {
       allow read;
-      allow write: if isLoggedInAndAdmin() && contentIsValid();
+      allow create, update: if isAdmin() && contentIsValid(); 
+      allow delete: if isAdmin();
     }
 
     match /users/{user} {
       allow read, create;
       allow update: if isLoggedIn() && request.auth.uid == user;
-      allow delete: if isLoggedInAndAdmin();
+      allow delete: if isLoggedIn() && request.auth.uid == user || isAdmin();
     }
 
     match /articles/{article} {
       allow read;
       allow create: if isLoggedIn() && contentIsValid();
-      allow update, delete: if isLoggedInAndAdmin() && contentIsValid() || isLoggedInAndOwner() && contentIsValid();
+      allow update: if isLoggedIn();
+      allow delete: if isAdmin() || isOwner();
     }
 
     match /messages/{message} {
       allow read;
       allow create: if isLoggedIn() && contentIsValid();
-      allow update, delete: if isLoggedInAndAdmin() && contentIsValid() || isLoggedInAndOwner() && contentIsValid();
+      allow update: if isLoggedIn();
+      allow delete: if isAdmin() || isOwner();
     }
 
     match /airportRideApplications/{airportApplication} {
-      allow read, delete: if isLoggedInAndAdmin() || isLoggedInAndOwner();
-      allow create: if isLoggedIn() && airportRideInfoIsValid();
-      allow update: if isLoggedInAndAdmin() && airportRideInfoIsValid();
+      allow read, delete: if isAdmin() || isOwner();
+      allow create, update: if isLoggedIn() && airportRideInfoIsValid();
     }    
 
     match /homestayApplications/{homestayApplication} {
-      allow read, delete: if isLoggedInAndAdmin() || isLoggedInAndOwner();
-      allow create: if isLoggedIn() && homestayInfoIsValid();
-      allow update: if isLoggedInAndAdmin() && homestayInfoIsValid();
+      allow read, delete: if isAdmin() || isOwner();
+      allow create, update: if isLoggedIn() && homestayInfoIsValid();
     }    
 
     match /schoolApplications/{schoolApplication} {
-      allow read, delete: if isLoggedInAndAdmin() || isLoggedInAndOwner();
-      allow create: if isLoggedIn() && schoolInfoIsValid();
-      allow update: if isLoggedInAndAdmin() && schoolInfoIsValid();
+      allow read, delete: if isAdmin() || isOwner();
+      allow create, update: if isLoggedIn() && schoolInfoIsValid();
     }
   }
 }
