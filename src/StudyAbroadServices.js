@@ -25,11 +25,14 @@ function StudyAbroadServices(props) {
                     <Route path={[`${match.path}/homestay`, `${match.path}/airport`]}>
                         <AuthUserContext.Consumer>
                             {authUser => authUser ? 
-                                <StudyAbroadServiceApplication authUser={authUser} /> 
+                                <>
+                                    <Typography variant='h6'>{location.pathname.includes('homestay') ? 'Homestay Application' : 'Airport Ride Application'}</Typography>
+                                    <StudyAbroadServiceApplication authUser={authUser} /> 
+                                </>
                                 : 
                                 <Box py={10}>
-                                    <Typography variant='h4'>{location.pathname.includes('homestay') ? 'Homestay Application' : 'Airport Ride Application'}</Typography>
-                                    <Typography variant='h5'>Please Register or Login to Apply</Typography> 
+                                    <Typography variant='h6'>{location.pathname.includes('homestay') ? 'Homestay Application' : 'Airport Ride Application'}</Typography>
+                                    <Typography variant='subtitle1'>Please Register or Login to Apply</Typography> 
                                 </Box>
                             }
                         </AuthUserContext.Consumer>
@@ -52,10 +55,13 @@ function StudyAbroadServices(props) {
                     </Route>
                 </Switch>
             
-                <DatabaseContext.Consumer>
-                    {({ state: { studyabroadGraphics: { homestayBannerProcess = {} } = {} } }) => 
-                        <HomestayProcess body={homestayBannerProcess}/>}
-                </DatabaseContext.Consumer>
+                <Box 
+                {...(location.pathname.includes('homestay') || location.pathname.includes('airport')) && { marginTop: 6 }}>
+                    <DatabaseContext.Consumer>
+                        {({ state: { studyabroadGraphics: { homestayBannerProcess = {} } = {} } }) => 
+                            <HomestayProcess body={homestayBannerProcess}/>}
+                    </DatabaseContext.Consumer>
+                </Box>
             </Paper>
             <ResponsiveFooters/>
         </>

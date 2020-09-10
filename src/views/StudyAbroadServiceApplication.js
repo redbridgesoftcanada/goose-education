@@ -1,18 +1,15 @@
-import React, { useState, useReducer } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import { Button, Container, Typography } from '@material-ui/core';
-import { withAuthorization } from '../components/session';
 import { PERSONAL_FIELDS, ARRIVAL_FIELDS, DEPARTURE_FIELDS, HOMESTAY_FIELDS, OTHER_FIELDS } from '../constants/constants';
 import { convertToCamelCase, convertToTitleCase } from '../constants/helpers/_features';
+import { withAuthorization } from '../components/session';
 import StyledValidators from '../components/customMUI';
 import ErrorSnackbar from '../components/ErrorSnackbar';
 
 let formFields = [];
-let INITIAL_STATE = {
-  isLoading: false,
-  agreeToPrivacy: false
-};
+let INITIAL_STATE = { agreeToPrivacy: false };
 
 function StudyAbroadServiceApplication(props) {
   const history = useHistory();
@@ -21,62 +18,57 @@ function StudyAbroadServiceApplication(props) {
 
   configureFormFields(match);
 
-  const [ error, setError ] = useState({
-    exists: false,
-    message: null
-  });
+  const [ state, setState ] = useState(INITIAL_STATE);
+  const [ error, setError ] = useState(null);
 
-  const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-
-  // E V E N T  L I S T E N E R S
-  const handleFormInput = event => dispatch({type: event.target});
-
-  const handlePickerInput = (date, field) => {
-    const payloadConfig = { formField: field, selectedDate: date }
-    dispatch({type: 'datePicker', payload: {...payloadConfig}});
+  const handleFormInput = e => {
+    const field = e.target.name;
+    const input = (field !== 'agreeToPrivacy') ? e.target.value : e.target.checked;
+    setState(prevState => ({...prevState, [field]: input}));
   }
 
-  const handleCheckboxInput = event => dispatch({type: 'checkbox', payload: event.target});
+  const handlePickerInput = (date, field) => setState(prevState => ({...prevState, [field]: date}));
 
   const onSubmit = event => {
     const { agreeToPrivacy, ...applicationForm } = state;
-
-    if (!agreeToPrivacy) {
-      setError({ exists: true, message: 'Please agree to the privacy agreement.'})
-    }
-
-    if (error.exists) {
-      return;
-    }
-
-    const firebaseRef = (match.url.includes('homestay')) ? firebase.homestayApplications(authUser.uid) : firebase.airportRideApplications(authUser.uid);
+    const firebaseRef = (match.url.includes('homestay')) ? firebase.homestayApplications() : firebase.airportRideApplications();
+    
     firebaseRef.add({
       authorID: authUser.uid,
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      ...applicationForm})
+      ...applicationForm
+    })
     .then(() => history.push('/profile'))
-    // .catch(error => dispatch({ type: 'error', payload: error }));
+    .catch(error => setError(error.message));
+
     event.preventDefault();
   }
 
+  useEffect(() => {
+    ValidatorForm.addValidationRule('isRequiredCustom', value => !!value);
+    return () => ValidatorForm.removeValidationRule('isRequiredCustom');
+  });
+
   return (
     <Container>
-      {error.exists && 
-        ErrorSnackbar(error.exists, () => setError({ exists: false, message: null }))}
+      {error && 
+        <ErrorSnackbar 
+          isOpen={!!error}
+          onCloseHandler={() => setError(null)}
+          errorMessage={error}/>}
 
       <ValidatorForm onSubmit={onSubmit}>
         {formFields.map(field => {
           const formLabel = convertToTitleCase(field);  
           field = convertToCamelCase(field);
           
-          const inputProps = {
+          const defaultProps = {
             key: field,
             name: field,
             value: state[field],
             label: formLabel,
-            onChange: !field.includes('Date') ? 
-              handleFormInput : date => handlePickerInput(date, field)
+            onChange: !field.includes('Date') ? handleFormInput : date => handlePickerInput(date, field)
           }
 
           const validationRules = {
@@ -93,68 +85,74 @@ function StudyAbroadServiceApplication(props) {
               ];
               return (
                 <StyledValidators.CustomRadioGroup
-                  {...inputProps}
+                  {...defaultProps}
                   {...validationRules}
                   options={options}/>
             )}
 
             case 'arrivalFlightDate':
             case 'departureFlightDate': {
-              inputProps.minDate = (field === "departureFlightDate") ? state.arrivalFlightDate : '';
+              if (field === 'departureFlightDate') {
+                defaultProps.minDate = state.arrivalFlightDate;
+              }
               return (
-                <StyledValidators.CustomDatePicker {...inputProps}/>
+                <StyledValidators.CustomDateTimePicker {...defaultProps}/>
             )}
             
             case 'birthDate':
             case 'homestayStartDate':
             case 'homestayEndDate':
               if (field !== "birthDate") {
-                inputProps.disablePast = true;
+                defaultProps.disablePast = true;
                 if (field === "homestayStartDate") {
-                  inputProps.minDate = state.arrivalFlightDate;
+                  defaultProps.minDate = state.arrivalFlightDate;
                 }
                 if (field === "homestayEndDate") {
-                  inputProps.minDate = state.homestayStartDate;
+                  defaultProps.minDate = state.homestayStartDate;
                 }
               }
-
               return (
                 <StyledValidators.CustomDatePicker
-                  {...inputProps}
-                  {...field === 'birthDate' && validationRules}
+                  {...defaultProps}
+                  validators={['isRequiredCustom']}
+                  errorMessages={['']}
                 />
               );
 
             case 'additionalRequests': 
               return (
-                <StyledValidators.TextField
-                {...inputProps}
-                {...validationRules}
-                multiline={true}
-                rows={5}/>);
+                <StyledValidators.TextField 
+                  {...defaultProps}
+                  multiline={true}
+                  rows={5}/>
+              );
             
             default: {
               return (
                 <StyledValidators.TextField
-                  {...inputProps}
+                  {...defaultProps}
                   {...validationRules}/>
               );
             }
           }
         })}
 
+        <br/>
         <Typography variant="h6">Privacy</Typography>
         <Typography align="left" variant="body2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Typography>
         
         <StyledValidators.CustomCheckbox
           checked={state.agreeToPrivacy}
           name='agreeToPrivacy'
-          onChange={handleCheckboxInput}
+          onChange={handleFormInput}
           label={<Typography variant="body2">I agree to the Privacy Agreement.</Typography>}
-          additionalText=''/>
+          additionalText=''
+          value={state.agreeToPrivacy}
+          validators={['isRequiredCustom']}
+          errorMessages={['']}/>
 
         <div>
-          <Button variant="contained" color="secondary" type="submit">Submit Application</Button>
+          <Button fullWidth variant="contained" color="secondary" type="submit">Submit Application</Button>
         </div>
 
       </ValidatorForm>
@@ -179,20 +177,6 @@ function configureFormFields(match) {
     return INITIAL_STATE;
   });
 }
-
-function toggleReducer(state, action) {
-  const { type, payload } = action;
-  const { name, value } = type;
-
-  if (type === 'checkbox') return { ...state, [payload.name]: payload.checked }
-  if (type === 'datePicker') {
-    return {...state, [payload.formField]: payload.selectedDate}
-  }
-  if (typeof type === 'string' && type.includes('Date')) return { ...state, [type]: payload}
-  // if (type === 'submit') return { ...INITIAL_STATE }
-  return { ...state, [name]: value }
-}
-
 
 const condition = authUser => !!authUser;
 export default withAuthorization(condition)(StudyAbroadServiceApplication);
