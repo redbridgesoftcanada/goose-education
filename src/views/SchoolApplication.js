@@ -1,9 +1,7 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import { Button, Container, FormLabel, Typography } from '@material-ui/core';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import React, { useState, useEffect } from 'react';
+import { Button, Container, Typography } from '@material-ui/core';
 import { ValidatorForm } from "react-material-ui-form-validator";
 import { useHistory } from "react-router-dom";
-import DateFnsUtils from '@date-io/date-fns';
 import { STATUSES, PERSONAL_FIELDS, PROGRAM_FIELDS, ARRIVAL_FIELDS, OTHER_FIELDS } from '../constants/constants';
 import { convertToCamelCase, convertToTitleCase } from '../constants/helpers/_features';
 import { DatabaseContext } from '../components/database';
@@ -28,8 +26,8 @@ function SchoolApplication(props) {
     message: null });
 
   const handleFormInput = e => {
-    const field = e.currentTarget.name;
-    const input = (field !== 'agreeToPrivacy') ? e.currentTarget.value : e.currentTarget.checked;
+    const field = e.target.name;
+    const input = (field !== 'agreeToPrivacy') ? e.target.value : e.target.checked;
     setUserInput(prevState => ({...prevState, [field]: input}));
   }
 
@@ -64,8 +62,8 @@ function SchoolApplication(props) {
   }
 
   useEffect(() => {
-    ValidatorForm.addValidationRule('isChecked', value => !!value);
-    return () => ValidatorForm.removeValidationRule('isChecked');
+    ValidatorForm.addValidationRule('isRequiredCustom', value => !!value);
+    return () => ValidatorForm.removeValidationRule('isRequiredCustom');
   });
 
   return (
@@ -81,7 +79,7 @@ function SchoolApplication(props) {
           const formLabel = convertToTitleCase(field);
           field = convertToCamelCase(field);
 
-          const inputProps = {
+          const defaultProps = {
             key: field,
             name: field,
             value: userInput[field],
@@ -104,7 +102,7 @@ function SchoolApplication(props) {
               
               return (
                 <StyledValidators.CustomRadioGroup 
-                  {...inputProps} 
+                  {...defaultProps} 
                   {...validationRules}
                   options={options}/>
               );
@@ -115,8 +113,8 @@ function SchoolApplication(props) {
             case 'arrivalFlightDate':
               return (
                 <StyledValidators.CustomDatePicker
-                  {...inputProps}
-                  validators={['isChecked']}
+                  {...defaultProps}
+                  validators={['isRequiredCustom']}
                   errorMessages={['']}
                   onChange={date => handlePickerInput(date, field)}
                   {...field !== "birthDate" && { disablePast: true }}/>
@@ -130,7 +128,7 @@ function SchoolApplication(props) {
 
               return (
                 <StyledValidators.CustomRadioGroup 
-                  {...inputProps} 
+                  {...defaultProps} 
                   {...validationRules}
                   options={options}/>
               );
@@ -138,34 +136,36 @@ function SchoolApplication(props) {
               
             case 'schoolName':
               return (
-                <Fragment key={field}>
-                  <FormLabel component="legend" className={classes.legend}>{formLabel}</FormLabel>
-                  <DatabaseContext.Consumer>
-                    {({ state }) => {
-                      const listOfSchoolNames = state.listOfSchools.map(school => school.title);
-                      return (
-                        <StyledValidators.CustomSelect 
-                          {...inputProps} 
-                          options={listOfSchoolNames}/>
-                      )}
-                    }
+                <DatabaseContext.Consumer>
+                  {({ state }) => {
+                    const listOfSchoolNames = state.listOfSchools.map(school => school.title);
+                    return (
+                      <StyledValidators.CustomSelect
+                        {...defaultProps}
+                        options={listOfSchoolNames}
+                        validators={['isRequiredCustom']}
+                        errorMessages={['']}
+                      />
+                    )}
+                  }
                 </DatabaseContext.Consumer>
-                </Fragment>
               );
 
             case 'additionalRequests': 
               return (
                 <StyledValidators.TextField 
-                  {...inputProps}
+                  {...defaultProps}
                   multiline={true}
                   rows={5}/>
               );
 
             default:
               return (
-                <StyledValidators.TextField 
-                  {...inputProps} 
-                  {...validationRules}/>
+                <StyledValidators.TextField
+                  {...defaultProps}
+                  {...field !== 'insurance' && { ...validationRules }}
+                  {...field === 'programDuration' && { type: 'number', label: 'Program Duration (Number of Weeks)', inputProps: { min: '0' } }}
+                />
             )}
           })
         }
@@ -180,7 +180,7 @@ function SchoolApplication(props) {
           label={<Typography variant="body2">I agree to the Privacy Agreement.</Typography>}
           additionalText=''
           value={userInput.agreeToPrivacy}
-          validators={['isChecked']}
+          validators={['isRequiredCustom']}
           errorMessages={['']}
         />
 
