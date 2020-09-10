@@ -69,11 +69,13 @@ function Comments(props) {
           }
         </Grid>
 
-        <Grid container item xs={1} className={classes.feContainer}>
-          <IconButton id='comment' onClick={openPostActions}>
-            <MoreVertOutlined fontSize='small'/>
-          </IconButton>
-        </Grid>
+        {isCommentOwner &&
+          <Grid container item xs={1} className={classes.feContainer}>
+            <IconButton id='comment' onClick={openPostActions}>
+              <MoreVertOutlined fontSize='small'/>
+            </IconButton>
+          </Grid>
+        }
       </Grid>
 
       {/* Conditional Components - Edit + Delete Features */}
