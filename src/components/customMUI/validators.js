@@ -112,11 +112,14 @@ class RadioGroupValidator extends ValidatorComponent {
 
 class DatePickValidator extends ValidatorComponent {
   renderValidatorComponent() {
-    const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
+    const { errorMessages, validators, requiredError, validatorListener, ...rest } = this.props;
     return (
       <KeyboardDatePicker
         variant="inline"
+        inputVariant="outlined"
         format="MM/dd/yyyy"
+        style={{ width: '100%'}}
+        {...!this.state.isValid && { style: { ...errorStyles, width: '100%' } }}
         {...rest}/>
   )}
 }

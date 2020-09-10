@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Button, Container, FormLabel, Typography } from '@material-ui/core';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { ValidatorForm } from "react-material-ui-form-validator";
@@ -12,10 +12,8 @@ import ErrorSnackbar from '../components/ErrorSnackbar';
 import StyledValidators from '../components/customMUI';
 import { useStyles } from '../styles/schools';
 
-const formFields = [ PERSONAL_FIELDS, OTHER_FIELDS[1], PROGRAM_FIELDS, OTHER_FIELDS[0], ARRIVAL_FIELDS[0], OTHER_FIELDS[2] ].flat();
-
-// configure initial values for all form fields in local state;
 let INITIAL_STATE = { agreeToPrivacy: false }
+const formFields = [ PERSONAL_FIELDS, OTHER_FIELDS[1], PROGRAM_FIELDS, OTHER_FIELDS[0], ARRIVAL_FIELDS[0], OTHER_FIELDS[2] ].flat();
 configureFormDefaults(formFields);
 
 function SchoolApplication(props) {
@@ -65,6 +63,11 @@ function SchoolApplication(props) {
     event.preventDefault();
   }
 
+  useEffect(() => {
+    ValidatorForm.addValidationRule('isChecked', value => !!value);
+    return () => ValidatorForm.removeValidationRule('isChecked');
+  });
+
   return (
     <Container>
       {progress.error && 
@@ -111,16 +114,12 @@ function SchoolApplication(props) {
             case 'programStartDate':
             case 'arrivalFlightDate':
               return (
-                <MuiPickersUtilsProvider utils={DateFnsUtils} key={field}>
-                  <FormLabel component="legend" className={classes.legend}>{formLabel}</FormLabel>
-                  <KeyboardDatePicker
-                    name={field}
-                    value={userInput[field]}
-                    onChange={date => handlePickerInput(date, field)}
-                    variant="inline"
-                    format="MM/dd/yyyy"
-                    {...field !== "birthDate" && { disablePast: true }}/>
-                </MuiPickersUtilsProvider>
+                <StyledValidators.CustomDatePicker
+                  {...inputProps}
+                  validators={['isChecked']}
+                  errorMessages={['']}
+                  onChange={date => handlePickerInput(date, field)}
+                  {...field !== "birthDate" && { disablePast: true }}/>
               );
 
             case 'visa': {
@@ -180,6 +179,9 @@ function SchoolApplication(props) {
           onChange={handleFormInput}
           label={<Typography variant="body2">I agree to the Privacy Agreement.</Typography>}
           additionalText=''
+          value={userInput.agreeToPrivacy}
+          validators={['isChecked']}
+          errorMessages={['']}
         />
 
         <Button variant="contained" color="secondary" type="submit">Submit Application</Button>
