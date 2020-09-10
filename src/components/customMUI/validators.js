@@ -115,6 +115,7 @@ class DatePickValidator extends ValidatorComponent {
     const { errorMessages, validators, requiredError, validatorListener, ...rest } = this.props;
     return (
       <KeyboardDatePicker
+        autoOk
         variant="inline"
         inputVariant="outlined"
         format="MM/dd/yyyy"
@@ -141,4 +142,19 @@ class CheckboxValidator extends ValidatorComponent {
   )}
 }
 
-export { SelectValidator, QuillValidator, FileValidator, RadioGroupValidator, DatePickValidator, CheckboxValidator }
+class DateTimePickValidator extends ValidatorComponent {
+  renderValidatorComponent() {
+    const { errorMessages, validators, requiredError, validatorListener, ...rest } = this.props;
+    return (
+      <KeyboardDateTimePicker
+        autoOk
+        variant="inline"
+        inputVariant="outlined"
+        format="MM/dd/yyyy hh:mm a"
+        style={{ width: '100%'}}
+        {...!this.state.isValid && { style: { ...errorStyles, width: '100%' } }}
+        {...rest}/>
+  )}
+}
+
+export { SelectValidator, QuillValidator, FileValidator, RadioGroupValidator, DatePickValidator, CheckboxValidator, DateTimePickValidator }

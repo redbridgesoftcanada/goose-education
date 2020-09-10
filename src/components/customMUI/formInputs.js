@@ -1,9 +1,9 @@
 import React from 'react';
 import { TextValidator } from "react-material-ui-form-validator";
-import { FormLabel, OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio, Checkbox } from "@material-ui/core";
+import { FormLabel, OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio } from "@material-ui/core";
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { QuillValidator, FileValidator, SelectValidator, RadioGroupValidator, DatePickValidator, CheckboxValidator } from "./validators";
+import { QuillValidator, FileValidator, SelectValidator, RadioGroupValidator, DatePickValidator, CheckboxValidator, DateTimePickValidator } from "./validators";
 
 const legendStyles = {
   textAlign: 'left',
@@ -138,5 +138,15 @@ function CustomDatePicker(props) {
   )
 }
 
+function CustomDateTimePicker(props) {
+  const { label, ...customProps } = props;
+  return (
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <CustomLabel>{label}</CustomLabel>
+      <DateTimePickValidator {...customProps}/>
+    </MuiPickersUtilsProvider>
+  )
+}
+
 export { RichTextField, FileUpload, AuthLoginField, AdminTextField,
-TextField, CustomSelect, CustomRadioGroup, CustomCheckbox, CustomDatePicker }
+TextField, CustomSelect, CustomRadioGroup, CustomCheckbox, CustomDatePicker, CustomDateTimePicker }

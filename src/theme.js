@@ -2,6 +2,14 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { green, grey, red } from '@material-ui/core/colors';
 
 const rawTheme = createMuiTheme({
+  overrides: {
+    MuiPickersToolbar: {
+      toolbar: {
+        height: 125
+      }
+    }
+  },
+
   palette: {
     primary: {
       light: '#69696a',
@@ -11,7 +19,6 @@ const rawTheme = createMuiTheme({
     secondary: {
       light: '#fff5f8',
       main: '#bf1f22', 
-      // former main: '#ff3366'
       dark: '#e62958',
     },
     warning: {
