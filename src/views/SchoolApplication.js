@@ -20,10 +20,7 @@ function SchoolApplication(props) {
   const { authUser, firebase } = props;
 
   const [ userInput, setUserInput ] = useState(INITIAL_STATE);
-  const [ progress, setProgress ] = useState({ 
-    loading: false, 
-    error: false, 
-    message: null });
+  const [ error, setError ] = useState(null);
 
   const handleFormInput = e => {
     const field = e.target.name;
@@ -36,27 +33,18 @@ function SchoolApplication(props) {
   }
 
   const onSubmit = event => {
-    setProgress(prevState => ({...prevState, loading: true}));
-
     const { agreeToPrivacy, ...schoolApplication } = userInput;
 
-    if (!agreeToPrivacy) {
-      setProgress({loading: false, error: true, message: 'Please review and agree to the privacy agreement.'});
-      return;
-    }
-
-    firebase.schoolApplications(authUser.uid).add({
+    firebase.schoolApplications().add({
       authorID: authUser.uid,
       createdAt: Date.now(),
       updatedAt: Date.now(),
       status: STATUSES[0],
       ...schoolApplication})
     .then(() => {
-      setProgress(prevState => ({...prevState, loading: false}));
       history.push('/profile');
     })
-    .catch(err => 
-      setProgress({loading: false, error: true, message: err}));
+    .catch(err => setError(err.message));
 
     event.preventDefault();
   }
@@ -68,11 +56,11 @@ function SchoolApplication(props) {
 
   return (
     <Container>
-      {progress.error && 
+      {error && 
         <ErrorSnackbar 
-          isOpen={progress.error}
-          onCloseHandler={() => setProgress({loading: false, error: false, message: null})}
-          errorMessage={progress.message}/>}
+          isOpen={!!error}
+          onCloseHandler={() => setError(null)}
+          errorMessage={error}/>}
 
       <ValidatorForm className={classes.root} onSubmit={onSubmit}>
         {formFields.map(field => {
