@@ -18,25 +18,6 @@ service cloud.firestore {
     function contentIsValid() {
       return request.resource.data.keys().hasAll(["title", "description"]);
     }
-
-    function personalInfoIsValid() {
-      return request.resource.data.keys().hasAll(["address", "birthDate", "email", "emergencyContactNumber", "emergencyContactRelation", "firstName", "gender", "lastName", "phoneNumber"]);
-    }
-
-    function schoolInfoIsValid() {
-      return personalInfoIsValid() && 
-      request.resource.data.keys().hasAll(["programName", "schoolName", "startDate"]);
-    }
-
-    function homestayInfoIsValid() {
-      return personalInfoIsValid() && 
-      request.resource.data.keys().hasAll(["homestayStartDate", "homestayEndDate"]);
-    }
-
-    function airportRideInfoIsValid() {
-      return personalInfoIsValid() &&
-      request.resource.data.keys().hasAll(["arrivalFlightDate", "arrivalFlightName", "arrivalFlightTime", "departureFlightDate", "departureFlightName", "departureFlightTime"]);
-    }
  
     match /aggregates/{aggregate} {
       allow read;
@@ -87,17 +68,17 @@ service cloud.firestore {
 
     match /airportRideApplications/{airportApplication} {
       allow read, delete: if isAdmin() || isOwner();
-      allow create, update: if isLoggedIn() && airportRideInfoIsValid();
+      allow create, update: if isLoggedIn();
     }    
 
     match /homestayApplications/{homestayApplication} {
       allow read, delete: if isAdmin() || isOwner();
-      allow create, update: if isLoggedIn() && homestayInfoIsValid();
+      allow create, update: if isLoggedIn();
     }    
 
     match /schoolApplications/{schoolApplication} {
       allow read, delete: if isAdmin() || isOwner();
-      allow create, update: if isLoggedIn() && schoolInfoIsValid();
+      allow create, update: if isLoggedIn();
     }
   }
 }
