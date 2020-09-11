@@ -20,6 +20,7 @@ function UserApplicationHistory(props) {
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell align='center'>Name</TableCell>
                   <TableCell align='center'>Program</TableCell>
                   <TableCell align='center'>School</TableCell>
                   <TableCell align='center'>Date Submitted</TableCell>
@@ -32,13 +33,17 @@ function UserApplicationHistory(props) {
                   props.applications.map(application => {
                     return (
                       <TableRow key={application.id}>
+                        <TableCell align='center'>{application.firstName} {application.lastName}</TableCell>
                         <TableCell align='center'>{application.programName} ({application.programDuration} weeks)</TableCell>
                         <TableCell align='center'>{application.schoolName}</TableCell>
                         <TableCell align='center'>{format(application.createdAt, 'P')}</TableCell>
                         <TableCell align='center'>{application.status}</TableCell>
                         <TableCell align='center'>
                           {(application.status !== STATUSES[2]) && "No changes can be made at this time."}
-                          {(application.status === STATUSES[2]) && <Button color="secondary" size="small">Pay Tuition</Button>}
+                          {(application.status === STATUSES[2]) && 
+                            <Button size="small" color="secondary" href='mailto:goose.education@gmail.com'>
+                              Pay Tuition
+                            </Button>}
                         </TableCell>
                       </TableRow>
                     )
