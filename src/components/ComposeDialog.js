@@ -18,7 +18,7 @@ const INITIAL_STATE = {
 }
 
 function ComposeDialogBase(props) {
-  const { authUser, firebase, history, composeOpen, onClose, composeType } = props;
+  const { authUser, firebase, composeOpen, onClose, composeType } = props;
   
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
   const { isEdit, isLoading, title, tag, description, instagramURL, link1, link2, uploads } = state;
@@ -26,51 +26,47 @@ function ComposeDialogBase(props) {
   const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'EDIT_FORM', payload: { composeType, isEdit, prevContent }});
   const handleFormFields = event => dispatch({ payload:event.target });
   const handleRichText = htmlString => dispatch({ type:'RICH_TEXT', payload: htmlString });
-  const handleFileUpload = event => dispatch({ type:'FILE_UPLOAD', payload:event.target.files[0] });
+  const handleFileUpload = event => dispatch({ type:'FILE_UPLOAD', payload: event.target.files[0] });
 
   const onSubmit = event => {
     dispatch({ type: 'INITIALIZE_SAVE' });
 
+    // user uploads a file with the form (note. empty array overwrites to a File object)
+    const isFileUploaded = uploads.length && uploads instanceof File;
+
     // configure Firestore collection/document locations
-    let uploadKey, uploadRef, newDoc, formContent, redirectPath;
+    let uploadKey, uploadRef, newDoc, formContent;
     switch (composeType) {
       case "article": {
         const { isEdit, isLoading, uploads, ...articleForm } = state;
         uploadKey = 'image';
-        uploadRef = firebase.imagesRef(uploads);
-        newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
+        uploadRef = isFileUploaded && firebase.imagesRef(uploads);
+        newDoc = isEdit ? firebase.article(state.id) : firebase.articles();
         formContent = {...articleForm};
-        redirectPath = {
-          pathname: '/networking', 
-          state: { title: 'Networking', selected: 0 }
-        }
-        break;
-      }
-
-      case "message": {
-        const { isEdit, isLoading, tag, instagramURL, uploads, ...messageForm } = state;
-        uploadKey = 'attachments';
-        uploadRef = firebase.attachmentsRef(uploads);
-        newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
-        formContent = {...messageForm}
-        redirectPath = {
-          pathname: '/services',
-          state: { title: 'Service Centre', tab: 1 }
-        }
         break;
       }
 
       case "announce": {
         const { isEdit, isLoading, uploads, ...announceForm } = state;
         uploadKey = 'attachments';
-        uploadRef = firebase.attachmentsRef(uploads);
-        newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
+        uploadRef = isFileUploaded && firebase.attachmentsRef(uploads);
+        newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements();
         formContent = {...announceForm};
-        redirectPath = {
-          pathname: '/services', 
-          state: { title: 'Service Centre', tab: 0 }
-        }
+        break;
       }
+
+      case "message": {
+        const { isEdit, isLoading, tag, instagramURL, uploads, ...messageForm } = state;
+        uploadKey = 'attachments';
+        uploadRef = isFileUploaded && firebase.attachmentsRef(uploads);
+        newDoc = isEdit ? firebase.message(state.id) : firebase.messages();
+        formContent = {...messageForm}
+        break;
+      }
+
+      default: 
+        console.log('Missing compose type for Compose Dialog onSubmit.');
+        return;
     }
 
     const defaultDocFields = {
@@ -78,40 +74,44 @@ function ComposeDialogBase(props) {
       authorDisplayName: authUser.roles['admin'] ? '슈퍼관리자' : authUser.displayName,
       comments: [],
       ...!isEdit && { createdAt: Date.now() },
-      updatedAt: Date.now(),
-      views: 0
+      updatedAt: Date.now()
     }
 
-    // user uploads a file with the form (note. empty array overwrites to a File object)
-    if (uploads.length !== 0) {
-      const metadata = { customMetadata: { "owner": authUser.uid } }
+    if (isFileUploaded) {
       const uploadTask = uploadRef.put(uploads, metadata);
+      const metadata = { customMetadata: { "owner": authUser.uid } }
 
-      uploadTask.on('state_changed', function(snapshot) {
-      }, function(error) { dispatch({ type: 'error', payload: error.code });
-      }, function () {
+      uploadTask.on('state_changed', snapshot => {
+      },
+
+      error => { 
+        dispatch({ type: 'error', payload: error.code });
+      }, 
+
+      () => {
         uploadTask.snapshot.ref.getDownloadURL()
-        .then(function(downloadURL) {
-          newDoc.set({
-            ...defaultDocFields,
-            ...formContent,
-            [uploadKey]: downloadURL
-          }, { merge: true })
-        .then(() => {
-          onClose();
-          history.push(redirectPath)});
+          .then(function(downloadURL) {
+            newDoc.set({
+              ...defaultDocFields,
+              ...formContent,
+              [uploadKey]: downloadURL
+            }, { merge: true })
+          .then(() => {
+            onClose();
+          });
         })});
 
     // user does not upload a file with the form
     } else {
-      newDoc.set({
+      newDoc.add({
         ...defaultDocFields,
         ...formContent,
-        [uploadKey]: uploads
-      }, { merge: true })
+        [uploadKey]: []
+      })
       .then(() => {
         onClose();
-        history.push(redirectPath)});
+        // history.push(redirectPath)
+      });
     }
     event.preventDefault();
   }
@@ -120,7 +120,7 @@ function ComposeDialogBase(props) {
     ValidatorForm.addValidationRule('isSelected', value => !!value);
     // (optional cleanup mechanism for effects) - remove rule when not needed;
     return () => ValidatorForm.removeValidationRule('isSelected');
-  }, []);
+  });
 
 
   useEffect(() => {
@@ -135,7 +135,7 @@ function ComposeDialogBase(props) {
     const { composeType, isEdit } = props;
     const prevContent = props.article;
     prevContent && configureEditForm(composeType, isEdit, prevContent);
-  }, [props.article]);
+  }, [props]);
   
   return (
     <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='md'>
@@ -195,6 +195,7 @@ function ComposeDialogBase(props) {
             onChange={handleFormFields}
           />
 
+          <br/>
           {composeType === 'article' ? 
             <StyledValidators.FileUpload
               name='file'
@@ -208,7 +209,7 @@ function ComposeDialogBase(props) {
             <Input type="file" disableUnderline onChange={handleFileUpload}/>
           }
 
-          <br/>
+          <br/><br/>
           <Button 
             type="submit"
             variant="contained" 
@@ -225,23 +226,24 @@ function ComposeDialogBase(props) {
 
 function generateDialogTitle(isEdit, composeType) {
   switch(isEdit) {
-    case false: {
+    case false:
       switch (composeType) {
         case "article": return "Create Post";
         case "message": return "Create Counselling Request";
         case "announce": return "Create Announcement";
+        default: return;
       }
-    }
-    break;
     
-    case true: {
+    case true:
       switch (composeType) {
         case "article": return "Edit Post";
         case "message": return "Edit Counselling Request";
         case "announce": return "Edit Announcement";
-      }
+        default: return;
     }
-    break;
+
+    default:
+      return;
   }
 }
 
@@ -259,6 +261,7 @@ function toggleReducer(state, action) {
         const { attachments, ...prepopulateForm } = prevContent;
         return { ...prepopulateForm, isEdit, isLoading: false, uploads: [] }
       }
+      break;
 
     case 'INITIALIZE_SAVE':
       return { ...state, isLoading: true }
