@@ -54,14 +54,15 @@ class Firebase {
           next(authUser);
 
         });
-      // } else {
-      //   fallback();
+      } else {
+        fallback();
       }
     }) 
   }
 
   // A U T H E N T I C A T I O N  A P I
   createAccountWithEmailAndPassword = (email, password) => this.auth.createUserWithEmailAndPassword(email, password);
+  updateAccountProfile = fields => this.auth.currentUser.updateProfile(fields);
 
   doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password);
   doSignOut = () => this.auth.signOut();

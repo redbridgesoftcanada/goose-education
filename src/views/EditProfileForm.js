@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
-import { Button, Container, FormGroup } from "@material-ui/core";
-import { withAuthorization } from '../components/session';
+import { useHistory } from "react-router-dom";
+import { Button, Container } from "@material-ui/core";
 import { ValidatorForm } from 'react-material-ui-form-validator';
-import StyledValidators from '../components/customMUI';
 import { convertToSentenceCase } from '../constants/helpers/_features';
+import { withAuthorization } from '../components/session';
+import StyledValidators from '../components/customMUI';
+import ErrorSnackbar from '../components/ErrorSnackbar';
 import useStyles from '../styles/profile';
 
 const EditProfileForm = (props) => {
   const classes = useStyles();
+  const history = useHistory();
   const { authUser, firebase, profile } = props;
   let { lastSignInTime, roles, ...profileForm } = profile;
   profileForm = Object.keys(profileForm).sort();
 
   const [ state, setState ] = useState({...profile});
-  const [ error, setError ] = useState({ exists: false, message: null });
+  const [ error, setError ] = useState(null);
 
   const { username, email } = state;
 
@@ -23,70 +26,43 @@ const EditProfileForm = (props) => {
     setState({ ...state, [formField]: value });
   }
 
-  const onSubmit = event => {
-    const profileForm = state;
-
-    firebase.user(authUser.uid).update({...profileForm})
-    .then(authUser => {
-      const user = authUser.user;
-      user.updateProfile({
-        displayName: username,
-        email
-      });
-    })
-    .catch(error => setState(error));
+  const onSubmit = async event => {
+    try {
+      const updateUserDoc = firebase.user(authUser.uid).update({...state});
+      const updateUserProfile = firebase.updateAccountProfile({ displayName: username, email });
+  
+      await Promise.all([updateUserDoc, updateUserProfile]).then(() => history.push('/profile'));
+    } catch (err) {
+      setError(error)
+    }
+    
     event.preventDefault();
   }
 
   return (
     <Container>
+      
+      {error && 
+          <ErrorSnackbar 
+          isOpen={!!error}
+          onCloseHandler={() => setError(null)}
+          errorMessage={error}/>
+      }
+
       <ValidatorForm onSubmit={onSubmit}>
-        {profileForm.map((formField, i) => {
-          const isNumberInput = formField.includes('Number');
-          
-          const inputType = isNumberInput ? 'tel' : formField === 'email' ? 'email' : 'text';
-
-          const valRules = { validators: ['required'], errorMessages: [''] }
-          const phValRules = { validators: ['required', 'isNumber'], errorMessages: ['', ''] }
-          const validationRules = isNumberInput ? phValRules : valRules;
-
-          const inputProps = {
-            key: i,
-            type: inputType,
-            label: convertToSentenceCase(formField),
-            name: formField,
-            defaultValue: state[formField],
-            value: state[formField],
-            onChange: onChange,
-            ...validationRules
-          }
-
-        if (formField === 'receiveEmails' || formField === 'publicAccount') {
-          const emailHelperText = 'I would like to receieve email notifications.';
-          const publicHelperText = 'Allow others to see my information. Please allow for 0 number of days for your account settings to be changed.';
-          return (
-            <Container key={i}>
-              <FormGroup>
-                <StyledValidators.CustomCheckbox
-                  key={i}
-                  checked={state[formField]}
-                  name={formField}
-                  onChange={onChange}
-                  label={convertToSentenceCase(formField)}
-                  additionalText={formField === 'receiveEmails' ? emailHelperText : publicHelperText}
-                />
-              </FormGroup>
-            </Container>
-          )
-        } else if (formField === 'receiveSMS') {
-          return;
-        }
-        
-        return <StyledValidators.TextField {...inputProps}/>
-      })}
+        {profileForm.map((formField, i) => 
+          <StyledValidators.TextField 
+            key={i}
+            label={convertToSentenceCase(formField)}
+            name={formField}
+            value={state[formField]}
+            onChange={onChange}
+            validators={['required', 'isQuillEmpty']}
+            errorMessages={['', '']}
+          />
+        )}
   
-        <Button
-          className={classes.submitButton}
+        <Button className={classes.submitButton}
           fullWidth
           variant="contained" 
           color="secondary" 
