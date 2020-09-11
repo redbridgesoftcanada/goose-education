@@ -23,19 +23,32 @@ export default function SocialMediaButtons(props) {
 }
 
 function customButtonToolTip(classes, label, icon) {
+    
+    const { footerRight } = JSON.parse(localStorage.getItem('footer'));
+    const { FR1, FR2, FR3 } = footerRight;
+
     const isEmail = label === 'goose.education@gmail.com';
-    const configIconButton = {
-        component: Link,
-        href: 'https://pf.kakao.com/_hNspC',
-        target: '_blank'
+
+    const configIconButton = { component: Link, target: '_blank' }
+    switch (label) {
+        case 'Instagram':
+            configIconButton.href = FR1.image;
+            break;
+
+        case 'Facebook': 
+            configIconButton.href = FR2.image;
+            break;
+
+        case 'Kakao':
+            configIconButton.href = FR3.image;
+            break;
     }
     
     return (
         <Grid item xs={3} md={3}>
             <Tooltip title={label} placement='top'>
-                <IconButton 
-                    className={classes.toolTipButton}
-                    {...!isEmail && configIconButton}>
+                <IconButton className={classes.toolTipButton}
+                    {...!isEmail ? configIconButton : { href: `mailto:${label}` }}>
                         {icon}
                 </IconButton>
             </Tooltip>
