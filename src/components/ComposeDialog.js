@@ -41,7 +41,7 @@ function ComposeDialogBase(props) {
         const { isEdit, isLoading, uploads, ...articleForm } = state;
         uploadKey = 'image';
         uploadRef = isFileUploaded && firebase.imagesRef(uploads);
-        newDoc = isEdit ? firebase.article(state.id) : firebase.articles();
+        newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
         formContent = {...articleForm};
         break;
       }
@@ -50,7 +50,7 @@ function ComposeDialogBase(props) {
         const { isEdit, isLoading, uploads, ...announceForm } = state;
         uploadKey = 'attachments';
         uploadRef = isFileUploaded && firebase.attachmentsRef(uploads);
-        newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements();
+        newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
         formContent = {...announceForm};
         break;
       }
@@ -59,7 +59,7 @@ function ComposeDialogBase(props) {
         const { isEdit, isLoading, tag, instagramURL, uploads, ...messageForm } = state;
         uploadKey = 'attachments';
         uploadRef = isFileUploaded && firebase.attachmentsRef(uploads);
-        newDoc = isEdit ? firebase.message(state.id) : firebase.messages();
+        newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
         formContent = {...messageForm}
         break;
       }
@@ -103,7 +103,7 @@ function ComposeDialogBase(props) {
 
     // user does not upload a file with the form
     } else {
-      newDoc.add({
+      newDoc.set({
         ...defaultDocFields,
         ...formContent,
         [uploadKey]: []
