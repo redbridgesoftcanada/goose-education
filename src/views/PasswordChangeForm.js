@@ -18,15 +18,7 @@ function PasswordChangeForm(props) {
     const onChange = e => setState({...state, [e.target.name]: e.target.value});
 
     const onSubmit = e => {
-        firebase.changeAccountPassword(state.prevPassword, state.passwordOne, setNotification)
-        .then(() => {
-            setNotification('New password saved!');
-            setState({
-                prevPassword: '',
-                passwordOne: '',
-                passwordTwo: ''
-            });
-        })
+        firebase.changeAccountPassword(state.prevPassword, state.passwordOne, setNotification);
         e.preventDefault();
     }
 

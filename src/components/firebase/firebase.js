@@ -75,18 +75,16 @@ class Firebase {
       return;
     }
 
-    const user = this.auth.currentUser;
-
     // Firebase: security-sensitive actions require to re-authenticate the user by getting new sign-in credentials;
-    const credentials = this.firebase.EmailAuthProvider.credential(
-      user.email,
-      providedPassword
-    );
+    const user = this.auth.currentUser;
+    const credentials = this.firebase.EmailAuthProvider.credential(user.email, providedPassword);
     
     user.reauthenticateWithCredential(credentials).then(() => {
-      user.updatePassword(newPassword)
+      user.updatePassword(newPassword);
+      setNotification('New password saved!');
+    }).catch(error => { 
+      setNotification(error.message);
     })
-    .catch(error => { setNotification(error.message) })
   }
   
 
