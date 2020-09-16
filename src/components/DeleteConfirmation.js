@@ -46,6 +46,11 @@ export default function DeleteConfirmation(props) {
             content = 'Deleted comments cannot be recovered.';
             break;
         
+        case 'account': 
+            title = 'Delete this account?';
+            content = 'Deleted accounts cannot be recovered.';
+        break;
+
         default:
         
         return [title, content];

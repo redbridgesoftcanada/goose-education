@@ -84,7 +84,30 @@ class Firebase {
       setNotification('New password saved!');
     }).catch(error => { 
       setNotification(error.message);
-    })
+    });
+  }
+
+  deleteAccount = (email, password, setNotification, setDialog) => {
+    const user = this.auth.currentUser;
+    const credentials = this.firebase.EmailAuthProvider.credential(email, password);
+    const cleanupActions = message => {
+      setDialog();
+      setNotification(message);
+    }
+
+    user.reauthenticateWithCredential(credentials).then(async () => {
+      const deleteUserDoc = this.db.doc(`users/${user.uid}`).delete();
+      const deleteUserAccount = user.delete();
+      const signout = this.auth.signOut();
+  
+      await Promise.all([deleteUserDoc, deleteUserAccount, signout]).catch(error => {
+        console.log('A promise failed to resolve in account deletion.');
+        cleanupActions(error.message);
+      });
+    }).catch(error => {
+      console.log('User reauthentication failed.');
+      cleanupActions(error.message);
+    });
   }
   
 
