@@ -42,14 +42,5 @@ export const useStyles = props => {
       },
     },
 
-    formField: {
-      margin: `${theme.spacing(2)}px 0`
-    },
-
-    error: {
-      ...theme.typography.body2,
-      color: theme.palette.secondary.main
-    }
-
   }))(props);
 }

@@ -1,53 +1,52 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Button, Typography } from "@material-ui/core";
+import { ValidatorForm } from 'react-material-ui-form-validator';
 import StyledValidators  from '../components/customMUI';
+import ErrorSnackbar from '../components/ErrorSnackbar';
 import { withFirebase } from '../components/firebase';
 import { useStyles } from '../styles/forgotPassword';
 
-const INITIAL_STATE = {
-  email: '',
-  error: null,
-};
-
 function PasswordForgetForm({ firebase, form }) {
   const classes = useStyles();
-  const { firebaseValidator } = StyledValidators;
 
-  const [ state, setState ] = useState({...INITIAL_STATE});
-  const { email, error } = state;
-
-  const onChange = event => setState({
-    ...state,
-    error: null,
-    [event.target.name]: event.target.value});
+  const [ email, setEmail ] = useState('');
+  const [ notification, setNotification ] = useState(null);
 
   const onSubmit = event => {
-    firebase.doPasswordReset(email)
-    .then(() => setState({...INITIAL_STATE}))
-    .catch(error => setState( error ));
-
+    firebase.doPasswordReset(email);
+    setNotification('Please check your email for instructions to reset your password.');
     event.preventDefault();
   }
 
   return (
     <>
+      {notification && 
+        <ErrorSnackbar 
+        isOpen={!!notification}
+        onCloseHandler={() => setNotification(null)}
+        errorMessage={notification}/>}
+
       <Typography className={classes.formTitle}>{form.title}</Typography>
       <Typography className={classes.formSubtitle}>{form.subtitle}</Typography>
-      <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
-        <Box className={classes.formField}>
-          {firebaseValidator('text', 'email', email, 'Email', onChange, error)}
+      <ValidatorForm className={classes.root} onSubmit={onSubmit}>
+        <Box mx={2}>
+          <StyledValidators.AuthLoginField
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            error={notification}
+            validators={['required', 'isQuillEmpty', 'isEmail']}
+            errorMessages={['', '', '']}
+          />
         </Box>
-        {error && <Typography className={classes.error}>{error.message}</Typography>}
         <Button
           variant="contained" 
           color="secondary"
-          size="large" 
           type="submit"
         >
           {form.caption}
         </Button>
-      </form>
+      </ValidatorForm>
     </>
   )
 }
