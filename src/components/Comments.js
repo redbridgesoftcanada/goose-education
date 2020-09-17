@@ -14,9 +14,10 @@ function Comments(props) {
 
   const [ state, setState ] = useState({
     formType: props.formType,
+    selectedResource: props.selectedResource,
     listOfComments: props.listOfComments,
     selectedComment: null,
-    selectedResource: props.selectedResource,
+    selectedCommentBody: '',
     commentAnchor: null,
     commentConfirmOpen: false,
     commentDialogOpen: false,
@@ -24,26 +25,68 @@ function Comments(props) {
 
   const handleMenuOpen = e => setState(state => ({ ...state, commentAnchor: e.currentTarget }));
   const handleMenuClose = () => setState(state => ({ ...state, commentAnchor: null }));
-  const handleCancel = () => setState(state => ({ ...state, commentDialogOpen: !state.commentDialogOpen, selectedComment: null }));
-  const handleDeleteConfirmation = () => setState(state => ({ ...state, commentAnchor: null, commentConfirmOpen: !state.commentConfirmOpen }));
+
+  const handleChange = e => {
+    const userInput = e.currentTarget.value;
+    setState(state => ({ ...state, selectedCommentBody: userInput }));
+  }
+  
+  const handleCancel = () => setState(state => ({ ...state, selectedComment: null, commentDialogOpen: !state.commentDialogOpen }));
+
+  const handleDeleteConfirmation = e => setState(state => ({ ...state, commentConfirmOpen: !state.commentConfirmOpen }));
 
   const handleEdit = () => {
-    const matchCommentObj = state.listOfComments.find(comment => comment.id === state.commentAnchor.id);
-    setState(state => ({ ...state, commentAnchor: null, commentDialogOpen: !state.commentDialogOpen, selectedComment: matchCommentObj }));
+    const commentMatch = state.listOfComments.find(comment => comment.id === state.commentAnchor.id);
+    setState(state => ({ 
+      ...state, 
+      selectedComment: commentMatch, 
+      selectedCommentBody: commentMatch.description, 
+      commentAnchor: null, 
+      commentDialogOpen: !state.commentDialogOpen
+    }));
+  }
+  
+  const onSubmit = e => {
+    const collectionRef = configFirebase(firebase, state.formType, state.selectedResource.id);
+
+    firebase.transaction(t => {
+      return t.get(collectionRef).then(doc => {
+        const commentsArr = doc.data().comments;
+        const filteredCommentsArr = commentsArr.filter(comment => comment.id !== state.selectedComment.id);
+        
+        const selectedComment = commentsArr.find(comment => comment.id === state.selectedComment.id);
+        selectedComment.description = state.selectedCommentBody;
+        selectedComment.updatedAt = Date.now();
+
+        filteredCommentsArr.push(selectedComment);
+        t.update(collectionRef, { comments: filteredCommentsArr });
+    })})
+    .then(() => setState(state => ({ 
+        ...state, 
+        selectedComment: null,
+        selectedCommentBody: '', 
+        commentDialogOpen: !state.commentDialogOpen 
+      })));
+    e.preventDefault();
   }
 
-  const handleCommentDelete = id => {
+  const onDelete = e => {
     const collectionRef = configFirebase(firebase, state.formType, state.selectedResource.id);
 
     firebase.transaction(t => {
       return t.get(collectionRef).then(doc => {
         const commentsArr = doc.data().comments;
 
-        const filteredCommentsArr = commentsArr.filter(comment => comment.id !== id);
+        const filteredCommentsArr = commentsArr.filter(comment => comment.id !== state.commentAnchor.id);
 
         t.update(collectionRef, { comments: filteredCommentsArr });
       })})
-      // .then(() => resetAllActions());
+      .then(() => setState(state => ({ 
+        ...state, 
+        commentAnchor: null,
+        commentConfirmOpen: !state.commentConfirmOpen 
+    })));
+    e.preventDefault();
   }
 
   return (
@@ -68,10 +111,10 @@ function Comments(props) {
                 :
                 state.selectedComment.id === comment.id &&
                 <CommentDialog 
-                  formType={state.formType}
-                  selectedResource={state.selectedResource} 
-                  prevComment={comment} 
-                  onClose={handleCancel}/>
+                  commentBody={state.selectedCommentBody} 
+                  handleChange={handleChange}
+                  onClose={handleCancel}
+                  onSubmit={onSubmit}/>
               }
             </Grid>
 
@@ -99,7 +142,7 @@ function Comments(props) {
               <DeleteConfirmation 
                 deleteType='comment' 
                 open={state.commentConfirmOpen} 
-                handleDelete={() => handleCommentDelete(comment.id)} 
+                handleDelete={onDelete} 
                 onClose={handleDeleteConfirmation}/>
             </>
           }
