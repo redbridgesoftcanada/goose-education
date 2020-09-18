@@ -17,10 +17,7 @@ import useStyles from '../styles/serviceCentre';
 
 const INITIAL_STATE = {
     comment: '',
-    commentAnchor: null,
-    commentDialogOpen: false,
     commentCollapseOpen: false,
-    commentConfirmOpen: false,
     editAnchor: null,
     editDialogOpen: false,
     editConfirmOpen: false
@@ -34,8 +31,7 @@ function Article(props) {
 
     const [ error, setError ] = useState(null);
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { comment, commentAnchor, commentCollapseOpen, commentDialogOpen, commentConfirmOpen, editAnchor, editConfirmOpen, editDialogOpen } = state;
-    const commentAnchorOpen = Boolean(commentAnchor);
+    const { comment, commentCollapseOpen, editAnchor, editConfirmOpen, editDialogOpen } = state;
     const editAnchorOpen = Boolean(editAnchor);
     const isArticleOwner = (!authUser) ? false : authUser.uid === article.authorID;
 
@@ -48,20 +44,6 @@ function Article(props) {
     const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
     const handleRedirect = () => history.push({ pathname: '/networking', state: { title: 'Networking', selected: 0 } });
     const handleArticleDelete = () => firebase.deleteArticle(article.id).then(() => handleRedirect());
-
-    const commentsProps = { 
-        formType: 'article', 
-        selectedResource: article,
-        commentAnchor, 
-        commentAnchorOpen, 
-        commentDialogOpen, 
-        commentConfirmOpen, 
-        openPostActions, 
-        closePostActions, 
-        handleEdit, 
-        handleDeleteConfirmation, 
-        resetAllActions
-    }
   
     const onCommentSubmit = event => {
       firebase.article(article.id).update({ 
@@ -218,16 +200,12 @@ function Article(props) {
                 CommentFormField
             }
 
-            {!!article.comments.length && article.comments.map((comment, i) => {
-                    const isCommentOwner = authUser && authUser.uid === comment.authorID;
-                    return (
-                        <Comments 
-                            key={i}  
-                            comment={comment} 
-                            isCommentOwner={isCommentOwner} 
-                            {...commentsProps}/> 
-                    );
-                })
+            {!!article.comments.length &&
+                <Comments 
+                    formType='article' 
+                    authUser={authUser}
+                    selectedResource={article}
+                    listOfComments={article.comments}/> 
             }
         </Container>
     )
@@ -261,8 +239,7 @@ function toggleReducer(state, action) {
             return { ...state, comment: payload }
 
         case 'OPEN_ACTIONS':
-            const anchorKey = (payload.id === 'article') ? 'editAnchor' : 'commentAnchor';
-            return { ...state, [anchorKey]: payload }
+            return { ...state, editAnchor: payload }
 
         case 'CLOSE_ACTIONS':
             return { ...state, editAnchor: null, commentAnchor: null }
@@ -271,19 +248,17 @@ function toggleReducer(state, action) {
             return { ...state, commentCollapseOpen: !state.commentCollapseOpen }
         
         case 'CONFIRM_DELETE':
-            const confirmKey = (payload.id === 'article') ? 'editConfirmOpen' : 'commentConfirmOpen';
             return { 
                 ...state, 
-                [confirmKey]: !state[confirmKey],
-                ...(!state[confirmKey]) && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
+                editConfirmOpen: !state.editConfirmOpen,
+                ...!state.editConfirmOpen && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
             }
         
         case 'EDIT_CONTENT':
-            const dialogKey = (payload.id === 'article') ? 'editDialogOpen' : 'commentDialogOpen';
             return { 
                 ...state, 
-                [dialogKey]: !state[dialogKey],
-                ...(!state[dialogKey]) && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
+                editDialogOpen: !state.editDialogOpen,
+                ...!state.editDialogOpen && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
             }
         
         case 'RESET_ACTIONS': {

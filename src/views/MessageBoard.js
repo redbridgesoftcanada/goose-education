@@ -44,7 +44,7 @@ export default function MessageBoard(props) {
         error: error.message, 
         isError: error.exists }
 
-    const [ paginate, setPagination ] = useState({ currentPage: 0, pageLimit: 10 });
+    const [ paginate, setPagination ] = useState({ currentPage: 0, pageLimit: 20 });
     const totalPages = Math.ceil(filteredMessages.length / paginate.pageLimit);
     const paginatedMessages = createPagination(filteredMessages, currentPage, paginate.pageLimit, totalPages);
 

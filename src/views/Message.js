@@ -14,41 +14,33 @@ import StyledValidators from '../components/customMUI';
 import Comments from '../components/Comments';
 import useStyles from '../styles/serviceCentre.js';
 
+const INITIAL_STATE = {
+    comment: '',
+    commentCollapseOpen: true,
+    editAnchor: null,
+    editDialogOpen: false,
+    editConfirmOpen: false
+}
+
 function Message(props) {
     const classes = useStyles(props);
     const history = useHistory();
     const xsBreakpoint = MuiThemeBreakpoints().xs;
     const { authUser, firebase, selectedMessage } = props;
-    
-    const INITIAL_STATE = {
-        comment: '',
-        commentAnchor: null,
-        commentCollapseOpen: false,
-        commentDialogOpen: false,
-        commentConfirmOpen: false,
-        editAnchor: null,
-        editDialogOpen: false,
-        editConfirmOpen: false
-    }
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { comment, commentAnchor, commentCollapseOpen, commentDialogOpen, commentConfirmOpen, editAnchor, editConfirmOpen, editDialogOpen } = state;
-    const commentAnchorOpen = Boolean(commentAnchor);
+    const { comment, commentCollapseOpen, editAnchor, editConfirmOpen, editDialogOpen } = state;
     const editAnchorOpen = Boolean(editAnchor);
     
     const redirectPath = () => history.push({ pathname: '/services', state: { title: 'Service Centre', tab: 1 }});
     const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
     const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS' });
-    const handleComment = value => dispatch({ type:'NEW_COMMENT', payload:value });
+    const handleComment = event => dispatch({ type:'NEW_COMMENT', payload: event.target.value });
     const handleDeleteConfirmation = event => (event.currentTarget.id) ? dispatch({ type:'CONFIRM_DELETE', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
     const handleEdit = event => (event.currentTarget.id) ? dispatch({ type: 'EDIT_CONTENT', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
     const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
-    const handleCollapse = e => {
-        dispatch({ type: 'TRIGGER_COLLAPSE' })
-    }
+    const handleCollapse = () => dispatch({ type: 'TRIGGER_COLLAPSE' });
     const handleMessageDelete = () => firebase.deleteMessage(selectedMessage.id).then(() => redirectPath());
-
-    const commentsProps = { formType: 'message', classes, firebase, commentAnchor, commentAnchorOpen, commentDialogOpen, commentConfirmOpen, openPostActions, closePostActions, handleEdit, handleDeleteConfirmation, resetAllActions, selectedResource: selectedMessage }
 
     let isMessageOwner;
     if (!selectedMessage) {
@@ -66,13 +58,21 @@ function Message(props) {
                 description: comment,
                 createdAt: Date.now(),
                 updatedAt: Date.now()
-        })}).then(() => { 
-            handleComment('');
-            redirectPath();
-           })
-        // .catch(error => dispatch({ type: 'error', payload: error }))
+        })});
         event.preventDefault();
     }
+
+    const CommentFormField = 
+        <ValidatorForm onSubmit={onCommentSubmit}>
+            <StyledValidators.TextField
+                multiline
+                rows={5}
+                value={comment}
+                onChange={handleComment}
+                validators={['isQuillEmpty']}
+                errorMessages={['']}/>
+            <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+        </ValidatorForm>
 
     return (
         <Container>
@@ -175,46 +175,26 @@ function Message(props) {
                 {selectedMessage.comments.length} Comments
             </Typography>
 
-            {!xsBreakpoint && isMessageOwner ? 
-            <Collapse in={commentCollapseOpen} timeout="auto" unmountOnExit>
-                <ValidatorForm onSubmit={onCommentSubmit}>
-                    <StyledValidators.TextField
-                        multiline
-                        rows={5}
-                        value={comment}
-                        onChange={handleComment}
-                        validators={['isQuillEmpty']}
-                        errorMessages={['']}/>
-                    <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-                </ValidatorForm>
-            </Collapse>
-            :
-            <ValidatorForm onSubmit={onCommentSubmit}>
-                <StyledValidators.TextField
-                    multiline
-                    rows={5}
-                    value={comment}
-                    onChange={handleComment}
-                    validators={['isQuillEmpty']}
-                    errorMessages={['']}/>
-                <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-            </ValidatorForm>
+            {
+                !authUser ? 
+                <Typography>Please login/register to post comments.</Typography>
+                :
+                !xsBreakpoint && isMessageOwner ? 
+                <Collapse in={commentCollapseOpen} timeout="auto" unmountOnExit>
+                    {CommentFormField}
+                </Collapse>
+                :
+                CommentFormField
             }
 
-            {selectedMessage.comments.length ? 
-                selectedMessage.comments.map((comment, i) => {
-                    const isCommentOwner = authUser.uid === comment.authorID;
-                    return (
-                        <Comments 
-                            key={i}  
-                            comment={comment} 
-                            isCommentOwner={isCommentOwner} 
-                            {...commentsProps}/> 
-                    );
-                })
-            :
-                <Typography>There are currently no comments.</Typography> 
+            {!!selectedMessage.comments.length && 
+                <Comments 
+                    formType='message'
+                    authUser={authUser}
+                    selectedResource={selectedMessage}
+                    listOfComments={selectedMessage.comments}/> 
             }
+
         </Container>
     )
 }
@@ -247,28 +227,26 @@ function toggleReducer(state, action) {
             return { ...state, comment: payload }
 
         case 'OPEN_ACTIONS':
-            const anchorKey = (payload.id === 'message') ? 'editAnchor' : 'commentAnchor';
-            return { ...state, [anchorKey]: payload }
+            return { ...state, editAnchor: payload }
 
         case 'CLOSE_ACTIONS':
             return { ...state, editAnchor: null, commentAnchor: null }
         
-            case 'TRIGGER_COLLAPSE':
-                return { ...state, commentCollapseOpen: !state.commentCollapseOpen}
+        case 'TRIGGER_COLLAPSE':
+            return { ...state, commentCollapseOpen: !state.commentCollapseOpen}
+                
         case 'CONFIRM_DELETE':
-            const confirmKey = (payload.id === 'message') ? 'editConfirmOpen' : 'commentConfirmOpen';
             return { 
                 ...state, 
-                [confirmKey]: !state[confirmKey],
-                ...(!state[confirmKey]) && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
+                editConfirmOpen: !state.editConfirmOpen,
+                ...!state.editConfirmOpen && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
             }
         
         case 'EDIT_CONTENT':
-            const dialogKey = (payload.id === 'message') ? 'editDialogOpen' : 'commentDialogOpen';
             return { 
                 ...state, 
-                [dialogKey]: !state[dialogKey],
-                ...(!state[dialogKey]) && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
+                editDialogOpen: !state.editDialogOpen,
+                ...!state.editDialogOpen && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
             }
         
         case 'RESET_ACTIONS': {

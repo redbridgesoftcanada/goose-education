@@ -165,7 +165,7 @@ export default function ArticleBoard(props) {
     const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: listOfArticles });
 
     useEffect(() => {
-        if (location.state.article) {
+        if (location.state && location.state.article) {
             dispatch({ type: 'SELECTED_ARTICLE', payload: { selected: location.state.article, listOfArticles }});
         }
 

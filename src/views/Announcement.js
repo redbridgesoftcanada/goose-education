@@ -1,5 +1,5 @@
-import React, { useReducer } from 'react';
-import { Button, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
+import React, { useReducer, useState } from 'react';
+import { Box, Button, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, ScheduleOutlined, MoreVertOutlined, Facebook, Instagram, RoomOutlined, LanguageOutlined, EditOutlined, DeleteOutline } from '@material-ui/icons';
 import { useHistory } from "react-router-dom";
 import { format, compareDesc } from 'date-fns';
@@ -12,30 +12,28 @@ import Comments from '../components/Comments';
 import ComposeDialog from '../components/ComposeDialog';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import StyledValidators from '../components/customMUI';
+import ErrorSnackbar from '../components/ErrorSnackbar';
 import useStyles from '../styles/serviceCentre.js';
+
+const INITIAL_STATE = {
+    comment: '',
+    commentCollapseOpen: false,
+    editAnchor: null,
+    editDialogOpen: false,
+    editConfirmOpen: false
+}
 
 function Announcement(props) {
     const classes = useStyles(props);
     const history = useHistory();
     const xsBreakpoint = MuiThemeBreakpoints().xs;
     const { authUser, firebase, selectedAnnounce } = props;
-
-    const INITIAL_STATE = {
-        comment: '',
-        commentAnchor: null,
-        commentCollapseOpen: false,
-        commentDialogOpen: false,
-        commentConfirmOpen: false,
-        editAnchor: null,
-        editDialogOpen: false,
-        editConfirmOpen: false
-    }
-
-    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { comment, commentAnchor, commentCollapseOpen, commentDialogOpen, commentConfirmOpen, editAnchor, editConfirmOpen, editDialogOpen } = state;
-    const commentAnchorOpen = Boolean(commentAnchor);
-    const editAnchorOpen = Boolean(editAnchor);
     const isLoggedInAdmin = authUser && authUser.roles['admin'];
+
+    const [ error, setError ] = useState(null);
+    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+    const { comment, commentCollapseOpen, editAnchor, editConfirmOpen, editDialogOpen } = state;
+    const editAnchorOpen = Boolean(editAnchor);
 
     const openPostActions = event => dispatch({ type:'OPEN_ACTIONS', payload:event.currentTarget});
     const closePostActions = () => dispatch({ type:'CLOSE_ACTIONS' });
@@ -45,20 +43,6 @@ function Announcement(props) {
     const handleCollapse = () => { dispatch({ type: 'TRIGGER_COLLAPSE' })}
     const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
     const handleAnnounceDelete = () => firebase.deleteArticle(selectedAnnounce.id).then(() => redirectPath());
-
-    const commentsProps = { 
-        formType: 'announcement', 
-        selectedResource: selectedAnnounce, 
-        commentAnchor, 
-        commentAnchorOpen, 
-        commentDialogOpen, 
-        commentConfirmOpen, 
-        openPostActions, 
-        closePostActions, 
-        handleEdit, 
-        handleDeleteConfirmation, 
-        resetAllActions 
-    }
 
     const redirectPath = () => history.push({ 
         pathname: '/services', state: { title: 'Service Centre', tab: 0 }});
@@ -73,13 +57,31 @@ function Announcement(props) {
                 createdAt: Date.now(),
                 updatedAt: Date.now()
         })})
-        .then(() => { redirectPath() });
-        // .catch(error => dispatch({ type: 'error', payload: error }))
+        .then(() => { redirectPath() })
+        .catch(error => setError(error.message));
         event.preventDefault();
     }
+
+    const CommentFormField = 
+    <ValidatorForm onSubmit={onCommentSubmit}>
+        <StyledValidators.TextField
+            multiline
+            rows={5}
+            value={comment}
+            onChange={handleComment}
+            validators={['isQuillEmpty']}
+            errorMessages={['']}/>
+        <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+    </ValidatorForm>
     
     return (
         <Container>
+            {error && 
+                <ErrorSnackbar 
+                isOpen={!!error}
+                onCloseHandler={() => setError(null)}
+                errorMessage={error}/>}
+
             <Typography className={classes.title}>{selectedAnnounce.title}</Typography>
 
             <Grid container className={classes.metaContainer}>
@@ -110,7 +112,7 @@ function Announcement(props) {
 
             {!xsBreakpoint ?
             <>
-                {parse(selectedAnnounce.description)}
+                <Box py={3}>{parse(selectedAnnounce.description)}</Box>
 
                 {isLoggedInAdmin &&
                     <Grid container className={classes.announceActions}>
@@ -179,45 +181,24 @@ function Announcement(props) {
                 {selectedAnnounce.comments.length} Comments
             </Typography>
 
-            {!xsBreakpoint && isLoggedInAdmin ? 
-            <Collapse in={commentCollapseOpen} timeout="auto" unmountOnExit>
-                <ValidatorForm onSubmit={onCommentSubmit}>
-                    <StyledValidators.TextField
-                        multiline
-                        rows={5}
-                        value={comment}
-                        onChange={handleComment}
-                        validators={['isQuillEmpty']}
-                        errorMessages={['']}/>
-                    <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-                </ValidatorForm>
-            </Collapse>
-            :
-            <ValidatorForm onSubmit={onCommentSubmit}>
-                <StyledValidators.TextField
-                    multiline
-                    rows={5}
-                    value={comment}
-                    onChange={handleComment}
-                    validators={['isQuillEmpty']}
-                    errorMessages={['']}/>
-                <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-            </ValidatorForm>
+            {
+                !authUser ? 
+                <Typography>Please login/register to post comments.</Typography>
+                :
+                !xsBreakpoint && isLoggedInAdmin ? 
+                    <Collapse in={commentCollapseOpen} timeout="auto" unmountOnExit>
+                        {CommentFormField}
+                    </Collapse>
+                :
+                CommentFormField
             }
 
-            {selectedAnnounce.comments.length ? 
-                selectedAnnounce.comments.map((comment, i) => {
-                    const isCommentOwner = authUser && authUser.uid === comment.authorID;
-                    return (
-                        <Comments 
-                            key={i}  
-                            comment={comment} 
-                            isCommentOwner={isCommentOwner} 
-                            {...commentsProps}/> 
-                    );
-                })
-            :
-                <Typography>There are currently no comments.</Typography> 
+            {!!selectedAnnounce.comments.length && 
+                <Comments 
+                    formType='announcement'
+                    authUser={authUser}
+                    selectedResource={selectedAnnounce}
+                    listOfComments={selectedAnnounce.comments}/> 
             }
         </Container>
     )
@@ -251,8 +232,7 @@ function toggleReducer(state, action) {
         return { ...state, comment: payload }
 
         case 'OPEN_ACTIONS':
-            const anchorKey = (payload.id === 'announce') ? 'editAnchor' : 'commentAnchor';
-            return { ...state, [anchorKey]: payload }
+            return { ...state, editAnchor: payload }
 
         case 'CLOSE_ACTIONS':
             return { ...state, editAnchor: null, commentAnchor: null }
@@ -261,21 +241,17 @@ function toggleReducer(state, action) {
             return { ...state, commentCollapseOpen: !state.commentCollapseOpen}
         
         case 'CONFIRM_DELETE':
-            const confirmKey = (payload.id === 'announce') ? 'editConfirmOpen' : 'commentConfirmOpen';
             return { 
                 ...state, 
-                [confirmKey]: !state[confirmKey],
-                ...(!state[confirmKey]) && { editAnchor: null, commentAnchor: null }   
-                // synchronize closing the EDIT/DELETE menu in the background
+                editConfirmOpen: !state.editConfirmOpen,
+                ...!state.editConfirmOpen && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
             }
         
         case 'EDIT_CONTENT':
-            const dialogKey = (payload.id === 'announce') ? 'editDialogOpen' : 'commentDialogOpen';
             return { 
                 ...state, 
-                [dialogKey]: !state[dialogKey],
-                ...(!state[dialogKey]) && { editAnchor: null, commentAnchor: null }   
-                // synchronize closing the EDIT/DELETE menu in the background
+                editDialogOpen: !state.editDialogOpen,
+                ...!state.editDialogOpen && { editAnchor: null, commentAnchor: null }   // synchronize closing the EDIT/DELETE menu in the background
             }
         
         case 'RESET_ACTIONS': {
