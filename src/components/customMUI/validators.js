@@ -42,9 +42,16 @@ class SelectValidator extends ValidatorComponent {
           {...rest}>
             {children}
         </Select>
-        <FormHelperText>{this.getErrorMessage()}</FormHelperText>
+        {this.errorText()}
       </FormControl>
   )}
+
+  errorText() {
+    const { isValid } = this.state;
+    if (isValid) return null;
+
+    return <FormHelperText>{this.getErrorMessage()}</FormHelperText>
+  }
 }
 
 class QuillValidator extends ValidatorComponent {
