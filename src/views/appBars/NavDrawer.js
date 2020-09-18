@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { Link as RouterLink } from "react-router-dom";
 import { Collapse, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core'
-import { AccountCircle, DeleteForever, ExitToApp, ExpandLess, ExpandMore } from '@material-ui/icons';
+import { AccountCircle, Dashboard, ExitToApp, ExpandLess, ExpandMore, Tune } from '@material-ui/icons';
 import { NAV_PAGES } from '../../constants/constants';
 
 export default function NavDrawer(props) {
@@ -18,7 +18,7 @@ export default function NavDrawer(props) {
     }
 
     const isAdmin = authUser.roles['admin'];
-    const userPages = isAdmin ? ['Dashboard'] : ['My Page', 'Change Information'];
+    const userPages = isAdmin ? ['Dashboard', 'My Page', 'Change Information'] : ['My Page', 'Change Information'];
     const sitePages = NAV_PAGES.slice(1);
 
     return (
@@ -45,22 +45,25 @@ function generateUserPageList(isAdmin, userPages) {
                     <ListItemIcon>{icon}</ListItemIcon>
                     <ListItemText primary={page} />
             </ListItem>
-)})}
+        )
+    })
+}
 
 function configUserPage(isAdmin, index) {
     const config = {};
     if (index === 0) {
         config.path = isAdmin ? '/admin' : '/profile';
-        config.icon = <AccountCircle/>;
+        config.icon = isAdmin ? <Dashboard/> : <AccountCircle/>;
     
     } else if (index === 1) {
         config.path = '/profile/edit';
-        config.icon = <ExitToApp/>;
+        config.icon = isAdmin ? <AccountCircle/> : <ExitToApp/>;
     
     } else {
         config.path = '/';
-        config.icon = <DeleteForever/>;
+        config.icon = <Tune/>;
     }
+
     return config;
 }
 
