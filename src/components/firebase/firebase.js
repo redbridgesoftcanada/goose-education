@@ -151,6 +151,7 @@ class Firebase {
   // A N N O U N C E M E N T S
   announcements = () => this.db.collection("announcements");
   announcement = announcementId => this.db.doc(`announcements/${announcementId}`);
+  deleteAnnouncement = announcementId => this.db.doc(`announcements/${announcementId}`).delete();
 
   // M E S S A G E S
   messages = () => this.db.collection("messages");

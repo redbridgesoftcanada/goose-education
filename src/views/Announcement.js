@@ -42,7 +42,7 @@ function Announcement(props) {
     const handleEdit = event => (event.currentTarget.id) ? dispatch({ type: 'EDIT_CONTENT', payload:event.currentTarget }) : dispatch({ type:'RESET_ACTIONS' });
     const handleCollapse = () => { dispatch({ type: 'TRIGGER_COLLAPSE' })}
     const resetAllActions = () => dispatch({ type:'RESET_ACTIONS' });
-    const handleAnnounceDelete = () => firebase.deleteArticle(selectedAnnounce.id).then(() => redirectPath());
+    const handleAnnounceDelete = () => firebase.deleteAnnouncement(selectedAnnounce.id).then(() => redirectPath());
 
     const redirectPath = () => history.push({ 
         pathname: '/services', state: { title: 'Service Centre', tab: 0 }});
