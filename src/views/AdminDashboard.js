@@ -39,7 +39,7 @@ export default function AdminDashboard() {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
-    <div className={classes.root}>
+    <Box display='flex'>
       <AppBar position="absolute" className={clsx(classes.appBar, state.drawerOpen && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
           <IconButton
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
           <Copyright />
         </Box>
       </main>
-    </div>
+    </Box>
   );
 }
 
