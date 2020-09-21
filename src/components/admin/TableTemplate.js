@@ -1,18 +1,21 @@
-import React, { useReducer } from "react";
-import { CircularProgress, Link, Typography } from "@material-ui/core";
+import React, { Suspense, useReducer } from "react";
+import { Backdrop, CircularProgress, Link, Typography } from "@material-ui/core";
 import Title from "./Title";
 import { DatabaseContext } from '../../components/database';
-import Accounts from '../admin/Accounts';
-import Schools from '../admin/Schools';
-import Applications from '../admin/Applications';
-import Homestays from '../admin/Homestays';
-import AirportRides from '../admin/AirportRides';
-import GooseTips from '../admin/GooseTips';
-import Articles from '../admin/Articles';
-import Announcements from '../admin/Announcements';
-import Messages from '../admin/Messages';
-import Settings from '../admin/Settings';
 import { useStyles } from '../../styles/adminDashboard';
+
+const Accounts = React.lazy(() => import('../admin/Accounts'));
+const Schools = React.lazy(() => import('../admin/Schools'));
+const Applications = React.lazy(() => import('../admin/Applications'));
+const Homestays = React.lazy(() => import('../admin/Homestays'));
+const AirportRides = React.lazy(() => import('../admin/AirportRides'));
+const GooseTips = React.lazy(() => import('../admin/GooseTips'));
+const Articles = React.lazy(() => import('../admin/Articles'));
+const Announcements = React.lazy(() => import('../admin/Announcements'));
+const Messages = React.lazy(() => import('../admin/Messages'));
+const Settings = React.lazy(() => import('../admin/Settings'));
+
+const FallbackElement = <Backdrop open={true}><CircularProgress color="primary"/></Backdrop>;
 
 export default function TableTemplate(props) {
   const classes = useStyles();
@@ -21,16 +24,14 @@ export default function TableTemplate(props) {
     isLoading: false,
     anchorUserRole: null,
     anchorApplicationStatus: null,
-    deleteConfirmOpen: false,
-    snackbarOpen: false,
-    snackbarMessage: null,
     composeDialogOpen: false,
     editDialogOpen: false,
+    deleteConfirmOpen: false,
   }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
   return (
-    <>
+    <Suspense fallback={FallbackElement}>
       <Title>{props.type}</Title>
       <DatabaseContext.Consumer>
         {context => 
@@ -40,7 +41,7 @@ export default function TableTemplate(props) {
           </>
         }
       </DatabaseContext.Consumer>
-    </>
+    </Suspense>
   );
 }
 
@@ -132,20 +133,21 @@ function toggleReducer(state, action) {
     
     case 'MENU_OPEN': {
       const anchorKey = payload.key;
-      const selectedMenu = payload.selected;
-      return {...state, [anchorKey]: selectedMenu}
+      const anchorEl = payload.selected;
+      return {...state, [anchorKey]: anchorEl}
     }
     
     case 'MENU_SELECTED': {
       const anchorKey = payload.key;
       switch (anchorKey) {
         case "anchorUserRole": {
-          const { firebase, selectedRole, uid } = payload;
-          if (selectedRole === 'supervisor') {
+          const uid = state[anchorKey].id;
+          const { firebase, userRole } = payload;
+          if (userRole === 'supervisor') {
             firebase.user(uid).update({
-              roles: { [selectedRole]: true }
+              roles: { [userRole]: true }
             });
-          } else if (selectedRole === 'user') {
+          } else if (userRole === 'user') {
             firebase.user(uid).update({
               roles: {}
             });
