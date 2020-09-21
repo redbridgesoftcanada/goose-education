@@ -8,21 +8,19 @@ import DeleteConfirmation from '../DeleteConfirmation';
 function Accounts(props) {
   const { state, dispatch, listOfUsers, firebase } = props;
 
-  // S T A T E 
   const [ selectedUser, setSelectedUser ] = useState(null);
 
-  // D I S P A T C H  M E T H O D S
   const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {
     key: 'anchorUserRole', 
     selected: event.currentTarget }
   });
 
-  const setMenuClose = (event, uid) => {
-    if (uid) {
+  const setMenuClose = event => {
+    const userRole = event.currentTarget.id
+    if (event.currentTarget.id) {
       dispatch({type: 'MENU_SELECTED', payload: {
         key: 'anchorUserRole', 
-        selectedRole: event.currentTarget.id,
-        uid, 
+        userRole,
         firebase }
       });
     } else {
@@ -79,18 +77,18 @@ function Accounts(props) {
                 <TableCell>{user.phoneNumber}</TableCell>
                 <TableCell>{user.mobileNumber}</TableCell>
                 <TableCell>
-                  <Button disabled={user.roles['admin']} onClick={setMenuOpen}>
+                  <Button id={user.id} disabled={user.roles['admin']} onClick={setMenuOpen}>
                     {user.roles["admin"] ? "Admin" : user.roles["supervisor"] ? "Supervisor" : "User"}
                   </Button>
                   <Menu
                     anchorEl={state.anchorUserRole}
                     keepMounted
                     open={Boolean(state.anchorUserRole)}
-                    onClose={event => setMenuClose(event, null)}
+                    onClose={setMenuClose}
                   >
-                    <MenuItem id="admin" onClick={event => setMenuClose(event, user.id)}>Administrator</MenuItem>
-                    <MenuItem id="supervisor" onClick={event => setMenuClose(event, user.id)}>Supervisor</MenuItem>
-                    <MenuItem id="user" onClick={event => setMenuClose(event, user.id)}>User</MenuItem>
+                    <MenuItem id="admin" onClick={setMenuClose}>Administrator</MenuItem>
+                    <MenuItem id="supervisor" onClick={setMenuClose}>Supervisor</MenuItem>
+                    <MenuItem id="user" onClick={setMenuClose}>User</MenuItem>
                   </Menu>
                 </TableCell>
                 <TableCell>{user.lastSignInTime ? format(user.lastSignInTime, 'Pp') : ""}</TableCell>
