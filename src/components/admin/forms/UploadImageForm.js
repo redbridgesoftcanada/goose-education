@@ -1,9 +1,9 @@
 import React, { useEffect, useReducer } from "react";
-import { Button, CircularProgress, FormLabel, Input, makeStyles } from "@material-ui/core";
+import { Avatar, Box, Button, CircularProgress, Grid, makeStyles } from "@material-ui/core";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import { withFirebase } from "../../firebase";
 import { TAGS } from "../../../constants/constants";
-import * as COMPONENTS from "../../../constants/helpers-admin";
+import StyledValidators from "../../customMUI";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,37 +21,28 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const INITIAL_STATE = {
+  isEdit: false,
+  isLoading: false,
+  isFeatured: false,
+  upload: "",
+  title: "",
+  description: "",
+  tag: "",
+  instagramURL: "",
+  link1: "",
+  link2: ""
+}
+
 function UploadImageForm(props) {
   const classes = useStyles();
   const { dialogOpen, onDialogClose, setSnackbarMessage, firebase, formType } = props;
 
-  // S T A T E
-  const INITIAL_STATE = {
-    isEdit: false,
-    isLoading: false,
-    isFeatured: false,
-    upload: "",
-    title: "",
-    description: "",
-    tag: "",
-    instagramURL: "",
-    link1: "",
-    link2: ""
-  }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  
-  useEffect(() => {
-    const prevContent = props.prevContent;
-    if (prevContent) {
-      dispatch({type:"EDIT_STATE", payload: prevContent});
-    } else {
-      dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
-    }
-  }, [dialogOpen]);
 
-    // D I S P A T C H  M E T H O D S
+  // D I S P A T C H  M E T H O D S
   const handleTextInput = event => dispatch({type: "TEXT_INPUT", payload: event.target});
-  const handleRichTextInput = (name, value) => dispatch({type: "RICH_TEXT_INPUT", payload: {name, value}});
+  const handleRichTextInput = htmlString => dispatch({type: "RICH_TEXT_INPUT", payload: htmlString});
   const handleFileUpload = event => dispatch({type: "FILE_UPLOAD", payload: event.target.files[0]});
 
   const onSubmit = event => {
@@ -85,66 +76,123 @@ function UploadImageForm(props) {
           comments: [],
           updatedAt: Date.now(),
           image: downloadURL,
-          ...!isEdit && { createdAt: Date.now(), views: 0 },
+          ...!isEdit && { createdAt: Date.now() },
           ...formContent
         }, { merge: true })
         .then(() => {
           dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
-          !isEdit ? setSnackbarMessage("Created successfully!") : setSnackbarMessage("Updated successfully!");
+          !isEdit ? 
+            setSnackbarMessage(`Created ${formType} - please refresh to see new changes.`) : 
+            setSnackbarMessage(`Updated ${formType} - please refresh to see new changes`);
           onDialogClose();
     })});
     event.preventDefault();
     });
   }
 
+  useEffect(() => {
+    const prevContent = props.prevContent;
+    if (prevContent) {
+      dispatch({type:"EDIT_STATE", payload: prevContent});
+    } else {
+      dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
+    }
+  }, [dialogOpen]);
+  
+  useEffect(() => {
+    ValidatorForm.addValidationRule('isSelected', value => !!value);
+    // (optional cleanup mechanism for effects) - remove rule when not needed;
+    return () => ValidatorForm.removeValidationRule('isSelected');
+  });
+
+  useEffect(() => {
+    ValidatorForm.addValidationRule("isRequiredUpload", value => {
+      if (!value || value.length === 0) return false;
+      return true;
+    });
+    return () => ValidatorForm.removeValidationRule('isRequiredUpload');
+  });
+
   return (
     <ValidatorForm onSubmit={onSubmit}>
-      <div>
-        <FormLabel component="legend">Title</FormLabel>
-        {COMPONENTS.textField("title", state.title, handleTextInput, false)}
+      <StyledValidators.TextField
+        name="title"
+        value={state.title}
+        label="Title"
+        onChange={handleTextInput}
+        validators={['required', 'isQuillEmpty']}
+        errorMessages={['']}/>
 
-        {formType === "article" &&
-          <>
-            <FormLabel component="legend">Tag</FormLabel>
-            {COMPONENTS.selectField("tag", state.tag, TAGS, handleTextInput)}
+      {formType === "article" &&
+        <>
+          <StyledValidators.CustomSelect
+            name="tag"
+            value={state.tag}
+            label="Tag"
+            onChange={handleTextInput}
+            options={TAGS.slice(1)}
+            validators={['isSelected']}
+            errorMessages={['']}
+          />
 
-            <FormLabel component="legend">Instagram</FormLabel>
-            {COMPONENTS.textField("instagramURL", state.instagramURL, handleTextInput, false)}
-          </>
-        }
+          <StyledValidators.TextField
+            name="instagramURL"
+            value={state.instagramURL}
+            label="Instagram"
+            onChange={handleTextInput}/>
+        </>
+      }
 
-        <FormLabel component="legend">Description</FormLabel>
-        {COMPONENTS.RichTextField("description", state.description, handleRichTextInput)}
+      <br/>
+      <StyledValidators.RichTextField
+        name="description"
+        value={state.description}
+        label="Description"
+        onChange={handleRichTextInput}/>
 
-        {formType === "article" && 
-          <>
-            <FormLabel component="legend">Link #1</FormLabel>
-            {COMPONENTS.textField("link1", state.link1, handleTextInput, false)}
+      {formType === "article" && 
+        <>
+          <StyledValidators.TextField
+            name="link1"
+            value={state.link1}
+            label="Link #1"
+            onChange={handleTextInput}/>
+          
+          <StyledValidators.TextField
+            name="link2"
+            value={state.link2}
+            label="Link #2"
+            onChange={handleTextInput}/>
+        </>
+      }
 
-            <FormLabel component="legend">Link #2</FormLabel>
-            {COMPONENTS.textField("link2", state.link2, handleTextInput, false)}
-          </>
-        }
-        
-        <FormLabel component="legend">Image</FormLabel>
-        {(state.image) &&
-          <img className={classes.image} src={(state.image.includes('firebase')) ? state.image : require(`../../../assets/img/${state.image}`)} alt="cover image"/>
-        }
-        <div>
-          <Input type="file" disableUnderline onChange={handleFileUpload}/>
-        </div>
+      <StyledValidators.FileUpload 
+        value={state.upload}
+        label='Image'
+        onChange={handleFileUpload}
+        validators={['isRequiredUpload']}
+        errorMessages={['']}/>
 
-        <FormLabel component="legend">Goose Featured</FormLabel>
-        {COMPONENTS.configRadioGroup("isFeatured", state.isFeatured, [{value: true, label:"Yes"}, {value: false, label:"No"}], handleTextInput, `Display as a featured ${formType} on the home page.`)}
-      </div>
+      <StyledValidators.CustomRadioGroup
+        name='isFeatured'
+        value={state.isFeatured}
+        label='Goose Featured'
+        onChange={handleTextInput}
+        helperText={`Display as a featured ${formType} on the home page.`}
+        options={["Yes", "No"]}
+        validators={['isSelected']}
+        errorMessages={['']}
+      />
 
-      <Button className={classes.button} onClick={onDialogClose}>
-        Cancel
-      </Button>
+      <Box display='flex' justifyContent='center'>
+        <Button className={classes.button} onClick={onDialogClose}>
+          Cancel
+        </Button>
 
-      <Button type="submit" color="secondary" autoFocus className={classes.button}>
-        {state.isLoading ? <CircularProgress /> : "Save"}
-      </Button>
+        <Button type="submit" color="secondary" autoFocus className={classes.button}>
+          {state.isLoading ? <CircularProgress /> : "Save"}
+        </Button>
+      </Box>
 
     </ValidatorForm>
   );
@@ -172,9 +220,7 @@ function toggleReducer(state, action) {
     }
     
     case "RICH_TEXT_INPUT": {
-      const inputField = payload.name;
-      const inputValue = payload.value;
-      return {...state, [inputField]: inputValue}
+      return {...state, description: payload}
     }
 
     case "FILE_UPLOAD":
