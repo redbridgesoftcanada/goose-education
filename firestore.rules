@@ -67,18 +67,18 @@ service cloud.firestore {
     }
 
     match /airportRideApplications/{airportApplication} {
-      allow read, delete: if isAdmin() || isOwner();
-      allow create, update: if isLoggedIn();
+      allow read, update, delete: if isAdmin() || isOwner();
+      allow create: if isLoggedIn();
     }    
 
     match /homestayApplications/{homestayApplication} {
-      allow read, delete: if isAdmin() || isOwner();
-      allow create, update: if isLoggedIn();
+      allow read, update, delete: if isAdmin() || isOwner();
+      allow create: if isLoggedIn();
     }    
 
     match /schoolApplications/{schoolApplication} {
-      allow read, delete: if isAdmin() || isOwner();
-      allow create, update: if isLoggedIn();
+      allow read, update, delete: if isAdmin() || isOwner();
+      allow create: if isLoggedIn();
     }
   }
 }
