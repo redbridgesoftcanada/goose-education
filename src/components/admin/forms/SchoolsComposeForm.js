@@ -108,7 +108,7 @@ function SchoolsComposeForm(props) {
 
   return (
     <ValidatorForm onSubmit={onSubmit}>
-      
+
       {generateFormContent(classes, schoolFormFields, onChange, onUpload)}
       
       <Box display='flex' justifyContent='center'>
@@ -250,10 +250,32 @@ function toggleReducer(state, action) {
     case "RESET_STATE":
       return { ...INITIAL_STATE }
 
-    case "EDIT_STATE":
-      const prepopulateForm = payload;
-      const { id, createdAt, updatedAt, ...schoolFormFields } = prepopulateForm;
-      return {...schoolFormFields, isEdit: true, isLoading: false}
+      case "EDIT_STATE":
+      const formFields = new Map();   // to preserve order of form fields;
+      // formFields.set('id', payload.id);
+      // formFields.set('createdAt', payload.createdAt);
+      // formFields.set('updatedAt', payload.updatedAt);
+      formFields.set('title', payload.title);
+      formFields.set('type', payload.type);
+      formFields.set('location', payload.location);
+      formFields.set('url', payload.url);
+      formFields.set('image', payload.image);
+      formFields.set('dateOfEstablishment', payload.dateOfEstablishment);
+      formFields.set('description', payload.description);
+      formFields.set('features', payload.features);
+      formFields.set('program', payload.program);
+      formFields.set('expenses', payload.expenses);
+      formFields.set('numberOfStudents', payload.numberOfStudents);
+      formFields.set('openingProcess', payload.openingProcess);
+      formFields.set('accommodation', payload.accommodation);
+      formFields.set('googleUrl', payload.googleUrl);
+      formFields.set('youtubeUrl', payload.youtubeUrl);
+      payload.recommendation ? formFields.set('recommendation', 'Yes') : formFields.set('recommendation', 'No'); 
+      payload.isFeatured ? formFields.set('isFeatured', 'Yes') : formFields.set('isFeatured', 'No');
+
+      const prepopulateForm = Object.fromEntries(formFields.entries());
+
+      return {...prepopulateForm, isEdit: true, isLoading: false}
     
     case "INIT_SAVE":
       return {...state, isLoading: true}
