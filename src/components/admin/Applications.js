@@ -21,12 +21,12 @@ function Applications(props) {
     selected: event.currentTarget }
   });
 
-  const setMenuClose = (event, authorId) => {
-    if (authorId) {
+  const setMenuClose = event => {
+    const applicationStatus = event.currentTarget.id;
+    if (applicationStatus) {
       dispatch({type: 'MENU_SELECTED', payload: {
         key: 'anchorApplicationStatus', 
-        selectedStatus: event.currentTarget.id,
-        authorId, 
+        selectedStatus: applicationStatus, 
         firebase }
       });
     } else {
@@ -79,18 +79,16 @@ function Applications(props) {
             <TableCell>{application.startDate}</TableCell>
             <TableCell>{format(application.createdAt, "Pp")}</TableCell>
             <TableCell>
-              <Button onClick={setMenuOpen}>{application.status}</Button>
+              <Button id={application.id} onClick={setMenuOpen}>{application.status}</Button>
               <Menu
                 keepMounted
                 anchorEl={state.anchorApplicationStatus}
                 open={Boolean(state.anchorApplicationStatus)}
-                onClose={event => setMenuClose(event, null)}
+                onClose={setMenuClose}
               >
-                {STATUSES.map((status, i) => {
-                  return (
-                    <MenuItem key={i} id={status} onClick={event => setMenuClose(event, application.authorID)}>{status}</MenuItem>
-                  )
-                })}
+                {STATUSES.map((status, i) => 
+                  <MenuItem key={i} id={status} onClick={setMenuClose}>{status}</MenuItem>
+                )}
               </Menu>
             </TableCell>
             <TableCell>

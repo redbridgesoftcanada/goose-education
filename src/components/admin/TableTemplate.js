@@ -143,8 +143,11 @@ function toggleReducer(state, action) {
         }
         
         case "anchorApplicationStatus": {
-          const { firebase, selectedStatus, authorId } = payload;
-          firebase.schoolApplication(authorId).update({status: selectedStatus});
+          const applicationId = state[anchorKey].id;
+          const { firebase, selectedStatus } = payload;
+          firebase.schoolApplication(applicationId).update({
+            status: selectedStatus
+          });
           return {...state, anchorApplicationStatus: null}
         }
       }

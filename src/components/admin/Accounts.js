@@ -17,7 +17,7 @@ function Accounts(props) {
 
   const setMenuClose = event => {
     const userRole = event.currentTarget.id
-    if (event.currentTarget.id) {
+    if (userRole) {
       dispatch({type: 'MENU_SELECTED', payload: {
         key: 'anchorUserRole', 
         userRole,
