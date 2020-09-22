@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React, { Fragment, useEffect, useReducer } from "react";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import { Avatar, Box, Button, CircularProgress, FormHelperText, Grid, makeStyles } from "@material-ui/core";
 import { withFirebase } from "../../firebase";
@@ -14,8 +14,7 @@ const useStyles = makeStyles(theme => ({
 
   avatar: {
     width: theme.spacing(18),
-    height: theme.spacing(18),
-    marginTop: theme.spacing(2)
+    height: theme.spacing(18)
   },
 
 }));
@@ -23,11 +22,11 @@ const useStyles = makeStyles(theme => ({
 const INITIAL_STATE = {
   isEdit: false,
   isLoading: false,
+  image: "",
   title: "",
   type: "",
   location: "",
   url: "",
-  image: "",
   dateOfEstablishment: "",
   description: "",
   features: "",
@@ -50,37 +49,56 @@ function SchoolsComposeForm(props) {
   const { isEdit, isLoading, ...schoolFormFields } = state;
 
   const onChange = event => dispatch({type:"TEXT_INPUT", payload:event.target});
-  const onUpload = event => dispatch({type:"FILE_UPLOAD", payload:event.target.files[0]});
+  const onUpload = event => dispatch({type:"FILE_UPLOAD", payload:event.target.files});
   
-  const onSubmit = event => {
+  const onSubmit = async event => {
     
     dispatch({type: "INIT_SAVE"});
-
-    // configure Firestore collection/document locations
     const { image, ...newSchoolForm } = schoolFormFields;
-    const docRef = isEdit ? firebase.school(state.id) : firebase.schools().doc();
-    const uploadRef = firebase.imagesRef(image);
-    const uploadTask = uploadRef.put(image);
+    const cleanupActions = message => {
+      dispatch({type:"RESET_STATE"});
+      setSnackbarMessage(message);
+      onDialogClose();
+    }
 
-    // user uploads a file with the form (note. empty string overwrites to a File object)
-    uploadTask.on("state_changed", function(snapshot) {
-    }, function(error) {
-      console.log('Error in upload task: ', error)
-    }, function () {
-      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+    if (isEdit) {
+      const docRef = firebase.school(props.prevContent.id);
+
+      if (typeof image === 'string') {
         docRef.set({
-          ...!isEdit && { id: docRef.id, createdAt: Date.now() },
-          updatedAt: Date.now(),
-          image: downloadURL,
-          ...newSchoolForm
+          ...newSchoolForm,
+          updatedAt: Date.now()
         }, { merge: true })
-        .then(() => {
-          dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
-          !isEdit ? setSnackbarMessage("Created school successfully!") : setSnackbarMessage("Updated school successfully!");
-          onDialogClose();
-    })});
-    event.preventDefault();
-    });
+        .then(() => cleanupActions("Updated school successfully!"));
+        event.preventDefault();
+
+      } else if (image instanceof File) {
+        const uploadTask = firebase.imagesRef(image).put(image);
+        const downloadURL = await uploadStorageImage(uploadTask);
+        docRef.set({
+          ...newSchoolForm,
+          updatedAt: Date.now(),
+          image: downloadURL
+        }, { merge: true })
+        .then(() => cleanupActions("Updated school successfully!"));
+        event.preventDefault();
+      }
+
+    } else {
+      const docRef = firebase.schools().doc();
+      const uploadTask = firebase.imagesRef(image).put(image);
+      const downloadURL = await uploadStorageImage(uploadTask);
+
+      docRef.set({
+        ...newSchoolForm,
+        id: docRef.id, 
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        image: downloadURL
+      })
+      .then(() => cleanupActions("Created school successfully!"));
+      event.preventDefault();
+    }
   }
 
   useEffect(() => {
@@ -90,7 +108,7 @@ function SchoolsComposeForm(props) {
     } else {
       dispatch({ type:"RESET_STATE" });
     }
-  }, [dialogOpen]);
+  }, [dialogOpen, props.prevContent]);
 
   useEffect(() => {
     ValidatorForm.addValidationRule('isSelected', value => !!value);
@@ -136,7 +154,6 @@ function generateFormContent(classes, formFields, onChange, onUpload) {
     <>
       {Object.entries(formFields).map(([name, value]) => {
         const defaultProps = {
-          key: name,
           name,
           value,
           label: convertToSentenceCase(name),
@@ -147,7 +164,7 @@ function generateFormContent(classes, formFields, onChange, onUpload) {
         switch(name) {
           case 'type':
             customComponent = 
-              <StyledValidators.CustomSelect
+              <StyledValidators.CustomSelect key={name}
                 {...defaultProps}
                 options={SCHOOL_TYPES}
                 label='Institution Type'
@@ -157,30 +174,29 @@ function generateFormContent(classes, formFields, onChange, onUpload) {
             break;
 
           case 'recommendation':
-          case 'isFeatured': {
+          case 'isFeatured': 
             if (name === 'recommendation') {
               defaultProps.label = 'Goose Recommended';
-              defaultProps.helperText = "Display a 'recommended' badge for this institution.";
+              defaultProps.helpertext = "Display a 'recommended' badge for this institution.";
             } else if (name === 'isFeatured') {
               defaultProps.label = 'Featured';
-              defaultProps.helperText = 'Display this institution on the home page.';
+              defaultProps.helpertext = 'Display this institution on the home page.';
             }
 
             customComponent = 
-              <StyledValidators.CustomRadioGroup
+              <StyledValidators.CustomRadioGroup key={name}
                 {...defaultProps}
                 options={["Yes", "No"]}
                 validators={['isSelected']}
                 errorMessages={['']}
               />
-            }
             break;
 
-          case 'image': {
+          case 'image': 
             customComponent = 
-              <Grid container>
-                {value &&
-                  <Grid item xs={12}>
+              <Grid container justify='center' alignItems='center' key={name}>
+                <Grid item xs={2}>
+                  {value ?
                     <Avatar
                       className={classes.avatar}
                       imgProps={{style: { objectFit: 'contain' }}}
@@ -188,18 +204,20 @@ function generateFormContent(classes, formFields, onChange, onUpload) {
                       variant='rounded' 
                       src={
                         value instanceof File ? null : value.includes('firebase') ? value : require(`../../../assets/img/${value}`)}/>
-                  </Grid>
-                }
+                  :
+                    <Box height={144} width={144} border={1} borderColor='grey.500' borderRadius={8}/>
+                  }
+                </Grid>
 
                 <Grid item>
                   <StyledValidators.FileUpload 
                     {...defaultProps}
                     validators={['isRequiredUpload']}
                     errorMessages={['']}/>
+                  <FormHelperText>Select a new file to upload and replace current image.</FormHelperText>
                 </Grid>
 
               </Grid>
-            }
             break;
           
           case 'url':
@@ -220,27 +238,33 @@ function generateFormContent(classes, formFields, onChange, onUpload) {
             }
 
             customComponent = 
-              <>
+              <Fragment key={name}>
                 <StyledValidators.TextField {...defaultProps} />
                 <FormHelperText>{customHelperText}</FormHelperText>
-              </>
+              </Fragment>
             break;
 
           case 'title':
           case 'description': 
             defaultProps.validators = ['required', 'isQuillEmpty'];
             defaultProps.errorMessages = ['', ''];  
-            customComponent = <StyledValidators.TextField {...defaultProps} />
+            customComponent = <StyledValidators.TextField {...defaultProps} key={name}/>
             break;
           
           default:
-            customComponent = <StyledValidators.TextField {...defaultProps} />
+            customComponent = <StyledValidators.TextField {...defaultProps} key={name}/>
         }
 
         return customComponent;
       })}
     </>
   );
+}
+
+function uploadStorageImage(uploadTask) {
+  return uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+    return downloadURL;
+  });
 }
 
 function toggleReducer(state, action) {
@@ -252,14 +276,11 @@ function toggleReducer(state, action) {
 
       case "EDIT_STATE":
       const formFields = new Map();   // to preserve order of form fields;
-      // formFields.set('id', payload.id);
-      // formFields.set('createdAt', payload.createdAt);
-      // formFields.set('updatedAt', payload.updatedAt);
+      formFields.set('image', payload.image);
       formFields.set('title', payload.title);
       formFields.set('type', payload.type);
       formFields.set('location', payload.location);
       formFields.set('url', payload.url);
-      formFields.set('image', payload.image);
       formFields.set('dateOfEstablishment', payload.dateOfEstablishment);
       formFields.set('description', payload.description);
       formFields.set('features', payload.features);
@@ -287,8 +308,8 @@ function toggleReducer(state, action) {
     }
 
     case "FILE_UPLOAD":
-      const uploadFile = payload;
-      return (!uploadFile) ? { ...state, image: [] } : { ...state, image: uploadFile }
+      if (payload.length) return { ...state, image: payload[0] }
+      return { ...state, image: "" }
     
     default:
       console.log("Not a valid dispatch type for SchoolsComposeForm.")
