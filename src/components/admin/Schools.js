@@ -18,32 +18,44 @@ function Schools(props) {
 
   const setEditSchool = id => {
     setSelectedSchool(listOfSchools.find(school => school.id === id));
-    toggleEditDialog();
+    dispatch({type: 'TOGGLE_EDIT_DIALOG'});
   }
   
   const setDeleteSchool = id => {
     setSelectedSchool(listOfSchools.find(school => school.id === id));
-    toggleDeleteConfirm();
+    dispatch({type: 'DELETE_CONFIRM'});
   }
 
-  const deleteSchool = () => {
-    firebase.deleteSchool(selectedSchool.id).then(function() {
-     dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('School deleted successfully!');
-    }).catch(function(error) {
-      console.log(error)
-    });
+  const deleteSchool = async () => {
+    const deleteStorageResource = firebase.refFromUrl(selectedSchool.image).delete();
+    const deleteSchool =  firebase.deleteSchool(selectedSchool.id);
+
+    try {
+      await Promise.all([deleteStorageResource, deleteSchool]);
+      dispatch({type: 'DELETE_CONFIRM'});
+      setSnackbarMessage('School deleted successfully!');
+    } catch (err) {
+      console.log(err.message)
+    }
   }
 
   return (
     <>
       {/* E D I T */}
-      <AdminComposeDialog prevContent={selectedSchool} formType="school" isEdit={true} open={state.editDialogOpen} onClose={toggleEditDialog} setSnackbarMessage={setSnackbarMessage}/>
+      <AdminComposeDialog 
+        prevContent={selectedSchool} 
+        formType="school" 
+        isEdit={true} 
+        open={state.editDialogOpen} 
+        onClose={toggleEditDialog} 
+        setSnackbarMessage={setSnackbarMessage}/>
 
       {/* D E L E T E */}
-      <DeleteConfirmation deleteType='admin_school' open={state.deleteConfirmOpen} 
-      handleDelete={deleteSchool} 
-      onClose={toggleDeleteConfirm}/>
+      <DeleteConfirmation 
+        deleteType='admin_school' 
+        open={state.deleteConfirmOpen} 
+        handleDelete={deleteSchool} 
+        onClose={toggleDeleteConfirm}/>
 
       <Table size="small">
         <TableHead>
