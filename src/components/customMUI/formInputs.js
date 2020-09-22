@@ -104,7 +104,7 @@ function CustomRadioGroup(props) {
   return (
     <>
       <CustomLabel>{label}</CustomLabel>
-      {props.helperText && <FormHelperText>{props.helperText}</FormHelperText>}
+      {props.helpertext && <FormHelperText>{props.helpertext}</FormHelperText>}
       <RadioGroupValidator {...customProps}>
         {options.map((option, i) => 
           <FormControlLabel 
