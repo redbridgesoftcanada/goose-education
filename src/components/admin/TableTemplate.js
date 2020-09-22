@@ -21,7 +21,6 @@ export default function TableTemplate(props) {
   const classes = useStyles();
 
   const INITIAL_STATE = {
-    isLoading: false,
     anchorUserRole: null,
     anchorApplicationStatus: null,
     composeDialogOpen: false,
@@ -37,7 +36,7 @@ export default function TableTemplate(props) {
         {context => 
           <>
             {generateContentTable(state, dispatch, props, context)}
-            {props.type !== "Settings" && generatePagination(classes, state, dispatch, props.type, context)}
+            {props.type !== "Settings" && generatePagination(classes, props.type, context)}
           </>
         }
       </DatabaseContext.Consumer>
@@ -101,22 +100,13 @@ function generateContentTable(state, dispatch, props, context) {
   }
 }
 
-function generatePagination(classes, state, dispatch, type, context) {
-  const loadMoreHandler = type => {
-    dispatch({type:"TOGGLE_LOADING"});
-    context.paginatedQuery(type);
-    dispatch({type:"TOGGLE_LOADING"});
-  }
-
+function generatePagination(classes, type, context) {
   return (
     <div className={classes.seeMore}>
-      {state.isLoading ? 
-      <CircularProgress color="secondary"/>
-      :
-      context.state.isQueryEmpty[type] ? 
+      {context.state.isQueryEmpty[type] ? 
       <Typography>All {type} Data Loaded.</Typography>
       :
-      <Link color="secondary" href="#" onClick={() => loadMoreHandler(type)}>
+      <Link color="secondary" href="#" onClick={() => context.paginatedQuery(type)}>
         Load More
       </Link>
       }
@@ -127,10 +117,7 @@ function generatePagination(classes, state, dispatch, type, context) {
 function toggleReducer(state, action) {
   const { type, payload } = action;
 
-  switch(type) {
-    case 'TOGGLE_LOADING':
-      return {...state, isLoading: !state.isLoading}
-    
+  switch(type) {    
     case 'MENU_OPEN': {
       const anchorKey = payload.key;
       const anchorEl = payload.selected;
