@@ -31,13 +31,13 @@ const CustomError = ({ children }) => {
 
 class SelectValidator extends ValidatorComponent {  
   renderValidatorComponent() {
-    const { children, errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
+    const { children, errorMessages, validators, requiredError, validatorListener, ...rest } = this.props;
     return (
       <FormControl
         style={{ width: '100%'}}
         {...!this.state.isValid && { error: true }}>
         <Select
-          displayEmpty
+          notched={false}
           variant='outlined'
           {...rest}>
             {children}
@@ -56,7 +56,7 @@ class SelectValidator extends ValidatorComponent {
 
 class QuillValidator extends ValidatorComponent {
   renderValidatorComponent() {
-    const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
+    const { errorMessages, validators, requiredError, validatorListener, ...rest } = this.props;
     return (
       <>
         <ReactQuill
@@ -99,7 +99,7 @@ class FileValidator extends ValidatorComponent {
 
 class RadioGroupValidator extends ValidatorComponent {
   renderValidatorComponent() {
-    const { errorMessages, validators, requiredError, validatorListener, value, ...rest } = this.props;
+    const { errorMessages, validators, requiredError, validatorListener, ...rest } = this.props;
     return (
       <>
         <RadioGroup
@@ -134,7 +134,7 @@ class DatePickValidator extends ValidatorComponent {
 
 class CheckboxValidator extends ValidatorComponent {  
   renderValidatorComponent() {
-    const { children, errorMessages, validators, requiredError, validatorListener, value, label, ...rest } = this.props;
+    const { children, errorMessages, validators, requiredError, validatorListener, label, ...rest } = this.props;
     return (
       <FormControl 
         style={{ float: 'left' }}

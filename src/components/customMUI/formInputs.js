@@ -89,7 +89,6 @@ function CustomSelect(props) {
       {props.label && <CustomLabel>{props.label}</CustomLabel>}
       <SelectValidator
         {...customProps}>
-          <MenuItem value="none" disabled>Select One</MenuItem>
           {options.map((option, i) => 
             <MenuItem key={i} name={option} value={option}>
               {option}
