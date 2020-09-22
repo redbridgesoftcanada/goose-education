@@ -159,8 +159,10 @@ class Firebase {
   deleteMessage = messageId => this.db.doc(`messages/${messageId}`).delete();
 
   // U P L O A D S
+  refFromUrl = url => this.storage.refFromURL(url);
   imagesRef = file => this.storage.ref('images').child(file.name);
   attachmentsRef = file => this.storage.ref('attachments').child(file.name);
+
 
   // S T A T I C  A S S E T S
   graphics = () => this.db.collection("graphics");
