@@ -7,50 +7,52 @@ import AdminComposeDialog from './AdminComposeDialog';
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function GooseTips(props) {
-  const { state, dispatch, listOfTips, firebase } = props;
+  const { dispatch, listOfTips, firebase } = props;
 
-  // S T A T E
   const [ selectedTip, setSelectedTip ] = useState(null);
 
-  // D I S P A T C H  M E T H O D S
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
   const toggleEditDialog = () => dispatch({type: 'TOGGLE_EDIT_DIALOG'});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
-  const setEditTip = id => {
-    setSelectedTip(listOfTips.find(school => school.id === id));
+  const setEditTip = event => {
+    const findTipData = listOfTips.find(tip => tip.id === event.currentTarget.id);
+    setSelectedTip(findTipData);
     toggleEditDialog();
   }
   
-  const setDeleteTip = id => {
-    setSelectedTip(listOfTips.find(school => school.id === id));
+  const setDeleteTip = event => {
+    const findTipData = listOfTips.find(tip => tip.id === event.currentTarget.id);
+    setSelectedTip(findTipData);
     toggleDeleteConfirm();
   }
 
-  const deleteTip = () => {
-    firebase.deleteTip(selectedTip.id).then(function() {
-     dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('Tip deleted successfully!');
-    }).catch(function(error) {
-      console.log(error)
-    });
+  const deleteTip = async () => {
+    const deleteStorageResource = firebase.refFromUrl(selectedTip.downloadUrl).delete();
+    const deleteDoc =  firebase.deleteTip(selectedTip.id);
+
+    try {
+      await Promise.all([deleteStorageResource, deleteDoc]);
+      dispatch({type: 'DELETE_CONFIRM'});
+      setSnackbarMessage('Tip successfully deleted!');
+    } catch (error) {
+      console.log(error.message)
+    }
   }
 
   return (
     <>
-      {/* E D I T */}
       <AdminComposeDialog 
         formType="tip" 
         isEdit={true} 
-        open={state.editDialogOpen} 
+        open={props.state.editDialogOpen} 
         onClose={toggleEditDialog} 
         setSnackbarMessage={setSnackbarMessage} 
         prevContent={selectedTip}/>
 
-      {/* D E L E T E */}
       <DeleteConfirmation 
         deleteType='admin_tip' 
-        open={state.deleteConfirmOpen} 
+        open={props.state.deleteConfirmOpen} 
         handleDelete={deleteTip} 
         onClose={toggleDeleteConfirm}/>
 
@@ -71,12 +73,12 @@ function GooseTips(props) {
               <TableCell>{tip.isFeatured ? <CheckBox/> : <CheckBoxOutlineBlank/>}</TableCell>
               <TableCell>{format(tip.updatedAt, "Pp")}</TableCell>
               <TableCell>
-                <IconButton color="secondary" onClick={() => setEditTip(tip.id)}>
+                <IconButton id={tip.id} color="secondary" onClick={setEditTip}>
                   <EditOutlined/> 
                 </IconButton>
               </TableCell>
               <TableCell>
-                <IconButton color="secondary" onClick={() => setDeleteTip(tip.id)}>
+                <IconButton id={tip.id} color="secondary" onClick={setDeleteTip}>
                   <Clear/>
                 </IconButton>
               </TableCell>
