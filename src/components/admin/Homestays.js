@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { Clear, CloudDownload } from "@material-ui/icons";
+import { format, parseISO } from 'date-fns';
 import { withFirebase } from "../firebase";
 import DeleteConfirmation from '../DeleteConfirmation';
 
@@ -14,18 +15,22 @@ function Homestays(props) {
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
-  const setDeleteApplication = id => {
-    setSelectedApplication(listOfHomestays.find(application => application.id === id));
+  const setDeleteApplication = event => {
+    const findHomestayData = listOfHomestays.find(application => application.id === event.currentTarget.id)
+    setSelectedApplication(findHomestayData);
     toggleDeleteConfirm();
   }
 
-  const deleteApplication = () => {
-    firebase.deleteHomestayApplication(selectedApplication.id).then(function() {
-     dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('Application successfully deleted!');
-    }).catch(function(error) {
-      console.log(error)
-    });
+  const deleteApplication = async () => {
+    const deleteStorageResource = firebase.refFromUrl(selectedApplication.downloadUrl).delete();
+    const deleteDoc =  firebase.deleteHomestayApplication(selectedApplication.id);
+    try {
+      await Promise.all([deleteStorageResource, deleteDoc]);
+      dispatch({type: 'DELETE_CONFIRM'});
+      setSnackbarMessage('Application successfully deleted!');
+    } catch (error) {
+      console.log(error.message)
+    }
   }
 
   return (
@@ -42,30 +47,31 @@ function Homestays(props) {
           <TableCell>Last Name</TableCell>
           <TableCell>Start Date</TableCell>
           <TableCell>End Date</TableCell>
-          <TableCell>Arrival Flight</TableCell>
+          <TableCell>Arrival Date</TableCell>
           <TableCell>Delete</TableCell>
           <TableCell>Download</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {listOfHomestays.map((application, i) => {
-          const formattedArrivalTime = Date(application.arrivalFlightTime).toString();
+        {listOfHomestays.map(application => {
           return (
-          <TableRow key={i} hover>
+          <TableRow key={application.id} hover>
             <TableCell>{application.firstName}</TableCell>
             <TableCell>{application.lastName}</TableCell>
-            <TableCell>{application.homestayStartDate}</TableCell>
-            <TableCell>{application.homestayEndDate}</TableCell>
-            <TableCell>{application.arrivalFlightDate} {formattedArrivalTime}</TableCell>
+            <TableCell>{format(application.homestayStartDate.toDate(), 'P')}</TableCell>
+            <TableCell>{format(application.homestayEndDate.toDate(), 'P')}</TableCell>
+            <TableCell>{format(application.arrivalFlightDate.toDate(), 'Pp')}</TableCell>
             <TableCell>
-              <IconButton color="secondary" onClick={() => setDeleteApplication(application.authorID)}>
+              <IconButton id={application.id} color="secondary" onClick={setDeleteApplication}>
                 <Clear/>
               </IconButton>
             </TableCell>
             <TableCell>
-              <IconButton color="secondary" onClick={()=>console.log('Clicked')}>
-                <CloudDownload/>
-              </IconButton>
+              {application.downloadUrl &&
+                <IconButton color="secondary" onClick={() => window.open(application.downloadUrl)}>
+                  <CloudDownload/>
+                </IconButton>
+              }
             </TableCell>
           </TableRow>
         )})}
