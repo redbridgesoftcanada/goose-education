@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from "react";
-import { Avatar, Box, Button, CircularProgress, Grid, makeStyles } from "@material-ui/core";
+import { Avatar, Box, Button, CircularProgress, FormHelperText, Grid, makeStyles } from "@material-ui/core";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import { withFirebase } from "../../firebase";
 import { TAGS } from "../../../constants/constants";
@@ -8,6 +8,10 @@ import StyledValidators from "../../customMUI";
 const useStyles = makeStyles(theme => ({
   root: {
     width: "100%",
+  },
+  avatar: {
+    width: theme.spacing(18),
+    height: theme.spacing(18)
   },
   button: {
     marginTop: theme.spacing(1),
@@ -25,7 +29,7 @@ const INITIAL_STATE = {
   isEdit: false,
   isLoading: false,
   isFeatured: false,
-  upload: "",
+  image: "",
   title: "",
   description: "",
   tag: "",
@@ -39,55 +43,63 @@ function UploadImageForm(props) {
   const { dialogOpen, onDialogClose, setSnackbarMessage, firebase, formType } = props;
 
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+  const { isEdit, isLoading, ...uploadImageForm } = state;
 
-  // D I S P A T C H  M E T H O D S
   const handleTextInput = event => dispatch({type: "TEXT_INPUT", payload: event.target});
   const handleRichTextInput = htmlString => dispatch({type: "RICH_TEXT_INPUT", payload: htmlString});
   const handleFileUpload = event => dispatch({type: "FILE_UPLOAD", payload: event.target.files[0]});
 
-  const onSubmit = event => {
-    dispatch({type: "INIT_SAVE"});
-    
-    const { isEdit, isLoading, upload, ...newContent } = state;
-    // configure Firestore collection/document/storage locations
-    let newDoc, formContent;
-    if (formType === 'article') {
-      newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
-      formContent = {...newContent}
-    } else if (formType === 'tip') {
-      const { tag, instagramUrl, link1, link2, ...newTipsForm} = newContent;
-      newDoc = isEdit ? firebase.tip(state.id) : firebase.tips().doc();
-      formContent = {...newTipsForm}
+  const onSubmit = async event => {
+    const cleanupActions = message => {
+      dispatch({type:"RESET_STATE"});
+      setSnackbarMessage(message);
+      onDialogClose();
     }
-    const uploadRef = firebase.imagesRef(upload);
-    const uploadTask = uploadRef.put(upload);
-
-
-    // user uploads a file with the form (note. empty array overwrites to a File object)
-    uploadTask.on("state_changed", function (snapshot) {
-    }, function(error) {
-      console.log(error)
-    }, function () {
-      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-        newDoc.set({
-          id: newDoc.id,
-          authorDisplayName: "최고관리자",
-          authorID: 0,
-          comments: [],
+    const { image, ...newForm } = uploadImageForm;
+    
+    // config Firebase collection reference and document content;
+    let docRef, content;
+    if (formType === 'article') {
+      docRef = isEdit ? firebase.article(state.id) : firebase.articles().doc();
+      content = {...newForm}
+    } else if (formType === 'tip') {
+      const { tag, instagramUrl, link1, link2, ...newTipsForm} = newForm;
+      docRef = isEdit ? firebase.tip(state.id) : firebase.tips().doc();
+      content = {...newTipsForm}
+    }
+    
+    dispatch({type: "INIT_SAVE"});
+    if (isEdit) {
+      if (typeof image === 'string') {
+        docRef.set({ ...content, updatedAt: Date.now() }, { merge: true })
+        .then(() => cleanupActions(`Updated ${formType} - please refresh to see new changes`));
+      } else if (image instanceof File) {
+        const uploadTask = firebase.imagesRef(image).put(image);
+        const downloadURL = await uploadStorageImage(uploadTask);
+        docRef.set({
+          ...content,
           updatedAt: Date.now(),
-          image: downloadURL,
-          ...!isEdit && { createdAt: Date.now() },
-          ...formContent
+          image: downloadURL
         }, { merge: true })
-        .then(() => {
-          dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
-          !isEdit ? 
-            setSnackbarMessage(`Created ${formType} - please refresh to see new changes.`) : 
-            setSnackbarMessage(`Updated ${formType} - please refresh to see new changes`);
-          onDialogClose();
-    })});
+        .then(() => cleanupActions(`Updated ${formType} - please refresh to see new changes!`));
+      }
+
+    } else {
+      const uploadTask = firebase.imagesRef(image).put(image);
+      const downloadURL = await uploadStorageImage(uploadTask);
+      docRef.set({
+        ...content,
+        id: docRef.id,
+        authorDisplayName: "최고관리자",
+        authorID: 0,
+        comments: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        image: downloadURL,
+      })
+      .then(() => cleanupActions(`Created ${formType} - please refresh to see new changes`));
+    }
     event.preventDefault();
-    });
   }
 
   useEffect(() => {
@@ -115,6 +127,34 @@ function UploadImageForm(props) {
 
   return (
     <ValidatorForm onSubmit={onSubmit}>
+      <Grid container justify='center' alignItems='center'>
+        <Grid item xs={2}>
+          {state.image ?
+            <Avatar
+              className={classes.avatar}
+              imgProps={{style: { objectFit: 'contain' }}}
+              alt='T'
+              variant='rounded' 
+              src={
+                state.image instanceof File ? null : state.image.includes('firebase') ? state.image : require(`../../../assets/img/${state.image}`)}/>
+          :
+            <Box height={144} width={144} border={1} borderColor='grey.500' borderRadius={8}/>
+          }
+        </Grid>
+
+        <Grid item>
+          <StyledValidators.FileUpload 
+            value={state.image}
+            label='Image'
+            onChange={handleFileUpload}
+            validators={['isRequiredUpload']}
+            errorMessages={['']}/>
+          <FormHelperText>Select a new file to upload and replace current image.</FormHelperText>
+        </Grid>
+      </Grid>
+
+
+
       <StyledValidators.TextField
         name="title"
         value={state.title}
@@ -166,19 +206,12 @@ function UploadImageForm(props) {
         </>
       }
 
-      <StyledValidators.FileUpload 
-        value={state.upload}
-        label='Image'
-        onChange={handleFileUpload}
-        validators={['isRequiredUpload']}
-        errorMessages={['']}/>
-
       <StyledValidators.CustomRadioGroup
         name='isFeatured'
         value={state.isFeatured}
         label='Goose Featured'
         onChange={handleTextInput}
-        helperText={`Display as a featured ${formType} on the home page.`}
+        helpertext={`Display as a featured ${formType} on the home page.`}
         options={["Yes", "No"]}
         validators={['isSelected']}
         errorMessages={['']}
@@ -198,6 +231,13 @@ function UploadImageForm(props) {
   );
 }
 
+function uploadStorageImage(uploadTask) {
+  return uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+    return downloadURL;
+  });
+}
+
+
 function toggleReducer(state, action) {
   const { type, payload } = action;
   
@@ -207,8 +247,7 @@ function toggleReducer(state, action) {
       return {...initialState}
 
     case "EDIT_STATE":
-      const { upload, ...prepopulateForm } = payload;
-      return {...prepopulateForm, isEdit: true, isLoading: false, upload: ""}
+      return {...payload, isEdit: true, isLoading: false }
     
     case "INIT_SAVE":
       return {...state, isLoading: true}
@@ -225,10 +264,7 @@ function toggleReducer(state, action) {
 
     case "FILE_UPLOAD":
       const uploadFile = payload;
-      if (!uploadFile) {
-        return {...state, upload: []}
-      }
-      return {...state, upload: uploadFile}
+      return (!uploadFile) ? {...state, image: ''} : {...state, image: uploadFile}
     
     default:
       console.log("Not a valid dispatch type for Admin Articles Compose Form.")
