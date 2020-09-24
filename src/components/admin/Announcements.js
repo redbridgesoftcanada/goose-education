@@ -9,25 +9,39 @@ import DeleteConfirmation from '../DeleteConfirmation';
 function Announcements(props) {
   const { state, dispatch, listOfAnnouncements, firebase } = props;
 
-  // S T A T E
   const [ selectedAnnounce, setSelectedAnnounce ] = useState(null);
 
-  // D I S P A T C H  M E T H O D S
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
   const toggleEditDialog = () => dispatch({type: 'TOGGLE_EDIT_DIALOG'});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
-  const setEditAnnounce = id => {
-    setSelectedAnnounce(listOfAnnouncements.find(announce => announce.id === id));
-    toggleEditDialog();
-  }
-  
-  const setDeleteAnnounce = id => {
-    setSelectedAnnounce(listOfAnnouncements.find(announce => announce.id === id));
-    toggleDeleteConfirm();
+  const toggleClickAction = event => {
+    const actionType = event.currentTarget.name;
+    const announceData = listOfAnnouncements.find(announce => announce.id === event.currentTarget.id);
+    setSelectedAnnounce(announceData);
+    (actionType === 'edit') ? toggleEditDialog() : toggleDeleteConfirm();
   }
 
-  const deleteAnnounce = () => {
+  const onDelete = async () => {
+    const deletePromises = [];
+
+    if (selectedAnnounce.attachments) {
+      const deleteStorageResource = firebase.refFromUrl(selectedAnnounce.attachments).delete();
+      deletePromises.push(deleteStorageResource);
+    }
+
+    const deleteDoc =  firebase.deleteTip(selectedAnnounce.id);
+    deletePromises.push(deleteDoc);
+
+    try {
+      await Promise.all(deletePromises);
+      dispatch({type: 'DELETE_CONFIRM'});
+      setSnackbarMessage('Tip successfully deleted!');
+    } catch (error) {
+      console.log(error.message)
+    }
+
+
     firebase.deleteAnnouncement(selectedAnnounce.id).then(function() {
      dispatch({type: 'DELETE_CONFIRM'});
      setSnackbarMessage('Announcement deleted successfully!');
@@ -38,13 +52,19 @@ function Announcements(props) {
 
   return (
     <>
-      {/* E D I T */}
-      <AdminComposeDialog formType="announce" isEdit={true} open={state.editDialogOpen} onClose={toggleEditDialog} setSnackbarMessage={setSnackbarMessage} prevContent={selectedAnnounce}/>
+      <AdminComposeDialog 
+        isEdit={true} 
+        formType="announce" 
+        open={state.editDialogOpen} 
+        onClose={toggleEditDialog} 
+        setSnackbarMessage={setSnackbarMessage} 
+        prevContent={selectedAnnounce}/>
 
-      {/* D E L E T E */}
-      <DeleteConfirmation deleteType='admin_announce' open={state.deleteConfirmOpen} 
-      handleDelete={deleteAnnounce} 
-      onClose={toggleDeleteConfirm}/>
+      <DeleteConfirmation 
+        deleteType='admin_announce' 
+        open={state.deleteConfirmOpen} 
+        handleDelete={onDelete} 
+        onClose={toggleDeleteConfirm}/>
 
       <Table size="small">
         <TableHead>
@@ -61,12 +81,12 @@ function Announcements(props) {
               <TableCell>{announce.title}</TableCell>
               <TableCell>{format(announce.updatedAt, "Pp")}</TableCell>
               <TableCell>
-                <IconButton color="secondary" onClick={() => setEditAnnounce(announce.id)}>
+                <IconButton name='edit' id={announce.id} color="secondary" onClick={toggleClickAction}>
                   <EditOutlined fontSize="small"/>
                 </IconButton>
               </TableCell>
               <TableCell>
-                <IconButton color="secondary" onClick={() => setDeleteAnnounce(announce.id)}>
+                <IconButton name='delete' id={announce.id} color="secondary" onClick={toggleClickAction}>
                   <Clear fontSize="small"/>
                 </IconButton>
               </TableCell>
