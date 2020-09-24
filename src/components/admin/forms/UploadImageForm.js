@@ -153,8 +153,6 @@ function UploadImageForm(props) {
         </Grid>
       </Grid>
 
-
-
       <StyledValidators.TextField
         name="title"
         value={state.title}
@@ -237,7 +235,6 @@ function uploadStorageImage(uploadTask) {
   });
 }
 
-
 function toggleReducer(state, action) {
   const { type, payload } = action;
   
@@ -247,7 +244,9 @@ function toggleReducer(state, action) {
       return {...initialState}
 
     case "EDIT_STATE":
-      return {...payload, isEdit: true, isLoading: false }
+      const { isFeatured, ...prevContent } = payload;
+      const isFeaturedState = isFeatured ? 'Yes' : 'No';
+      return {...prevContent, isEdit: true, isLoading: false, isFeatured: isFeaturedState }
     
     case "INIT_SAVE":
       return {...state, isLoading: true}
