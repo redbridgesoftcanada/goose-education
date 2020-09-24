@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
 import DeleteConfirmation from '../DeleteConfirmation';
+import { onDelete } from '../../constants/helpers/_storage';
 
 function Announcements(props) {
   const { state, dispatch, listOfAnnouncements, firebase } = props;
@@ -22,33 +23,7 @@ function Announcements(props) {
     (actionType === 'edit') ? toggleEditDialog() : toggleDeleteConfirm();
   }
 
-  const onDelete = async () => {
-    const deletePromises = [];
-
-    if (selectedAnnounce.attachments) {
-      const deleteStorageResource = firebase.refFromUrl(selectedAnnounce.attachments).delete();
-      deletePromises.push(deleteStorageResource);
-    }
-
-    const deleteDoc =  firebase.deleteTip(selectedAnnounce.id);
-    deletePromises.push(deleteDoc);
-
-    try {
-      await Promise.all(deletePromises);
-      dispatch({type: 'DELETE_CONFIRM'});
-      setSnackbarMessage('Tip successfully deleted!');
-    } catch (error) {
-      console.log(error.message)
-    }
-
-
-    firebase.deleteAnnouncement(selectedAnnounce.id).then(function() {
-     dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('Announcement deleted successfully!');
-    }).catch(function(error) {
-      console.log(error)
-    });
-  }
+  const handleDelete = () => onDelete(selectedAnnounce.id, selectedAnnounce.attachments, firebase, toggleDeleteConfirm, setSnackbarMessage);
 
   return (
     <>
@@ -63,7 +38,7 @@ function Announcements(props) {
       <DeleteConfirmation 
         deleteType='admin_announce' 
         open={state.deleteConfirmOpen} 
-        handleDelete={onDelete} 
+        handleDelete={handleDelete} 
         onClose={toggleDeleteConfirm}/>
 
       <Table size="small">

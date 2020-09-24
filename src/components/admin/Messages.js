@@ -5,45 +5,41 @@ import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
 import DeleteConfirmation from '../DeleteConfirmation';
+import { onDelete } from '../../constants/helpers/_storage';
 
 function Messages(props) {
   const { state, dispatch, listOfMessages, firebase } = props;
 
   const [ selectedMessage, setSelectedMessage ] = useState(null);
 
-  // D I S P A T C H  M E T H O D S
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
   const toggleEditDialog = () => dispatch({type: 'TOGGLE_EDIT_DIALOG'});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
-  const setEditMessage = id => {
-    setSelectedMessage(listOfMessages.find(message => message.id === id));
-    toggleEditDialog();
-  }
-  
-  const setDeleteMessage = id => {
-    setSelectedMessage(listOfMessages.find(message => message.id === id));
-    toggleDeleteConfirm();
+  const toggleClickAction = event => {
+    const actionType = event.currentTarget.name;
+    const messageData = listOfMessages.find(message => message.id === event.currentTarget.id);
+    setSelectedMessage(messageData);
+    (actionType === 'edit') ? toggleEditDialog() : toggleDeleteConfirm();
   }
 
-  const deleteMessage = () => {
-    firebase.deleteMessage(selectedMessage.id).then(function() {
-     dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('Message deleted successfully!');
-    }).catch(function(error) {
-      console.log(error)
-    });
-  }
+  const handleDelete = () => onDelete(selectedMessage.id, selectedMessage.attachments, firebase, toggleDeleteConfirm, setSnackbarMessage);
 
   return (
     <>
-      {/* E D I T */}
-      <AdminComposeDialog formType="message" isEdit={true} open={state.editDialogOpen} onClose={toggleEditDialog} setSnackbarMessage={setSnackbarMessage} prevContent={selectedMessage}/>
+      <AdminComposeDialog 
+        isEdit={true} 
+        formType="message" 
+        open={state.editDialogOpen} 
+        onClose={toggleEditDialog} 
+        setSnackbarMessage={setSnackbarMessage} 
+        prevContent={selectedMessage}/>
 
-      {/* D E L E T E */}
-      <DeleteConfirmation deleteType='message' open={state.deleteConfirmOpen} 
-      handleDelete={deleteMessage} 
-      onClose={toggleDeleteConfirm}/>
+      <DeleteConfirmation 
+        deleteType='message' 
+        open={state.deleteConfirmOpen} 
+        handleDelete={handleDelete} 
+        onClose={toggleDeleteConfirm}/>
 
       <Table size="small">
         <TableHead>
@@ -57,32 +53,31 @@ function Messages(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {listOfMessages.map((message, i) => (
-            <TableRow key={i} hover>
-              <TableCell>{message.authorDisplayName}</TableCell>
-              <TableCell>{message.title}</TableCell>
-              <TableCell>{format(message.updatedAt, "Pp")}</TableCell>
-              <TableCell>
-                <IconButton color="secondary" onClick={() => setEditMessage(message.id)}>
-                  {message.authorDisplayName === "슈퍼관리자" && <EditOutlined fontSize="small"/>}
-                </IconButton>
-              </TableCell>
-              <TableCell>
-                <IconButton color="secondary" onClick={() => setDeleteMessage(message.id)}>
-                  <Clear fontSize="small"/>
-                </IconButton>
-              </TableCell>
-              <TableCell>
-                {message.attachments.length ?
-                  <IconButton color="secondary" onClick={()=>window.open(message.attachments, "_blank")}>
+          {listOfMessages.map((message, i) => {
+            const canEdit = message.authorID === firebase.getCurrentUser().uid;
+            return (
+              <TableRow key={i} hover>
+                <TableCell>{message.authorDisplayName}</TableCell>
+                <TableCell>{message.title}</TableCell>
+                <TableCell>{format(message.updatedAt, "Pp")}</TableCell>
+                <TableCell>
+                  <IconButton name='edit' id={message.id} color="secondary" onClick={toggleClickAction} disabled={!canEdit}>
+                    <EditOutlined fontSize="small"/>
+                  </IconButton>
+                </TableCell>
+                <TableCell>
+                  <IconButton name='delete' id={message.id} color="secondary" onClick={toggleClickAction}>
+                    <Clear fontSize="small"/>
+                  </IconButton>
+                </TableCell>
+                <TableCell>
+                  <IconButton color="secondary" onClick={()=>window.open(message.attachments, "_blank")} disabled={!message.attachments.length}>
                     <CloudDownload fontSize="small"/>
                   </IconButton>
-                  :
-                  "No attachment submitted."
-                }
-            </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+              </TableRow>
+            )
+          })}
         </TableBody>
       </Table>
     </>

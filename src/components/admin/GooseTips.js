@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
 import DeleteConfirmation from '../DeleteConfirmation';
+import { onDelete } from '../../constants/helpers/_storage';
 
 function GooseTips(props) {
   const { dispatch, listOfTips, firebase } = props;
@@ -15,30 +16,14 @@ function GooseTips(props) {
   const toggleEditDialog = () => dispatch({type: 'TOGGLE_EDIT_DIALOG'});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
-  const setEditTip = event => {
-    const findTipData = listOfTips.find(tip => tip.id === event.currentTarget.id);
-    setSelectedTip(findTipData);
-    toggleEditDialog();
-  }
-  
-  const setDeleteTip = event => {
-    const findTipData = listOfTips.find(tip => tip.id === event.currentTarget.id);
-    setSelectedTip(findTipData);
-    toggleDeleteConfirm();
+  const toggleClickAction = event => {
+    const actionType = event.currentTarget.name;
+    const tipData = listOfTips.find(tip => tip.id === event.currentTarget.id);
+    setSelectedTip(tipData);
+    (actionType === 'edit') ? toggleEditDialog() : toggleDeleteConfirm();
   }
 
-  const deleteTip = async () => {
-    const deleteStorageResource = firebase.refFromUrl(selectedTip.downloadUrl).delete();
-    const deleteDoc =  firebase.deleteTip(selectedTip.id);
-
-    try {
-      await Promise.all([deleteStorageResource, deleteDoc]);
-      dispatch({type: 'DELETE_CONFIRM'});
-      setSnackbarMessage('Tip successfully deleted!');
-    } catch (error) {
-      console.log(error.message)
-    }
-  }
+  const handleDelete = () => onDelete(selectedTip.id, selectedTip.image, firebase, toggleDeleteConfirm, setSnackbarMessage);
 
   return (
     <>
@@ -53,7 +38,7 @@ function GooseTips(props) {
       <DeleteConfirmation 
         deleteType='admin_tip' 
         open={props.state.deleteConfirmOpen} 
-        handleDelete={deleteTip} 
+        handleDelete={handleDelete} 
         onClose={toggleDeleteConfirm}/>
 
       <Table size="small">
@@ -73,12 +58,12 @@ function GooseTips(props) {
               <TableCell>{tip.isFeatured ? <CheckBox/> : <CheckBoxOutlineBlank/>}</TableCell>
               <TableCell>{format(tip.updatedAt, "Pp")}</TableCell>
               <TableCell>
-                <IconButton id={tip.id} color="secondary" onClick={setEditTip}>
+                <IconButton name='edit' id={tip.id} color="secondary" onClick={toggleClickAction}>
                   <EditOutlined/> 
                 </IconButton>
               </TableCell>
               <TableCell>
-                <IconButton id={tip.id} color="secondary" onClick={setDeleteTip}>
+                <IconButton name='delete' id={tip.id} color="secondary" onClick={toggleClickAction}>
                   <Clear/>
                 </IconButton>
               </TableCell>

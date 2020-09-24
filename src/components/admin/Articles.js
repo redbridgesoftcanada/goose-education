@@ -1,50 +1,45 @@
 import React, { useState } from "react";
-import { IconButton, Table, TableBody, TableCell, TableHead, TableRow, Tabs, Tab, Typography } from "@material-ui/core";
+import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { Clear, EditOutlined } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../firebase";
 import AdminComposeDialog from './AdminComposeDialog';
 import DeleteConfirmation from '../DeleteConfirmation';
+import { onDelete } from '../../constants/helpers/_storage';
 
 function Networking(props) {
-  const { state, dispatch, listOfArticles, firebase } = props;
+  const { dispatch, listOfArticles, firebase } = props;
 
-  // S T A T E
   const [ selectedArticle, setSelectedArticle ] = useState(null);
 
-  // D I S P A T C H  M E T H O D S
   const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
   const toggleEditDialog = () => dispatch({type: 'TOGGLE_EDIT_DIALOG'});
   const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
-  const setEditArticle = id => {
-    setSelectedArticle(listOfArticles.find(article => article.id === id));
-    toggleEditDialog();
-  }
-  
-  const setDeleteArticle = id => {
-    setSelectedArticle(listOfArticles.find(article => article.id === id));
-    toggleDeleteConfirm();
+  const toggleClickAction = event => {
+    const actionType = event.currentTarget.name;
+    const articleData = listOfArticles.find(article => article.id === event.currentTarget.id);
+    setSelectedArticle(articleData);
+    (actionType === 'edit') ? toggleEditDialog() : toggleDeleteConfirm();
   }
 
-  const deleteArticle = () => {
-    firebase.deleteArticle(selectedArticle.id).then(function() {
-     dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('Article deleted successfully!');
-    }).catch(function(error) {
-      console.log(error)
-    });
-  }
+  const handleDelete = () => onDelete(selectedArticle.id, selectedArticle.image, firebase, toggleDeleteConfirm, setSnackbarMessage);
 
   return (
     <>
-      {/* E D I T */}
-      <AdminComposeDialog formType="article" isEdit={true} open={state.editDialogOpen} onClose={toggleEditDialog} setSnackbarMessage={setSnackbarMessage} prevContent={selectedArticle}/>
+      <AdminComposeDialog 
+        formType="article" 
+        isEdit={true} 
+        open={(props.state) ? props.state.editDialogOpen : false } 
+        onClose={toggleEditDialog} 
+        setSnackbarMessage={setSnackbarMessage} 
+        prevContent={selectedArticle}/>
 
-      {/* D E L E T E */}
-      <DeleteConfirmation deleteType='article' open={state.deleteConfirmOpen} 
-      handleDelete={deleteArticle} 
-      onClose={toggleDeleteConfirm}/>
+      <DeleteConfirmation 
+        deleteType='article' 
+        open={(props.state) ? props.state.deleteConfirmOpen : false} 
+        handleDelete={handleDelete} 
+        onClose={toggleDeleteConfirm}/>
 
       <Table size="small">
         <TableHead>
@@ -65,12 +60,12 @@ function Networking(props) {
               <TableCell>{article.tag}</TableCell>
               <TableCell>{format(article.updatedAt, "Pp")}</TableCell>
               <TableCell>
-                <IconButton color="secondary" onClick={() => setEditArticle(article.id)}>
+                <IconButton name='edit' id={article.id} color="secondary" onClick={toggleClickAction}>
                   <EditOutlined fontSize="small"/>
                 </IconButton>
               </TableCell>
               <TableCell>
-                <IconButton color="secondary" onClick={() => setDeleteArticle(article.id)}>
+                <IconButton name='delete' id={article.id} color="secondary" onClick={toggleClickAction}>
                   <Clear fontSize="small"/>
                 </IconButton>
               </TableCell>
