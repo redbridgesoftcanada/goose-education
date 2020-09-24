@@ -62,9 +62,9 @@ function SchoolsComposeForm(props) {
     }
 
     if (isEdit) {
+      const prevImage = props.prevContent.image;
       const docRef = firebase.school(props.prevContent.id);
-
-      if (typeof image === 'string') {
+      if (image === prevImage) {
         docRef.set({
           ...newSchoolForm,
           updatedAt: Date.now()

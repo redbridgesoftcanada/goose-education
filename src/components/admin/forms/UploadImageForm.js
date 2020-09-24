@@ -70,8 +70,12 @@ function UploadImageForm(props) {
     
     dispatch({type: "INIT_SAVE"});
     if (isEdit) {
-      if (typeof image === 'string') {
-        docRef.set({ ...content, updatedAt: Date.now() }, { merge: true })
+      const prevImage = props.prevContent.image;
+      if (image === prevImage) {
+        docRef.set({ 
+          ...content, 
+          updatedAt: Date.now() 
+        }, { merge: true })
         .then(() => cleanupActions(`Updated ${formType} - please refresh to see new changes`));
       } else if (image instanceof File) {
         const uploadTask = firebase.imagesRef(image).put(image);
@@ -90,8 +94,8 @@ function UploadImageForm(props) {
       docRef.set({
         ...content,
         id: docRef.id,
-        authorDisplayName: "최고관리자",
-        authorID: 0,
+        authorDisplayName: firebase.getCurrentUser().displayName,
+        authorID: firebase.getCurrentUser().uid,
         comments: [],
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -133,7 +137,7 @@ function UploadImageForm(props) {
             <Avatar
               className={classes.avatar}
               imgProps={{style: { objectFit: 'contain' }}}
-              alt='T'
+              alt='G'
               variant='rounded' 
               src={
                 state.image instanceof File ? null : state.image.includes('firebase') ? state.image : require(`../../../assets/img/${state.image}`)}/>
