@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from "react";
-import { Box, Button, CircularProgress, makeStyles } from "@material-ui/core";
+import { Box, Button, CircularProgress, makeStyles, FormHelperText } from "@material-ui/core";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import { withFirebase } from "../../firebase";
 import { TAGS } from '../../../constants/constants';
@@ -25,7 +25,7 @@ const INITIAL_STATE = {
   isEdit: false,
   isLoading: false,
   isFeatured: false,
-  upload: "",
+  attachments: "",
   title: "",
   description: "",
   tag: "",
@@ -38,71 +38,84 @@ function UploadAttachmentForm(props) {
   const { dialogOpen, onDialogClose, setSnackbarMessage, firebase, formType } = props;
 
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+  const { isEdit, isLoading, ...uploadForm } = state;
   const classes = useStyles();
 
   const handleTextInput = event => dispatch({type: "TEXT_INPUT", payload: event.target});
   const handleRichTextInput = htmlString => dispatch({type: "RICH_TEXT_INPUT", payload: htmlString});
   const handleFileUpload = event => dispatch({type: "FILE_UPLOAD", payload: event.target.files[0]});
 
-  const onSubmit = event => {
-    dispatch({type: "INIT_SAVE"});
+  const onSubmit = async event => {
+    const cleanupActions = message => {
+      dispatch({type:"RESET_STATE"});
+      setSnackbarMessage(message);
+      onDialogClose();
+    }
+    const { attachments, ...newForm } = uploadForm;
     
-    const { isEdit, isLoading, upload, ...newContent } = state;
-    // configure Firestore collection/document/storage locations
-    let newDoc;
+    // config Firebase collection reference and document content;
+    let docRef;
     if (formType === 'announce') {
-      newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
+      docRef = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
     } else if (formType === 'message') {
-      newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
+      docRef = isEdit ? firebase.message(state.id) : firebase.messages().doc();
     }
+    
+    dispatch({type: "INIT_SAVE"});
+    if (isEdit) {
+      const prevAttachment = props.prevContent.attachments;
+      if (!attachments || attachments === prevAttachment) {
+        docRef.set({ 
+          ...newForm, 
+          updatedAt: Date.now() 
+        }, { merge: true })
+        .then(() => cleanupActions(`Updated ${formType} - please refresh to see new changes`));
 
-    // user uploads a file with the form (note. empty array overwrites to a File object)
-    if (upload && upload instanceof File) {
-      const uploadRef = firebase.attachmentsRef(upload);
-      const uploadTask = uploadRef.put(upload);
-  
-      uploadTask.on("state_changed", function (snapshot) {
-      }, function(error) {
-        console.log(error)
-      }, function () {
-        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-          newDoc.set({
-            id: newDoc.id,
-            authorDisplayName: "최고관리자",
-            authorID: 0,
-            comments: [],
-            updatedAt: Date.now(),
-            attachments: downloadURL,
-            ...!isEdit && { createdAt: Date.now() },
-            ...newContent
-          }, { merge: true })
-          .then(() => {
-            dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
-            !isEdit ?             
-              setSnackbarMessage(`Created ${formType} - please refresh to see new changes.`) : 
-              setSnackbarMessage(`Updated ${formType} - please refresh to see new changes`);
-            onDialogClose();
-      })});
-      event.preventDefault();
-      });
+      } else if (attachments instanceof File) {
+        // if user uploads a new File, delete previous upload from Storage;
+        if (prevAttachment) await firebase.refFromUrl(prevAttachment).delete();
+        
+        const uploadTask = firebase.attachmentsRef(attachments).put(attachments);
+        const downloadURL = await uploadStorageAttachment(uploadTask);
+        docRef.set({
+          ...newForm,
+          updatedAt: Date.now(),
+          attachments: downloadURL
+        }, { merge: true })
+        .then(() => cleanupActions(`Updated ${formType} - please refresh to see new changes!`));
+      }
+
     } else {
-      newDoc.set({
-        id: newDoc.id,
-        authorDisplayName: "최고관리자",
-        authorID: 0,
-        comments: [],
-        updatedAt: Date.now(),
-        attachments: '',
-        ...!isEdit && { createdAt: Date.now() },
-        ...newContent
-      }, { merge: true })
-      .then(() => {
-        dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
-        !isEdit ? setSnackbarMessage("Created successfully!") : setSnackbarMessage("Updated successfully!");
-        onDialogClose();
-      });
-      event.preventDefault();
+      if (!attachments) {
+        docRef.set({
+          ...newForm,
+          id: docRef.id,
+          authorDisplayName: firebase.getCurrentUser().displayName,
+          authorID: firebase.getCurrentUser().uid,
+          comments: [],
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          attachments: "",
+        })
+        .then(() => cleanupActions(`Created ${formType} - please refresh to see new changes`));
+
+      } else { 
+        const uploadTask = firebase.attachmentsRef(attachments).put(attachments);
+        const downloadURL = await uploadStorageAttachment(uploadTask);
+        docRef.set({
+          ...newForm,
+          id: docRef.id,
+          authorDisplayName: firebase.getCurrentUser().displayName,
+          authorID: firebase.getCurrentUser().uid,
+          comments: [],
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          attachments: downloadURL,
+        })
+        .then(() => cleanupActions(`Created ${formType} - please refresh to see new changes`));
+      }
     }
+    event.preventDefault();
   }
 
   useEffect(() => {
@@ -110,7 +123,7 @@ function UploadAttachmentForm(props) {
     if (prevContent) {
       dispatch({type:"EDIT_STATE", payload: prevContent});
     } else {
-      dispatch({type:"RESET_STATE", payload: INITIAL_STATE});
+      dispatch({type:"RESET_STATE"});
     }
   }, [dialogOpen]);
 
@@ -167,6 +180,10 @@ function UploadAttachmentForm(props) {
       <StyledValidators.FileUpload 
         label='Attachment'
         onChange={handleFileUpload}/>
+      
+      {(isEdit && state.attachments) &&
+        <FormHelperText>Attachment Found: if applicable, select to upload and replace existing file.</FormHelperText>
+      }
 
       <Box display='flex' justifyContent='center'>
         <Button className={classes.button} onClick={onDialogClose}>
@@ -182,17 +199,21 @@ function UploadAttachmentForm(props) {
   );
 }
 
+function uploadStorageAttachment(uploadTask) {
+  return uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+    return downloadURL;
+  });
+}
+
 function toggleReducer(state, action) {
   const { type, payload } = action;
   
   switch(type) {
     case "RESET_STATE":
-      const initialState = payload;
-      return {...initialState}
+      return {...INITIAL_STATE}
 
     case "EDIT_STATE":
-      const { upload, ...prepopulateForm } = payload;
-      return {...prepopulateForm, isEdit: true, isLoading: false, upload: ""}
+      return {...payload, isEdit: true, isLoading: false}
     
     case "INIT_SAVE":
       return {...state, isLoading: true}
@@ -210,9 +231,9 @@ function toggleReducer(state, action) {
     case "FILE_UPLOAD":
       const uploadFile = payload;
       if (!uploadFile) {
-        return {...state, upload: []}
+        return {...state, attachments: []}
       }
-      return {...state, upload: uploadFile}
+      return {...state, attachments: uploadFile}
     
     default:
       console.log("Not a valid dispatch type for Admin Articles Compose Form.")
