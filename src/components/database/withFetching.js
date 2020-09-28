@@ -50,6 +50,18 @@ function withFetching(Component) {
       return fetchPaginatedQuery(state, firebase, setState, type);
     }
 
+    const adminPageQuery = async page => {
+      try {
+        if (page === 'Settings') {
+          fetchAllDocuments("graphics", firebase, setState);
+        } else if (ADMIN_PAGES.includes(page)) {
+          await paginatedQuery(page);
+        }
+      } catch(err) {
+        console.log("Unable to fetch data", err);
+      }
+    }
+
     if (state.footerGraphics && localStorage.getItem('footer') === null) {
       localStorage.setItem('footer', JSON.stringify(state.footerGraphics));
     }
@@ -125,24 +137,8 @@ function withFetching(Component) {
           break;
         
         case '/admin':
-          async function loadInitialData() {
-            fetchAllDocuments("aggregates", firebase, setState);
-            fetchSelectDocuments("recent", "messages", firebase, setState, '');
-            try {
-              for (let i = 0; i <= ADMIN_PAGES.slice(1).length; i++) {
-                if (ADMIN_PAGES[i] === "Settings") {
-                  fetchAllDocuments("graphics", firebase, setState);
-                }
-                else {
-                  await paginatedQuery(ADMIN_PAGES[i]);
-                }
-                
-              }
-            } catch(error) {
-              console.log("Unable to fetch data", error)
-            }
-          }
-          loadInitialData();
+          fetchAllDocuments("aggregates", firebase, setState);
+          fetchSelectDocuments("recent", "messages", firebase, setState, '');
           break;
 
         default:
@@ -152,7 +148,7 @@ function withFetching(Component) {
     }, [path]);
 
     return (
-    <DatabaseContext.Provider value={{state, paginatedQuery}}>
+    <DatabaseContext.Provider value={{state, paginatedQuery, adminPageQuery}}>
       <Component {...props} />
     </DatabaseContext.Provider>
     )

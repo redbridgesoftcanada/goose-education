@@ -14,21 +14,21 @@ import TableTemplate from "../components/admin/TableTemplate";
 import AdminComposeDialog from '../components/admin/AdminComposeDialog';
 import { useStyles } from '../styles/adminDashboard';
 
+const INITIAL_STATE = {
+  drawerOpen: true,
+  selectedContent: ADMIN_PAGES[0],
+  composeMenuAnchor: null,
+  composeFormType: null,
+  composeDialogOpen: false,
+  snackbarOpen: false,
+  snackbarMessage: null
+}
+
 export default function AdminDashboard() {
-  const INITIAL_STATE = {
-    drawerOpen: true,
-    selectedContent: ADMIN_PAGES[0],
-    composeMenuAnchor: null,
-    composeFormType: null,
-    composeDialogOpen: false,
-    snackbarOpen: false,
-    snackbarMessage: null
-  }
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
-  // D I S P A T C H  M E T H O D S
   const toggleDrawer = () => dispatch({type: "TOGGLE_DRAWER"});
-  const toggleDisplayContent = event => dispatch({type: "TOGGLE_CONTENT", payload: event.currentTarget.id});
+  const toggleDisplayContent = (event, adminPageQuery) => dispatch({type: "TOGGLE_CONTENT", payload: { selectedContent: event.currentTarget.id, adminPageQuery }});
   const toggleComposeDialog = () => dispatch({type: 'TOGGLE_COMPOSE_DIALOG'});
 
   const setComposeMenu = event => dispatch({type: "COMPOSE_ANCHOR", payload: event.currentTarget});
@@ -102,13 +102,17 @@ export default function AdminDashboard() {
         <List>
           {ADMIN_PAGES.map((page, i) => {
             return (
-            <ListItem button key={i} id={page} onClick={toggleDisplayContent}>
-              <ListItemIcon>
-                {loadMenuIcons(page)}
-              </ListItemIcon>
-              <ListItemText primary={page} />
-            </ListItem>
-          )})}
+              <DatabaseContext.Consumer key={i}>
+                {({ adminPageQuery }) => 
+                  <ListItem button id={page} onClick={event => toggleDisplayContent(event, adminPageQuery)}>
+                    <ListItemIcon>
+                      {loadMenuIcons(page)}
+                    </ListItemIcon>
+                    <ListItemText primary={page} />
+                  </ListItem>
+                }
+              </DatabaseContext.Consumer>
+            )})}
         </List>
       </Drawer>
 
@@ -146,7 +150,9 @@ function toggleReducer(state, action) {
       return { ...state, drawerOpen: !state.drawerOpen }
     
     case "TOGGLE_CONTENT":
-      return { ...state, selectedContent: payload }
+      const { selectedContent, adminPageQuery } = payload;
+      adminPageQuery(selectedContent);
+      return { ...state, selectedContent }
 
     case 'TOGGLE_COMPOSE_DIALOG':
       return {...state, composeDialogOpen: !state.composeDialogOpen}  
