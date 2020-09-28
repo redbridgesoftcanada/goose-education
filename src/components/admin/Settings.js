@@ -215,6 +215,7 @@ const createImagesTable = (listOfImages, changeListener, onSave) => {
         })}
       </Grid>
 
+      <br/>
       <Button 
         fullWidth 
         variant="contained" 
