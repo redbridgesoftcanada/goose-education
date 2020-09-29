@@ -2,17 +2,17 @@ import React from 'react';
 import { TablePagination } from '@material-ui/core';
 
 function Pagination(props) {
-    const { currentPage, totalPages, resourcesPerPage, handlePageChange } = props; 
+    const { currentPage, count, resourcesPerPage, handlePageChange } = props; 
     return (
         <TablePagination
-        component="nav"
-        page={currentPage}
-        rowsPerPage={resourcesPerPage}
-        rowsPerPageOptions={[]}
-        labelRowsPerPage=''
-        count={totalPages}
-        onChangePage={handlePageChange}
-    />
+            component="nav"
+            page={currentPage}
+            count={count}
+            rowsPerPage={resourcesPerPage}
+            onChangePage={handlePageChange}
+            rowsPerPageOptions={[]}
+            labelRowsPerPage=''
+        />
     );
 }
 

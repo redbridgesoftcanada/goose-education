@@ -1,7 +1,9 @@
-function createPagination(totalResources, currentPage, resourcesPerPage, totalPages) {
-  const indexOfLastResource = (currentPage * resourcesPerPage) + 1;
-  const indexOfFirstResource = indexOfLastResource - resourcesPerPage;
-  const paginatedResource = (totalPages > 1) ? totalResources.slice(indexOfFirstResource, indexOfLastResource) : totalResources;
+function createPagination(total, currentPage, pageLimit) {
+    const start = currentPage * pageLimit;
+    const end = (currentPage + 1) * pageLimit;
+
+    const paginatedResource = total.slice(start, end);
+
   return paginatedResource;
 }
 

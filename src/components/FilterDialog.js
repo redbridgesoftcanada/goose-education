@@ -4,9 +4,15 @@ import { CheckOutlined, CloseOutlined } from '@material-ui/icons';
 import { FILTER_OPTIONS, FILTER_CONJUNCTIONS } from '../constants/constants';
 import useStyles from '../styles/constants';
 
+const errorStyles = {
+    fontSize: '0.75rem',
+    color: '#bf1f22',
+    textAlign: 'center'
+}
+
 export default function FilterDialog(props) {
     const classes = useStyles(props, 'buttons'); 
-    const { filterOpen, filterOption, filterConjunction, filterQuery, error, isError, handleSearchQuery, handleSearchClick, onClose } = props;
+    const { filterOpen, filterOption, filterConjunction, filterQuery, error, handleSearchQuery, handleSearchClick, onClose } = props;
 
     const generateDialogField = (name, value, label, children) => 
         <TextField className={classes.menu}
@@ -34,8 +40,8 @@ export default function FilterDialog(props) {
                 onChange={handleSearchQuery}
                 margin="dense"/>
         </div>
+        {error && <Typography style={{...errorStyles}}>{error}</Typography>}
         <div className={classes.container}>
-            {(isError) && <Typography>{error}</Typography>}
             <Button
                 variant="contained"
                 color="secondary"
@@ -56,7 +62,6 @@ export default function FilterDialog(props) {
       </Dialog>
     )
 }
-
 
 const listOfOptions = FILTER_OPTIONS.map((option, i) => (
     <MenuItem key={i} value={option}>

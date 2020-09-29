@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useReducer } from 'react';
+import React, { Fragment, useEffect, useState, useReducer, useRef } from 'react';
 import parse, { domToReact } from 'html-react-parser';
 import { CardContent, CardMedia, Container, Grid, Link, Typography } from '@material-ui/core';
 import { Switch, Redirect, Route, Link as RouterLink, useRouteMatch, useHistory, useLocation } from "react-router-dom";
@@ -15,162 +15,63 @@ import Pagination from '../components/Pagination';
 import Article from '../views/Article';
 import { useStyles } from '../styles/networking';
 
-function toggleReducer(state, action) {
-    const { type, payload } = action;
-  
-    switch(type) {
-        case 'LOAD_ARTICLES': 
-            return { ...state, filteredArticles: payload }
-
-        case 'TOGGLE_COMPOSE':
-            return { ...state, composeOpen: !state.composeOpen }
-
-        case 'TOGGLE_FILTER':
-            return { ...state, filterOpen: !state.filterOpen }
-
-        case 'OPEN_SORT':
-            return { ...state, anchorOpen: payload }
-        
-        case 'SELECTED_SORT':
-            const selectedSort = payload.id;
-            const sortedArticles = sortQuery('articles', state.filteredArticles, selectedSort);
-            
-            return { 
-                ...state, 
-                anchorOpen: null,
-                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
-                filteredArticles: sortedArticles
-            }
-        
-        case 'RESET_FILTER':
-            return { 
-                ...state,
-                filteredArticles: payload,
-                isFiltered: false,
-                filterOpen: false,
-                filterOption: 'Title',
-                filterConjunction: 'And',
-                filterQuery: '',
-                isError: false,
-                error: null,                
-            }
-
-        case 'FILTER_QUERY':
-            const filterType = payload.name;
-            const selectedType = payload.value;
-            return {
-                ...state,
-                [filterType]: selectedType,
-                isError: false,
-                error: null,
-            }
-
-        case 'SEARCH_ARTICLES':
-            const { filterOption, filterConjunction, filterQuery } = state;
-            let filteredContent = [];
-
-            if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
-                filteredContent = multipleFilterQuery(payload, filterOption, filterConjunction, filterQuery);
-
-            } else if (Boolean(filterQuery)) {
-                filteredContent = singleFilterQuery(payload, filterOption, filterQuery);
-
-            } else {
-                return {
-                    ...state,
-                    isError: true,
-                    error: 'Please enter one or more filter terms.'
-                }
-            }
-
-            if (filteredContent.length) {
-                return {
-                    ...state,
-                    filteredArticles: filteredContent,
-                    isFiltered: true,
-                    filterOpen: false
-                }
-            } else {
-                return {
-                    ...state,
-                    isError: true,
-                    error: 'Sorry, no matches found!'
-                }
-            }
-
-        case 'SELECTED_ARTICLE':
-            const selectedArticle = payload.listOfArticles.find(article => article.id.toString() === payload.selected.id);
-            return { ...state, selectedArticle }
-        
-        case 'SEARCH_QUERY':
-            const searchQuery = payload.value;
-            return { ...state, searchQuery }
-
-        case 'CHANGE_PAGE':
-            const currentPage = payload;
-            return { ...state, currentPage }
-                    
-        default:
-            console.log('No matching dispatch type for ArticleBoard.')
-            return;
-    }
+const INITIAL_STATE = {
+    filteredArticles: [],
+    selectedArticle: null,
+    composeOpen: false,   
+    anchorOpen: null,     
+    selectedAnchor: '',
+    isFiltered: false,    
+    filterOpen: false,
+    filterOption: 'Title',
+    filterConjunction: 'And',
+    filterQuery: ''
 }
 
-export default function ArticleBoard(props) {
+export default function ArticleBoard({ listOfArticles }) {
     const classes = useStyles();
     const history = useHistory();
     const match = useRouteMatch();
     const location = useLocation();
-    const { listOfArticles } = props;
-
-    const INITIAL_STATE = {
-        filteredArticles: [],   
-        selectedArticle: null,
-        composeOpen: false,   
-        anchorOpen: null,     
-        selectedAnchor: '',
-        isFiltered: false,    
-        filterOpen: false,
-        filterOption: 'Title',
-        filterConjunction: 'And',
-        filterQuery: '',
-        currentPage: 0,       
-        articlesPerPage: 10,
-        isError: false,
-        error: null
-    }
 
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { filteredArticles, selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, searchQuery, currentPage, articlesPerPage, error, isError } = state;
-    const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
-
-    const totalPages = Math.ceil(filteredArticles.length/articlesPerPage);
-    const paginatedArticles = createPagination(filteredArticles, currentPage, articlesPerPage, totalPages);
+    const [ error, setError ] = useState(null);
     
-    // E V E N T  L I S T E N E R S
-    const handlePageChange = newPage => dispatch({ type:'CHANGE_PAGE', payload: newPage });
-
-    const handleSelectedArticle = event => dispatch({ type: 'SELECTED_ARTICLE', payload: { selected: event.currentTarget, listOfArticles }});
+    const { selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, searchQuery } = state;
     
-    const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
+    // Pagination
+    const [ paginate, setPaginate ] = useState({ currentPage: 0, pageLimit: 5 });
+    const paginateRef = useRef(null);
+    paginateRef.current = createPagination(state.filteredArticles, paginate.currentPage, paginate.pageLimit);
 
-    const openSortPopover = event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget });
+    // Filter
+    const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER', payload: setError });
+    const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target});
+    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: { listOfArticles, setError } });
+
+    // Sort
     const handleSelectedSort = event => dispatch({ type: 'SELECTED_SORT', payload: event.currentTarget});
+    const openSortPopover = event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget });
 
-    const handleSearchQuery = event => dispatch({ type: 'SEARCH_QUERY', payload: event.target });
-    const handleSearch = () => dispatch({ type:'SEARCH_ARTICLES', payload: listOfArticles });
+    // Search
+    const handleSearchQuery = event => dispatch({ type: 'SEARCH_QUERY', payload: event.target});
+    const handleSearch = () => dispatch({ type:'SEARCH_ARTICLES', payload: { listOfArticles, setError } });
 
-    const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER' });
-    const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target });
-    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: listOfArticles });
+    // Dialog
+    const handleSelectedArticle = event => dispatch({ type: 'SELECTED_ARTICLE', payload: { selected: event.currentTarget, listOfArticles }});
+    const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
 
     useEffect(() => {
         if (location.state && location.state.article) {
             dispatch({ type: 'SELECTED_ARTICLE', payload: { selected: location.state.article, listOfArticles }});
-        }
-
+        } 
         dispatch({ type:'LOAD_ARTICLES', payload: listOfArticles });
-    }, [listOfArticles])
+    }, [location.state, listOfArticles])
+
+    // Δ filteredArticles (sort, filter); 
+    useEffect(() => {
+        paginateRef.current = createPagination(state.filteredArticles, paginate.currentPage, paginate.pageLimit);
+    }, [state.filteredArticles, paginate.currentPage, paginate.pageLimit]);
 
     return (
         <Container className={classes.root}>
@@ -193,7 +94,7 @@ export default function ArticleBoard(props) {
                                 article={selectedArticle} 
                             /> 
                         </>
-                        }
+                    }
                     </AuthUserContext.Consumer>
                 }
 
@@ -236,7 +137,10 @@ export default function ArticleBoard(props) {
                         handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, category: 'Networking', resources: listOfArticles} })}/>
 
                     <FilterDialog
-                        {...filterProps}
+                        filterOpen={state.filterOpen}
+                        filterOption={state.filterOption}
+                        filterConjunction={state.filterConjunction}
+                        error={error}
                         handleSearchQuery={handleFilterQuery}
                         handleSearchClick={handleSearch} 
                         onClose={toggleFilterDialog} />
@@ -247,7 +151,7 @@ export default function ArticleBoard(props) {
                         onClose={handleSelectedSort}/>
 
                     <Grid container className={classes.board} spacing={1}>
-                        {paginatedArticles.map(article => {
+                        {paginateRef.current.map(article => {
                             const redirectPath = { 
                                 pathname: `${match.path}/${article.id}`, 
                                 state: { title: 'Networking' } 
@@ -281,12 +185,106 @@ export default function ArticleBoard(props) {
                         })}
                     </Grid>
                     <Pagination 
-                        totalPages={totalPages}
-                        currentPage={currentPage} 
-                        resourcesPerPage={articlesPerPage}
-                        handlePageChange={(event, newPage) => handlePageChange(newPage)}/>
+                        count={state.filteredArticles.length}
+                        currentPage={paginate.currentPage} 
+                        resourcesPerPage={paginate.pageLimit}
+                        handlePageChange={(event, newPage) => setPaginate(prevState => ({...prevState, currentPage: newPage}))}/>
                 </Route>
             </Switch>
         </Container>
     );
+}
+
+function toggleReducer(state, action) {
+    const { type, payload } = action;
+  
+    switch(type) {
+        case 'LOAD_ARTICLES': 
+            return { ...state, filteredArticles: payload }
+
+        case 'TOGGLE_COMPOSE':
+            return { ...state, composeOpen: !state.composeOpen }
+
+        case 'TOGGLE_FILTER': {
+            (!state.filterOpen === false) && payload(null);
+            return { ...state, filterOpen: !state.filterOpen }
+        }
+
+        case 'OPEN_SORT':
+            return { ...state, anchorOpen: payload }
+        
+        case 'SELECTED_SORT':
+            const selectedSort = payload.id;
+            const sortedArticles = sortQuery('articles', state.filteredArticles, selectedSort);
+            
+            return { 
+                ...state, 
+                anchorOpen: null,
+                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
+                filteredArticles: sortedArticles
+            }
+        
+        case 'RESET_FILTER': {
+            const { listOfArticles, setError } = payload;
+            setError(null);
+            return { 
+                ...state,
+                filteredArticles: listOfArticles,
+                isFiltered: false,
+                filterOpen: false,
+                filterOption: 'Title',
+                filterConjunction: 'And',
+                filterQuery: ''              
+            }
+        }
+
+        case 'FILTER_QUERY':
+            const filterType = payload.name;
+            const selectedType = payload.value;
+            return { ...state, [filterType]: selectedType }
+
+        case 'SEARCH_ARTICLES':
+            const { filterOption, filterConjunction, filterQuery } = state;
+            const { listOfArticles, setError } = payload;
+            
+            let filteredContent = [];
+            if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
+                filteredContent = multipleFilterQuery(listOfArticles, filterOption, filterConjunction, filterQuery);
+
+            } else if (Boolean(filterQuery)) {
+                filteredContent = singleFilterQuery(listOfArticles, filterOption, filterQuery);
+
+            } else {
+                setError('Please enter one or more filter terms');
+                return { ...state }
+            }
+
+            if (filteredContent.length) {
+                return {
+                    ...state,
+                    filteredArticles: filteredContent,
+                    isFiltered: true,
+                    filterOpen: false
+                }
+            } else {
+                setError('Sorry, no matched found!');
+                return { ...state }
+            }
+
+        case 'SELECTED_ARTICLE':
+            const selectedArticle = payload.listOfArticles.find(article => article.id.toString() === payload.selected.id);
+            return { ...state, selectedArticle }
+        
+        case 'SEARCH_QUERY':
+            const searchQuery = payload.value;
+            return { ...state, searchQuery }
+
+        case 'CHANGE_PAGE':
+            const currentPage = payload;
+            return { ...state, currentPage }
+                    
+        default:
+            console.log('No matching dispatch type for ArticleBoard.')
+            return;
+    }
 }
