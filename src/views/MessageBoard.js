@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from 'react';
+import React, { useEffect, useState, useReducer, useRef } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format, compareDesc } from 'date-fns';
@@ -16,51 +16,52 @@ import Pagination from '../components/Pagination';
 const title = 'Study Abroad Counselling';
 const description = 'We will respond to your inquiry within 24 hours.';
 
+const INITIAL_STATE = {
+    filteredMessages: [],
+    composeOpen: false,
+    anchorOpen: null,
+    selectedAnchor: '',
+    isFiltered: false,
+    filterOpen: false,
+    filterOption: 'Title',
+    filterConjunction: 'And',
+    filterQuery: ''
+} 
+
 export default function MessageBoard(props) {
     const match = useRouteMatch();
     const { listOfMessages, setMessage } = props;
 
-    const [ error, setError ] = useState({ exists: true, message: null });
-
-    const INITIAL_STATE = {
-        filteredMessages: [],
-        composeOpen: false,
-        anchorOpen: null,
-        selectedAnchor: '',
-        isFiltered: false,
-        filterOpen: false,
-        filterOption: 'Title',
-        filterConjunction: 'And',
-        filterQuery: ''
-    }    
+    const [ error, setError ] = useState(null);
     const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+    const { filteredMessages, composeOpen, anchorOpen, selectedAnchor, isFiltered } = state;
 
-    const { filteredMessages, composeOpen, anchorOpen, selectedAnchor, isFiltered, filterOpen, filterOption, filterConjunction, filterQuery, currentPage } = state;
-    const filterProps = { 
-        filterOpen, 
-        filterOption, 
-        filterConjunction, 
-        filterQuery, 
-        error: error.message, 
-        isError: error.exists }
+    // Pagination
+    const paginateRef = useRef(null);
+    const [ paginate, setPaginate ] = useState({ currentPage: 0, pageLimit: 5 });
+    paginateRef.current = createPagination(filteredMessages, paginate.currentPage, paginate.pageLimit);
 
-    const [ paginate, setPagination ] = useState({ currentPage: 0, pageLimit: 20 });
-    const totalPages = Math.ceil(filteredMessages.length / paginate.pageLimit);
-    const paginatedMessages = createPagination(filteredMessages, currentPage, paginate.pageLimit, totalPages);
+    // Filter
+    const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER', payload: setError });
+    const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target });
+    const handleFilterSearch = () => dispatch({ type:'FILTER_MESSAGES', payload: { listOfMessages, setError } });
+    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: { listOfMessages, setError }});
 
-    const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
-
+    // Sort
     const openSortPopover = event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget });
     const handleSelectedSort = event => dispatch({ type: 'SELECTED_SORT', payload: event.currentTarget});
 
-    const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER' });
-    const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target });
-    const handleFilterSearch = () => dispatch({ type:'FILTER_MESSAGES', payload: listOfMessages });
-    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: listOfMessages });
+    // Dialog
+    const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
 
     useEffect(() => {
         dispatch({ type: 'LOAD_MESSAGES', payload: listOfMessages })
-    }, [listOfMessages])
+    }, [listOfMessages]);
+
+    // Δ filteredArticles (sort, filter); 
+    useEffect(() => {
+        paginateRef.current = createPagination(state.filteredMessages, paginate.currentPage, paginate.pageLimit);
+    }, [state.filteredMessages, paginate.currentPage, paginate.pageLimit]);
 
     return (
         <Container>
@@ -88,7 +89,10 @@ export default function MessageBoard(props) {
                 handleSortClick={openSortPopover}/>
 
             <FilterDialog  
-                {...filterProps}
+                filterOpen={state.filterOpen}
+                filterOption={state.filterOption}
+                filterConjunction={state.filterConjunction}
+                error={error}
                 handleSearchQuery={handleFilterQuery}
                 handleSearchClick={handleFilterSearch} 
                 onClose={toggleFilterDialog} />
@@ -107,7 +111,7 @@ export default function MessageBoard(props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {paginatedMessages.map(message => {
+                    {paginateRef.current.map(message => {
                         const redirectPath = { pathname: `${match.path}/message/${message.id}`, state: { title: 'Service Centre', selected: 1 } }
                         return (
                             <TableRow hover key={message.id} id={message.id} onClick={setMessage}>
@@ -128,10 +132,10 @@ export default function MessageBoard(props) {
                 </TableBody>
             </Table>
             <Pagination 
-                totalPages={totalPages}
+                count={state.filteredMessages.length}
                 currentPage={paginate.currentPage} 
                 resourcesPerPage={paginate.pageLimit}
-                handlePageChange={(event, newPage) => setPagination(prevState => ({...prevState, currentPage: newPage }))}/>
+                handlePageChange={(event, newPage) => setPaginate(prevState => ({...prevState, currentPage: newPage}))}/>
         </Container>
     )
 }
@@ -150,6 +154,7 @@ function toggleReducer(state, action) {
             return { ...state, composeOpen: !state.composeOpen }
 
         case 'TOGGLE_FILTER':
+            (!state.filterOpen === false) && payload(null);
             return { ...state, filterOpen: !state.filterOpen }
 
         case 'FILTER_QUERY':
@@ -163,21 +168,19 @@ function toggleReducer(state, action) {
             }
             
         case 'FILTER_MESSAGES':
-            const { filteredMessages, filterOption, filterConjunction, filterQuery } = state;
+            const { listOfMessages, setError } = payload;
+            const { filterOption, filterConjunction, filterQuery } = state;
             let filteredContent = [];
 
             if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
-                filteredContent = multipleFilterQuery(filteredMessages, filterOption, filterConjunction, filterQuery);
+                filteredContent = multipleFilterQuery(listOfMessages, filterOption, filterConjunction, filterQuery);
 
             } else if (Boolean(filterQuery)) {
-                filteredContent = singleFilterQuery(filteredMessages, filterOption, filterQuery);
+                filteredContent = singleFilterQuery(listOfMessages, filterOption, filterQuery);
 
             } else {
-                return {
-                    ...state,
-                    isError: true,
-                    error: 'Please enter one or more filter terms.'
-                }
+                setError('Please enter one or more filter terms');
+                return { ...state }
             }
 
             if (filteredContent.length) {
@@ -188,25 +191,23 @@ function toggleReducer(state, action) {
                     filterOpen: false
                 }
             } else {
-                return {
-                    ...state,
-                    isError: true,
-                    error: 'Sorry, no matches found!'
-                }
+                setError('Sorry, no matches found!');
+                return { ...state }
             }
         
-        case 'RESET_FILTER':
+        case 'RESET_FILTER': {
+            const { listOfMessages, setError } = payload;
+            setError(null);
             return { 
                 ...state,
-                filteredMessages: payload,
+                filteredMessages: listOfMessages,
                 isFiltered: false,
                 filterOpen: false,
                 filterOption: 'Title',
                 filterConjunction: 'And',
-                filterQuery: '',
-                isError: false,
-                error: null,                
+                filterQuery: '',              
             }
+        }
         
         case 'SELECTED_SORT':
             const selectedSort = payload.id;

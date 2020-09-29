@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useRef, useEffect } from 'react';
 import { Link as RouterLink, useHistory, useRouteMatch } from "react-router-dom";
 import { CardMedia, Container, Grid, Link, Typography } from '@material-ui/core';
 import { createPagination } from '../constants/helpers/_features';
@@ -12,28 +12,29 @@ export default function ListOfSchools(props) {
     const history = useHistory();
     const match = useRouteMatch();
     
-    const [ searchQuery, setSearchQuery ] = useState('');
-    const [ pagination, setPagination ] = useState({currentPage: 0, schoolsPerPage: 10});
-    const { currentPage, schoolsPerPage } = pagination;
+    const [ query, setQuery ] = useState('');
+    
+    const paginateRef = useRef(null);
+    const [ paginate, setPaginate ] = useState({ currentPage: 0, pageLimit: 5 });
+    paginateRef.current = createPagination(listOfSchools, paginate.currentPage, paginate.pageLimit);
 
-    const handlePageChange = (event, newPage) => setPagination({...pagination, currentPage: newPage});
-
-    const totalPages = Math.ceil(listOfSchools.length / schoolsPerPage);
-    const paginatedSchools = createPagination(listOfSchools, currentPage, schoolsPerPage, totalPages);
+    useEffect(() => {
+        paginateRef.current = createPagination(props.listOfSchools, paginate.currentPage, paginate.pageLimit);
+    }, [props.listOfSchools])
 
     return (
         <section className={classes.sectionRoot}>
             <Container>
                 <Typography className={classes.counter}>There are a total of <b>{listOfSchools.length}</b> schools.</Typography>
                 <SearchField 
-                    handleSearch={event => setSearchQuery(event.target.value)}
+                    handleSearch={event => setQuery(event.target.value)}
                     handleSearchClick={() => 
                         history.push({
                             pathname:'/search', 
-                            search:`?query=${searchQuery}`, 
+                            search:`?query=${query}`, 
                             state: { resources: listOfSchools, category: 'Schools' } })}/>
                 <Grid container spacing={2} className={classes.grid}>
-                    {paginatedSchools.map(school => {
+                    {paginateRef.current.map(school => {
                         const redirectPath = {
                             pathname: `${match.path}/${school.title.replace(/[^A-Z0-9]+/ig, "_").toLowerCase()}`, 
                             state: {
@@ -75,11 +76,10 @@ export default function ListOfSchools(props) {
                     })}
                 </Grid>
                 <Pagination 
-                    totalPages={totalPages}
-                    currentPage={currentPage} 
-                    resourcesPerPage={schoolsPerPage}
-                    handlePageChange={handlePageChange}
-                />
+                    count={listOfSchools.length}
+                    currentPage={paginate.currentPage} 
+                    resourcesPerPage={paginate.pageLimit}
+                    handlePageChange={(event, newPage) => setPaginate(prevState => ({...prevState, currentPage: newPage}))}/>
             </Container>
         </section>
     );

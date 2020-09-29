@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect, useState, useRef } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 import { format, compareDesc } from 'date-fns';
@@ -16,49 +16,52 @@ import Pagination from '../components/Pagination';
 const title = 'Announcement Board';
 const description = 'Check out the latest news from Goose!';
 
+const INITIAL_STATE = {
+    filteredAnnounces: [],
+    composeOpen: false,
+    anchorOpen: null,
+    selectedAnchor: '',
+    isFiltered: false,
+    filterOpen: false,
+    filterOption: 'Title',
+    filterConjunction: 'And',
+    filterQuery: ''
+}
+
 export default function AnnouncementBoard(props) {
     const { setAnnounce, listOfAnnouncements } = props;
-    const INITIAL_STATE = {
-        filteredAnnounces: [],
-        composeOpen: false,
-        anchorOpen: null,
-        selectedAnchor: '',
-        isFiltered: false,
-        filterOpen: false,
-        filterOption: 'Title',
-        filterConjunction: 'And',
-        filterQuery: '',
-        currentPage: 0,
-        announcesPerPage: 10,
-        isError: false,
-        error: null
-    }
-
-    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-    const { filteredAnnounces, composeOpen, filterOpen, anchorOpen, selectedAnchor, isFiltered, filterOption, filterConjunction, filterQuery, currentPage, announcesPerPage, error, isError } = state;
-    const filterProps = { filterOpen, filterOption, filterConjunction, filterQuery, error, isError }
     const match = useRouteMatch();
+    
+    const [ error, setError ] = useState(null);
+    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+    const { filteredAnnounces, composeOpen, anchorOpen, selectedAnchor, isFiltered } = state;
+    
+    // Pagination
+    const paginateRef = useRef(null);
+    const [ paginate, setPaginate ] = useState({ currentPage: 0, pageLimit: 5 });
+    paginateRef.current = createPagination(filteredAnnounces, paginate.currentPage, paginate.pageLimit);
 
-    // P A G I N A T I O N
-    const totalPages = Math.ceil(filteredAnnounces.length/announcesPerPage);
-    const paginatedAnnounces = createPagination(filteredAnnounces, currentPage, announcesPerPage, totalPages);
+    // Filter
+    const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER', payload: setError });
+    const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target });
+    const handleFilterSearch = () => dispatch({ type:'FILTER_ANNOUNCEMENTS', payload: { listOfAnnouncements, setError } });
+    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: { listOfAnnouncements, setError } });
 
-    // E V E N T  L I S T E N E R S
-    const handlePageChange = newPage => dispatch({ type:'CHANGE_PAGE', payload: newPage });
-
-    const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
-
+    // Sort
     const openSortPopover = event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget });
     const handleSelectedSort = event => dispatch({ type: 'SELECTED_SORT', payload: event.currentTarget});
-
-    const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER' });
-    const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target });
-    const handleFilterSearch = () => dispatch({ type:'FILTER_ANNOUNCEMENTS', payload: listOfAnnouncements });
-    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: listOfAnnouncements });
+    
+    // Dialog
+    const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
 
     useEffect(() => {
         dispatch({ type: 'LOAD_ANNOUNCEMENTS', payload: listOfAnnouncements })
     }, [listOfAnnouncements]);
+
+    // Δ filteredArticles (sort, filter); 
+    useEffect(() => {
+        paginateRef.current = createPagination(state.filteredAnnounces, paginate.currentPage, paginate.pageLimit);
+    }, [state.filteredAnnounces, paginate.currentPage, paginate.pageLimit]);
 
     return (
         <Container>
@@ -84,7 +87,10 @@ export default function AnnouncementBoard(props) {
                 handleFilterReset={resetFilter}/>
             
             <FilterDialog  
-                {...filterProps}
+                filterOpen={state.filterOpen}
+                filterOption={state.filterOption}
+                filterConjunction={state.filterConjunction}
+                error={error}
                 handleSearchQuery={handleFilterQuery}
                 handleSearchClick={handleFilterSearch} 
                 onClose={toggleFilterDialog}/>
@@ -107,7 +113,7 @@ export default function AnnouncementBoard(props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {paginatedAnnounces.map(announce => {
+                    {paginateRef.current.map(announce => {
                         const redirectPath = { pathname: `${match.path}/announcement/${announce.id}`, state: { title: 'Service Centre', tab: 0 } }
                         return (
                             <TableRow hover key={announce.id} id={announce.id} onClick={setAnnounce}>
@@ -129,11 +135,10 @@ export default function AnnouncementBoard(props) {
                 </TableBody>
             </Table>
             <Pagination 
-                totalPages={totalPages}
-                currentPage={currentPage} 
-                resourcesPerPage={announcesPerPage}
-                handlePageChange={(event, newPage) => handlePageChange(newPage)}
-            />
+                count={state.filteredAnnounces.length}
+                currentPage={paginate.currentPage} 
+                resourcesPerPage={paginate.pageLimit}
+                handlePageChange={(event, newPage) => setPaginate(prevState => ({...prevState, currentPage: newPage}))}/>
         </Container>
     )
 }
@@ -155,6 +160,7 @@ function toggleReducer(state, action) {
             return { ...state, composeOpen: !state.composeOpen }
 
         case 'TOGGLE_FILTER':
+            (!state.filterOpen === false) && payload(null);
             return { ...state, filterOpen: !state.filterOpen }
 
         case 'FILTER_QUERY':
@@ -168,21 +174,19 @@ function toggleReducer(state, action) {
             }
 
         case 'FILTER_ANNOUNCEMENTS':
-            const { filteredAnnounces, filterOption, filterConjunction, filterQuery } = state;
+            const { filterOption, filterConjunction, filterQuery } = state;
+            const { listOfAnnouncements, setError } = payload;
             let filteredContent = [];
 
             if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
-                filteredContent = multipleFilterQuery(filteredAnnounces, filterOption, filterConjunction, filterQuery);
+                filteredContent = multipleFilterQuery(listOfAnnouncements, filterOption, filterConjunction, filterQuery);
 
             } else if (Boolean(filterQuery)) {
-                filteredContent = singleFilterQuery(filteredAnnounces, filterOption, filterQuery);
+                filteredContent = singleFilterQuery(listOfAnnouncements, filterOption, filterQuery);
 
             } else {
-                return {
-                    ...state,
-                    isError: true,
-                    error: 'Please enter one or more filter terms.'
-                }
+                setError('Please enter one or more filter terms');
+                return { ...state }
             }
 
             if (filteredContent.length) {
@@ -193,25 +197,23 @@ function toggleReducer(state, action) {
                     filterOpen: false
                 }
             } else {
-                return {
-                    ...state,
-                    isError: true,
-                    error: 'Sorry, no matches found!'
-                }
+                setError('Sorry, no matches found!');
+                return { ...state }
             }
         
-        case 'RESET_FILTER':
+        case 'RESET_FILTER': {
+            const { listOfAnnouncements, setError } = payload;
+            setError(null);
             return { 
                 ...state,
-                filteredAnnounces: payload,
+                filteredAnnounces: listOfAnnouncements,
                 isFiltered: false,
                 filterOpen: false,
                 filterOption: 'Title',
                 filterConjunction: 'And',
-                filterQuery: '',
-                isError: false,
-                error: null,                
+                filterQuery: ''            
             }
+        }
         
         case 'SELECTED_SORT':
             const selectedSort = payload.id;

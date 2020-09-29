@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState, useRef } from 'react';
 import { Card, CardMedia, Container, Grid, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, LocalOfferOutlined, ScheduleOutlined } from '@material-ui/icons';
 import { useHistory } from "react-router-dom";
@@ -21,19 +21,22 @@ const INITIAL_STATE = {
   searchQuery: '',
   dialogOpen: false,
   selectedResource: null,
-  currentPage: 0,
-  resourcesPerPage: 10
 }
 
 function Search(props) {
   const classes = useStyles();
   const history = useHistory();
+
   const [ state, setState ] = useState(INITIAL_STATE);
-  const { searchedResources, searchCategory, searchOption, searchConjunction, dialogOpen, selectedResource, currentPage, resourcesPerPage } = state;
+  const { searchedResources, searchCategory, searchOption, searchConjunction, dialogOpen, selectedResource } = state;
+
+  // Pagination
+  const paginateRef = useRef(null);
+  const [ paginate, setPaginate ] = useState({ currentPage: 0, pageLimit: 5 });
+  paginateRef.current = createPagination(searchedResources, paginate.currentPage, paginate.pageLimit);
 
   // const handleSearchQuery = event => setState({...state, [event.target.name]: event.target.value});
   const handleDialogClose = () => setState({...state, dialogOpen: false, selectedResource: null});
-  const handlePageChange = (event, newPage) => setState({...state, currentPage: newPage});
   const handleResourceClick = selectedResource => {
     switch(searchCategory) {
       case 'Tips':
@@ -58,9 +61,6 @@ function Search(props) {
         break;
     }
   }
-
-  const totalPages = Math.ceil(searchedResources.length/resourcesPerPage);
-  const paginatedResources = createPagination(searchedResources, currentPage, resourcesPerPage, totalPages);
   
   useEffect(() => {
     const { resources, category } = props.location.state;
@@ -83,10 +83,10 @@ function Search(props) {
       <ResponsiveNavBars/>
       {/* <SearchBar classes={classes} searchProps={{...state}} handleSearchQuery={handleSearchQuery} /> */}
       <Container>
-        {!paginatedResources.length ? 
+        {!paginateRef.current.length ? 
         <Typography className={classes.noMatchError}>No matches found.</Typography>
         :
-        paginatedResources.map((resource, i) => {
+        paginateRef.current.map((resource, i) => {
           return (
             <Fragment key={i}>
               <Card variant='outlined' className={classes.card}>
@@ -102,7 +102,7 @@ function Search(props) {
                   <Grid container item xs={9} md={9} onClick={() => handleResourceClick(resource)} className={classes.summary}>
                   
                     <Grid item>
-                      <Typography variant='h6'>{resource.title}</Typography>
+                      <Typography variant='h6' className={classes.title}>{resource.title}</Typography>
                     </Grid>
 
                   {searchCategory !== 'Schools' &&
@@ -134,7 +134,11 @@ function Search(props) {
             </Fragment>
           )
         })}
-        <Pagination totalPages={totalPages} currentPage={currentPage} resourcesPerPage={resourcesPerPage} handlePageChange={handlePageChange}/>
+        <Pagination 
+          count={state.searchedResources.length}
+          currentPage={paginate.currentPage} 
+          resourcesPerPage={paginate.pageLimit}
+          handlePageChange={(event, newPage) => setPaginate(prevState => ({...prevState, currentPage: newPage}))}/>
       </Container>
       <ResponsiveFooters/>
     </>
