@@ -13,7 +13,7 @@ const useStyles = props => {
       marginRight: theme.spacing(1),
       width: 200,
     },
-  
+
     image: {
       height: 150,
       [theme.breakpoints.down('sm')]: {
@@ -37,6 +37,9 @@ const useStyles = props => {
       textAlign: 'left',
       cursor: 'pointer',
       '&:hover': {
+        '& .MuiTypography-h6': {
+          color: theme.palette.secondary.main,  
+        },
         color: theme.palette.secondary.main,
       },
     },
