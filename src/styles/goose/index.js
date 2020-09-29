@@ -7,7 +7,7 @@ const useStyles = (props, stylesheet) => {
       return studyAbroadStyles(props);
 
     case 'tips':
-      return tipsStyles(props);
+      return tipsStyles();
   }
 }
 

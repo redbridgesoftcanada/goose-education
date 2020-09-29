@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-export const tipsStyles = props => {
+export const tipsStyles = () => {
   return makeStyles(theme => ({
     title: {
       marginTop: theme.spacing(7),
@@ -35,5 +35,5 @@ export const tipsStyles = props => {
       marginTop: theme.spacing(2)
     },
 
-  }))(props)
+  }))()
 }
