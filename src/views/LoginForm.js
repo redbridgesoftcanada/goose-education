@@ -16,24 +16,22 @@ function LoginForm(props) {
   const [ error, setError ] = useState(null);
   const { email, password } = loginCred;
 
-  const onChange = event => setLoginCred(({ ...loginCred, [event.target.name]: event.target.value}));
+  const onChange = event => {
+    if (error) setError(null);
+    setLoginCred(({ ...loginCred, [event.target.name]: event.target.value}));
+  }
 
   const onSubmit = event => {
     firebase.doSignInWithEmailAndPassword(email, password)
     .then(authUser => {
       const user = authUser.user;
       const lastSignInTime = Number(user.metadata.b);
-      return firebase.user(user.uid).set({lastSignInTime}, {merge: true});
+      return firebase.user(user.uid).set({lastSignInTime}, { merge: true });
     })
-    .then(() => {
-      setLoginCred({ email: '', password: '' });
-      history.push('/');
-    })
-    .catch(error => 
-      setError(error),
-      setLoginCred({ email: '', password: '' })
-    );
-    
+    .then(() => history.push('/'))
+    .catch(e => 
+      Promise.all([setError(e), setLoginCred({ email: '', password: '' })])
+    );    
     event.preventDefault();
   }
 
