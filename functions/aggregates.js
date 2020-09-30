@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 const db = admin.firestore();
 const { configureAggregation } = require('./helpers/_aggregates');
 const { configurePDFGenerator } = require('./helpers/_pdf');
+const FieldValue = admin.firestore.FieldValue;
 
 exports.totalTips = functions.firestore
   .document('tips/{tipId}')
@@ -79,4 +80,14 @@ exports.totalAnnounces = functions.firestore
   .onWrite((change, context) => {
     const announceRef = db.collection('aggregates').doc('announcements');
     return configureAggregation(announceRef, 1, 'tag', change);
+});
+
+exports.totalSchools = functions.firestore
+.document('schools/{schoolId}')
+.onWrite((change, context) => {
+  const schoolRef = db.collection('aggregates').doc('schools');
+  const schoolName = change.after.exists ? change.after.data().title : change.before.data().title;
+
+  if (!change.after.exists) return schoolRef.update({ [schoolName]: FieldValue.delete() });
+  return schoolRef.set({ [schoolName]: 0 }, {merge: true});
 });
