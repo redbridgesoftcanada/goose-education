@@ -7,35 +7,36 @@ import { STATUSES } from "../../constants/constants";
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function Applications(props) {
-  const { state, dispatch, listOfApplications, firebase } = props;
+  const { firebase, listOfApplications, snackbarMessage, deleteConfirmOpen, deleteConfirmToggle } = props;
 
   const [ selectedApplication, setSelectedApplication ] = useState(null);
 
-  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
-  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
-
-  const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {
-    key: 'anchorApplicationStatus', 
-    selected: event.currentTarget }
-  });
+  const setMenuOpen = event => setSelectedApplication(event.currentTarget);
 
   const setMenuClose = event => {
-    const applicationStatus = event.currentTarget.id;
-    if (applicationStatus) {
-      dispatch({type: 'MENU_SELECTED', payload: {
-        key: 'anchorApplicationStatus', 
-        selectedStatus: applicationStatus, 
-        firebase }
-      });
+    const applicationDoc = listOfApplications.find(application => application.id === selectedApplication.id);
+    const selectedStatus = event.currentTarget.id
+    const isDuplicate = selectedStatus && applicationDoc.status === selectedStatus;
+
+    const cleanupActions = message => {
+      snackbarMessage(message);
+      setSelectedApplication(null);
+    }
+
+    if (isDuplicate) {
+      cleanupActions('Same application status - no changes have been saved.');
+    } else if (!isDuplicate && selectedStatus) {
+      firebase.schoolApplication(selectedApplication.id).update({ status: selectedStatus })
+      .then(() => cleanupActions(`Application status has been updated to ${selectedStatus}.`));
     } else {
-      dispatch({type: 'MENU_CLOSE', payload: 'anchorApplicationStatus'});
+      setSelectedApplication(null);
     }
   }
 
   const setDeleteApplication = event => {
     const findApplicationData = listOfApplications.find(application => application.id === event.currentTarget.id);
     setSelectedApplication(findApplicationData);
-    toggleDeleteConfirm();
+    deleteConfirmToggle();
   }
 
   const deleteApplication = async () => {
@@ -44,8 +45,8 @@ function Applications(props) {
 
     try {
       await Promise.all([deleteStorageResource, deleteDoc]);
-      dispatch({type: 'DELETE_CONFIRM'});
-      setSnackbarMessage('Application successfully deleted!');
+      deleteConfirmToggle();
+      snackbarMessage('Application successfully deleted!');
     } catch (error) {
       console.log(error.message)
     }
@@ -53,9 +54,11 @@ function Applications(props) {
 
   return (
     <>
-      <DeleteConfirmation deleteType='admin_application' open={state.deleteConfirmOpen} 
-      handleDelete={deleteApplication} 
-      onClose={toggleDeleteConfirm}/>
+      <DeleteConfirmation 
+        deleteType='admin_application' 
+        open={deleteConfirmOpen} 
+        handleDelete={deleteApplication} 
+        onClose={deleteConfirmToggle}/>
 
       <Table size="small">
         <TableHead>
@@ -84,8 +87,8 @@ function Applications(props) {
                 <Button id={application.id} onClick={setMenuOpen}>{application.status}</Button>
                 <Menu
                   keepMounted
-                  anchorEl={state.anchorApplicationStatus}
-                  open={Boolean(state.anchorApplicationStatus)}
+                  anchorEl={selectedApplication}
+                  open={Boolean(selectedApplication)}
                   onClose={setMenuClose}
                 >
                   {STATUSES.map((status, i) => 

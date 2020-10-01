@@ -20,14 +20,11 @@ const FallbackElement = <Backdrop open={true}><CircularProgress color="primary"/
 export default function TableTemplate(props) {
   const classes = useStyles();
 
-  const INITIAL_STATE = {
-    anchorUserRole: null,
-    anchorApplicationStatus: null,
+  const [ state, dispatch ] = useReducer(toggleReducer, {
     composeDialogOpen: false,
     editDialogOpen: false,
     deleteConfirmOpen: false,
-  }
-  const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+  });
 
   return (
     <Suspense fallback={FallbackElement}>
@@ -46,10 +43,13 @@ export default function TableTemplate(props) {
 
 function generateContentTable(state, dispatch, props, context) {
   const { type, snackbarMessage } = props;
-  const customProps = { state, dispatch };
+  const deleteConfirmToggle = () => dispatch({type: 'DELETE_CONFIRM'});
+  const deleteConfirmOpen = state.deleteConfirmOpen;
+  const customProps = { state, dispatch, snackbarMessage, deleteConfirmToggle, deleteConfirmOpen };
 
   switch(type) {
     case "Users":
+      customProps.deleteConfirmOpen = state.deleteConfirmOpen;
       customProps.listOfUsers = context.state.listOfUsers;
       return <Accounts {...customProps}/>
     
@@ -86,7 +86,6 @@ function generateContentTable(state, dispatch, props, context) {
       return <Messages {...customProps}/>
 
     case "Settings":
-      customProps.snackbarMessage = snackbarMessage;
       customProps.listOfGraphics = Object.values(context.state.adminGraphics).sort((a, b) => {
         if (a.location < b.location) return -1;
         if (a.location > b.location) return 1;
@@ -118,46 +117,6 @@ function toggleReducer(state, action) {
   const { type, payload } = action;
 
   switch(type) {    
-    case 'MENU_OPEN': {
-      const anchorKey = payload.key;
-      const anchorEl = payload.selected;
-      return {...state, [anchorKey]: anchorEl}
-    }
-    
-    case 'MENU_SELECTED': {
-      const anchorKey = payload.key;
-      switch (anchorKey) {
-        case "anchorUserRole": {
-          const uid = state[anchorKey].id;
-          const { firebase, userRole } = payload;
-          if (userRole === 'supervisor') {
-            firebase.user(uid).update({
-              roles: { [userRole]: true }
-            });
-          } else if (userRole === 'user') {
-            firebase.user(uid).update({
-              roles: {}
-            });
-          }
-          return {...state, anchorUserRole: null}
-        }
-        
-        case "anchorApplicationStatus": {
-          const applicationId = state[anchorKey].id;
-          const { firebase, selectedStatus } = payload;
-          firebase.schoolApplication(applicationId).update({
-            status: selectedStatus
-          });
-          return {...state, anchorApplicationStatus: null}
-        }
-      }
-    }
-
-    case 'MENU_CLOSE': {
-      const anchorKey = payload;
-      return {...state, [anchorKey]: null}
-    }
-
     case 'TOGGLE_EDIT_DIALOG':
       return {...state, editDialogOpen: !state.editDialogOpen}
     

@@ -6,40 +6,57 @@ import { withFirebase } from "../../components/firebase";
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function Accounts(props) {
-  const { state, dispatch, listOfUsers, firebase } = props;
+  const { firebase, listOfUsers, snackbarMessage, deleteConfirmOpen, deleteConfirmToggle } = props;
 
-  const [ selectedUser, setSelectedUser ] = useState(null);
+  const [ userAccount, setUserAccount ] = useState(null);
 
-  const setMenuOpen = event => dispatch({type: 'MENU_OPEN', payload: {
-    key: 'anchorUserRole', 
-    selected: event.currentTarget }
-  });
-
+  const setMenuOpen = event => setUserAccount(event.currentTarget);
+  
   const setMenuClose = event => {
-    const userRole = event.currentTarget.id
-    if (userRole) {
-      dispatch({type: 'MENU_SELECTED', payload: {
-        key: 'anchorUserRole', 
-        userRole,
-        firebase }
-      });
+    const userDoc = listOfUsers.find(user => user.id === userAccount.id);
+    const selectedRole = event.currentTarget.id
+    const isDuplicate = selectedRole && userDoc.roles[selectedRole] === true;
+
+    const cleanupActions = message => {
+      snackbarMessage(message);
+      setUserAccount(null);
+    }
+
+    if (isDuplicate) {
+      cleanupActions('Same account role - no changes have been saved.');
+    } else if (!isDuplicate && selectedRole) {
+      // a new user role has been selected → save and close menu;      
+      switch (selectedRole) {
+        case 'admin':
+          firebase.user(userAccount.id).update({'roles.admin': true})
+          .then(() => cleanupActions('Account role has been updated to admin.'));
+          break;
+
+        case 'supervisor':
+          firebase.user(userAccount.id).update({'roles.supervisor': true})
+          .then(() => cleanupActions('Account role has been updated to supervisor.'));
+          break;
+        
+        case 'user':
+          // overwrites entire map field (roles) w/o dot notation;
+          firebase.user(userAccount.id).update({ roles: {} })
+          .then(() => cleanupActions('Account role has been updated to user.'));
+          break;
+      }
     } else {
-      dispatch({type:'MENU_CLOSE', payload: "anchorUserRole"});
+      setUserAccount(null);
     }
   }
   
-  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
-  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
-  
   const setDeleteUser = uid => {
-    setSelectedUser(listOfUsers.find(user => user.id === uid));
-    toggleDeleteConfirm();
+    setUserAccount(listOfUsers.find(user => user.id === uid));
+    deleteConfirmToggle();
   }
   
   const deleteUser = () => {
-    firebase.deleteUser(selectedUser.id).then(function() {
-     dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('User successfully deleted!');
+    firebase.deleteUser(userAccount.id).then(function() {
+     deleteConfirmToggle();
+     snackbarMessage('User successfully deleted!');
     }).catch(function(error) {
       console.log(error)
     });
@@ -47,10 +64,9 @@ function Accounts(props) {
 
   return (
     <>
-      {/* D E L E T E */}
-      <DeleteConfirmation deleteType='admin_user' open={state.deleteConfirmOpen} 
+      <DeleteConfirmation deleteType='admin_user' open={deleteConfirmOpen} 
       handleDelete={deleteUser} 
-      onClose={toggleDeleteConfirm}/>
+      onClose={deleteConfirmToggle}/>
       
       <Table size="small">
         <TableHead>
@@ -81,9 +97,9 @@ function Accounts(props) {
                     {user.roles["admin"] ? "Admin" : user.roles["supervisor"] ? "Supervisor" : "User"}
                   </Button>
                   <Menu
-                    anchorEl={state.anchorUserRole}
+                    anchorEl={userAccount}
                     keepMounted
-                    open={Boolean(state.anchorUserRole)}
+                    open={Boolean(userAccount)}
                     onClose={setMenuClose}
                   >
                     <MenuItem id="admin" onClick={setMenuClose}>Administrator</MenuItem>
