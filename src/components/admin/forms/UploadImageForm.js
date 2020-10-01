@@ -55,7 +55,7 @@ function UploadImageForm(props) {
       setSnackbarMessage(message);
       onDialogClose();
     }
-    const { image, ...newForm } = uploadImageForm;
+    const { image, isFeatured, ...newForm } = uploadImageForm;
     
     // config Firebase collection reference and document content;
     let docRef, content;
@@ -74,6 +74,7 @@ function UploadImageForm(props) {
       if (image === prevImage) {
         docRef.set({ 
           ...content, 
+          isFeatured: Boolean(isFeatured === 'Yes'),
           updatedAt: Date.now() 
         }, { merge: true })
         .then(() => cleanupActions(`Updated ${formType} - please refresh to see new changes`));
@@ -82,8 +83,9 @@ function UploadImageForm(props) {
         const downloadURL = await uploadStorageImage(uploadTask);
         docRef.set({
           ...content,
-          updatedAt: Date.now(),
-          image: downloadURL
+          image: downloadURL,
+          isFeatured: Boolean(isFeatured === 'Yes'),
+          updatedAt: Date.now()
         }, { merge: true })
         .then(() => cleanupActions(`Updated ${formType} - please refresh to see new changes!`));
       }
@@ -98,8 +100,9 @@ function UploadImageForm(props) {
         authorID: firebase.getCurrentUser().uid,
         comments: [],
         createdAt: Date.now(),
-        updatedAt: Date.now(),
         image: downloadURL,
+        isFeatured: Boolean(isFeatured === 'Yes'),
+        updatedAt: Date.now()
       })
       .then(() => cleanupActions(`Created ${formType} - please refresh to see new changes`));
     }
