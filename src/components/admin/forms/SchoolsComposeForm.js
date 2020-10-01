@@ -52,9 +52,8 @@ function SchoolsComposeForm(props) {
   const onUpload = event => dispatch({type:"FILE_UPLOAD", payload:event.target.files});
   
   const onSubmit = async event => {
-    
     dispatch({type: "INIT_SAVE"});
-    const { image, ...newSchoolForm } = schoolFormFields;
+    const { image, isFeatured, recommendation, ...newSchoolForm } = schoolFormFields;
     const cleanupActions = message => {
       dispatch({type:"RESET_STATE"});
       setSnackbarMessage(message);
@@ -67,6 +66,8 @@ function SchoolsComposeForm(props) {
       if (image === prevImage) {
         docRef.set({
           ...newSchoolForm,
+          isFeatured: isFeatured === 'Yes' ? true : false,
+          recommendation: recommendation === 'Yes' ? true: false,
           updatedAt: Date.now()
         }, { merge: true })
         .then(() => cleanupActions("Updated school successfully!"));
@@ -77,8 +78,10 @@ function SchoolsComposeForm(props) {
         const downloadURL = await uploadStorageImage(uploadTask);
         docRef.set({
           ...newSchoolForm,
-          updatedAt: Date.now(),
-          image: downloadURL
+          image: downloadURL,
+          isFeatured: isFeatured === 'Yes' ? true : false,
+          recommendation: recommendation === 'Yes' ? true: false,
+          updatedAt: Date.now()
         }, { merge: true })
         .then(() => cleanupActions("Updated school successfully!"));
         event.preventDefault();
@@ -93,8 +96,10 @@ function SchoolsComposeForm(props) {
         ...newSchoolForm,
         id: docRef.id, 
         createdAt: Date.now(),
-        updatedAt: Date.now(),
-        image: downloadURL
+        image: downloadURL,
+        isFeatured: isFeatured === 'Yes' ? true : false,
+        recommendation: recommendation === 'Yes' ? true: false,
+        updatedAt: Date.now()
       })
       .then(() => cleanupActions("Created school successfully!"));
       event.preventDefault();
