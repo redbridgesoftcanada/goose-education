@@ -65,7 +65,7 @@ function generatePDF(type, ref, file, form){
   doc.text(`First Name: ${form.firstName}`, 330, 190);
   doc.moveTo(72, 210).lineTo(524, 210).stroke();
   doc.moveTo(315, 180).lineTo(315, 240).stroke();
-  doc.text('Date of Birth ', 80, 220, {continued: true}).fontSize(7).text('(MM/DD/YYYY)', 80, 224, {continued: true}).fontSize(12).text(`: ${form.birthDate}`, 80, 220);
+  doc.text('Date of Birth ', 80, 220, {continued: true}).fontSize(7).text('(MM/DD/YYYY)', 80, 224, {continued: true}).fontSize(12).text(`: ${format(form.birthDate.toDate(), 'P')}`, 80, 220);
   doc.text('Gender:', 330, 220);
   (form.gender === 'male') ? doc.rect(380, 220, 8, 8).fill().stroke() : doc.rect(380, 220, 8, 8).stroke();
   (form.gender === 'female') ? doc.rect(440, 220, 8, 8).fill().stroke() : doc.rect(440, 220, 8, 8).stroke();
@@ -123,12 +123,12 @@ function generateSchoolSections(doc, form) {
   doc.font('Helvetica').fontSize(12);
   doc.text(`Program Name: ${form.programName}`, 80, 440);
   doc.moveTo(72, 460).lineTo(524, 460).stroke();
-  doc.text(`Program Duration: ${form.programDuration}`, 80, 470);
+  doc.text(`Program Duration (Number of Weeks): ${form.programDuration}`, 80, 470);
   doc.moveTo(72, 490).lineTo(524, 490).stroke();
-  doc.text(`Start Date: ${format(form.startDate, 'P')}`, 80, 500);
+  doc.text(`Start Date: ${format(form.programStartDate.toDate(), 'P')}`, 80, 500);
 
   // Arrival Date & Insurance
-  doc.font('Helvetica-Bold').text('ARRIVAL DATE ', 72, 545).fontSize(7).text('(MM/DD/YYYY)', 160, 549, {continued: true}).fontSize(12).text(`: ${format(form.arrivalDate, 'P')}`, 165, 545);
+  doc.font('Helvetica-Bold').text('ARRIVAL DATE ', 72, 545).fontSize(7).text('(MM/DD/YYYY)', 160, 549, {continued: true}).fontSize(12).text(`: ${format(form.arrivalFlightDate.toDate(), 'P')}`, 165, 545);
   doc.roundedRect(72, 565, 451, 50, 2).stroke();
   doc.roundedRect(72, 565, 451, 30, 2).stroke();
   doc.font('Helvetica-Bold').fontSize(16).text('INSURANCE', 80, 575);
@@ -149,11 +149,11 @@ function generateHomestaySections(doc, form) {
   doc.font('Helvetica-Bold').fontSize(16).text('ACCOMMODATION', 80, 410);
   doc.font('Helvetica').fontSize(12);
   doc.moveTo(315, 430).lineTo(315, 460).stroke();
-  doc.text(`Start Date: ${format(form.homestayStartDate, 'P')}`, 80, 440);
-  doc.text(`End Date: ${format(form.homestayEndDate, 'P')}`, 330, 440);
+  doc.text(`Start Date: ${format(form.homestayStartDate.toDate(), 'P')}`, 80, 440);
+  doc.text(`End Date: ${format(form.homestayEndDate.toDate(), 'P')}`, 330, 440);
 
   // Flight Information
-  const checkForFlightInfo = form.arrivalFlightName && form.arrivalFlightDate && form.arrivalFlightTime;
+  const checkForFlightInfo = form.arrivalFlightName && form.arrivalFlightDate;
 
   doc.font('Helvetica-Bold').text('Flight Information Provided:', 72, 490);
   if (!checkForFlightInfo) {
@@ -173,9 +173,7 @@ function generateHomestaySections(doc, form) {
   doc.font('Helvetica').fontSize(12);
   doc.text(`Name: ${(form.arrivalFlightName) ? form.arrivalFlightName : 'N/A'}`, 80, 545);
   doc.moveTo(230, 535).lineTo(230, 565).stroke();
-  doc.text(`Date: ${(form.arrivalFlightDate) ? format(form.arrivalFlightDate, 'P') : 'N/A'}`, 240, 545);
-  doc.moveTo(380, 535).lineTo(380, 565).stroke();
-  doc.text(`Time: ${(form.arrivalFlightTime) ? format(form.arrivalFlightTime, 'p') : 'N/A'}`, 390, 545);
+  doc.text(`Date: ${(form.arrivalFlightDate) ? format(form.arrivalFlightDate.toDate(), 'Pp') : 'N/A'}`, 240, 545);
 }
 
 function generateAirportSections(doc, form) {
@@ -189,9 +187,7 @@ function generateAirportSections(doc, form) {
   doc.font('Helvetica').fontSize(12);
   doc.text(`Name: ${form.arrivalFlightName}`, 80, 440);
   doc.moveTo(230, 430).lineTo(230, 460).stroke();
-  doc.text(`Date: ${format(form.arrivalFlightDate, 'P')}`, 240, 440);
-  doc.moveTo(380, 430).lineTo(380, 460).stroke();
-  doc.text(`Time: ${format(form.arrivalFlightTime, 'p')}`, 390, 440);
+  doc.text(`Date: ${format(form.arrivalFlightDate.toDate(), 'Pp')}`, 240, 440);
 
   doc.roundedRect(72, 490, 451, 60, 2).stroke();
   doc.moveTo(72, 520).lineTo(523, 520).stroke();
@@ -199,9 +195,7 @@ function generateAirportSections(doc, form) {
   doc.font('Helvetica').fontSize(12);
   doc.text(`Name: ${form.departureFlightName}`, 80, 530);
   doc.moveTo(230, 520).lineTo(230, 550).stroke();
-  doc.text(`Date: ${format(form.departureFlightDate, 'P')}`, 240, 530);
-  doc.moveTo(380, 520).lineTo(380, 550).stroke();
-  doc.text(`Time: ${format(form.departureFlightTime, 'p')}`, 390, 530);
+  doc.text(`Date: ${format(form.departureFlightDate.toDate(), 'Pp')}`, 240, 530);
 
   // Homestay Information
   const checkForHomestayInfo = form.homestayStartDate && form.homestayEndDate;
@@ -222,6 +216,6 @@ function generateAirportSections(doc, form) {
   doc.font('Helvetica-Bold').fontSize(16).text('ACCOMMODATION', 80, 610);
   doc.font('Helvetica').fontSize(12);
   doc.moveTo(315, 630).lineTo(315, 660).stroke();
-  doc.text(`Start Date: ${(form.homestayStartDate) ? format(form.homestayStartDate, 'P') : 'N/A'}`, 80, 640);
-  doc.text(`End Date: ${(form.homestayEndDate) ? format(form.homestayEndDate, 'P') : 'N/A'}`, 330, 640);
+  doc.text(`Start Date: ${(form.homestayStartDate) ? format(form.homestayStartDate.toDate(), 'P') : 'N/A'}`, 80, 640);
+  doc.text(`End Date: ${(form.homestayEndDate) ? format(form.homestayEndDate.toDate(), 'P') : 'N/A'}`, 330, 640);
 }
