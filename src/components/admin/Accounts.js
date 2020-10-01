@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useRef } from "react";
 import { Button, IconButton, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { Clear } from "@material-ui/icons";
 import { format } from 'date-fns';
@@ -8,14 +8,15 @@ import DeleteConfirmation from '../DeleteConfirmation';
 function Accounts(props) {
   const { firebase, listOfUsers, snackbarMessage, deleteConfirmOpen, deleteConfirmToggle } = props;
 
+  const accountRef = useRef(null);
   const [ userAccount, setUserAccount ] = useState(null);
 
   const setMenuOpen = event => setUserAccount(event.currentTarget);
   
   const setMenuClose = event => {
-    const userDoc = listOfUsers.find(user => user.id === userAccount.id);
+    accountRef.current = listOfUsers.find(user => user.id === userAccount.id);
     const selectedRole = event.currentTarget.id
-    const isDuplicate = selectedRole && userDoc.roles[selectedRole] === true;
+    const isDuplicate = selectedRole && accountRef.current.roles[selectedRole] === true;
 
     const cleanupActions = message => {
       snackbarMessage(message);
@@ -48,13 +49,13 @@ function Accounts(props) {
     }
   }
   
-  const setDeleteUser = uid => {
-    setUserAccount(listOfUsers.find(user => user.id === uid));
+  const setDeleteUser = event => {
+    accountRef.current = event.currentTarget.id
     deleteConfirmToggle();
   }
-  
+
   const deleteUser = () => {
-    firebase.deleteUser(userAccount.id).then(function() {
+    firebase.deleteUser(accountRef.current).then(function() {
      deleteConfirmToggle();
      snackbarMessage('User successfully deleted!');
     }).catch(function(error) {
@@ -64,9 +65,11 @@ function Accounts(props) {
 
   return (
     <>
-      <DeleteConfirmation deleteType='admin_user' open={deleteConfirmOpen} 
-      handleDelete={deleteUser} 
-      onClose={deleteConfirmToggle}/>
+      <DeleteConfirmation
+        deleteType='admin_user' 
+        open={deleteConfirmOpen} 
+        handleDelete={deleteUser} 
+        onClose={deleteConfirmToggle}/>
       
       <Table size="small">
         <TableHead>
@@ -110,7 +113,7 @@ function Accounts(props) {
                 <TableCell>{user.lastSignInTime ? format(user.lastSignInTime, 'Pp') : ""}</TableCell>
                 <TableCell>
                   {!user.roles["admin"] ? 
-                    <IconButton color="secondary" onClick={() => setDeleteUser(user.id)}>
+                    <IconButton id={user.id} color="secondary" onClick={setDeleteUser}>
                       <Clear/>
                     </IconButton>
                   : 

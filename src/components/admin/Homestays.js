@@ -1,24 +1,19 @@
 import React, { useState } from "react";
 import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { Clear, CloudDownload } from "@material-ui/icons";
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { withFirebase } from "../firebase";
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function Homestays(props) {
-  const { state, dispatch, listOfHomestays, firebase } = props;
+  const { firebase, listOfHomestays, snackbarMessage, deleteConfirmOpen, deleteConfirmToggle } = props;
 
-  // S T A T E
   const [ selectedApplication, setSelectedApplication ] = useState(null);
-
-  // D I S P A T C H  M E T H O D S
-  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
-  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
   const setDeleteApplication = event => {
     const findHomestayData = listOfHomestays.find(application => application.id === event.currentTarget.id)
     setSelectedApplication(findHomestayData);
-    toggleDeleteConfirm();
+    deleteConfirmToggle();
   }
 
   const deleteApplication = async () => {
@@ -26,8 +21,8 @@ function Homestays(props) {
     const deleteDoc =  firebase.deleteHomestayApplication(selectedApplication.id);
     try {
       await Promise.all([deleteStorageResource, deleteDoc]);
-      dispatch({type: 'DELETE_CONFIRM'});
-      setSnackbarMessage('Application successfully deleted!');
+      deleteConfirmToggle();
+      snackbarMessage('Application successfully deleted!');
     } catch (error) {
       console.log(error.message)
     }
@@ -36,9 +31,11 @@ function Homestays(props) {
   return (
     <>
       {/* D E L E T E */}
-      <DeleteConfirmation deleteType='admin_application' open={state.deleteConfirmOpen} 
+      <DeleteConfirmation 
+      deleteType='admin_application' 
+      open={deleteConfirmOpen} 
       handleDelete={deleteApplication} 
-      onClose={toggleDeleteConfirm}/>
+      onClose={deleteConfirmToggle}/>
 
       <Table size="small">
       <TableHead>

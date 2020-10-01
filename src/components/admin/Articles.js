@@ -8,38 +8,34 @@ import DeleteConfirmation from '../DeleteConfirmation';
 import { onDelete } from '../../constants/helpers/_storage';
 
 function Networking(props) {
-  const { dispatch, listOfArticles, firebase } = props;
+  const { firebase, listOfArticles, snackbarMessage, deleteConfirmOpen, deleteConfirmToggle, editOpen, editToggle } = props;
 
   const [ selectedArticle, setSelectedArticle ] = useState(null);
-
-  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
-  const toggleEditDialog = () => dispatch({type: 'TOGGLE_EDIT_DIALOG'});
-  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
   const toggleClickAction = event => {
     const actionType = event.currentTarget.name;
     const articleData = listOfArticles.find(article => article.id === event.currentTarget.id);
     setSelectedArticle(articleData);
-    (actionType === 'edit') ? toggleEditDialog() : toggleDeleteConfirm();
+    (actionType === 'edit') ? editToggle() : deleteConfirmToggle();
   }
 
-  const handleDelete = () => onDelete(selectedArticle.id, selectedArticle.image, firebase, toggleDeleteConfirm, setSnackbarMessage);
+  const handleDelete = () => onDelete(selectedArticle.id, selectedArticle.image, firebase, deleteConfirmToggle, snackbarMessage);
 
   return (
     <>
       <AdminComposeDialog 
         formType="article" 
         isEdit={true} 
-        open={(props.state) ? props.state.editDialogOpen : false } 
-        onClose={toggleEditDialog} 
-        setSnackbarMessage={setSnackbarMessage} 
+        open={editOpen} 
+        onClose={editToggle} 
+        setSnackbarMessage={snackbarMessage} 
         prevContent={selectedArticle}/>
 
       <DeleteConfirmation 
         deleteType='article' 
-        open={(props.state) ? props.state.deleteConfirmOpen : false} 
+        open={deleteConfirmOpen} 
         handleDelete={handleDelete} 
-        onClose={toggleDeleteConfirm}/>
+        onClose={deleteConfirmToggle}/>
 
       <Table size="small">
         <TableHead>

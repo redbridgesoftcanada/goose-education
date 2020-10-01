@@ -76,18 +76,26 @@ function generateContentTable(stateVars, setStates, props, context) {
 
     case "Goose Tips":
       customProps.listOfTips = context.state.gooseTips;
+      customProps.editOpen = editOpen;
+      customProps.editToggle = editConfirmToggle;
       return <GooseTips {...customProps}/>
 
     case "Articles":
       customProps.listOfArticles = context.state.listOfArticles;
+      customProps.editOpen = editOpen;
+      customProps.editToggle = editConfirmToggle;
       return <Articles {...customProps}/>
     
     case "Announcements":
       customProps.listOfAnnouncements = context.state.listOfAnnouncements;
+      customProps.editOpen = editOpen;
+      customProps.editToggle = editConfirmToggle;
       return <Announcements {...customProps}/>
 
     case "Messages":
       customProps.listOfMessages = context.state.listOfMessages;
+      customProps.editOpen = editOpen;
+      customProps.editToggle = editConfirmToggle;
       return <Messages {...customProps}/>
 
     case "Settings":

@@ -192,9 +192,9 @@ const createImagesTable = (listOfImages, changeListener, onSave) => {
   return (
     <Box mx={3} my={2}>
       <Grid container spacing={3} justify='center' alignItems='center'>
-        {listOfImages.map(image => {
+        {listOfImages.map((image, i) => {
           return (
-            <>
+            <Fragment key={i}>
               <Grid item xs={6}>
                 <CardMedia
                   component="img"
@@ -210,7 +210,7 @@ const createImagesTable = (listOfImages, changeListener, onSave) => {
                   defaultValue={image.url}
                   onChange={event => changeListener(event, 'image')}/>
               </Grid>
-            </>
+            </Fragment>
           )
         })}
       </Grid>

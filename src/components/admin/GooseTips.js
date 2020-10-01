@@ -8,38 +8,34 @@ import DeleteConfirmation from '../DeleteConfirmation';
 import { onDelete } from '../../constants/helpers/_storage';
 
 function GooseTips(props) {
-  const { dispatch, listOfTips, firebase } = props;
+  const { firebase, listOfTips, snackbarMessage, deleteConfirmOpen, deleteConfirmToggle, editOpen, editToggle } = props;
 
   const [ selectedTip, setSelectedTip ] = useState(null);
-
-  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
-  const toggleEditDialog = () => dispatch({type: 'TOGGLE_EDIT_DIALOG'});
-  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
   const toggleClickAction = event => {
     const actionType = event.currentTarget.name;
     const tipData = listOfTips.find(tip => tip.id === event.currentTarget.id);
     setSelectedTip(tipData);
-    (actionType === 'edit') ? toggleEditDialog() : toggleDeleteConfirm();
+    (actionType === 'edit') ? editToggle() : deleteConfirmToggle();
   }
 
-  const handleDelete = () => onDelete(selectedTip.id, selectedTip.image, firebase, toggleDeleteConfirm, setSnackbarMessage);
+  const handleDelete = () => onDelete(selectedTip.id, selectedTip.image, firebase, deleteConfirmToggle, snackbarMessage);
 
   return (
     <>
       <AdminComposeDialog 
         formType="tip" 
         isEdit={true} 
-        open={props.state.editDialogOpen} 
-        onClose={toggleEditDialog} 
-        setSnackbarMessage={setSnackbarMessage} 
+        open={editOpen} 
+        onClose={editToggle} 
+        setSnackbarMessage={snackbarMessage} 
         prevContent={selectedTip}/>
 
       <DeleteConfirmation 
         deleteType='admin_tip' 
-        open={props.state.deleteConfirmOpen} 
+        open={deleteConfirmOpen} 
         handleDelete={handleDelete} 
-        onClose={toggleDeleteConfirm}/>
+        onClose={deleteConfirmToggle}/>
 
       <Table size="small">
         <TableHead>

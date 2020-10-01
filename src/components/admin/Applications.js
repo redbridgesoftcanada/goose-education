@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button, IconButton, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { Clear, CloudDownload } from "@material-ui/icons";
 import { format } from "date-fns";
@@ -9,14 +9,15 @@ import DeleteConfirmation from '../DeleteConfirmation';
 function Applications(props) {
   const { firebase, listOfApplications, snackbarMessage, deleteConfirmOpen, deleteConfirmToggle } = props;
 
+  const applicationRef = useRef(null);
   const [ selectedApplication, setSelectedApplication ] = useState(null);
 
   const setMenuOpen = event => setSelectedApplication(event.currentTarget);
 
   const setMenuClose = event => {
-    const applicationDoc = listOfApplications.find(application => application.id === selectedApplication.id);
+    applicationRef.current = listOfApplications.find(application => application.id === selectedApplication.id);
     const selectedStatus = event.currentTarget.id
-    const isDuplicate = selectedStatus && applicationDoc.status === selectedStatus;
+    const isDuplicate = selectedStatus && applicationRef.current.status === selectedStatus;
 
     const cleanupActions = message => {
       snackbarMessage(message);
@@ -34,14 +35,13 @@ function Applications(props) {
   }
 
   const setDeleteApplication = event => {
-    const findApplicationData = listOfApplications.find(application => application.id === event.currentTarget.id);
-    setSelectedApplication(findApplicationData);
+    applicationRef.current = listOfApplications.find(application => application.id === event.currentTarget.id);
     deleteConfirmToggle();
   }
 
   const deleteApplication = async () => {
-    const deleteStorageResource = firebase.refFromUrl(selectedApplication.downloadUrl).delete();
-    const deleteDoc =  firebase.deleteSchoolApplication(selectedApplication.id);
+    const deleteStorageResource = firebase.refFromUrl(applicationRef.current.downloadUrl).delete();
+    const deleteDoc =  firebase.deleteSchoolApplication(applicationRef.current.id);
 
     try {
       await Promise.all([deleteStorageResource, deleteDoc]);
@@ -81,7 +81,7 @@ function Applications(props) {
               <TableCell>{application.lastName}</TableCell>
               <TableCell>{application.schoolName}</TableCell>
               <TableCell>{application.programName}</TableCell>
-              <TableCell>{application.startDate}</TableCell>
+              <TableCell>{format(application.programStartDate.toDate(), "P")}</TableCell>
               <TableCell>{format(application.createdAt, "Pp")}</TableCell>
               <TableCell>
                 <Button id={application.id} onClick={setMenuOpen}>{application.status}</Button>

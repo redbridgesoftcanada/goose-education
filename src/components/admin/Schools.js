@@ -6,24 +6,18 @@ import AdminComposeDialog from './AdminComposeDialog';
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function Schools(props) {
-  const { state, dispatch, listOfSchools, firebase } = props;
+  const { firebase, listOfSchools, snackbarMessage, deleteConfirmOpen, deleteConfirmToggle, editOpen, editToggle } = props;
 
-  // S T A T E
   const [ selectedSchool, setSelectedSchool ] = useState(null);
-
-  // D I S P A T C H  M E T H O D S
-  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
-  const toggleEditDialog = () => dispatch({type: 'TOGGLE_EDIT_DIALOG'});
-  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
 
   const setEditSchool = id => {
     setSelectedSchool(listOfSchools.find(school => school.id === id));
-    dispatch({type: 'TOGGLE_EDIT_DIALOG'});
+    editToggle();
   }
   
   const setDeleteSchool = id => {
     setSelectedSchool(listOfSchools.find(school => school.id === id));
-    dispatch({type: 'DELETE_CONFIRM'});
+    deleteConfirmToggle();
   }
 
   const deleteSchool = async () => {
@@ -32,8 +26,8 @@ function Schools(props) {
 
     try {
       await Promise.all([deleteStorageResource, deleteSchool]);
-      dispatch({type: 'DELETE_CONFIRM'});
-      setSnackbarMessage('School deleted successfully!');
+      deleteConfirmToggle();
+      snackbarMessage('School deleted successfully!');
     } catch (err) {
       console.log(err.message)
     }
@@ -41,21 +35,19 @@ function Schools(props) {
 
   return (
     <>
-      {/* E D I T */}
       <AdminComposeDialog 
         prevContent={selectedSchool} 
         formType="school" 
         isEdit={true} 
-        open={state.editDialogOpen} 
-        onClose={toggleEditDialog} 
-        setSnackbarMessage={setSnackbarMessage}/>
+        open={editOpen} 
+        onClose={editToggle} 
+        setSnackbarMessage={snackbarMessage}/>
 
-      {/* D E L E T E */}
       <DeleteConfirmation 
         deleteType='admin_school' 
-        open={state.deleteConfirmOpen} 
+        open={deleteConfirmOpen} 
         handleDelete={deleteSchool} 
-        onClose={toggleDeleteConfirm}/>
+        onClose={deleteConfirmToggle}/>
 
       <Table size="small">
         <TableHead>

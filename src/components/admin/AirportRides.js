@@ -6,24 +6,19 @@ import { withFirebase } from "../firebase";
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function AirportRides(props) {
-  const { state, dispatch, listOfAirportRides, firebase } = props;
+  const { firebase, listOfAirportRides, snackbarMessage, deleteConfirmOpen, deleteConfirmToggle } = props;
 
-  // S T A T E
   const [ selectedApplication, setSelectedApplication ] = useState(null);
 
-  // D I S P A T C H  M E T H O D S
-  const setSnackbarMessage = message => dispatch({type: 'SNACKBAR_OPEN', payload: message});
-  const toggleDeleteConfirm = () => dispatch({type: 'DELETE_CONFIRM'});
-
-  const setDeleteApplication = id => {
-    setSelectedApplication(listOfAirportRides.find(application => application.id === id));
-    toggleDeleteConfirm();
+  const setDeleteApplication = event => {
+    setSelectedApplication(listOfAirportRides.find(application => application.id === event.currentTarget.id));
+    deleteConfirmToggle();
   }
 
   const deleteApplication = () => {
     firebase.deleteAirportRideApplication(selectedApplication.id).then(function() {
-     dispatch({type: 'DELETE_CONFIRM'});
-     setSnackbarMessage('Application successfully deleted!');
+     deleteConfirmToggle();
+     snackbarMessage('Application successfully deleted!');
     }).catch(function(error) {
       console.log(error)
     });
@@ -31,10 +26,11 @@ function AirportRides(props) {
 
   return (
     <>
-      {/* D E L E T E */}
-      <DeleteConfirmation deleteType='admin_application' open={state.deleteConfirmOpen} 
-      handleDelete={deleteApplication} 
-      onClose={toggleDeleteConfirm}/>
+      <DeleteConfirmation 
+        deleteType='admin_application'
+        open={deleteConfirmOpen} 
+        handleDelete={deleteApplication} 
+        onClose={deleteConfirmToggle}/>
 
       <Table size="small">
       <TableHead>
@@ -54,11 +50,11 @@ function AirportRides(props) {
             <TableCell>{application.firstName}</TableCell>
             <TableCell>{application.lastName}</TableCell>
             <TableCell>{application.arrivalFlightName}</TableCell>
-            <TableCell>{application.arrivalFlightDate} {format(application.arrivalFlightTime, "p")}</TableCell>
+            <TableCell>{format(application.arrivalFlightDate.toDate(), "Pp")}</TableCell>
             <TableCell>{application.departureFlightName}</TableCell>
-            <TableCell>{application.departureFlightDate} {format(application.departureFlightTime, "p")}</TableCell>
+            <TableCell>{format(application.departureFlightDate.toDate(), "Pp")}</TableCell>
             <TableCell>
-              <IconButton color="secondary" onClick={() => setDeleteApplication(application.authorID)}>
+              <IconButton id={application.authorID} color="secondary" onClick={setDeleteApplication}>
                 <Clear/>
               </IconButton>
             </TableCell>
