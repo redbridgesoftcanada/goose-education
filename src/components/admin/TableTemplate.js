@@ -1,4 +1,4 @@
-import React, { Suspense, useReducer } from "react";
+import React, { Suspense, useState } from "react";
 import { Backdrop, CircularProgress, Link, Typography } from "@material-ui/core";
 import Title from "./Title";
 import { DatabaseContext } from '../../components/database';
@@ -20,11 +20,12 @@ const FallbackElement = <Backdrop open={true}><CircularProgress color="primary"/
 export default function TableTemplate(props) {
   const classes = useStyles();
 
-  const [ state, dispatch ] = useReducer(toggleReducer, {
-    composeDialogOpen: false,
-    editDialogOpen: false,
-    deleteConfirmOpen: false,
-  });
+  const [ composeOpen, setCompose ] = useState(false);
+  const [ editOpen, setEdit ] = useState(false);
+  const [ deleteConfirmOpen, setDelete ] = useState(false);
+
+  const stateVars = {composeOpen, editOpen, deleteConfirmOpen }
+  const setStates = { setCompose, setEdit, setDelete }
 
   return (
     <Suspense fallback={FallbackElement}>
@@ -32,7 +33,7 @@ export default function TableTemplate(props) {
       <DatabaseContext.Consumer>
         {context => 
           <>
-            {generateContentTable(state, dispatch, props, context)}
+            {generateContentTable(stateVars, setStates, props, context)}
             {props.type !== "Settings" && generatePagination(classes, props.type, context)}
           </>
         }
@@ -41,20 +42,24 @@ export default function TableTemplate(props) {
   );
 }
 
-function generateContentTable(state, dispatch, props, context) {
+function generateContentTable(stateVars, setStates, props, context) {
   const { type, snackbarMessage } = props;
-  const deleteConfirmToggle = () => dispatch({type: 'DELETE_CONFIRM'});
-  const deleteConfirmOpen = state.deleteConfirmOpen;
-  const customProps = { state, dispatch, snackbarMessage, deleteConfirmToggle, deleteConfirmOpen };
+  const { composeOpen, editOpen, deleteConfirmOpen } = stateVars;
+  const { setCompose, setEdit, setDelete } = setStates;
+
+  const editConfirmToggle = () => setEdit(!editOpen);  
+  const deleteConfirmToggle = () => setDelete(!deleteConfirmOpen);
+  const customProps = { snackbarMessage, deleteConfirmOpen, deleteConfirmToggle };
 
   switch(type) {
     case "Users":
-      customProps.deleteConfirmOpen = state.deleteConfirmOpen;
       customProps.listOfUsers = context.state.listOfUsers;
       return <Accounts {...customProps}/>
     
     case "Schools":
       customProps.listOfSchools = context.state.listOfSchools;
+      customProps.editOpen = editOpen;
+      customProps.editToggle = editConfirmToggle;
     return <Schools {...customProps}/>
 
     case "Applications":
@@ -111,17 +116,4 @@ function generatePagination(classes, type, context) {
       }
     </div>
   )
-}
-
-function toggleReducer(state, action) {
-  const { type, payload } = action;
-
-  switch(type) {    
-    case 'TOGGLE_EDIT_DIALOG':
-      return {...state, editDialogOpen: !state.editDialogOpen}
-    
-    case 'DELETE_CONFIRM':
-      return {...state, deleteConfirmOpen: !state.deleteConfirmOpen}
-    
-  }
 }
