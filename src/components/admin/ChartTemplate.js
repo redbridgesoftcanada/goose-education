@@ -28,8 +28,6 @@ export default function Chart(props) {
   const COLORS = useRef(null);
   if (!COLORS.current) COLORS.current = createColourPalette(data.plots.length);
 
-  if (!data) return null;
-
   const renderPieLegend = dataPlots => {
     return dataPlots.map((entry, i) => (
       { value: entry.Name, type: 'square', id:`item-${i}`, color: COLORS.current[i % COLORS.current.length] }));
