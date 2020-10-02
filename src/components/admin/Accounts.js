@@ -2,6 +2,7 @@ import React, { Fragment, useState, useRef } from "react";
 import { Button, IconButton, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { Clear } from "@material-ui/icons";
 import { format } from 'date-fns';
+import { onDelete } from '../../constants/helpers/_storage';
 import { withFirebase } from "../../components/firebase";
 import DeleteConfirmation from '../DeleteConfirmation';
 
@@ -54,13 +55,9 @@ function Accounts(props) {
     deleteConfirmToggle();
   }
 
-  const deleteUser = () => {
-    firebase.deleteUser(accountRef.current).then(function() {
-     deleteConfirmToggle();
-     snackbarMessage('User successfully deleted!');
-    }).catch(function(error) {
-      console.log(error)
-    });
+  const handleDelete = () => {
+    const deleteDoc = firebase.deleteUser(accountRef.current);
+    onDelete([], firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
   }
 
   return (
@@ -68,7 +65,7 @@ function Accounts(props) {
       <DeleteConfirmation
         deleteType='admin_user' 
         open={deleteConfirmOpen} 
-        handleDelete={deleteUser} 
+        handleDelete={handleDelete} 
         onClose={deleteConfirmToggle}/>
       
       <Table size="small">

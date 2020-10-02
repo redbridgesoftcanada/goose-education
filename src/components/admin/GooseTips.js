@@ -19,7 +19,10 @@ function GooseTips(props) {
     (actionType === 'edit') ? editToggle() : deleteConfirmToggle();
   }
 
-  const handleDelete = () => onDelete(selectedTip.id, selectedTip.image, firebase, deleteConfirmToggle, snackbarMessage);
+  const handleDelete = () => {
+    const deleteDoc = firebase.deleteTip(selectedTip.id);
+    onDelete(selectedTip.image, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+  }
 
   return (
     <>

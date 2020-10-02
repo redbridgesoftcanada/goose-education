@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Avatar, IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { CheckBox, CheckBoxOutlineBlank, Clear, EditOutlined } from "@material-ui/icons";
+import { onDelete } from '../../constants/helpers/_storage';
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
 import DeleteConfirmation from '../DeleteConfirmation';
@@ -20,17 +21,9 @@ function Schools(props) {
     deleteConfirmToggle();
   }
 
-  const deleteSchool = async () => {
-    const deleteStorageResource = firebase.refFromUrl(selectedSchool.image).delete();
-    const deleteSchool =  firebase.deleteSchool(selectedSchool.id);
-
-    try {
-      await Promise.all([deleteStorageResource, deleteSchool]);
-      deleteConfirmToggle();
-      snackbarMessage('School deleted successfully!');
-    } catch (err) {
-      console.log(err.message)
-    }
+  const handleDelete = () => {
+    const deleteDoc = firebase.deleteSchool(selectedSchool.id);
+    onDelete(selectedSchool.image, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
   }
 
   return (
@@ -46,7 +39,7 @@ function Schools(props) {
       <DeleteConfirmation 
         deleteType='admin_school' 
         open={deleteConfirmOpen} 
-        handleDelete={deleteSchool} 
+        handleDelete={handleDelete} 
         onClose={deleteConfirmToggle}/>
 
       <Table size="small">

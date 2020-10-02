@@ -19,7 +19,10 @@ function Networking(props) {
     (actionType === 'edit') ? editToggle() : deleteConfirmToggle();
   }
 
-  const handleDelete = () => onDelete(selectedArticle.id, selectedArticle.image, firebase, deleteConfirmToggle, snackbarMessage);
+  const handleDelete = () => {
+    const deleteDoc = firebase.deleteArticle(selectedArticle.id);
+    onDelete(selectedArticle.image, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+  }
 
   return (
     <>

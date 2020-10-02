@@ -3,6 +3,7 @@ import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@m
 import { Clear } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../firebase";
+import { onDelete } from '../../constants/helpers/_storage';
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function AirportRides(props) {
@@ -15,13 +16,9 @@ function AirportRides(props) {
     deleteConfirmToggle();
   }
 
-  const deleteApplication = () => {
-    firebase.deleteAirportRideApplication(selectedApplication.id).then(function() {
-     deleteConfirmToggle();
-     snackbarMessage('Application successfully deleted!');
-    }).catch(function(error) {
-      console.log(error)
-    });
+  const handleDelete = () => {
+    const deleteDoc = firebase.deleteAirportRideApplication(selectedApplication.id);
+    onDelete(selectedApplication.downloadUrl, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
   }
 
   return (
@@ -29,7 +26,7 @@ function AirportRides(props) {
       <DeleteConfirmation 
         deleteType='admin_application'
         open={deleteConfirmOpen} 
-        handleDelete={deleteApplication} 
+        handleDelete={handleDelete} 
         onClose={deleteConfirmToggle}/>
 
       <Table size="small">

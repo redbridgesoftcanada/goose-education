@@ -19,7 +19,10 @@ function Announcements(props) {
     (actionType === 'edit') ? editToggle() : deleteConfirmToggle();
   }
 
-  const handleDelete = () => onDelete(selectedAnnounce.id, selectedAnnounce.attachments, firebase, deleteConfirmToggle, snackbarMessage);
+  const handleDelete = () => {
+    const deleteDoc = firebase.deleteAnnouncement(selectedAnnounce.id);
+    onDelete(selectedAnnounce.attachments, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+  }
 
   return (
     <>

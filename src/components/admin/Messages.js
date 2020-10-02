@@ -19,7 +19,11 @@ function Messages(props) {
     (actionType === 'edit') ? editToggle() : deleteConfirmToggle();
   }
 
-  const handleDelete = () => onDelete(selectedMessage.id, selectedMessage.attachments, firebase, deleteConfirmToggle, snackbarMessage);
+  const handleDelete = () => {
+    const deleteDoc = firebase.deleteMessage(selectedMessage.id);
+    console.log(selectedMessage.attachments)
+    onDelete(selectedMessage.attachments, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+  }
 
   return (
     <>

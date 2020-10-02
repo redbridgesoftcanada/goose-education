@@ -4,6 +4,7 @@ import { Clear, CloudDownload } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import { STATUSES } from "../../constants/constants";
+import { onDelete } from '../../constants/helpers/_storage';
 import DeleteConfirmation from '../DeleteConfirmation';
 
 function Applications(props) {
@@ -39,17 +40,10 @@ function Applications(props) {
     deleteConfirmToggle();
   }
 
-  const deleteApplication = async () => {
-    const deleteStorageResource = firebase.refFromUrl(applicationRef.current.downloadUrl).delete();
-    const deleteDoc =  firebase.deleteSchoolApplication(applicationRef.current.id);
-
-    try {
-      await Promise.all([deleteStorageResource, deleteDoc]);
-      deleteConfirmToggle();
-      snackbarMessage('Application successfully deleted!');
-    } catch (error) {
-      console.log(error.message)
-    }
+  const handleDelete = () => {
+    const { id, downloadUrl } = applicationRef.current;
+    const deleteDoc = firebase.deleteSchoolApplication(id);
+    onDelete(downloadUrl, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
   }
 
   return (
@@ -57,7 +51,7 @@ function Applications(props) {
       <DeleteConfirmation 
         deleteType='admin_application' 
         open={deleteConfirmOpen} 
-        handleDelete={deleteApplication} 
+        handleDelete={handleDelete} 
         onClose={deleteConfirmToggle}/>
 
       <Table size="small">

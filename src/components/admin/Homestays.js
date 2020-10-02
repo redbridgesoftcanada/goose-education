@@ -4,6 +4,7 @@ import { Clear, CloudDownload } from "@material-ui/icons";
 import { format } from 'date-fns';
 import { withFirebase } from "../firebase";
 import DeleteConfirmation from '../DeleteConfirmation';
+import { onDelete } from '../../constants/helpers/_storage';
 
 function Homestays(props) {
   const { firebase, listOfHomestays, snackbarMessage, deleteConfirmOpen, deleteConfirmToggle } = props;
@@ -16,16 +17,9 @@ function Homestays(props) {
     deleteConfirmToggle();
   }
 
-  const deleteApplication = async () => {
-    const deleteStorageResource = firebase.refFromUrl(selectedApplication.downloadUrl).delete();
-    const deleteDoc =  firebase.deleteHomestayApplication(selectedApplication.id);
-    try {
-      await Promise.all([deleteStorageResource, deleteDoc]);
-      deleteConfirmToggle();
-      snackbarMessage('Application successfully deleted!');
-    } catch (error) {
-      console.log(error.message)
-    }
+  const handleDelete = () => {
+    const deleteDoc = firebase.deleteHomestayApplication(selectedApplication.id);
+    onDelete(selectedApplication.downloadUrl, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
   }
 
   return (
@@ -34,7 +28,7 @@ function Homestays(props) {
       <DeleteConfirmation 
       deleteType='admin_application' 
       open={deleteConfirmOpen} 
-      handleDelete={deleteApplication} 
+      handleDelete={handleDelete} 
       onClose={deleteConfirmToggle}/>
 
       <Table size="small">
