@@ -35,7 +35,9 @@ function SchoolApplication(props) {
   const onSubmit = event => {
     const { agreeToPrivacy, ...schoolApplication } = userInput;
 
-    firebase.schoolApplications().add({
+    const docRef = firebase.schoolApplications().doc();
+    docRef.set({
+      id: docRef.id,
       authorID: authUser.uid,
       createdAt: Date.now(),
       updatedAt: Date.now(),

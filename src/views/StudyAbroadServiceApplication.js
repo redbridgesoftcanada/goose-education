@@ -32,8 +32,10 @@ function StudyAbroadServiceApplication(props) {
   const onSubmit = event => {
     const { agreeToPrivacy, ...applicationForm } = state;
     const firebaseRef = (match.url.includes('homestay')) ? firebase.homestayApplications() : firebase.airportRideApplications();
-    
-    firebaseRef.add({
+    const docRef = firebase.schools().doc();
+
+    docRef.set({
+      id: docRef.id,
       authorID: authUser.uid,
       createdAt: Date.now(),
       updatedAt: Date.now(),
