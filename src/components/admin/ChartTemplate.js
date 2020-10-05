@@ -26,7 +26,7 @@ export default function Chart(props) {
   const { chart, data } = props;
 
   const COLORS = useRef(null);
-  if (!COLORS.current) COLORS.current = createColourPalette(data.plots.length);
+  if (data && !COLORS.current) COLORS.current = createColourPalette(data.plots.length);
 
   const renderPieLegend = dataPlots => {
     return dataPlots.map((entry, i) => (
