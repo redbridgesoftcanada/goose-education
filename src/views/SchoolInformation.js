@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link as RouterLink, withRouter } from "react-router-dom";
-import { Button, CardMedia, Collapse, Container, List, ListItem, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core';
+import { Button, CardMedia, Collapse, Container, Link, List, ListItem, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import parse from 'html-react-parser';
 import { convertToSentenceCase } from '../constants/helpers/_features';
@@ -51,7 +51,11 @@ function SchoolInformation(props) {
                             <TableCell className={classes.tableText}>{selectedSchool.title ? selectedSchool.title : ''}</TableCell>
                             <TableCell className={classes.tableText}>{selectedSchool.type ? selectedSchool.type : ''}</TableCell>
                             <TableCell className={classes.tableText}>{selectedSchool.location ? selectedSchool.location : ''}</TableCell>
-                            <TableCell className={classes.tableText}>{selectedSchool.url ? selectedSchool.url : ''}</TableCell>
+                            <TableCell>
+                                <Typography className={classes.tableText}>
+                                    <Link href={selectedSchool.url} color="inherit" target="_blank" rel="nooopener">{selectedSchool.url}</Link>
+                                </Typography>
+                            </TableCell>
                             <TableCell className={classes.tableText}>{selectedSchool.dateOfEstablishment ? selectedSchool.dateOfEstablishment : ''}</TableCell>
                         </TableRow>
                     </TableBody>
@@ -107,7 +111,7 @@ function SchoolInformation(props) {
                 <Button
                     color="secondary" 
                     variant="contained" 
-                    size="medium"
+                    fullWidth
                     component={RouterLink} 
                     to={{
                         pathname: `/schools`, 
