@@ -34,14 +34,9 @@ export const featureOthersStyles = props => {
     },
 
     image: {
-        display: 'block',
-        border: '0',
-        width: 'auto',
-        maxWidth: '25%',
-        height: 'auto',
-        margin: '0px auto',
-        [theme.breakpoints.down('xs')]: {
-            display: 'none'
+        height: 150,
+        [theme.breakpoints.down('sm')]: {
+          height: 100
         }
     },
 
