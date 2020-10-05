@@ -51,7 +51,7 @@ function AirportRides(props) {
             <TableCell>{application.departureFlightName}</TableCell>
             <TableCell>{format(application.departureFlightDate.toDate(), "Pp")}</TableCell>
             <TableCell>
-              <IconButton id={application.authorID} color="secondary" onClick={setDeleteApplication}>
+              <IconButton id={application.id} color="secondary" onClick={setDeleteApplication}>
                 <Clear/>
               </IconButton>
             </TableCell>
