@@ -3,7 +3,7 @@ import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, Input } f
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { TAGS } from '../constants/constants';
 import StyledValidators from '../components/customMUI';
-import { withAuthorization } from '../components/session';
+import { withFirebase } from '../components/firebase';
 
 const INITIAL_STATE = {
   isEdit: false,
@@ -280,6 +280,4 @@ function toggleReducer(state, action) {
   }
 }
 
-const condition = authUser => !!authUser;
-
-export default withAuthorization(condition)(ComposeDialogBase);
+export default withFirebase(ComposeDialogBase);
