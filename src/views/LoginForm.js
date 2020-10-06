@@ -29,9 +29,7 @@ function LoginForm(props) {
       return firebase.user(user.uid).set({lastSignInTime}, { merge: true });
     })
     .then(() => history.push('/'))
-    .catch(e => 
-      Promise.all([setError(e), setLoginCred({ email: '', password: '' })])
-    );    
+    .catch(e => Promise.all([setError(e), setLoginCred({ email: '', password: '' })]));    
     event.preventDefault();
   }
 
@@ -61,7 +59,7 @@ function LoginForm(props) {
           </Grid>
         </Grid>
 
-        {error && <Typography className={classes.error}>{error.message}</Typography>}
+        {error && <Typography className={classes.error}>The username or password you entered is incorrect</Typography>}
         
         <Button
           className={classes.submitButton}
