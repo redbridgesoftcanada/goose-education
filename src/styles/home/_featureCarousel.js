@@ -10,11 +10,14 @@ export const featureCarouselStyles = props => {
       top: '35%',
       right: '5%',
     },
-    
+
     media: {
       height: 200,
       backgroundPosition:'center', 
       backgroundSize:'contain',
-    },
+      '&:hover': {
+        cursor: 'pointer'
+      }
+    }
   }))(props);
 }
