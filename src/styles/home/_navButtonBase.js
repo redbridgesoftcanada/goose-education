@@ -5,11 +5,6 @@ export const navButtonBaseStyles = props => {
   const absoluteStyles = { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 };
 
   return makeStyles(theme => ({
-    root: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-
     buttonBase: {
       position: 'relative',
       display: 'inline-block',

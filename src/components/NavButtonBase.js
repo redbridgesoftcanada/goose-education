@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Box, ButtonBase, Typography } from '@material-ui/core';
 import { Redirect } from "react-router-dom";
 import { useStyles } from '../styles/home';
@@ -7,9 +7,15 @@ export default function NavButtonBase(props) {
   const classes = useStyles(props, 'navButtonBase');
   
   const { graphics } = props;
-  delete graphics['location'];  
-  // remove identifier key-value pair ({location: /home});
+  delete graphics['location'];  // remove identifier key-value pair ({location: /home});
   const graphicsArr = Object.values(graphics); 
+
+  let navButtons = new Set();
+  navButtons.add(graphicsArr.find(graphic => graphic.title === 'School Information'));
+  navButtons.add(graphicsArr.find(graphic => graphic.title === 'Study Abroad'));
+  navButtons.add(graphicsArr.find(graphic => graphic.title === 'Homestay'));
+  navButtons.add(graphicsArr.find(graphic => graphic.title === 'Airport Ride'));
+  navButtons = Array.from(navButtons);
   
   const [ redirectPath, setRedirectPath ] = useState({});
 
@@ -32,14 +38,14 @@ export default function NavButtonBase(props) {
       case 'Homestay':
         setRedirectPath({
           pathname: '/studyabroad', 
-          state: { title: 'Study Abroad', selected: 0 }
+          state: { title: 'Study Abroad' }
         });
         break;
 
       case 'Airport Ride':
         setRedirectPath({
           pathname: '/studyabroad', 
-          state: { title: 'Study Abroad', selected: 1 }
+          state: { title: 'Study Abroad' }
         });
         break;
         
@@ -52,8 +58,8 @@ export default function NavButtonBase(props) {
     Object.keys(redirectPath).length ?
     <Redirect push to={redirectPath}/> 
     :
-    <Box className={classes.root}>
-      {graphicsArr.map((graphic, i) => (
+    <Box display='flex' flexWrap='wrap'>
+      {navButtons.map((graphic, i) => (
         <ButtonBase key={i}
           className={classes.buttonBase}
           style={{ width: (i === 0) ? '37%' : (i === 1) ? '18%' : '22.5%' }}
