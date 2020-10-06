@@ -13,9 +13,9 @@ function PasswordForgetForm({ firebase, form }) {
   const [ email, setEmail ] = useState('');
   const [ notification, setNotification ] = useState(null);
 
-  const onSubmit = event => {
-    firebase.doPasswordReset(email);
-    setNotification('Please check your email for instructions to reset your password.');
+  const onSubmit = async event => {
+    await firebase.doPasswordReset(email);
+    setNotification('Please check the provided email for instructions to reset your password.');
     event.preventDefault();
   }
 
@@ -31,10 +31,9 @@ function PasswordForgetForm({ firebase, form }) {
       <Typography className={classes.formSubtitle}>{form.subtitle}</Typography>
       <ValidatorForm className={classes.root} onSubmit={onSubmit}>
         <Box mx={2}>
-          <StyledValidators.AuthLoginField
+          <StyledValidators.TextField
             value={email}
             onChange={e => setEmail(e.target.value)}
-            error={notification}
             validators={['required', 'isQuillEmpty', 'isEmail']}
             errorMessages={['', '', '']}
           />
