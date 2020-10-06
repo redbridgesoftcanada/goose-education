@@ -21,11 +21,13 @@ export const featureInstagramStyles = props => {
 
     image: {
       "&:hover": {
-        cursor: 'pointer'
+        cursor: 'pointer',
+        boxShadow: '0 0 0 2px white',
+        border: '2px solid white'
       },
       height: 350,
       backgroundPosition:'center', 
-      backgroundSize:'contain',
+      backgroundSize:'cover',
     },
 
     cardContent: {
