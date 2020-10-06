@@ -16,7 +16,9 @@ export const featureCarouselStyles = props => {
       backgroundPosition:'center', 
       backgroundSize:'contain',
       '&:hover': {
-        cursor: 'pointer'
+        cursor: 'pointer',
+        boxShadow: '0 0 0 2px white',
+        border: '2px solid white'
       }
     }
   }))(props);
