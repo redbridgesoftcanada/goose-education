@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer } from 'react';
 import { Avatar, Box, Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormHelperText, Grid, Input } from '@material-ui/core';
+import DescriptionIcon from '@material-ui/icons/Description';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { TAGS } from '../constants/constants';
 import StyledValidators from '../components/customMUI';
@@ -36,14 +37,14 @@ function ComposeDialogBase(props) {
     
     // configure Firestore collection/document locations
     const metadata = { customMetadata: { "owner": authUser.uid } }
-    let uploadKey, formContent, newDoc, prevImage;
+    let uploadKey, formContent, newDoc, prevUpload;
     switch (composeType) {
       case "article": {
         const { isEdit, isLoading, uploads, ...articleForm } = state;
         uploadKey = 'image';
         formContent = { ...articleForm, isFeatured: false };
         newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
-        prevImage = isEdit && props.article.image;
+        prevUpload = isEdit && props.article.image;
         break;
       }
 
@@ -52,7 +53,7 @@ function ComposeDialogBase(props) {
         uploadKey = 'attachments';
         formContent = {...announceForm};
         newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
-        prevImage = isEdit && props.announcement.attachments;
+        prevUpload = isEdit && props.article.attachments;
         break;
       }
 
@@ -61,7 +62,7 @@ function ComposeDialogBase(props) {
         uploadKey = 'attachments';
         formContent = {...messageForm}
         newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
-        prevImage = isEdit && props.message.attachments;
+        prevUpload = isEdit && props.article.attachments;
         break;
       }
 
@@ -71,7 +72,7 @@ function ComposeDialogBase(props) {
     }
 
     if (isEdit) {
-      if (uploads === prevImage) {
+      if (uploads === prevUpload) {
         newDoc.set({
           ...formContent,
           updatedAt: Date.now()
@@ -84,7 +85,7 @@ function ComposeDialogBase(props) {
           updatedAt: Date.now(),
           [uploadKey]: downloadURL
         }, { merge: true }).then(async () => {
-          prevImage.includes('firebase') && await firebase.refFromUrl(prevImage).delete();
+          prevUpload && prevUpload.includes('firebase') && await firebase.refFromUrl(prevUpload).delete();
           onClose();
         });
       }
@@ -202,16 +203,19 @@ function ComposeDialogBase(props) {
           <Grid container justify='flex-start' alignItems='center'>
             <Grid item xs={2}>
               {uploads ?
+                composeType === "article" ?
                 <Avatar
-                  style={{width: 144, height: 144}}
+                  style={{width: 130, height: 130}}
                   imgProps={{style: { objectFit: 'contain' }}}
                   alt='G'
                   variant='rounded' 
                   src={
                     uploads instanceof File ? null : uploads.includes('firebase') ? uploads : require(`../assets/img/${uploads}`)}
                   />
+                  :
+                  <Avatar style={{width: 130, height: 130}} variant='rounded'><DescriptionIcon style={{fontSize: 50}}/></Avatar>
               :
-                <Box height={144} width={144} border={1} borderColor='grey.500' borderRadius={8}/>
+                <Box height={130} width={130} border={1} borderColor='grey.500' borderRadius={8}/>
               }
             </Grid>
 
@@ -278,7 +282,7 @@ async function handleStorageUpload(uploads, composeType, metadata, firebase) {
     }
     
     case "announce":
-    case "messages": {
+    case "message": {
       const uploadTask = await firebase.attachmentsRef(uploads).put(uploads, metadata);
       return await retrieveDownloadUrl(uploadTask);
     }
