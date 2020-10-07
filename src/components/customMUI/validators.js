@@ -141,10 +141,8 @@ class CheckboxValidator extends ValidatorComponent {
         {...!this.state.isValid && { style: { ...errorStyles, float: 'left' } }}>
         <FormControlLabel 
           label={label}
-          control={<Checkbox size="small" {...rest}/>}
-        />
+          control={<Checkbox size="small" {...rest}/>}/>
         {children}
-        <FormHelperText>{this.getErrorMessage()}</FormHelperText>
       </FormControl>
   )}
 }

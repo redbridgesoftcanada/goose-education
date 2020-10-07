@@ -126,7 +126,7 @@ function SchoolApplication(props) {
               
             case 'schoolName':
               return (
-                <DatabaseContext.Consumer>
+                <DatabaseContext.Consumer key={field}>
                   {({ state }) => {
                     const listOfSchoolNames = state.listOfSchools.map(school => school.title);
                     return (
@@ -168,7 +168,6 @@ function SchoolApplication(props) {
           name='agreeToPrivacy'
           onChange={handleFormInput}
           label={<Typography variant="body2">I agree to the Privacy Agreement.</Typography>}
-          additionalText=''
           value={userInput.agreeToPrivacy}
           validators={['isRequiredCustom']}
           errorMessages={['']}
