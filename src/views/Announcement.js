@@ -17,7 +17,7 @@ import useStyles from '../styles/serviceCentre.js';
 
 const INITIAL_STATE = {
     comment: '',
-    commentCollapseOpen: false,
+    commentCollapseOpen: true,
     editAnchor: null,
     editDialogOpen: false,
     editConfirmOpen: false
