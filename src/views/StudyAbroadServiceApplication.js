@@ -31,8 +31,7 @@ function StudyAbroadServiceApplication(props) {
 
   const onSubmit = event => {
     const { agreeToPrivacy, ...applicationForm } = state;
-    const firebaseRef = (match.url.includes('homestay')) ? firebase.homestayApplications() : firebase.airportRideApplications();
-    const docRef = firebase.schools().doc();
+    const docRef = (match.url.includes('homestay')) ? firebase.homestayApplications().doc() : firebase.airportRideApplications().doc();
 
     docRef.set({
       id: docRef.id,
@@ -98,7 +97,10 @@ function StudyAbroadServiceApplication(props) {
                 defaultProps.minDate = state.arrivalFlightDate;
               }
               return (
-                <StyledValidators.CustomDateTimePicker {...defaultProps}/>
+                <StyledValidators.CustomDateTimePicker 
+                  {...defaultProps}
+                  validators={['isRequiredCustom']}
+                  errorMessages={['']}/>
             )}
             
             case 'birthDate':
