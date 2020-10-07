@@ -82,7 +82,10 @@ function UploadAttachmentForm(props) {
           updatedAt: Date.now(),
           attachments: downloadURL
         }, { merge: true })
-        .then(() => cleanupActions(`Updated ${formType} - please refresh to see new changes!`));
+        .then(async () => {
+          prevAttachment.includes('firebase') && await firebase.refFromUrl(prevAttachment).delete();
+          cleanupActions(`Updated ${formType} - please refresh to see new changes!`);
+        });
       }
 
     } else {

@@ -87,7 +87,10 @@ function UploadImageForm(props) {
           isFeatured: Boolean(isFeatured === 'Yes'),
           updatedAt: Date.now()
         }, { merge: true })
-        .then(() => cleanupActions(`Updated ${formType} - please refresh to see new changes!`));
+        .then(async () => {
+          prevImage.includes('firebase') && await firebase.refFromUrl(prevImage).delete();
+          cleanupActions(`Updated ${formType} - please refresh to see new changes!`);
+        });
       }
 
     } else {
