@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { MoreVertOutlined } from '@material-ui/icons';
-import { format, compareDesc } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import parse from 'html-react-parser';
 import { withFirebase } from '../components/firebase';
 import CommentDialog from '../components/CommentDialog';
@@ -101,7 +101,7 @@ function Comments(props) {
 
             <Grid container item xs={6} className={classes.feContainer}>
               <Typography className={classes.metaDate}>
-                {format([comment.createdAt, comment.updatedAt].sort(compareDesc).pop(), 'Pp')}
+                {format([comment.createdAt, comment.updatedAt].sort(compareAsc).pop(), 'Pp')}
               </Typography>
             </Grid>
 

@@ -26,7 +26,8 @@ export const commentStyles = props => {
     },
 
     commentText: {
-      ...theme.typography.body2
+      ...theme.typography.body2,
+      textAlign: 'left'
     }
 
   }))(props)

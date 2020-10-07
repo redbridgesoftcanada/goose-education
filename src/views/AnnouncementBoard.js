@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect, useState, useRef } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
-import { format, compareDesc } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import { AuthUserContext } from '../components/session';
 import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/_features';
 import Compose from '../components/ComposeButton';
@@ -128,7 +128,7 @@ export default function AnnouncementBoard(props) {
                                     </Link>
                                 </TableCell>
                                 <TableCell align='center'>{announce.authorDisplayName}</TableCell>
-                                <TableCell align='center'>  {format([announce.createdAt, announce.updatedAt].sort(compareDesc).pop(), 'P')}</TableCell>
+                                <TableCell align='center'>  {format([announce.createdAt, announce.updatedAt].sort(compareAsc).pop(), 'P')}</TableCell>
                             </TableRow>
                         );
                     })}

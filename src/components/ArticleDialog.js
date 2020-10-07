@@ -2,7 +2,7 @@ import React from 'react';
 import { CardMedia, Dialog, DialogContent, DialogTitle, Grid, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, ScheduleOutlined } from '@material-ui/icons';
 import parse from 'html-react-parser';
-import { format, compareDesc } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import useStyles from '../styles/goose';
 
 function ArticleDialog(props) {
@@ -24,7 +24,7 @@ function ArticleDialog(props) {
           <Grid item><ScheduleOutlined fontSize='small'/></Grid>
           <Grid item>
             <Typography variant='body2'>
-              {format([article.createdAt, article.updatedAt].sort(compareDesc).pop(), 'P')}
+              {format([article.createdAt, article.updatedAt].sort(compareAsc).pop(), 'P')}
             </Typography>
           </Grid>
         </Grid>

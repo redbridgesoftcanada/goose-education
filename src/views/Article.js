@@ -3,7 +3,7 @@ import { Box, Button, CardMedia, Collapse, Container, Divider, Grid, IconButton,
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, ScheduleOutlined, MoreVertOutlined, Facebook, Instagram, RoomOutlined, LanguageOutlined, EditOutlined, DeleteOutline } from '@material-ui/icons';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import parse from 'html-react-parser';
-import { format, compareDesc } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { MuiThemeBreakpoints } from '../constants/constants';
 import { withFirebase } from '../components/firebase';
@@ -105,7 +105,7 @@ function Article(props) {
                     <Grid item><ScheduleOutlined fontSize='small'/></Grid>
                     <Grid item>
                         <Typography className={classes.metaText}>
-                            {format([article.createdAt, article.updatedAt].sort(compareDesc).pop(), 'P')}
+                            {format([article.createdAt, article.updatedAt].sort(compareAsc).pop(), 'P')}
                         </Typography>
                     </Grid>
                 </Grid>

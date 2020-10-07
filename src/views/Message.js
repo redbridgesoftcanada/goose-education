@@ -3,7 +3,7 @@ import { Button, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem,
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, ScheduleOutlined, MoreVertOutlined, LanguageOutlined, Facebook, Instagram, RoomOutlined, EditOutlined, DeleteOutline } from '@material-ui/icons';
 import { useHistory } from "react-router-dom";
 import { ValidatorForm } from 'react-material-ui-form-validator';
-import { format, compareDesc } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import parse from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
 import { MuiThemeBreakpoints } from '../constants/constants';
@@ -98,7 +98,7 @@ function Message(props) {
                     <Grid item><ScheduleOutlined fontSize='small'/></Grid>
                     <Grid item>
                         <Typography className={classes.metaText}>
-                            {format([selectedMessage.createdAt, selectedMessage.updatedAt].sort(compareDesc).pop(), 'P')}
+                            {format([selectedMessage.createdAt, selectedMessage.updatedAt].sort(compareAsc).pop(), 'P')}
                         </Typography>
                     </Grid>
                 </Grid>

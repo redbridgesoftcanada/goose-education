@@ -3,7 +3,7 @@ import { Card, CardMedia, Container, Grid, Typography } from '@material-ui/core'
 import { AccountCircleOutlined, LocalOfferOutlined, ScheduleOutlined } from '@material-ui/icons';
 import { useHistory } from "react-router-dom";
 import parse from 'html-react-parser';
-import { format, compareDesc } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import withRoot from './withRoot';
 import { createPagination, singleFilterQuery, multipleFilterQuery } from './constants/helpers/_features';
 import { AuthUserContext } from './components/session';
@@ -121,7 +121,7 @@ function Search(props) {
 
                       <Grid item>
                         <ScheduleOutlined fontSize="small" className={classes.icon}/> 
-                        {format([resource.createdAt, resource.updatedAt].sort(compareDesc).pop(), 'P')}
+                        {format([resource.createdAt, resource.updatedAt].sort(compareAsc).pop(), 'P')}
                       </Grid>
                     </Grid>
                   }

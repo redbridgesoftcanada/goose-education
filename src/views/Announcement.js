@@ -2,7 +2,7 @@ import React, { useReducer, useState } from 'react';
 import { Box, Button, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, ScheduleOutlined, MoreVertOutlined, Facebook, Instagram, RoomOutlined, LanguageOutlined, EditOutlined, DeleteOutline } from '@material-ui/icons';
 import { useHistory } from "react-router-dom";
-import { format, compareDesc } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import parse from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
 import { ValidatorForm } from 'react-material-ui-form-validator';
@@ -104,7 +104,7 @@ function Announcement(props) {
                     <Grid item><ScheduleOutlined fontSize='small'/></Grid>
                     <Grid item>
                         <Typography className={classes.metaText}>
-                            {format([selectedAnnounce.createdAt, selectedAnnounce.updatedAt].sort(compareDesc).pop(), 'P')}
+                            {format([selectedAnnounce.createdAt, selectedAnnounce.updatedAt].sort(compareAsc).pop(), 'P')}
                         </Typography>
                     </Grid>
                 </Grid>

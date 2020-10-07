@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useReducer, useRef } from 'react';
 import { Container, Link, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
-import { format, compareDesc } from 'date-fns';
+import { format, compareAsc } from 'date-fns';
 import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/_features';
 import { AuthUserContext } from '../components/session';
 import Compose from '../components/ComposeButton';
@@ -125,7 +125,7 @@ export default function MessageBoard(props) {
                                     </Link>
                                 </TableCell>
                                 <TableCell align='center'>{message.authorDisplayName}</TableCell>
-                                <TableCell align='center'>{format([message.createdAt, message.updatedAt].sort(compareDesc).pop(), 'Pp')}</TableCell>
+                                <TableCell align='center'>{format([message.createdAt, message.updatedAt].sort(compareAsc).pop(), 'Pp')}</TableCell>
                             </TableRow>
                         );
                     })}
