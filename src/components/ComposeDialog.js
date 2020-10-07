@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, Input } from '@material-ui/core';
+import { Avatar, Box, Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormHelperText, Grid, Input } from '@material-ui/core';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { TAGS } from '../constants/constants';
 import StyledValidators from '../components/customMUI';
@@ -14,7 +14,7 @@ const INITIAL_STATE = {
   instagramURL: '',
   link1: '',
   link2: '',
-  uploads: []
+  uploads: ''
 }
 
 function ComposeDialogBase(props) {
@@ -28,39 +28,40 @@ function ComposeDialogBase(props) {
   const handleRichText = htmlString => dispatch({ type:'RICH_TEXT', payload: htmlString });
   const handleFileUpload = event => dispatch({ type:'FILE_UPLOAD', payload: event.target.files[0] });
 
-  const onSubmit = event => {
+  const onSubmit = async event => {
     dispatch({ type: 'INITIALIZE_SAVE' });
 
     // user uploads a file with the form (note. empty array overwrites to a File object)
     const isFileUploaded = uploads instanceof File;
-
+    
     // configure Firestore collection/document locations
-    let uploadKey, uploadRef, newDoc, formContent;
+    const metadata = { customMetadata: { "owner": authUser.uid } }
+    let uploadKey, formContent, newDoc, prevImage;
     switch (composeType) {
       case "article": {
         const { isEdit, isLoading, uploads, ...articleForm } = state;
         uploadKey = 'image';
-        uploadRef = isFileUploaded && firebase.imagesRef(uploads);
-        newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
         formContent = { ...articleForm, isFeatured: false };
+        newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
+        prevImage = isEdit && props.article.image;
         break;
       }
 
       case "announce": {
         const { isEdit, isLoading, uploads, ...announceForm } = state;
         uploadKey = 'attachments';
-        uploadRef = isFileUploaded && firebase.attachmentsRef(uploads);
-        newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
         formContent = {...announceForm};
+        newDoc = isEdit ? firebase.announcement(state.id) : firebase.announcements().doc();
+        prevImage = isEdit && props.announcement.attachments;
         break;
       }
 
       case "message": {
         const { isEdit, isLoading, tag, instagramURL, uploads, ...messageForm } = state;
         uploadKey = 'attachments';
-        uploadRef = isFileUploaded && firebase.attachmentsRef(uploads);
-        newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
         formContent = {...messageForm}
+        newDoc = isEdit ? firebase.message(state.id) : firebase.messages().doc();
+        prevImage = isEdit && props.message.attachments;
         break;
       }
 
@@ -69,49 +70,50 @@ function ComposeDialogBase(props) {
         return;
     }
 
-    const defaultDocFields = {
-      authorID: authUser.uid,
-      authorDisplayName: authUser.displayName,
-      comments: [],
-      ...!isEdit && { createdAt: Date.now() },
-      updatedAt: Date.now()
-    }
+    if (isEdit) {
+      if (uploads === prevImage) {
+        newDoc.set({
+          ...formContent,
+          updatedAt: Date.now()
+        }, { merge: true })
+        .then(() => onClose());
+      } else if (isFileUploaded) {
+        const downloadURL = await handleStorageUpload(uploads, composeType, metadata, firebase);
+        newDoc.set({
+          ...formContent,
+          updatedAt: Date.now(),
+          [uploadKey]: downloadURL
+        }, { merge: true }).then(async () => {
+          prevImage.includes('firebase') && await firebase.refFromUrl(prevImage).delete();
+          onClose();
+        });
+      }
 
-    if (isFileUploaded) {
-      const metadata = { customMetadata: { "owner": authUser.uid } }
-      const uploadTask = uploadRef.put(uploads, metadata);
-
-      uploadTask.on('state_changed', snapshot => {
-      },
-
-      error => { 
-        dispatch({ type: 'error', payload: error.code });
-      }, 
-
-      () => {
-        uploadTask.snapshot.ref.getDownloadURL()
-          .then(function(downloadURL) {
-            newDoc.set({
-              ...defaultDocFields,
-              ...formContent,
-              [uploadKey]: downloadURL
-            }, { merge: true })
-          .then(() => {
-            onClose();
-          });
-        })});
-
-    // user does not upload a file with the form
     } else {
-      newDoc.set({
-        ...defaultDocFields,
-        ...formContent,
-        [uploadKey]: []
-      })
-      .then(() => {
-        onClose();
-        // history.push(redirectPath)
-      });
+      const defaultDocFields = {
+        authorID: authUser.uid,
+        authorDisplayName: authUser.displayName,
+        comments: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      }
+      
+      if (isFileUploaded) {
+        const downloadURL = await handleStorageUpload(uploads, composeType, metadata, firebase);
+        newDoc.set({
+          ...defaultDocFields,
+          ...formContent,
+          [uploadKey]: downloadURL
+        }).then(() => onClose());
+  
+      // user does not upload a file with the form
+      } else {
+        newDoc.set({
+          ...defaultDocFields,
+          ...formContent,
+          [uploadKey]: ''
+        }).then(() => onClose());
+      }
     }
     event.preventDefault();
   }
@@ -196,25 +198,46 @@ function ComposeDialogBase(props) {
           />
 
           <br/>
-          {composeType === 'article' ? 
-            <StyledValidators.FileUpload
-              name='file'
-              value={uploads}
-              label='Image'
-              onChange={handleFileUpload}
-              validators={['isRequiredUpload', 'allowedExtensions:image/png,image/jpeg,image/jpg']}
-              errorMessages={['', '']}
-            />
-            :
-            <Input type="file" disableUnderline onChange={handleFileUpload}/>
-          }
 
-          <br/><br/>
+          <Grid container justify='flex-start' alignItems='center'>
+            <Grid item xs={2}>
+              {uploads ?
+                <Avatar
+                  style={{width: 144, height: 144}}
+                  imgProps={{style: { objectFit: 'contain' }}}
+                  alt='G'
+                  variant='rounded' 
+                  src={
+                    uploads instanceof File ? null : uploads.includes('firebase') ? uploads : require(`../assets/img/${uploads}`)}
+                  />
+              :
+                <Box height={144} width={144} border={1} borderColor='grey.500' borderRadius={8}/>
+              }
+            </Grid>
+
+            {composeType === 'article' ? 
+            <Grid item>
+              <StyledValidators.FileUpload 
+                name='file'
+                value={uploads}
+                label='Image'
+                onChange={handleFileUpload}
+                validators={['isRequiredUpload']}
+                errorMessages={['']}/>
+              {uploads && <FormHelperText>Select a new file to upload and replace current image.</FormHelperText>}
+            </Grid>
+             :
+             <Input type="file" disableUnderline onChange={handleFileUpload}/>
+           }
+          </Grid>
+
+          <br/>
+
           <Button 
             type="submit"
             variant="contained" 
             color="secondary" 
-            fullWidth >
+            fullWidth>
             {isLoading ? <CircularProgress /> : 'Submit'}
           </Button>
 
@@ -247,6 +270,31 @@ function generateDialogTitle(isEdit, composeType) {
   }
 }
 
+async function handleStorageUpload(uploads, composeType, metadata, firebase) {
+  switch (composeType) {
+    case "article": {
+      const uploadTask = await firebase.imagesRef(uploads).put(uploads, metadata);
+      return await retrieveDownloadUrl(uploadTask);
+    }
+    
+    case "announce":
+    case "messages": {
+      const uploadTask = await firebase.attachmentsRef(uploads).put(uploads, metadata);
+      return await retrieveDownloadUrl(uploadTask);
+    }
+
+    default: 
+      console.log('Missing compose type for Compose Dialog onSubmit.');
+      return;
+  }
+}
+
+function retrieveDownloadUrl(uploadTask) {
+  return uploadTask.ref.getDownloadURL().then(downloadURL => {
+    return downloadURL;
+  });
+}
+
 function toggleReducer(state, action) {
   const { type, payload } = action;
   
@@ -255,11 +303,11 @@ function toggleReducer(state, action) {
       const { composeType, isEdit, prevContent } = payload;
       if (composeType === 'article') {
         const { image, ...prepopulateForm } = prevContent;
-        return { ...prepopulateForm, isEdit, isLoading: false, uploads: [] }
+        return { ...prepopulateForm, uploads: image, isEdit, isLoading: false }
       
       } else if (composeType === 'message' || composeType === 'announce') {
         const { attachments, ...prepopulateForm } = prevContent;
-        return { ...prepopulateForm, isEdit, isLoading: false, uploads: [] }
+        return { ...prepopulateForm, uploads: attachments, isEdit, isLoading: false }
       }
       break;
 
@@ -271,7 +319,7 @@ function toggleReducer(state, action) {
 
     case 'FILE_UPLOAD':
       const uploadFile = payload;
-      return (!uploadFile) ? { ...state, uploads: [] } : { ...state, uploads: uploadFile };
+      return (!uploadFile) ? { ...state, uploads: '' } : { ...state, uploads: uploadFile };
 
     default:
       const inputField = payload.name;
