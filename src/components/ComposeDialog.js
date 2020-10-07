@@ -32,7 +32,7 @@ function ComposeDialogBase(props) {
     dispatch({ type: 'INITIALIZE_SAVE' });
 
     // user uploads a file with the form (note. empty array overwrites to a File object)
-    const isFileUploaded = uploads.length && uploads instanceof File;
+    const isFileUploaded = uploads instanceof File;
 
     // configure Firestore collection/document locations
     let uploadKey, uploadRef, newDoc, formContent;
@@ -42,7 +42,7 @@ function ComposeDialogBase(props) {
         uploadKey = 'image';
         uploadRef = isFileUploaded && firebase.imagesRef(uploads);
         newDoc = isEdit ? firebase.article(state.id) : firebase.articles().doc();
-        formContent = {...articleForm};
+        formContent = { ...articleForm, isFeatured: false };
         break;
       }
 
@@ -71,15 +71,15 @@ function ComposeDialogBase(props) {
 
     const defaultDocFields = {
       authorID: authUser.uid,
-      authorDisplayName: authUser.roles['admin'] ? '슈퍼관리자' : authUser.displayName,
+      authorDisplayName: authUser.displayName,
       comments: [],
       ...!isEdit && { createdAt: Date.now() },
       updatedAt: Date.now()
     }
 
     if (isFileUploaded) {
-      const uploadTask = uploadRef.put(uploads, metadata);
       const metadata = { customMetadata: { "owner": authUser.uid } }
+      const uploadTask = uploadRef.put(uploads, metadata);
 
       uploadTask.on('state_changed', snapshot => {
       },
