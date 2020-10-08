@@ -41,7 +41,9 @@ function withFetching(Component) {
       adminAggregates: [],
       adminGraphics: [],
       profile: null,
-      schoolApplication: null,
+      schoolApplicationHistory: [],
+      homestayApplicationHistory: [],
+      airportRideApplicationHistory: [],
       instagram: []
     }
     const [ state, setState ] = useState(INITIAL_STATE);
@@ -125,7 +127,9 @@ function withFetching(Component) {
         
         case '/profile':
           fetchSelectDocuments("profile", "users", firebase, setState, userId);
-          fetchSelectDocuments("schoolApplication", "schoolApplications", firebase, setState, userId);
+          fetchSelectDocuments("schoolApplicationHistory", "schoolApplications", firebase, setState, userId);
+          fetchSelectDocuments("homestayApplicationHistory", "homestayApplications", firebase, setState, userId);
+          fetchSelectDocuments("airportApplicationHistory", "airportRideApplications", firebase, setState, userId);
           break;
         
         case '/login':

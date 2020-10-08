@@ -4,14 +4,18 @@ import { format } from 'date-fns';
 import { STATUSES } from '../constants/constants';
 import { withAuthorization } from '../components/session';
 import TabPanel from '../components/TabPanel';
+import Typography from '../components/onePirate/Typography';
 
 function UserApplicationHistory(props) {
   const [ selectedTab, setSelectedTab ] = useState(0);
 
   return (
     <>
-      <Tabs centered value={selectedTab}>
+      <Tabs centered value={selectedTab}
+      onChange={(event, newValue) => setSelectedTab(newValue)}>
         <Tab label="Applications"/>
+        <Tab label="Homestays"/>
+        <Tab label="Airport Rides"/>
       </Tabs>
 
       <TabPanel value={selectedTab} index={0}>
@@ -48,13 +52,87 @@ function UserApplicationHistory(props) {
                       </TableRow>
                     )
                   })
+                :
+                <TableRow>
+                  <TableCell align='center' colSpan={6}>You have no submitted applications.</TableCell>
+                </TableRow>
+                }
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Container>
+      </TabPanel>
+
+      <TabPanel value={selectedTab} index={1}>
+      <Container maxWidth='lg'>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell align='center'>Name</TableCell>
+                  <TableCell align='center'>Start Date</TableCell>
+                  <TableCell align='center'>End Date</TableCell>
+                  <TableCell align='center'>Arrival Flight</TableCell>
+                  <TableCell align='center'>Arrival Date</TableCell>
+                  <TableCell align='center'>Date Submitted</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {props.homestay && props.homestay.length ? 
+                  props.homestay.map(application => {
+                    return (
+                      <TableRow key={application.id}>
+                        <TableCell align='center'>{application.firstName} {application.lastName}</TableCell>
+                        <TableCell align='center'>{format(application.homestayStartDate.toDate(), 'P')}</TableCell>
+                        <TableCell align='center'>{format(application.homestayEndDate.toDate(), 'P')}</TableCell>
+                        <TableCell align='center'>{application.arrivalFlightName}</TableCell>
+                        <TableCell align='center'>{format(application.arrivalFlightDate.toDate(), 'Pp')}</TableCell>
+                        <TableCell align='center'>{format(application.createdAt, 'P')}</TableCell>
+                      </TableRow>
+                    )
+                  })
                 : 
                 <TableRow>
-                  <TableCell/>
-                  <TableCell/>
-                  <TableCell align='center'>You have no submitted applications.</TableCell>
-                  <TableCell/>
-                  <TableCell/>
+                  <TableCell align='center' colSpan={6}>You have no submitted homestays.</TableCell>
+                </TableRow>
+                }
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Container>
+      </TabPanel>
+
+      <TabPanel value={selectedTab} index={2}>
+      <Container maxWidth='lg'>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell align='center'>Name</TableCell>
+                  <TableCell align='center'>Arrival Flight</TableCell>
+                  <TableCell align='center'>Arrival Date</TableCell>
+                  <TableCell align='center'>Departure Flight</TableCell>
+                  <TableCell align='center'>Departure Date</TableCell>
+                  <TableCell align='center'>Date Submitted</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {props.airport && props.airport.length ? 
+                  props.airport.map(application => {
+                    return (
+                      <TableRow key={application.id}>
+                        <TableCell align='center'>{application.firstName} {application.lastName}</TableCell>
+                        <TableCell align='center'>{application.arrivalFlightName}</TableCell>
+                        <TableCell align='center'>{format(application.arrivalFlightDate.toDate(), 'Pp')}</TableCell>
+                        <TableCell align='center'>{application.departureFlightName}</TableCell>
+                        <TableCell align='center'>{format(application.departureFlightDate.toDate(), 'Pp')}</TableCell>
+                        <TableCell align='center'>{format(application.createdAt, 'P')}</TableCell>
+                      </TableRow>
+                    )
+                  })
+                : 
+                <TableRow>
+                  <TableCell align='center' colSpan={6}>You have no submitted airport rides.</TableCell>
                 </TableRow>
                 }
               </TableBody>

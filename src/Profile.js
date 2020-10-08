@@ -22,7 +22,9 @@ function Profile() {
 
                   <UserApplicationHistory 
                     authUser={authUser} 
-                    applications={state.schoolApplication}/>
+                    applications={state.schoolApplicationHistory}
+                    homestay={state.homestayApplicationHistory}
+                    airport={state.airportApplicationHistory}/>
               </>
             }
           </DatabaseContext.Consumer>
