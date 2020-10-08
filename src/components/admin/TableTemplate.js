@@ -1,19 +1,19 @@
-import React, { Suspense, useState } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import { Backdrop, CircularProgress, Link, Typography } from "@material-ui/core";
 import Title from "./Title";
 import { DatabaseContext } from '../../components/database';
 import { useStyles } from '../../styles/adminDashboard';
 
-const Accounts = React.lazy(() => import('../admin/Accounts'));
-const Schools = React.lazy(() => import('../admin/Schools'));
-const Applications = React.lazy(() => import('../admin/Applications'));
-const Homestays = React.lazy(() => import('../admin/Homestays'));
-const AirportRides = React.lazy(() => import('../admin/AirportRides'));
-const GooseTips = React.lazy(() => import('../admin/GooseTips'));
-const Articles = React.lazy(() => import('../admin/Articles'));
-const Announcements = React.lazy(() => import('../admin/Announcements'));
-const Messages = React.lazy(() => import('../admin/Messages'));
-const Settings = React.lazy(() => import('../admin/Settings'));
+const Accounts = lazy(() => import('../admin/Accounts'));
+const Schools = lazy(() => import('../admin/Schools'));
+const Applications = lazy(() => import('../admin/Applications'));
+const Homestays = lazy(() => import('../admin/Homestays'));
+const AirportRides = lazy(() => import('../admin/AirportRides'));
+const GooseTips = lazy(() => import('../admin/GooseTips'));
+const Articles = lazy(() => import('../admin/Articles'));
+const Announcements = lazy(() => import('../admin/Announcements'));
+const Messages = lazy(() => import('../admin/Messages'));
+const Settings = lazy(() => import('../admin/Settings'));
 
 const FallbackElement = <Backdrop open={true}><CircularProgress color="primary"/></Backdrop>;
 
