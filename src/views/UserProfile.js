@@ -16,7 +16,7 @@ function UserProfile(props) {
   return (
     <>
       <Box my={3} className={classes.avatarContainer}>
-        <Avatar className={classes.avatar}>G</Avatar>
+      <Avatar className={classes.avatar}>{profile.username.slice(0, 1)}</Avatar>
       </Box>
       <Typography variant='h4'>{profile.username}</Typography>
       <Box my={1}>
