@@ -96,17 +96,17 @@ class Firebase {
     }
 
     user.reauthenticateWithCredential(credentials).then(async () => {
-      const deleteUserDoc = this.db.doc(`users/${user.uid}`).delete();
       const deleteUserAccount = user.delete();
       const signout = this.auth.signOut();
   
-      await Promise.all([deleteUserDoc, deleteUserAccount, signout]).catch(error => {
+      return await Promise.all([deleteUserAccount, signout])
+      .catch(error => {
         console.log('A promise failed to resolve in account deletion.');
-        cleanupActions(error.message);
+        cleanupActions('The username or password you entered is incorrect');
       });
     }).catch(error => {
       console.log('User reauthentication failed.');
-      cleanupActions(error.message);
+      cleanupActions('The username or password you entered is incorrect');
     });
   }
 
