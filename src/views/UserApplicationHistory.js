@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 import { STATUSES } from '../constants/constants';
 import { withAuthorization } from '../components/session';
 import TabPanel from '../components/TabPanel';
-import Typography from '../components/onePirate/Typography';
 
 function UserApplicationHistory(props) {
   const [ selectedTab, setSelectedTab ] = useState(0);

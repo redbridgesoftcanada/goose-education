@@ -106,7 +106,7 @@ function Search(props) {
                     </Grid>
 
                   {searchCategory !== 'Schools' &&
-                    <Grid container item spacing={1} className={classes.meta}>
+                    <Grid container item spacing={1}>
                       <Grid item>
                         <AccountCircleOutlined fontSize="small" className={classes.icon}/> 
                         {resource.authorDisplayName}

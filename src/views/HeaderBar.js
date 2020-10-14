@@ -71,9 +71,7 @@ function HeaderBar(props) {
                         <AuthUserContext.Consumer>
                             {authUser => authUser ? 
                             <>
-                                <Button className={classes.navlinkItem} onClick={() => setDrawerOpen(!drawer)}>    
-                                    {(authUser && authUser.roles['admin']) ? 'Admin' : authUser.displayName}
-                                </Button>
+                                <Button className={classes.navlinkItem} onClick={() => setDrawerOpen(!drawer)}>{authUser.displayName}</Button>
                                 <DatabaseContext.Consumer>
                                     {({ state }) =>  state.homeGraphics &&
                                         <NavDrawer 

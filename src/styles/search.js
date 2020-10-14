@@ -21,11 +21,11 @@ const useStyles = props => {
       }
     },
 
-    meta: {
+    title: {
       [theme.breakpoints.down('xs')]: {
-        display: 'none'
+        fontSize: 15,
       }
-    },
+    }, 
 
     icon: {
       marginRight: 3

@@ -22,7 +22,9 @@ function EditProfile() {
         onChange={(event, newValue) => setSelectedTab(newValue)}>
         <Tab label="Edit Profile"/>
         <Tab label="Change Password"/>
-        <Tab label="Delete Account"/>
+        <AuthUserContext.Consumer>
+          {authUser => !authUser.roles['admin'] && <Tab label="Delete Account"/>}
+        </AuthUserContext.Consumer>
       </Tabs>
 
       <TabPanel value={selectedTab} index={0}>
