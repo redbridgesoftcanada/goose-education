@@ -5,7 +5,7 @@ import { BarChart, Bar, Tooltip, XAxis, YAxis, Label, ResponsiveContainer, PieCh
 import Title from './Title';
 
 const muiHues = [red, pink, deepPurple, indigo, blue, cyan, teal, orange];
-const muiShades = [300, 400, 500, 600, 700, 800, 900];
+const muiShades = [200, 300, 400, 500];
 
 function createColourPalette(entries) {  
   const palette = [];

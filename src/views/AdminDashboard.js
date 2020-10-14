@@ -3,7 +3,7 @@
 
 import React, { useReducer } from "react";
 import clsx from "clsx";
-import { AppBar, Box, Button, Divider, Drawer, Grid, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Paper, Snackbar,  Toolbar, Typography } from "@material-ui/core";
+import { AppBar, Box, Button, CircularProgress, Divider, Drawer, Grid, IconButton, Link, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Paper, Snackbar,  Toolbar, Typography } from "@material-ui/core";
 import { ChevronLeft, Menu as MenuIcon, Dashboard, People, Layers, AirplanemodeActive, Home, School, Settings, QuestionAnswer, NewReleases, Description, LiveHelp } from "@material-ui/icons";
 import { DatabaseContext } from '../components/database';
 import { ADMIN_PAGES } from "../constants/constants";
@@ -23,6 +23,11 @@ const INITIAL_STATE = {
   snackbarOpen: false,
   snackbarMessage: null
 }
+
+const LoadingFallbackComponent = 
+  <Grid container justify="center" alignItems="center">
+    <CircularProgress color="secondary"/>
+  </Grid> 
 
 export default function AdminDashboard() {
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
@@ -225,24 +230,24 @@ function generateAggregateCharts(fixedHeightPaper, aggregateData, messages) {
     <>
       {/* APPLICATIONS: [Submitted, Pending Review, Tuition Required, Approved] */}
       <Grid item xs={12} sm={12} md={6} lg={6}>
-        <Paper className={fixedHeightPaper}>
-          <ChartTemplate chart='bar' data={charts[1]}/>
-        </Paper>
+          <Paper className={fixedHeightPaper}>
+            {charts[1] ? <ChartTemplate chart='bar' data={charts[1]}/> : LoadingFallbackComponent}
+          </Paper> 
       </Grid>
 
       {/* SCHOOLS: Total number of applications per school */}
       <Grid item xs={12} sm={12} md={6} lg={6}>
-        <Paper className={fixedHeightPaper}>
-          <ChartTemplate chart='pie' data={charts[2]}/>
-        </Paper>
+          <Paper className={fixedHeightPaper}>
+            {charts[2] ? <ChartTemplate chart='pie' data={charts[2]}/> : LoadingFallbackComponent}
+          </Paper>
       </Grid>
 
 
       {/* AIRPORT & HOMESTAY APPLICATIONS: Totals For Each */}
       <Grid item xs={12} sm={12} md={6} lg={6}>
-        <Paper className={fixedHeightPaper}>
-          <ChartTemplate chart='bar' data={charts[0]}/>
-        </Paper>
+          <Paper className={fixedHeightPaper}>
+            {charts[0] ? <ChartTemplate chart='bar' data={charts[0]}/> : LoadingFallbackComponent}
+          </Paper>
       </Grid>
 
 
