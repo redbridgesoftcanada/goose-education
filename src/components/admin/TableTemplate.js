@@ -20,12 +20,11 @@ const FallbackElement = <Backdrop open={true}><CircularProgress color="primary"/
 export default function TableTemplate(props) {
   const classes = useStyles();
 
-  const [ composeOpen, setCompose ] = useState(false);
   const [ editOpen, setEdit ] = useState(false);
   const [ deleteConfirmOpen, setDelete ] = useState(false);
 
-  const stateVars = {composeOpen, editOpen, deleteConfirmOpen }
-  const setStates = { setCompose, setEdit, setDelete }
+  const stateVars = { editOpen, deleteConfirmOpen }
+  const setStates = { setEdit, setDelete }
 
   return (
     <Suspense fallback={FallbackElement}>
@@ -44,8 +43,8 @@ export default function TableTemplate(props) {
 
 function generateContentTable(stateVars, setStates, props, context) {
   const { type, snackbarMessage } = props;
-  const { composeOpen, editOpen, deleteConfirmOpen } = stateVars;
-  const { setCompose, setEdit, setDelete } = setStates;
+  const { editOpen, deleteConfirmOpen } = stateVars;
+  const { setEdit, setDelete } = setStates;
 
   const editConfirmToggle = () => setEdit(!editOpen);  
   const deleteConfirmToggle = () => setDelete(!deleteConfirmOpen);
