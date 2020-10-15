@@ -9,7 +9,7 @@ import withRoot from './withRoot';
 import { AuthUserContext, withAuthorization } from './components/session';
 import { DatabaseContext } from './components/database';
 
-function EditProfile() {
+function EditProfile(authUser) {
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
@@ -22,9 +22,7 @@ function EditProfile() {
         onChange={(event, newValue) => setSelectedTab(newValue)}>
         <Tab label="Edit Profile"/>
         <Tab label="Change Password"/>
-        <AuthUserContext.Consumer>
-          {authUser => !authUser.roles['admin'] && <Tab label="Delete Account"/>}
-        </AuthUserContext.Consumer>
+        <Tab label="Delete Account"/>
       </Tabs>
 
       <TabPanel value={selectedTab} index={0}>

@@ -95,11 +95,8 @@ class Firebase {
       setNotification(message);
     }
 
-    user.reauthenticateWithCredential(credentials).then(async () => {
-      const deleteUserAccount = user.delete();
-      const signout = this.auth.signOut();
-  
-      return await Promise.all([deleteUserAccount, signout])
+    user.reauthenticateWithCredential(credentials).then(async () => {  
+      return await user.delete()
       .catch(error => {
         console.log('A promise failed to resolve in account deletion.');
         cleanupActions('The username or password you entered is incorrect');
