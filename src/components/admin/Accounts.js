@@ -72,15 +72,15 @@ function Accounts(props) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>First Name</TableCell>
-            <TableCell>Last Name</TableCell>
-            <TableCell>Username</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Phone</TableCell>
-            <TableCell>Mobile</TableCell>
-            <TableCell>Roles</TableCell>
-            <TableCell>Latest Activity</TableCell>
-            <TableCell>Delete</TableCell>
+            <TableCell align='center'>First Name</TableCell>
+            <TableCell align='center'>Last Name</TableCell>
+            <TableCell align='center'>Username</TableCell>
+            <TableCell align='center'>Email</TableCell>
+            <TableCell align='center'>Phone</TableCell>
+            <TableCell align='center'>Mobile</TableCell>
+            <TableCell align='center'>Roles</TableCell>
+            <TableCell align='center'>Latest Activity</TableCell>
+            <TableCell align='center'>Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -89,13 +89,13 @@ function Accounts(props) {
             return (
               <Fragment key={i}>
                 <TableRow hover>
-                  <TableCell>{user.firstName}</TableCell>
-                  <TableCell>{user.lastName}</TableCell>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.phoneNumber}</TableCell>
-                  <TableCell>{user.mobileNumber}</TableCell>
-                  <TableCell>
+                  <TableCell align='center'>{user.firstName}</TableCell>
+                  <TableCell align='center'>{user.lastName}</TableCell>
+                  <TableCell align='center'>{user.username}</TableCell>
+                  <TableCell align='center'>{user.email}</TableCell>
+                  <TableCell align='center'>{user.phoneNumber}</TableCell>
+                  <TableCell align='center'>{user.mobileNumber}</TableCell>
+                  <TableCell align='center'>
                     <Button id={user.id} disabled={user.roles['admin']} onClick={setMenuOpen}>{userRole}</Button>
                     <Menu
                       anchorEl={userAccount}
@@ -108,11 +108,11 @@ function Accounts(props) {
                       <MenuItem id="user" onClick={setMenuClose}>User</MenuItem>
                     </Menu>
                   </TableCell>
-                  <TableCell>{user.lastSignInTime ? format(user.lastSignInTime, 'Pp') : null}</TableCell>
-                  <TableCell>
+                  <TableCell align='center'>{user.lastSignInTime ? format(user.lastSignInTime, 'Pp') : null}</TableCell>
+                  <TableCell align='center'>
                     {!user.roles["admin"] ? 
                       <IconButton id={user.id} color="secondary" onClick={setDeleteUser}>
-                        <Clear/>
+                        <Clear fontSize='small'/>
                       </IconButton>
                     : 
                     "Please contact management about any changes to the admin user."}

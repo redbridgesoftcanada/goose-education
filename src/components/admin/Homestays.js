@@ -34,33 +34,33 @@ function Homestays(props) {
       <Table size="small">
       <TableHead>
         <TableRow>
-          <TableCell>First Name</TableCell>
-          <TableCell>Last Name</TableCell>
-          <TableCell>Start Date</TableCell>
-          <TableCell>End Date</TableCell>
-          <TableCell>Arrival Date</TableCell>
-          <TableCell>Delete</TableCell>
-          <TableCell>Download</TableCell>
+          <TableCell align='center'>First Name</TableCell>
+          <TableCell align='center'>Last Name</TableCell>
+          <TableCell align='center'>Start Date</TableCell>
+          <TableCell align='center'>End Date</TableCell>
+          <TableCell align='center'>Arrival Date</TableCell>
+          <TableCell align='center'>Delete</TableCell>
+          <TableCell align='center'>Download</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {listOfHomestays.map(application => {
           return (
           <TableRow key={application.id} hover>
-            <TableCell>{application.firstName}</TableCell>
-            <TableCell>{application.lastName}</TableCell>
-            <TableCell>{format(application.homestayStartDate.toDate(), 'P')}</TableCell>
-            <TableCell>{format(application.homestayEndDate.toDate(), 'P')}</TableCell>
-            <TableCell>{format(application.arrivalFlightDate.toDate(), 'Pp')}</TableCell>
-            <TableCell>
+            <TableCell align='center'>{application.firstName}</TableCell>
+            <TableCell align='center'>{application.lastName}</TableCell>
+            <TableCell align='center'>{format(application.homestayStartDate.toDate(), 'P')}</TableCell>
+            <TableCell align='center'>{format(application.homestayEndDate.toDate(), 'P')}</TableCell>
+            <TableCell align='center'>{format(application.arrivalFlightDate.toDate(), 'Pp')}</TableCell>
+            <TableCell align='center'>
               <IconButton id={application.id} color="secondary" onClick={setDeleteApplication}>
-                <Clear/>
+                <Clear fontSize='small'/>
               </IconButton>
             </TableCell>
-            <TableCell>
+            <TableCell align='center'>
               {application.downloadUrl &&
                 <IconButton color="secondary" onClick={() => window.open(application.downloadUrl)}>
-                  <CloudDownload/>
+                  <CloudDownload fontSize='small'/>
                 </IconButton>
               }
             </TableCell>

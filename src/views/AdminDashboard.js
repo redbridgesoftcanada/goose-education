@@ -85,7 +85,7 @@ export default function AdminDashboard() {
               horizontal: 'left',
             }}
             open={state.snackbarOpen}
-            autoHideDuration={1000}
+            autoHideDuration={1500}
             onClose={() => setSnackbarMessage(null)}
             message={state.snackbarMessage}/>
 

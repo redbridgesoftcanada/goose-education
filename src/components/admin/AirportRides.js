@@ -32,27 +32,27 @@ function AirportRides(props) {
       <Table size="small">
       <TableHead>
         <TableRow>
-          <TableCell>First Name</TableCell>
-          <TableCell>Last Name</TableCell>
-          <TableCell>Arrival Flight</TableCell>
-          <TableCell>Arrival Date</TableCell>
-          <TableCell>Departure Flight</TableCell>
-          <TableCell>Departure Date</TableCell>
-          <TableCell>Delete</TableCell>
+          <TableCell align='center'>First Name</TableCell>
+          <TableCell align='center'>Last Name</TableCell>
+          <TableCell align='center'>Arrival Flight</TableCell>
+          <TableCell align='center'>Arrival Date</TableCell>
+          <TableCell align='center'>Departure Flight</TableCell>
+          <TableCell align='center'>Departure Date</TableCell>
+          <TableCell align='center'>Delete</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {listOfAirportRides.map((application, i) => (
           <TableRow key={i} hover>
-            <TableCell>{application.firstName}</TableCell>
-            <TableCell>{application.lastName}</TableCell>
-            <TableCell>{application.arrivalFlightName}</TableCell>
-            <TableCell>{format(application.arrivalFlightDate.toDate(), "Pp")}</TableCell>
-            <TableCell>{application.departureFlightName}</TableCell>
-            <TableCell>{format(application.departureFlightDate.toDate(), "Pp")}</TableCell>
-            <TableCell>
+            <TableCell align='center'>{application.firstName}</TableCell>
+            <TableCell align='center'>{application.lastName}</TableCell>
+            <TableCell align='center'>{application.arrivalFlightName}</TableCell>
+            <TableCell align='center'>{format(application.arrivalFlightDate.toDate(), "Pp")}</TableCell>
+            <TableCell align='center'>{application.departureFlightName}</TableCell>
+            <TableCell align='center'>{format(application.departureFlightDate.toDate(), "Pp")}</TableCell>
+            <TableCell align='center'>
               <IconButton id={application.id} color="secondary" onClick={setDeleteApplication}>
-                <Clear/>
+                <Clear fontSize='small'/>
               </IconButton>
             </TableCell>
           </TableRow>

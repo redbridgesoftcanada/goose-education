@@ -57,27 +57,27 @@ function Applications(props) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>First Name</TableCell>
-            <TableCell>Last Name</TableCell>
-            <TableCell>School Name</TableCell>
-            <TableCell>Program</TableCell>
-            <TableCell>Start Date</TableCell>
-            <TableCell>Date Submitted</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Delete</TableCell>
-            <TableCell>Download</TableCell>
+            <TableCell align='center'>First Name</TableCell>
+            <TableCell align='center'>Last Name</TableCell>
+            <TableCell align='center'>School</TableCell>
+            <TableCell align='center'>Program</TableCell>
+            <TableCell align='center'>Start Date</TableCell>
+            <TableCell align='center'>Date Submitted</TableCell>
+            <TableCell align='center'>Status</TableCell>
+            <TableCell align='center'>Delete</TableCell>
+            <TableCell align='center'>Download</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {listOfApplications.map((application, i) => (
             <TableRow key={i} hover>
-              <TableCell>{application.firstName}</TableCell>
-              <TableCell>{application.lastName}</TableCell>
-              <TableCell>{application.schoolName}</TableCell>
-              <TableCell>{application.programName}</TableCell>
-              <TableCell>{format(application.programStartDate.toDate(), "P")}</TableCell>
-              <TableCell>{format(application.createdAt, "Pp")}</TableCell>
-              <TableCell>
+              <TableCell align='center'>{application.firstName}</TableCell>
+              <TableCell align='center'>{application.lastName}</TableCell>
+              <TableCell align='center'>{application.schoolName}</TableCell>
+              <TableCell align='center'>{application.programName}</TableCell>
+              <TableCell align='center'>{format(application.programStartDate.toDate(), "P")}</TableCell>
+              <TableCell align='center'>{format(application.createdAt, "Pp")}</TableCell>
+              <TableCell align='center'>
                 <Button id={application.id} onClick={setMenuOpen}>{application.status}</Button>
                 <Menu
                   keepMounted
@@ -90,14 +90,14 @@ function Applications(props) {
                   )}
                 </Menu>
               </TableCell>
-              <TableCell>
+              <TableCell align='center'>
                 <IconButton id={application.id} color="secondary" onClick={setDeleteApplication}>
-                  <Clear/>
+                  <Clear fontSize='small'/>
                 </IconButton>
               </TableCell>
-              <TableCell>
+              <TableCell align='center'>
                 <IconButton color="secondary" onClick={() => window.open(application.downloadUrl)}>
-                  <CloudDownload/>
+                  <CloudDownload fontSize='small'/>
                 </IconButton>
               </TableCell>
             </TableRow>

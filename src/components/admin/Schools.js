@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Avatar, IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { CheckBox, CheckBoxOutlineBlank, Clear, EditOutlined } from "@material-ui/icons";
+import { Check, Block, Clear, Edit } from "@material-ui/icons";
 import { onDelete } from '../../constants/helpers/_storage';
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
@@ -45,35 +45,34 @@ function Schools(props) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell></TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Location</TableCell>
-            <TableCell>Featured</TableCell>
-            <TableCell>Recommended</TableCell>
-            <TableCell>Edit</TableCell>
-            <TableCell>Delete</TableCell>
+            <TableCell align='center' colSpan={2}>Name</TableCell>
+            <TableCell align='center'>Type</TableCell>
+            <TableCell align='center'>Location</TableCell>
+            <TableCell align='center'>Featured</TableCell>
+            <TableCell align='center'>Recommended</TableCell>
+            <TableCell align='center'>Edit</TableCell>
+            <TableCell align='center'>Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {listOfSchools.map((school, i) => (
             <TableRow key={i} hover>
               <TableCell>
-                <Avatar alt="School Logo" src={(school.image.includes('firebase')) ? school.image : require(`../../assets/img/${school.image}`)}/>
+                <Avatar variant='rounded' src={(school.image.includes('firebase')) ? school.image : require(`../../assets/img/${school.image}`)}/>
               </TableCell>
               <TableCell>{school.title}</TableCell>
-              <TableCell>{school.type}</TableCell>
-              <TableCell>{school.location}</TableCell>
-              <TableCell>{school.isFeatured ? <CheckBox/> : <CheckBoxOutlineBlank/>}</TableCell>
-              <TableCell>{school.isRecommended ? <CheckBox/> : <CheckBoxOutlineBlank/>}</TableCell>
-              <TableCell>
+              <TableCell align='center'>{school.type}</TableCell>
+              <TableCell align='center'>{school.location}</TableCell>
+              <TableCell align='center'>{school.isFeatured ? <Check fontSize='small'/> : <Block fontSize='small'/>}</TableCell>
+              <TableCell align='center'>{school.recommendation ? <Check fontSize='small'/> : <Block fontSize='small'/>}</TableCell>
+              <TableCell align='center'>
                 <IconButton color="secondary" onClick={() => setEditSchool(school.id)}>
-                  <EditOutlined/>
+                  <Edit fontSize='small'/>
                 </IconButton>
               </TableCell>
-              <TableCell>
+              <TableCell align='center'>
                 <IconButton color="secondary" onClick={() => setDeleteSchool(school.id)}>
-                  <Clear/>
+                  <Clear fontSize='small'/>
                 </IconButton>
               </TableCell>
             </TableRow>
