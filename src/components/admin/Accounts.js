@@ -34,10 +34,10 @@ function Accounts(props) {
           .then(() => cleanupActions('Account role has been updated to admin.'));
           break;
 
-        case 'supervisor':
-          firebase.user(userAccount.id).update({'roles.supervisor': true})
-          .then(() => cleanupActions('Account role has been updated to supervisor.'));
-          break;
+        // case 'supervisor':
+        //   firebase.user(userAccount.id).update({'roles.supervisor': true})
+        //   .then(() => cleanupActions('Account role has been updated to supervisor.'));
+        //   break;
         
         case 'user':
           // overwrites entire map field (roles) w/o dot notation;
@@ -55,9 +55,10 @@ function Accounts(props) {
     deleteConfirmToggle();
   }
 
-  const handleDelete = () => {
-    const deleteDoc = firebase.deleteUser(accountRef.current);
-    onDelete([], firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+  const handleDelete = async () => {
+    await firebase.deleteUser(accountRef.current);
+    snackbarMessage('Successfully deleted user account!');
+    deleteConfirmToggle();
   }
 
   return (
@@ -83,42 +84,43 @@ function Accounts(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {listOfUsers.map((user, i) => (
-            <Fragment key={i}>
-              <TableRow hover>
-                <TableCell>{user.firstName}</TableCell>
-                <TableCell>{user.lastName}</TableCell>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.phoneNumber}</TableCell>
-                <TableCell>{user.mobileNumber}</TableCell>
-                <TableCell>
-                  <Button id={user.id} disabled={user.roles['admin']} onClick={setMenuOpen}>
-                    {user.roles["admin"] ? "Admin" : user.roles["supervisor"] ? "Supervisor" : "User"}
-                  </Button>
-                  <Menu
-                    anchorEl={userAccount}
-                    keepMounted
-                    open={Boolean(userAccount)}
-                    onClose={setMenuClose}
-                  >
-                    <MenuItem id="admin" onClick={setMenuClose}>Administrator</MenuItem>
-                    <MenuItem id="supervisor" onClick={setMenuClose}>Supervisor</MenuItem>
-                    <MenuItem id="user" onClick={setMenuClose}>User</MenuItem>
-                  </Menu>
-                </TableCell>
-                <TableCell>{user.lastSignInTime ? format(user.lastSignInTime, 'Pp') : ""}</TableCell>
-                <TableCell>
-                  {!user.roles["admin"] ? 
-                    <IconButton id={user.id} color="secondary" onClick={setDeleteUser}>
-                      <Clear/>
-                    </IconButton>
-                  : 
-                  "Please contact management about any changes to the admin user."}
-                </TableCell>
-              </TableRow>
-            </Fragment>
-          ))}
+          {listOfUsers.map((user, i) => {
+            const userRole = Object.keys(user.roles).length ? Object.keys(user.roles).filter(role => user.roles[role] === true)[0] : "User";
+            return (
+              <Fragment key={i}>
+                <TableRow hover>
+                  <TableCell>{user.firstName}</TableCell>
+                  <TableCell>{user.lastName}</TableCell>
+                  <TableCell>{user.username}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.phoneNumber}</TableCell>
+                  <TableCell>{user.mobileNumber}</TableCell>
+                  <TableCell>
+                    <Button id={user.id} disabled={user.roles['admin']} onClick={setMenuOpen}>{userRole}</Button>
+                    <Menu
+                      anchorEl={userAccount}
+                      keepMounted
+                      open={Boolean(userAccount)}
+                      onClose={setMenuClose}
+                    >
+                      <MenuItem id="admin" onClick={setMenuClose}>Administrator</MenuItem>
+                      {/* <MenuItem id="supervisor" onClick={setMenuClose}>Supervisor</MenuItem> */}
+                      <MenuItem id="user" onClick={setMenuClose}>User</MenuItem>
+                    </Menu>
+                  </TableCell>
+                  <TableCell>{user.lastSignInTime ? format(user.lastSignInTime, 'Pp') : null}</TableCell>
+                  <TableCell>
+                    {!user.roles["admin"] ? 
+                      <IconButton id={user.id} color="secondary" onClick={setDeleteUser}>
+                        <Clear/>
+                      </IconButton>
+                    : 
+                    "Please contact management about any changes to the admin user."}
+                  </TableCell>
+                </TableRow>
+              </Fragment>
+            )}
+          )}
         </TableBody>
       </Table>
   </>
