@@ -44,7 +44,6 @@ function App() {
             <Route path="/forgotpassword" render={() => <ForgotPassword/>}/>
             <Route path="/login" render={() => <Login/>}/>
             <Route path="/register" render={() => <Register/>}/>
-            <Route path="/privacy" render={() => <Privacy/>}/>
             <Route exact path="/" render={() => <Home /> }/>
 
             <DatabaseContext.Consumer>
@@ -96,6 +95,8 @@ function App() {
                           listOfAnnouncements={state.listOfAnnouncements}
                           pageBanner={state.servicesGraphics.serviceCentrePageBanner}/>}
                     />}
+
+                  {state.privacyGraphics && <Route path="/privacy" render={() => <Privacy {...state.privacyGraphics.privacyPolicy}/>}/>}
                 </>
               }
             </DatabaseContext.Consumer>

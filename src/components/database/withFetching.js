@@ -144,6 +144,10 @@ function withFetching(Component) {
           fetchAllDocuments("aggregates", firebase, setState);
           fetchSelectDocuments("recent", "messages", firebase, setState, '');
           break;
+        
+        case '/privacy':
+          fetchSelectDocuments("location", "graphics", firebase, setState, path);
+          break;
 
         default:
           console.log('No path to fetch data!');
