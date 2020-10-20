@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextValidator } from "react-material-ui-form-validator";
-import { FormLabel, OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio } from "@material-ui/core";
+import { FormControl, FormLabel, InputLabel, OutlinedInput, FormControlLabel, FormHelperText, MenuItem, Radio } from "@material-ui/core";
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { QuillValidator, FileValidator, SelectValidator, RadioGroupValidator, DatePickValidator, CheckboxValidator, DateTimePickValidator } from "./validators";
@@ -74,11 +74,12 @@ function AdminTextField(props) {
      { name: props.name.outer, id: props.name.inner } : { name: props.name }
 
   return (
-    <OutlinedInput
-      fullWidth
-      {...props}
-      {...configMultiId}
-    />
+    <FormControl fullWidth margin="normal" variant="outlined">
+      <InputLabel>{props.label}</InputLabel>
+      <OutlinedInput 
+        {...props}
+        {...configMultiId}/>
+    </FormControl>
   )
 }
 
