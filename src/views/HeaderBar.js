@@ -38,12 +38,12 @@ function HeaderBar(props) {
                 <Grid container className={classes.container}>
                     <Grid item>
                         <Grid item className={classes.iconButtons}>
-                            <IconButton className={classes.icon} href={FR1.image} target="_blank"><Instagram/></IconButton>
-                            <IconButton className={classes.icon} href={FR2.image} target="_blank"><Facebook/></IconButton>
-                            <IconButton className={classes.icon} href={FR3.image} target="_blank">
+                            <IconButton className={classes.icon} href={FR1.link} target="_blank"><Instagram/></IconButton>
+                            <IconButton className={classes.icon} href={FR2.link} target="_blank"><Facebook/></IconButton>
+                            <IconButton className={classes.icon} href={FR3.link} target="_blank">
                                 <Kakao className={classes.customKakao}/>
                             </IconButton>
-                            <IconButton className={classes.icon} href={FR4.image} target="_blank">
+                            <IconButton className={classes.icon} href={FR4.link} target="_blank">
                                 <Naver className={classes.customNaver}/>
                             </IconButton>
                         </Grid>

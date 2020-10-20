@@ -32,15 +32,15 @@ function customButtonToolTip(classes, label, icon) {
     const configIconButton = { component: Link, target: '_blank' }
     switch (label) {
         case 'Instagram':
-            configIconButton.href = FR1.image;
+            configIconButton.href = FR1.link;
             break;
 
         case 'Facebook': 
-            configIconButton.href = FR2.image;
+            configIconButton.href = FR2.link;
             break;
 
         case 'Kakao':
-            configIconButton.href = FR3.image;
+            configIconButton.href = FR3.link;
             break;
     }
     
