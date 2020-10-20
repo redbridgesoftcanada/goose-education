@@ -1,37 +1,40 @@
 import { convertToCamelCase } from './_features';
 
 export function fetchSelectDocuments(select, collection, firebase, setState, id) {
-  const fetchSelectRefs = configureFetchSelect(select, collection, firebase, id);
-  const { query, stateRef } = fetchSelectRefs;
-  query.then(snapshot => {
-      if (snapshot.empty) {
-          console.log(`No matching documents in ${collection} collection.`);
-          return;
-      }
-
-      let formattedData;
-      const containsMultiDocs = Array.isArray(snapshot.docs);
-      if (containsMultiDocs) {
-          if (collection === "graphics") {
-              formattedData = {};
-              snapshot.forEach(doc => {
-                  return formattedData[doc.id] = doc.data();
-              });
-          } else {
-              formattedData = snapshot.docs.map(doc => {
-                  let data = doc.data();
-                  let id = doc.id;
-                  return {...data, id}
-              });
-          }
-      } else {
-          let data = snapshot.data();
-          formattedData = {...data}
-      }
-
-      setState(prevState => ({ ...prevState, [stateRef]: formattedData }));
-  })
-  .catch(err => console.log("Error in fetching select documents: ", err));
+    try {
+        const fetchSelectRefs = configureFetchSelect(select, collection, firebase, id);
+        const { query, stateRef } = fetchSelectRefs;
+        query.then(snapshot => {
+            if (snapshot.empty) {
+                console.log(`No matching documents in ${collection} collection.`);
+                return;
+            }
+      
+            let formattedData;
+            const containsMultiDocs = Array.isArray(snapshot.docs);
+            if (containsMultiDocs) {
+                if (collection === "graphics") {
+                    formattedData = {};
+                    snapshot.forEach(doc => {
+                        return formattedData[doc.id] = doc.data();
+                    });
+                } else {
+                    formattedData = snapshot.docs.map(doc => {
+                        let data = doc.data();
+                        let id = doc.id;
+                        return {...data, id}
+                    });
+                }
+            } else {
+                let data = snapshot.data();
+                formattedData = {...data}
+            }
+      
+            setState(prevState => ({ ...prevState, [stateRef]: formattedData }));
+        })
+    } catch (error) {
+        console.error("Error in fetching select documents: ", error);
+    }
 }
 
 // C A L L B A C K  F U N C T I O N S
