@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Box, Button, CardMedia, Collapse, Grid, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@material-ui/core";
+import { Box, Button, CardMedia, Collapse, Grid, IconButton, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@material-ui/core";
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { convertToSentenceCase } from '../../constants/helpers/_features';
 import TabPanel from '../../components/TabPanel';
@@ -80,11 +80,7 @@ const createMediaContentTable = (listOfGraphics, collapseState, collapseListener
     <Box mx={3} my={2}>
       <TableContainer>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell colSpan={6}>Location</TableCell>
-            </TableRow>
-          </TableHead>
+          <TableCell variant='head' colSpan={6}>Location</TableCell>
           <TableBody>
             {listOfGraphics.map(graphic => {
               const checkForMultiGraphics = multiGraphicsIds.some(id => graphic.id.includes(id));
@@ -116,11 +112,11 @@ const createMediaRow = (graphic, changeListener) => {
     graphic.id = JSON.parse(graphic.id);
   }
 
-  const editableFields = Object.entries(graphic).reduce((a, [k, v]) => (k !== 'image' && k !== 'location' && v ? (a[k] = v, a) : a), {});
+  const editableFields = Object.entries(graphic).reduce((a, [key, value]) => (key !== 'image' && key !== 'location' && value ? (a[key] = value, a) : a), {});
 
   return (
     <TableRow hover key={editableFields.id}>
-      <TableCell>{editableFields.id}</TableCell>
+      <TableCell variant='head'>{editableFields.id}</TableCell>
       <TableCell colSpan={5}>
         {Object.keys(editableFields).map(field => {
           if (!field || field === 'id') {
@@ -128,6 +124,8 @@ const createMediaRow = (graphic, changeListener) => {
           } else {
             return (
               <StyledValidators.AdminTextField
+                multiline
+                label={field}
                 key={editableFields.id + '-' + field}
                 name={editableFields.id}
                 defaultValue={editableFields[field]}
@@ -143,44 +141,49 @@ const createMediaRow = (graphic, changeListener) => {
 
 const createNestedMediaRow = (graphic, collapseState, collapseListener, changeListener) => {
   const nestedGraphics = Object.entries(graphic).reduce((a, [k, v]) => (typeof v !== 'string' ? (a[k] = v, a) : a), {});
+  const sortedGraphics = Object.values(nestedGraphics).sort((a ,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0));
 
   return (
     <Fragment key={graphic.id}>
       <TableRow hover id={graphic.id} onClick={collapseListener}>
         <TableCell>{graphic.id}</TableCell>
         <TableCell colSpan={4} align='right'>
-          {collapseState[graphic.id] ? <KeyboardArrowUp/> : <KeyboardArrowDown/>}
+          <IconButton>
+            {collapseState[graphic.id] ? <KeyboardArrowUp/> : <KeyboardArrowDown/>}
+          </IconButton>
         </TableCell>
       </TableRow>
 
       <TableRow>
         <TableCell padding='none' colSpan={6} style={{ paddingLeft: 40 }}>
           <Collapse in={collapseState[graphic.id]} timeout="auto" unmountOnExit>
-            
-            {Object.values(nestedGraphics).map((nGraphic, i) => {
-
-              const multiIds = JSON.stringify({outer: graphic.id, inner: nGraphic.id});
-
-                return (
-                  <Table key={i}>
-                    <TableBody>
-                      {Object.keys(nGraphic).map(field => {
-                        if (!nGraphic[field] || field === 'id') {
-                          return;
-                        } else {
-                          return (
-                            <StyledValidators.AdminTextField
-                              key={nGraphic.id + '-' + field}
-                              name={multiIds}
-                              defaultValue={nGraphic[field]}
-                              onChange={event => changeListener(event, field)}
-                            />
-                          )
-                        }
-                      })}
-                    </TableBody>
-                  </Table>
-              )})}
+            <Table>
+              {sortedGraphics.map((nGraphic, i) => {
+                const multiIds = JSON.stringify({outer: graphic.id, inner: nGraphic.id});
+                  return (
+                    <TableRow>
+                      <TableCell variant='head'>{nGraphic.id}</TableCell>
+                      <TableCell>
+                        {Object.keys(nGraphic).map(field => {
+                          if (!nGraphic[field] || field === 'id' || field === 'image') {
+                            return;
+                          } else {
+                            return (
+                              <StyledValidators.AdminTextField
+                                multiline
+                                label={field}
+                                key={nGraphic.id + '-' + field}
+                                name={multiIds}
+                                defaultValue={nGraphic[field]}
+                                onChange={event => changeListener(event, field)}
+                              />
+                            )
+                          }
+                        })}
+                      </TableCell>
+                    </TableRow>
+                )})}
+            </Table>
           </Collapse>
         </TableCell>
       </TableRow>
