@@ -210,7 +210,7 @@ function ComposeDialogBase(props) {
                   alt='G'
                   variant='rounded' 
                   src={
-                    uploads instanceof File ? null : uploads.includes('firebase') ? uploads : require(`../assets/img/${uploads}`)}
+                    uploads instanceof File ? null : uploads}
                   />
                   :
                   <Avatar style={{width: 130, height: 130}} variant='rounded'><DescriptionIcon style={{fontSize: 50}}/></Avatar>

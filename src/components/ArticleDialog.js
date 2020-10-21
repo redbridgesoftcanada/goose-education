@@ -35,7 +35,7 @@ function ArticleDialog(props) {
         
         <CardMedia
           className={classes.tipImage}
-          image={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)}
+          image={article.image}
           title='Tips Thumbnail'
         />
       </DialogContent>

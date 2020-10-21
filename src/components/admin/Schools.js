@@ -58,7 +58,7 @@ function Schools(props) {
           {listOfSchools.map((school, i) => (
             <TableRow key={i} hover>
               <TableCell>
-                <Avatar variant='rounded' src={(school.image.includes('firebase')) ? school.image : require(`../../assets/img/${school.image}`)}/>
+                <Avatar variant='rounded' src={school.image}/>
               </TableCell>
               <TableCell>{school.title}</TableCell>
               <TableCell align='center'>{school.type}</TableCell>

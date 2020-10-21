@@ -146,7 +146,7 @@ function UploadImageForm(props) {
               alt='G'
               variant='rounded' 
               src={
-                state.image instanceof File ? null : state.image.includes('firebase') ? state.image : require(`../../../assets/img/${state.image}`)}/>
+                state.image instanceof File ? null : state.image}/>
           :
             <Box height={144} width={144} border={1} borderColor='grey.500' borderRadius={8}/>
           }

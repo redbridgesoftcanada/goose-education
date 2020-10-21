@@ -33,7 +33,7 @@ function SchoolInformation(props) {
             <CardMedia
                 component='img'
                 className={classes.image}
-                image={(selectedSchool.image.includes('firebase')) ? selectedSchool.image : require(`../assets/img/${selectedSchool.image}`)}/>
+                image={selectedSchool.image}/>
             
             <TableContainer>
                 <Table>

@@ -73,7 +73,7 @@ function generateFeatureSchools(classes, customText, previewSchools, clickHandle
                         <div key={school.id} className={classes.item}>
                             <img
                                 className={classes.image}
-                                src={(school.image.includes('firebase')) ? school.image : require(`../assets/img/${school.image}`)}
+                                src={school.image}
                                 alt="school logo" />
                             <div id={school.id} className={classes.description} onClick={clickHandler}>
                                 <Typography variant="subtitle1">{school.title}</Typography>
@@ -107,7 +107,7 @@ function generateFeatureTips(classes, customText, previewTips, clickHandler) {
                         <div key={tip.id} className={classes.item}>
                             <img
                                 className={classes.image}
-                                src={(tip.image.includes('firebase')) ? tip.image : require(`../assets/img/${tip.image}`)}
+                                src={tip.image}
                                 alt="tip thumbnail" />
                             <div id={tip.id} className={classes.description} onClick={clickHandler}>
                                 <div>

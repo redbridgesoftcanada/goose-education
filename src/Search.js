@@ -95,7 +95,7 @@ function Search(props) {
                   <Grid item xs={3} md={3}>
                     <CardMedia 
                       className={classes.image}
-                      image={(resource.image.includes('firebase')) ? resource.image : require(`./assets/img/${resource.image}`)}
+                      image={resource.image}
                     />
                   </Grid>
 

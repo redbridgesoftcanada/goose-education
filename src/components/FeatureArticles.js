@@ -42,7 +42,7 @@ export default function FeatureArticles(props) {
                             <Grid item key={feature.id} xs={12} sm={6} md={3}>
                                 <div id={feature.id} onClick={handleArticleClick}>
                                     <img className={classes.image}
-                                        src={require(`../assets/img/${feature.image}`)}
+                                        src={feature.image}
                                         alt="article-thumbnail"/>
                                 </div>
                             </Grid>
