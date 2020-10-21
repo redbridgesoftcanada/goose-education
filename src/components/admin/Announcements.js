@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { Clear, EditOutlined } from "@material-ui/icons";
+import { Clear, Edit } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
@@ -56,7 +56,7 @@ function Announcements(props) {
               <TableCell>{format(announce.updatedAt, "Pp")}</TableCell>
               <TableCell>
                 <IconButton name='edit' id={announce.id} color="secondary" onClick={toggleClickAction}>
-                  <EditOutlined fontSize="small"/>
+                  <Edit fontSize="small"/>
                 </IconButton>
               </TableCell>
               <TableCell>

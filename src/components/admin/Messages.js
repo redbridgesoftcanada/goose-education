@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { Clear, CloudDownload, EditOutlined } from "@material-ui/icons";
+import { Clear, CloudDownload, Edit } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
@@ -62,7 +62,7 @@ function Messages(props) {
                 <TableCell>{format(message.updatedAt, "Pp")}</TableCell>
                 <TableCell>
                   <IconButton name='edit' id={message.id} color="secondary" onClick={toggleClickAction} disabled={!canEdit}>
-                    <EditOutlined fontSize="small"/>
+                    <Edit fontSize="small"/>
                   </IconButton>
                 </TableCell>
                 <TableCell>

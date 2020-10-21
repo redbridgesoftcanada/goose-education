@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { CheckBox, CheckBoxOutlineBlank, Clear, EditOutlined } from "@material-ui/icons";
+import { CheckBox, CheckBoxOutlineBlank, Clear, Edit } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
@@ -58,7 +58,7 @@ function GooseTips(props) {
               <TableCell>{format(tip.updatedAt, "Pp")}</TableCell>
               <TableCell>
                 <IconButton name='edit' id={tip.id} color="secondary" onClick={toggleClickAction}>
-                  <EditOutlined/> 
+                  <Edit/> 
                 </IconButton>
               </TableCell>
               <TableCell>
