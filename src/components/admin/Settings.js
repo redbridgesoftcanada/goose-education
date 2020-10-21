@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Box, Button, CardMedia, Collapse, Grid, IconButton, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@material-ui/core";
+import { Box, Button, CardMedia, Collapse, Grid, IconButton, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@material-ui/core";
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { convertToSentenceCase } from '../../constants/helpers/_features';
 import TabPanel from '../../components/TabPanel';
@@ -80,17 +80,15 @@ const createMediaContentTable = (listOfGraphics, collapseState, collapseListener
     <Box mx={3} my={2}>
       <TableContainer>
         <Table>
-          <TableCell variant='head' colSpan={6}>Location</TableCell>
-          <TableBody>
-            {listOfGraphics.map(graphic => {
-              const checkForMultiGraphics = multiGraphicsIds.some(id => graphic.id.includes(id));
-              if (!checkForMultiGraphics) {
-                return createMediaRow(graphic, changeListener)
-              } else {
-                return createNestedMediaRow(graphic, collapseState, collapseListener, changeListener)
-              }
-            })}
-          </TableBody>
+          <TableCell colSpan={6}/>
+          {listOfGraphics.map(graphic => {
+            const checkForMultiGraphics = multiGraphicsIds.some(id => graphic.id.includes(id));
+            if (!checkForMultiGraphics) {
+              return createMediaRow(graphic, changeListener)
+            } else {
+              return createNestedMediaRow(graphic, collapseState, collapseListener, changeListener)
+            }
+          })}
         </Table>
       </TableContainer>
 
@@ -117,7 +115,7 @@ const createMediaRow = (graphic, changeListener) => {
   return (
     <TableRow hover key={editableFields.id}>
       <TableCell variant='head'>{editableFields.id}</TableCell>
-      <TableCell colSpan={5}>
+      <TableCell padding='none'>
         {Object.keys(editableFields).map(field => {
           if (!field || field === 'id') {
             return;
@@ -125,12 +123,11 @@ const createMediaRow = (graphic, changeListener) => {
             return (
               <StyledValidators.AdminTextField
                 multiline
-                label={field}
+                label={convertToSentenceCase(field)}
                 key={editableFields.id + '-' + field}
                 name={editableFields.id}
                 defaultValue={editableFields[field]}
-                onChange={event => changeListener(event, field)}
-              />
+                onChange={event => changeListener(event, field)}/>
             )
           }
         })}
@@ -146,7 +143,7 @@ const createNestedMediaRow = (graphic, collapseState, collapseListener, changeLi
   return (
     <Fragment key={graphic.id}>
       <TableRow hover id={graphic.id} onClick={collapseListener}>
-        <TableCell>{graphic.id}</TableCell>
+        <TableCell variant='head'>{graphic.id}</TableCell>
         <TableCell colSpan={4} align='right'>
           <IconButton>
             {collapseState[graphic.id] ? <KeyboardArrowUp/> : <KeyboardArrowDown/>}
@@ -171,12 +168,11 @@ const createNestedMediaRow = (graphic, collapseState, collapseListener, changeLi
                             return (
                               <StyledValidators.AdminTextField
                                 multiline
-                                label={field}
+                                label={convertToSentenceCase(field)}
                                 key={nGraphic.id + '-' + field}
                                 name={multiIds}
                                 defaultValue={nGraphic[field]}
-                                onChange={event => changeListener(event, field)}
-                              />
+                                onChange={event => changeListener(event, field)}/>
                             )
                           }
                         })}
@@ -193,25 +189,28 @@ const createNestedMediaRow = (graphic, collapseState, collapseListener, changeLi
 
 const createImagesTable = (listOfImages, changeListener, onSave) => {
   return (
-    <Box mx={3} my={2}>
+    <Box mx={3} my={3} pt={2}>
       <Grid container spacing={3} justify='center' alignItems='center'>
         {listOfImages.map((image, i) => {
+          let label = convertToSentenceCase(image.id);
+          if (image.id.includes('GFB')) {
+            label = `Goose Feature Board ${image.id.slice(-1)}`;
+          } else if (image.id.includes('HFB')) {
+            label = `Home Feature Board ${image.id.slice(-1)}`;
+          }
+
           return (
             <Fragment key={i}>
               <Grid item xs={6}>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image={image.url}
-                />
+                <CardMedia component="img" height="140" image={image.url}/>
               </Grid>
               
               <Grid item xs={6}>
-                <Typography align="left" variant="h6">{convertToSentenceCase(image.id)}</Typography>
-                <StyledValidators.AdminTextField
-                  name={image.id}
-                  defaultValue={image.url}
-                  onChange={event => changeListener(event, 'image')}/>
+                <Typography align="left" variant="h6">{label}</Typography>
+                  <StyledValidators.AdminTextField
+                    name={image.id}
+                    defaultValue={image.url}
+                    onChange={event => changeListener(event, 'image')}/>
               </Grid>
             </Fragment>
           )
@@ -231,18 +230,18 @@ const createImagesTable = (listOfImages, changeListener, onSave) => {
   )
 }
 
-
 const createBatchUpdates = async (firebase, inputState) => {
-  let batch = firebase.batch();
-  await Object.keys(inputState).map(key => {
-    let inputCategory = key;
-    let { inputRef, inputValue, inputType } = inputState[key];
+  const batch = firebase.batch();
+  await Object.keys(inputState).map(inputCategory => {
+    const { inputRef, inputValue, inputType } = inputState[inputCategory];
 
-    let docRef = firebase.graphic(inputCategory);
-    if (inputRef) {
-      batch.update(docRef, {[inputRef]: {[inputType]: inputValue}})
+    const checkNestedGraphics = inputCategory.includes('GFB') || inputCategory.includes('HFB');
+    if (checkNestedGraphics) {
+      const docRef = inputCategory.includes('GFB') ? firebase.graphic(`gooseFeatureBoard`) : firebase.graphic(`homeFeatureBoard`);
+      batch.update(docRef, {[`${inputCategory}.${inputType}`]: inputValue});
     } else {
-      batch.update(docRef, {[inputType]: inputValue});
+      const docRef = firebase.graphic(inputCategory);
+      inputRef ? batch.update(docRef, {[`${inputRef}.${inputType}`]: inputValue}) : batch.update(docRef, {[inputType]: inputValue});
     }
   });
   batch.commit();
