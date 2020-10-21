@@ -97,7 +97,7 @@
     "homePoster": {
       "location": "/home",
       "title": "Find Your Own Path, Make Your Dreams Come True",
-      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      "subtitle": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
       "caption": "",
       "image": "https://images.unsplash.com/photo-1532174990295-ced4e9211e1b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1351&q=80"
     },
@@ -107,25 +107,25 @@
       "HFB1": {
         "title": "School Information",
         "subtitle": "",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "image": "https://images.unsplash.com/photo-1534081333815-ae5019106622?auto=format&fit=crop&w=400&q=80"
       },
       "HFB2": {
         "title": "Study Abroad",
         "subtitle": "",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "image": "https://images.unsplash.com/photo-1531299204812-e6d44d9a185c?auto=format&fit=crop&w=400&q=80"
       },
       "HFB3": {
         "title": "Homestay",
         "subtitle": "",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "image": "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=400&q=80"
       },
       "HFB4": {
         "title": "Airport Ride",
         "subtitle": "",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "image": "https://images.unsplash.com/photo-1453747063559-36695c8771bd?auto=format&fit=crop&w=400&q=80"
       }
     },
@@ -134,7 +134,7 @@
       "location": "/home",
       "title": "Networking",
       "subtitle": "",
-      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
       "image": ""
     },
 
@@ -173,8 +173,8 @@
     "goosePoster": {
       "location": "/goose",
       "title": "Goose Edu",
-      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "subtitle": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
       "image": "https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"      
     },
 
@@ -187,32 +187,32 @@
       "GFB1": {
         "title": "Notification Service",
         "subtitle": "",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "image": "mm01_01.png"
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
+        "image": "FIREBASE_STORAGE_DOWNLOAD_URL_WITH_ACCESS_TOKEN"
       },
       "GFB2": {
         "title": "Various Payment Methods",
         "subtitle": "",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "image": "mm01_02.png"
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
+        "image": "FIREBASE_STORAGE_DOWNLOADURL_WITH_ACCESS_TOKEN"
       },
       "GFB3": {
         "title": "Accurate Latest News",
         "subtitle": "",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "image": "mm01_03.png"
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
+        "image": "FIREBASE_STORAGE_DOWNLOADURL_WITH_ACCESS_TOKEN"
       },
       "GFB4": {
         "title": "Study Abroad For Yourself",
         "subtitle": "",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "image": "mm01_04.png"
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
+        "image": "FIREBASE_STORAGE_DOWNLOADURL_WITH_ACCESS_TOKEN"
       },
       "GFB5": {
         "title": "Networking",
         "subtitle": "",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "image": "mm01_05.png"
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
+        "image": "FIREBASE_STORAGE_DOWNLOADURL_WITH_ACCESS_TOKEN"
       }
     },
 
@@ -221,25 +221,25 @@
       "GC1": {
         "title": "Step 01",
         "subtitle": "School Choice",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "image": ""
       },
       "GC2": {
         "title": "Step 02",
         "subtitle": "Homestay",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "image": ""
       },
       "GC3": {
         "title": "Step 03",
         "subtitle": "Airport Ride",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "image": ""
       },
       "GC4": {
         "title": "Step 04",
         "subtitle": "Networking",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "image": ""
       }
     },
@@ -256,15 +256,15 @@
       "location": "/networking",
       "title": "Networking",
       "subtitle": "",
-      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
       "image": ""      
     },
 
     "networkingPoster": {
       "location": "/networking",
       "title": "Vancouver Now",
-      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "subtitle": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
       "image": "https://images.unsplash.com/photo-1543357115-92e515b2c9b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
     },
 
@@ -272,14 +272,14 @@
       "location": "/networking",
       "NC1": {
         "title": "",
-        "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "subtitle": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "image": ""
       },
       "NC2": {
         "title": "",
-        "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "subtitle": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
+        "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "image": ""
       }
     },
@@ -295,8 +295,8 @@
     "schoolInfoPosterTop": {
       "location": "/schools",
       "title": "School Information",
-      "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "subtitle": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
       "image": "https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"      
     },
 
@@ -304,7 +304,7 @@
       "location": "/schools",
       "title": "How To Use",
       "subtitle": "",
-      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.\n싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.\n싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.\n싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.\n싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.\n싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
       "image": ""      
     },
 
@@ -312,7 +312,7 @@
       "location": "/schools",
       "title": "Canada : Vancouver",
       "subtitle": "",
-      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
       "image": "https://images.unsplash.com/photo-1560813962-ff3d8fcf59ba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1267&q=80"           
     },
 
@@ -328,7 +328,7 @@
       "location": "/studyabroad",
       "title": "Study Abroad Services",
       "subtitle": "",
-      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
       "image": "https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"      
     },
     
@@ -336,32 +336,32 @@
       "location": "/studyabroad",
       "title": "Homestay",
       "subtitle": "",
-      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
       "image": ""
     },
 
     "homestayBannerProcess": {
       "location": "/studyabroad",
       "HBP1": {
-        "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "title": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "subtitle": "",
         "caption": "",
         "image": ""
       },
       "HBP2": {
-        "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "title": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "subtitle": "",
         "caption": "",
         "image": ""
       },
       "HBP3": {
-        "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "title": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "subtitle": "",
         "caption": "",
         "image": ""
       },
       "HBP4": {
-        "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "title": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
         "subtitle": "",
         "caption": "",
         "image": ""
@@ -372,7 +372,7 @@
       "location": "/studyabroad",
       "title": "Airport Ride",
       "subtitle": "",
-      "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다.",
       "image": ""
     },
 
@@ -388,7 +388,7 @@
       "location": "/privacy",
       "title": "Data and Privacy Policy",
       "subtitle": "",
-      "caption": "Leverage agile frameworks to provide a robust synopsis for high level overviews. Iterative approaches to corporate strategy foster collaborative thinking to further the overall value proposition. Organically grow the holistic world view of disruptive innovation via workplace diversity and empowerment.\nBring to the table win-win survival strategies to ensure proactive domination. At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution. User generated content in real-time will have multiple touchpoints for offshoring.\nCapitalize on low hanging fruit to identify a ballpark value added activity to beta test. Override the digital divide with additional clickthroughs from DevOps. Nanotechnology immersion along the information highway will close the loop on focusing solely on the bottom line.",
+      "caption": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다. 불러 피어나는 이상 귀는 더운지라 보배를 뛰노는 때문이다. 품으며, 위하여서, 그들의 장식하는 풀밭에 위하여, 것이다. 이상은 끝에 가치를 우리의 주며, 쓸쓸한 목숨을 것이다. 이상이 방황하였으며, 이성은 낙원을 것이다. 인생의 소금이라 얼마나 소리다.이것은 우는 보는 작고 가슴이 산야에 운다. 불어 청춘 이는 봄바람이다. 싶이 작고 평화스러운 장식하는 없는 구하지 인생을 운다. 능히 그들은 영락과 풍부하게 대고, 석가는 교향악이다. 인생에 같이 물방아 그들의 뜨거운지라, 때문이다.",
       "image": ""      
     }
   }
