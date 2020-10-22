@@ -273,7 +273,7 @@ function configureChartData(data) {
           name: convertToSentenceCase(type),
           xAxisKey: 'Status',
           dataKey: 'Totals',
-          plots: Object.keys(statusData).map(status => {
+          plots: Object.keys(statusData).sort().map(status => {
             return {Status: status, Totals: statusData[status]}
           })
         }
@@ -285,7 +285,7 @@ function configureChartData(data) {
         name: convertToSentenceCase(type),
         xAxisKey: 'Type',
         dataKey: 'Totals',
-        plots: Object.keys(applicationData).map(total => {
+        plots: Object.keys(applicationData).sort().map(total => {
           return {Type: convertToSentenceCase(total).replace('Total', ''), Totals: applicationData[total]}
         })
       }

@@ -65,19 +65,28 @@ export default function Chart(props) {
       }
 
       {chart === 'pie' &&
-      <ResponsiveContainer width={500} height="100%">
+      <ResponsiveContainer width={700} height="100%">
         <PieChart>
           <Pie
             data={data.plots}
             outerRadius={80}
             fill="#8884d8"
             dataKey={data.dataKey}>
-            {data.plots.map((entry, i) => <Cell key={`cell-${i}`} fill={COLORS.current[i % COLORS.current.length]} />)}
+              {data.plots.map((entry, i) => <Cell key={`cell-${i}`} fill={COLORS.current[i % COLORS.current.length]} />)}
           </Pie>
+          <Tooltip content={formatPieLabel}/>
           <Legend layout="vertical" verticalAlign="middle" align="right" payload={renderPieLegend(data.plots)}/>
         </PieChart>
       </ResponsiveContainer>
       }
     </>
   );
+}
+
+function formatPieLabel({ active, payload, label }) {
+  const pStyle = { background: 'white', borderRadius: 3, padding: 3 }
+  if (active) {
+    const { Name, Totals } = payload[0].payload;
+    return <p style={pStyle}>{`${Name}: ${Totals}`}</p>;
+  }
 }
