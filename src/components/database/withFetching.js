@@ -53,10 +53,11 @@ function withFetching(Component) {
     }
 
     const adminPageQuery = async page => {
+      const queryRef = (page === 'Goose Tips') ? 'gooseTips' : (page === 'Overview') ? 'adminAggregates' : `listOf${page}`;
       try {
         if (page === 'Settings') {
           fetchAllDocuments("graphics", firebase, setState);
-        } else if (ADMIN_PAGES.includes(page)) {
+        } else if (!state[queryRef].length) {
           await paginatedQuery(page);
         }
       } catch(err) {
