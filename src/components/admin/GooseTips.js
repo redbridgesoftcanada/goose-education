@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { CheckBox, CheckBoxOutlineBlank, Clear, EditOutlined } from "@material-ui/icons";
+import { Check, Block, Clear, Edit } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
@@ -20,8 +20,8 @@ function GooseTips(props) {
   }
 
   const handleDelete = () => {
-    const deleteDoc = firebase.deleteTip(selectedTip.id);
-    onDelete(selectedTip.image, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+    const selected = { id: selectedTip.id, upload: selectedTip.image }
+    onDelete('tips', selected, firebase, deleteConfirmToggle, snackbarMessage); 
   }
 
   return (
@@ -43,27 +43,27 @@ function GooseTips(props) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Title</TableCell>
-            <TableCell>Featured</TableCell>
-            <TableCell>Last Updated At</TableCell>
-            <TableCell>Edit</TableCell>
-            <TableCell>Delete</TableCell>
+            <TableCell align='center'>Title</TableCell>
+            <TableCell align='center'>Featured</TableCell>
+            <TableCell align='center'>Last Updated At</TableCell>
+            <TableCell align='center'>Edit</TableCell>
+            <TableCell align='center'>Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {listOfTips.map((tip, i) => (
             <TableRow key={i} hover>
-              <TableCell>{tip.title}</TableCell>
-              <TableCell>{tip.isFeatured ? <CheckBox/> : <CheckBoxOutlineBlank/>}</TableCell>
-              <TableCell>{format(tip.updatedAt, "Pp")}</TableCell>
-              <TableCell>
+              <TableCell align='center'>{tip.title}</TableCell>
+              <TableCell align='center'>{tip.isFeatured ? <Check fontSize='small'/> : <Block fontSize='small'/>}</TableCell>
+              <TableCell align='center'>{format(tip.updatedAt, "Pp")}</TableCell>
+              <TableCell align='center'>
                 <IconButton name='edit' id={tip.id} color="secondary" onClick={toggleClickAction}>
-                  <EditOutlined/> 
+                  <Edit fontSize='small'/> 
                 </IconButton>
               </TableCell>
-              <TableCell>
+              <TableCell align='center'>
                 <IconButton name='delete' id={tip.id} color="secondary" onClick={toggleClickAction}>
-                  <Clear/>
+                  <Clear fontSize='small'/>
                 </IconButton>
               </TableCell>
             </TableRow>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { Clear, EditOutlined } from "@material-ui/icons";
+import { Clear, Edit } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
@@ -20,8 +20,8 @@ function Announcements(props) {
   }
 
   const handleDelete = () => {
-    const deleteDoc = firebase.deleteAnnouncement(selectedAnnounce.id);
-    onDelete(selectedAnnounce.attachments, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+    const selected = { id: selectedAnnounce.id, upload: selectedAnnounce.attachments }
+    onDelete('announcements', selected, firebase, deleteConfirmToggle, snackbarMessage); 
   }
 
   return (
@@ -43,23 +43,23 @@ function Announcements(props) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Title</TableCell>
-            <TableCell>Last Updated At</TableCell>
-            <TableCell>Edit</TableCell>
-            <TableCell>Delete</TableCell>
+            <TableCell align='center'>Title</TableCell>
+            <TableCell align='center'>Last Updated At</TableCell>
+            <TableCell align='center'>Edit</TableCell>
+            <TableCell align='center'>Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {listOfAnnouncements.map((announce, i) => (
             <TableRow key={i} hover>
-              <TableCell>{announce.title}</TableCell>
-              <TableCell>{format(announce.updatedAt, "Pp")}</TableCell>
-              <TableCell>
+              <TableCell align='center'>{announce.title}</TableCell>
+              <TableCell align='center'>{format(announce.updatedAt, "Pp")}</TableCell>
+              <TableCell align='center'>
                 <IconButton name='edit' id={announce.id} color="secondary" onClick={toggleClickAction}>
-                  <EditOutlined fontSize="small"/>
+                  <Edit fontSize="small"/>
                 </IconButton>
               </TableCell>
-              <TableCell>
+              <TableCell align='center'>
                 <IconButton name='delete' id={announce.id} color="secondary" onClick={toggleClickAction}>
                   <Clear fontSize="small"/>
                 </IconButton>

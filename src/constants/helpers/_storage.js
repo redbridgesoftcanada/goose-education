@@ -1,20 +1,27 @@
-async function onDelete(uploads, firebase, deleteDoc, deleteConfirmToggle, setSnackbarMessage) {
-  const deletePromises = [];
-
-  if (uploads.length) {
-    const deleteStorageResource = firebase.refFromUrl(uploads).delete();
-    deletePromises.push(deleteStorageResource);
+function onDelete(collection, selected, firebase, closeDeleteConfirm, setSnackbarMessage) {
+  const { id, upload } = selected;
+  
+  let docRef;  
+  switch(collection) {    
+    case 'schools': docRef = firebase.deleteSchool(id);
+    case 'applications': docRef = firebase.deleteSchoolApplication(id);
+    case 'homestays': docRef = firebase.deleteHomestayApplication(id);
+    case 'airport_rides': docRef = firebase.deleteAirportRideApplication(id);
+    case 'tips': docRef = firebase.deleteTip(id);
+    case 'articles': docRef = firebase.deleteArticle(id);
+    case 'announcements': docRef = firebase.deleteAnnouncement(id);
+    case 'messages': docRef = firebase.deleteMessage(id);  
   }
 
-  deletePromises.push(deleteDoc);
+  const deletePromises = [ docRef ];
+  if (upload) deletePromises.push(firebase.refFromUrl(upload).delete());
 
-  try {
-    await Promise.all(deletePromises);
-    setSnackbarMessage('Successfully deleted!');
-    deleteConfirmToggle();
-  } catch (error) {
-    console.log(error.message)
-  }
+  Promise.all(deletePromises)
+  .then(() => {
+    setSnackbarMessage('Successfully deleted! Please refresh to see changes.');
+    closeDeleteConfirm();
+  })
+  .catch(err => setSnackbarMessage('Something went wrong! Unable to delete document.'));
 }
 
 export { onDelete }

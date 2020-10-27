@@ -21,9 +21,9 @@ function Schools(props) {
     deleteConfirmToggle();
   }
 
-  const handleDelete = () => {
-    const deleteDoc = firebase.deleteSchool(selectedSchool.id);
-    onDelete(selectedSchool.image, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+  const handleDelete = () => {
+    const selected = { id: selectedSchool.id, upload: selectedSchool.image }
+    onDelete('schools', selected, firebase, deleteConfirmToggle, snackbarMessage); 
   }
 
   return (

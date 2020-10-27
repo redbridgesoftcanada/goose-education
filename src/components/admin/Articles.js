@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { Clear, EditOutlined } from "@material-ui/icons";
+import { Clear, Edit } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../firebase";
 import AdminComposeDialog from './AdminComposeDialog';
@@ -20,8 +20,8 @@ function Networking(props) {
   }
 
   const handleDelete = () => {
-    const deleteDoc = firebase.deleteArticle(selectedArticle.id);
-    onDelete(selectedArticle.image, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+    const selected = { id: selectedArticle.id, upload: selectedArticle.image }
+    onDelete('articles', selected, firebase, deleteConfirmToggle, snackbarMessage); 
   }
 
   return (
@@ -43,27 +43,27 @@ function Networking(props) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Author</TableCell>
-            <TableCell>Title</TableCell>
-            <TableCell>Tag</TableCell>
-            <TableCell>Last Updated At</TableCell>
-            <TableCell>Edit</TableCell>
-            <TableCell>Delete</TableCell>
+            <TableCell align='center'>Author</TableCell>
+            <TableCell align='center'>Title</TableCell>
+            <TableCell align='center'>Tag</TableCell>
+            <TableCell align='center'>Last Updated At</TableCell>
+            <TableCell align='center'>Edit</TableCell>
+            <TableCell align='center'>Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {listOfArticles.map((article, i) => (
             <TableRow key={i} hover>
-              <TableCell>{article.authorDisplayName}</TableCell>
-              <TableCell>{article.title}</TableCell>
-              <TableCell>{article.tag}</TableCell>
-              <TableCell>{format(article.updatedAt, "Pp")}</TableCell>
-              <TableCell>
+              <TableCell align='center'>{article.authorDisplayName}</TableCell>
+              <TableCell align='center'>{article.title}</TableCell>
+              <TableCell align='center'>{article.tag}</TableCell>
+              <TableCell align='center'>{format(article.updatedAt, "Pp")}</TableCell>
+              <TableCell align='center'>
                 <IconButton name='edit' id={article.id} color="secondary" onClick={toggleClickAction}>
-                  <EditOutlined fontSize="small"/>
+                  <Edit fontSize="small"/>
                 </IconButton>
               </TableCell>
-              <TableCell>
+              <TableCell align='center'>
                 <IconButton name='delete' id={article.id} color="secondary" onClick={toggleClickAction}>
                   <Clear fontSize="small"/>
                 </IconButton>

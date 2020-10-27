@@ -18,8 +18,8 @@ function Homestays(props) {
   }
 
   const handleDelete = () => {
-    const deleteDoc = firebase.deleteHomestayApplication(selectedApplication.id);
-    onDelete(selectedApplication.downloadUrl, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+    const selected = { id: selectedApplication.id, upload: selectedApplication.downloadUrl}
+    onDelete('homestays', selected, firebase, deleteConfirmToggle, snackbarMessage); 
   }
 
   return (

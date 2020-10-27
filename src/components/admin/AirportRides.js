@@ -17,8 +17,8 @@ function AirportRides(props) {
   }
 
   const handleDelete = () => {
-    const deleteDoc = firebase.deleteAirportRideApplication(selectedApplication.id);
-    onDelete(selectedApplication.downloadUrl, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+    const selected = { id: selectedApplication.id, upload: selectedApplication.downloadUrl}
+    onDelete('airport_rides', selected, firebase, deleteConfirmToggle, snackbarMessage); 
   }
 
   return (

@@ -41,9 +41,8 @@ function Applications(props) {
   }
 
   const handleDelete = () => {
-    const { id, downloadUrl } = applicationRef.current;
-    const deleteDoc = firebase.deleteSchoolApplication(id);
-    onDelete(downloadUrl, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+    const selected = { id: applicationRef.current.id, upload: applicationRef.current.downloadUrl }
+    onDelete('applications', selected, firebase, deleteConfirmToggle, snackbarMessage);  
   }
 
   return (

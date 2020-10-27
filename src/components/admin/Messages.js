@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
-import { Clear, CloudDownload, EditOutlined } from "@material-ui/icons";
+import { Clear, CloudDownload, Edit } from "@material-ui/icons";
 import { format } from "date-fns";
 import { withFirebase } from "../../components/firebase";
 import AdminComposeDialog from './AdminComposeDialog';
@@ -20,9 +20,8 @@ function Messages(props) {
   }
 
   const handleDelete = () => {
-    const deleteDoc = firebase.deleteMessage(selectedMessage.id);
-    console.log(selectedMessage.attachments)
-    onDelete(selectedMessage.attachments, firebase, deleteDoc, deleteConfirmToggle, snackbarMessage);
+    const selected = { id: selectedMessage.id, upload: selectedMessage.attachments }
+    onDelete('messages', selected, firebase, deleteConfirmToggle, snackbarMessage); 
   }
 
   return (
@@ -44,12 +43,12 @@ function Messages(props) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Author</TableCell>
-            <TableCell>Title</TableCell>
-            <TableCell>Last Updated At</TableCell>
-            <TableCell>Edit</TableCell>
-            <TableCell>Delete</TableCell>
-            <TableCell>Download</TableCell>
+            <TableCell align='center'>Author</TableCell>
+            <TableCell align='center'>Title</TableCell>
+            <TableCell align='center'>Last Updated At</TableCell>
+            <TableCell align='center'>Edit</TableCell>
+            <TableCell align='center'>Delete</TableCell>
+            <TableCell align='center'>Download</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -57,20 +56,20 @@ function Messages(props) {
             const canEdit = message.authorID === firebase.getCurrentUser().uid;
             return (
               <TableRow key={i} hover>
-                <TableCell>{message.authorDisplayName}</TableCell>
-                <TableCell>{message.title}</TableCell>
-                <TableCell>{format(message.updatedAt, "Pp")}</TableCell>
-                <TableCell>
+                <TableCell align='center'>{message.authorDisplayName}</TableCell>
+                <TableCell align='center'>{message.title}</TableCell>
+                <TableCell align='center'>{format(message.updatedAt, "Pp")}</TableCell>
+                <TableCell align='center'>
                   <IconButton name='edit' id={message.id} color="secondary" onClick={toggleClickAction} disabled={!canEdit}>
-                    <EditOutlined fontSize="small"/>
+                    <Edit fontSize="small"/>
                   </IconButton>
                 </TableCell>
-                <TableCell>
+                <TableCell align='center'>
                   <IconButton name='delete' id={message.id} color="secondary" onClick={toggleClickAction}>
                     <Clear fontSize="small"/>
                   </IconButton>
                 </TableCell>
-                <TableCell>
+                <TableCell align='center'>
                   <IconButton color="secondary" onClick={()=>window.open(message.attachments, "_blank")} disabled={!message.attachments.length}>
                     <CloudDownload fontSize="small"/>
                   </IconButton>
