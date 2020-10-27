@@ -166,7 +166,7 @@ export default function ArticleBoard({ listOfArticles }) {
                                         to={redirectPath}>
                                         <CardMedia
                                             className={classes.articleThumbnail}
-                                            image={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)}
+                                            image={article.image}
                                             title="article-thumbnail"/>
                                         <CardContent>
                                             <Typography className={classes.articleTitle} >

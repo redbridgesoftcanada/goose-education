@@ -1,77 +1,68 @@
 {
     "articles": {
-        "c4734be5-8f68-4240-9bc9-e6283b2d2bab": {
-            "authorDisplayName": "최고관리자",
-            "authorID": "VpD5DtI9E3bPuHcOVTCdcT6hop93",
+        "c4734be5": {
+            "authorDisplayName": "FIREBASE_ADMIN_USERNAME",
+            "authorID": "FIREBASE_ADMIN_UID",
             "comments": [],
             "createdAt": 1579576698361,
             "description": "다양한 롤과 사시미!",
-            "image": "thumb-2919655616_Y4WrbPxp_61cb5518540dad6db53cd54c36ec8e933ca690f7_283x288.jpg",
+            "id": "c4734be5",
+            "image": "FIREBASE_STORAGE_DOWNLOAD_URL_WITH_ACCESS_TOKEN",
             "instagramURL": "",
             "isFeatured": true,
             "link1": "",
             "link2": "",
             "tag": "Restaurant",
             "title": "벤쿠버 수시 맛집 – Nanaimo Sushi",
-            "updatedAt": 1579576698361,
-            "views": 38
+            "updatedAt": 1579576698361
         },
-        "cde46196-265f-4a23-a90c-943678dc311e": {
-            "authorDisplayName": "최고관리자",
-            "authorID": "VpD5DtI9E3bPuHcOVTCdcT6hop93",
+        "cde46196": {
+            "authorDisplayName": "FIREBASE_ADMIN_USERNAME",
+            "authorID": "FIREBASE_ADMIN_UID",
             "comments": [],
             "createdAt": 1579576698361,
             "description": "밴쿠버에서 여름을 즐기기 위한 액티비티로 빠질 수 없는 캠핑!",
-            "image": "thumb-2919655616_CBAr7uG6_6b5db15acd1fde70c69c532cf137351e2468feb1_283x288.jpg",
+            "id": "cde46196",
+            "image": "FIREBASE_STORAGE_DOWNLOAD_URL_WITH_ACCESS_TOKEN",
             "instagramURL": "",
             "isFeatured": true,
             "link1": "",
             "link2": "",
             "tag": "Other",
             "title": "밴쿠버 캠핑 핫플 – Paradise Valley Campground",
-            "updatedAt": 1579576698361,
-            "views": 33
+            "updatedAt": 1579576698361
         },
-        "4a22a26b-1095-4197-8c6a-8efa26a5f7f7": {
-            "authorDisplayName": "최고관리자",
-            "authorID": "VpD5DtI9E3bPuHcOVTCdcT6hop93",
-            "comments": [
-                {
-                    "authorDisplayName": "Flowey the Flower",
-                    "authorID": "ilVze9sdJ7MRcwp3kTGM2t9I7t92",
-                    "createdAt": 1591894971717,
-                    "description": "The BBT DIY sets were so much fun and, of course, very tasty!",
-                    "id": "6b7d5c6e-0f7b-4666-bd0c-08ad8458fb49",
-                    "updatedAt": 1591894971717
-                }
-            ],
+        "4a22a26b": {
+            "authorDisplayName": "FIREBASE_ADMIN_USERNAME",
+            "authorID": "FIREBASE_ADMIN_UID",
+            "comments": [],
             "createdAt": 1579576698361,
             "description": "1680 Robson St, Vancouver; 4651 No 3 Rd #105, Richmond; 1764 Manitoba St, Vancouver",
-            "image": "thumb-643318286_ydhXINOi_408f5fdb2cf23cfa89626254c8bf675a784b19cc_283x288.jpg",
+            "id": "4a22a26b",
+            "image": "FIREBASE_STORAGE_DOWNLOAD_URL_WITH_ACCESS_TOKEN",
             "isFeatured": true,
             "instagramURL": "",
             "link1": "https: //www.facebook.com/thebbtshop/",
             "link2": "",
             "tag": "Restaurant",
             "title": "Bubble Tea Shop",
-            "updatedAt": 1579576698361,
-            "views": 39
+            "updatedAt": 1579576698361
         },
-        "040d5cb7-59bb-4af3-87ee-a512bc50cc93": {
-            "authorDisplayName": "최고관리자",
-            "authorID": "VpD5DtI9E3bPuHcOVTCdcT6hop93",
+        "040d5cb7": {
+            "authorDisplayName": "FIREBASE_ADMIN_USERNAME",
+            "authorID": "FIREBASE_ADMIN_UID",
             "comments": [],
             "createdAt": 1579576698361,
             "description": "3432 Cambie Street, Vancouver; 1180 Pinetree Way, Coquitlam; 8030 Granville Street, Vancouver; 2675 Kingsway, Vancouver; 130-8311 Lansdowne Rd, Richmond",
-            "image": "thumb-643318286_VJOTHgMi_d12784f59d57b78a947c1584875ada7ecdcf3c5c_283x288.jpg",
+            "id": "040d5cb7",
+            "image": "FIREBASE_STORAGE_DOWNLOAD_URL_WITH_ACCESS_TOKEN",
             "instagramURL": "",
             "isFeatured": true,
             "link1": "https: //www.xingfutang.ca/vancouver-menu.html",
             "link2": "",
             "tag": "Restaurant",
             "title": "Xing Fu Tang",
-            "updatedAt": 1579576698361,
-            "views": 57
+            "updatedAt": 1579576698361
         }
     }
 }

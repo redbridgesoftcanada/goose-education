@@ -1,0 +1,24 @@
+{
+  "users": {
+    "FIREBASE_AUTH_UID_0" : {
+      "email": "FIREBASE_AUTH_EMAIL",
+      "firstName": "Admin",
+      "lastName": "Test",
+      "lastSignInTime": "",
+      "mobileNumber": "",
+      "phoneNumber": "",
+      "roles": { "admin": true },
+      "username": "Admin"
+    },
+    "FIREBASE_AUTH_UID_1" : {
+      "email": "FIREBASE_AUTH_EMAIL",
+      "firstName": "User",
+      "lastName": "Test",
+      "lastSignInTime": "",
+      "mobileNumber": "",
+      "phoneNumber": "",
+      "roles": {},
+      "username": "User"
+    }
+  }
+}

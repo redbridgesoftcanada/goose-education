@@ -1,12 +1,21 @@
 import React from 'react';
+import { Box, Container, Typography } from "@material-ui/core";
 import withRoot from './withRoot';
 import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 
-function Privacy() {
+function Privacy(props) {
   return (
     <>
       <ResponsiveNavBars />
-      <div style={{marginTop:'50em', marginBottom:'50em'}}></div>
+      <Container>
+        <Box my={5}>
+          <Typography variant='h6'>{props.title}</Typography>
+          <br/>
+          <Typography variant='body1' align='left'>{props.subtitle}</Typography>
+          <br/>
+          <Typography variant='body1' align='left'>{props.caption}</Typography>
+        </Box>
+      </Container>
       <ResponsiveFooters />
     </>
   );

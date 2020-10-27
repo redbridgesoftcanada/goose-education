@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Box, Button, CardMedia, Collapse, Grid, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@material-ui/core";
+import { Box, Button, CardMedia, Collapse, Grid, IconButton, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@material-ui/core";
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { convertToSentenceCase } from '../../constants/helpers/_features';
 import TabPanel from '../../components/TabPanel';
@@ -80,21 +80,15 @@ const createMediaContentTable = (listOfGraphics, collapseState, collapseListener
     <Box mx={3} my={2}>
       <TableContainer>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell colSpan={6}>Location</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {listOfGraphics.map(graphic => {
-              const checkForMultiGraphics = multiGraphicsIds.some(id => graphic.id.includes(id));
-              if (!checkForMultiGraphics) {
-                return createMediaRow(graphic, changeListener)
-              } else {
-                return createNestedMediaRow(graphic, collapseState, collapseListener, changeListener)
-              }
-            })}
-          </TableBody>
+          <TableCell colSpan={6}/>
+          {listOfGraphics.map(graphic => {
+            const checkForMultiGraphics = multiGraphicsIds.some(id => graphic.id.includes(id));
+            if (!checkForMultiGraphics) {
+              return createMediaRow(graphic, changeListener)
+            } else {
+              return createNestedMediaRow(graphic, collapseState, collapseListener, changeListener)
+            }
+          })}
         </Table>
       </TableContainer>
 
@@ -116,23 +110,24 @@ const createMediaRow = (graphic, changeListener) => {
     graphic.id = JSON.parse(graphic.id);
   }
 
-  const editableFields = Object.entries(graphic).reduce((a, [k, v]) => (k !== 'image' && k !== 'location' && v ? (a[k] = v, a) : a), {});
+  const editableFields = Object.entries(graphic).reduce((a, [key, value]) => (key !== 'image' && key !== 'location' && value ? (a[key] = value, a) : a), {});
 
   return (
     <TableRow hover key={editableFields.id}>
-      <TableCell>{editableFields.id}</TableCell>
-      <TableCell colSpan={5}>
+      <TableCell variant='head'>{editableFields.id}</TableCell>
+      <TableCell padding='none'>
         {Object.keys(editableFields).map(field => {
           if (!field || field === 'id') {
             return;
           } else {
             return (
               <StyledValidators.AdminTextField
+                multiline
+                label={convertToSentenceCase(field)}
                 key={editableFields.id + '-' + field}
                 name={editableFields.id}
                 defaultValue={editableFields[field]}
-                onChange={event => changeListener(event, field)}
-              />
+                onChange={event => changeListener(event, field)}/>
             )
           }
         })}
@@ -143,44 +138,48 @@ const createMediaRow = (graphic, changeListener) => {
 
 const createNestedMediaRow = (graphic, collapseState, collapseListener, changeListener) => {
   const nestedGraphics = Object.entries(graphic).reduce((a, [k, v]) => (typeof v !== 'string' ? (a[k] = v, a) : a), {});
+  const sortedGraphics = Object.values(nestedGraphics).sort((a ,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0));
 
   return (
     <Fragment key={graphic.id}>
       <TableRow hover id={graphic.id} onClick={collapseListener}>
-        <TableCell>{graphic.id}</TableCell>
+        <TableCell variant='head'>{graphic.id}</TableCell>
         <TableCell colSpan={4} align='right'>
-          {collapseState[graphic.id] ? <KeyboardArrowUp/> : <KeyboardArrowDown/>}
+          <IconButton>
+            {collapseState[graphic.id] ? <KeyboardArrowUp/> : <KeyboardArrowDown/>}
+          </IconButton>
         </TableCell>
       </TableRow>
 
       <TableRow>
         <TableCell padding='none' colSpan={6} style={{ paddingLeft: 40 }}>
           <Collapse in={collapseState[graphic.id]} timeout="auto" unmountOnExit>
-            
-            {Object.values(nestedGraphics).map((nGraphic, i) => {
-
-              const multiIds = JSON.stringify({outer: graphic.id, inner: nGraphic.id});
-
-                return (
-                  <Table key={i}>
-                    <TableBody>
-                      {Object.keys(nGraphic).map(field => {
-                        if (!nGraphic[field] || field === 'id') {
-                          return;
-                        } else {
-                          return (
-                            <StyledValidators.AdminTextField
-                              key={nGraphic.id + '-' + field}
-                              name={multiIds}
-                              defaultValue={nGraphic[field]}
-                              onChange={event => changeListener(event, field)}
-                            />
-                          )
-                        }
-                      })}
-                    </TableBody>
-                  </Table>
-              )})}
+            <Table>
+              {sortedGraphics.map((nGraphic, i) => {
+                const multiIds = JSON.stringify({outer: graphic.id, inner: nGraphic.id});
+                  return (
+                    <TableRow>
+                      <TableCell variant='head'>{nGraphic.id}</TableCell>
+                      <TableCell>
+                        {Object.keys(nGraphic).map(field => {
+                          if (!nGraphic[field] || field === 'id' || field === 'image') {
+                            return;
+                          } else {
+                            return (
+                              <StyledValidators.AdminTextField
+                                multiline
+                                label={convertToSentenceCase(field)}
+                                key={nGraphic.id + '-' + field}
+                                name={multiIds}
+                                defaultValue={nGraphic[field]}
+                                onChange={event => changeListener(event, field)}/>
+                            )
+                          }
+                        })}
+                      </TableCell>
+                    </TableRow>
+                )})}
+            </Table>
           </Collapse>
         </TableCell>
       </TableRow>
@@ -190,25 +189,28 @@ const createNestedMediaRow = (graphic, collapseState, collapseListener, changeLi
 
 const createImagesTable = (listOfImages, changeListener, onSave) => {
   return (
-    <Box mx={3} my={2}>
+    <Box mx={3} my={3} pt={2}>
       <Grid container spacing={3} justify='center' alignItems='center'>
         {listOfImages.map((image, i) => {
+          let label = convertToSentenceCase(image.id);
+          if (image.id.includes('GFB')) {
+            label = `Goose Feature Board ${image.id.slice(-1)}`;
+          } else if (image.id.includes('HFB')) {
+            label = `Home Feature Board ${image.id.slice(-1)}`;
+          }
+
           return (
             <Fragment key={i}>
               <Grid item xs={6}>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image={image.url}
-                />
+                <CardMedia component="img" height="140" image={image.url}/>
               </Grid>
               
               <Grid item xs={6}>
-                <Typography align="left" variant="h6">{convertToSentenceCase(image.id)}</Typography>
-                <StyledValidators.AdminTextField
-                  name={image.id}
-                  defaultValue={image.url}
-                  onChange={event => changeListener(event, 'image')}/>
+                <Typography align="left" variant="h6">{label}</Typography>
+                  <StyledValidators.AdminTextField
+                    name={image.id}
+                    defaultValue={image.url}
+                    onChange={event => changeListener(event, 'image')}/>
               </Grid>
             </Fragment>
           )
@@ -228,18 +230,18 @@ const createImagesTable = (listOfImages, changeListener, onSave) => {
   )
 }
 
-
 const createBatchUpdates = async (firebase, inputState) => {
-  let batch = firebase.batch();
-  await Object.keys(inputState).map(key => {
-    let inputCategory = key;
-    let { inputRef, inputValue, inputType } = inputState[key];
+  const batch = firebase.batch();
+  await Object.keys(inputState).map(inputCategory => {
+    const { inputRef, inputValue, inputType } = inputState[inputCategory];
 
-    let docRef = firebase.graphic(inputCategory);
-    if (inputRef) {
-      batch.update(docRef, {[inputRef]: {[inputType]: inputValue}})
+    const checkNestedGraphics = inputCategory.includes('GFB') || inputCategory.includes('HFB');
+    if (checkNestedGraphics) {
+      const docRef = inputCategory.includes('GFB') ? firebase.graphic(`gooseFeatureBoard`) : firebase.graphic(`homeFeatureBoard`);
+      batch.update(docRef, {[`${inputCategory}.${inputType}`]: inputValue});
     } else {
-      batch.update(docRef, {[inputType]: inputValue});
+      const docRef = firebase.graphic(inputCategory);
+      inputRef ? batch.update(docRef, {[`${inputRef}.${inputType}`]: inputValue}) : batch.update(docRef, {[inputType]: inputValue});
     }
   });
   batch.commit();

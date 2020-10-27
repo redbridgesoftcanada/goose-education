@@ -115,7 +115,7 @@ function Article(props) {
             <CardMedia
                 alt='Article Cover'
                 className={classes.articleImage}
-                image={(article.image.includes('firebase')) ? article.image : require(`../assets/img/${article.image}`)}/>
+                image={article.image}/>
             
             {!xsBreakpoint ?
                 <>

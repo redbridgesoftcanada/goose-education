@@ -48,7 +48,7 @@ export default function ListOfSchools(props) {
                                     <CardMedia
                                         component='img'
                                         className={classes.image}
-                                        image={(school.image.includes('firebase')) ? school.image : require(`../assets/img/${school.image}`)}/>
+                                        image={school.image}/>
                                 </Grid>
                                 <Grid item xs={8} md={9} className={classes.school}>
                                     <Link className={classes.schoolTitle} 

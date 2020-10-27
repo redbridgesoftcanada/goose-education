@@ -208,7 +208,7 @@ function generateFormContent(classes, formFields, onChange, onUpload) {
                       alt='S'
                       variant='rounded' 
                       src={
-                        value instanceof File ? null : value.includes('firebase') ? value : require(`../../../assets/img/${value}`)}/>
+                        value instanceof File ? null : value}/>
                   :
                     <Box height={144} width={144} border={1} borderColor='grey.500' borderRadius={8}/>
                   }

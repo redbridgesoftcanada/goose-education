@@ -45,7 +45,7 @@ export default function FeatureCarousel(props) {
                         <div key={school.id}> 
                             <CardMedia
                                 className={classes.media}
-                                image={(school.image.includes('firebase')) ? school.image : require(`../assets/img/${school.image}`)}
+                                image={school.image}
                                 title={school.name}
                                 id={school.id}
                                 onClick={handleClick}

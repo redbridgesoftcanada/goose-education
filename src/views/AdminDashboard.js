@@ -29,7 +29,7 @@ const LoadingFallbackComponent =
     <CircularProgress color="secondary"/>
   </Grid> 
 
-export default function AdminDashboard() {
+export default function AdminDashboard(props) {
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
 
   const toggleDrawer = () => dispatch({type: "TOGGLE_DRAWER"});
@@ -58,9 +58,9 @@ export default function AdminDashboard() {
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             Goose Education
           </Typography>
-          
+
           {/* C R E A T E */}
-          <Button variant="outlined" color="secondary" onClick={setComposeMenu}>Create</Button>
+          <Button color="secondary" onClick={setComposeMenu}>Create</Button>
           <Menu
             keepMounted
             anchorEl={state.composeMenuAnchor}
@@ -78,6 +78,8 @@ export default function AdminDashboard() {
           </Menu>
 
           <AdminComposeDialog formType={state.composeFormType} isEdit={false} open={state.composeDialogOpen} onClose={toggleComposeDialog} setSnackbarMessage={setSnackbarMessage}/>
+
+          <Button onClick={props.firebase.doSignOut}>Sign Out</Button>
 
           <Snackbar
             anchorOrigin={{
@@ -271,7 +273,7 @@ function configureChartData(data) {
           name: convertToSentenceCase(type),
           xAxisKey: 'Status',
           dataKey: 'Totals',
-          plots: Object.keys(statusData).map(status => {
+          plots: Object.keys(statusData).sort().map(status => {
             return {Status: status, Totals: statusData[status]}
           })
         }
@@ -283,7 +285,7 @@ function configureChartData(data) {
         name: convertToSentenceCase(type),
         xAxisKey: 'Type',
         dataKey: 'Totals',
-        plots: Object.keys(applicationData).map(total => {
+        plots: Object.keys(applicationData).sort().map(total => {
           return {Type: convertToSentenceCase(total).replace('Total', ''), Totals: applicationData[total]}
         })
       }

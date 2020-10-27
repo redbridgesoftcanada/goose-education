@@ -1,14 +1,15 @@
 {
-    "schools": [
-        { 
+    "schools": {
+        "2df7b5ad": { 
+            "id": "2df7b5ad",
             "title": "iTTTi",
             "type": "ESL",
             "location": "Vancouver",
             "url": "https://www.ittti.ca/",
             "dateOfEstablishment": "1999", 
-            "image": "643318286_1fRTZOz6_dc1f626815427c94079076f6c9e8b8047d70a753.jpg",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            "features": "Cat ipsum dolor sit amet, what a cat-ass-trophy!. Meow in empty rooms touch water with paw then recoil in horror i like cats because they are fat and fluffy fall over dead (not really but gets sypathy) destroy house in 5 seconds yet terrorize the hundred-and-twenty-pound rottweiler and steal his bed, not sorry.",
+            "image": "FIREBASE_STORAGE_DOWNLOAD_URL_WITH_ACCESS_TOKEN",
+            "description": "Welcome to iTTTi Vancouver, an exceptional English as a second language institute focused on you, the individual! At iTTTi Vancouver our philosophy is that each student is an individual and has their own dreams, goals and hopes. We are dedicated to helping our students become fluency specialists through unique programs focused on perfecting their oral communication skills. Help- ing students achieve their language learning goals is of the greatest importance to everyone at iTTTi Van- couver. We don’t expect everyone to want the same things or learn at the same pace because our students come from many different countries, different backgrounds and with different reasons for being here.",
+            "features": "",
             "program": "",
             "expenses": "",
             "numberOfStudents": "100-150",
@@ -21,16 +22,17 @@
             "createdAt": 1579576698361,
             "updatedAt": 1579576698361
         },
-        { 
+        "a80d0e2f": { 
+            "id": "a80d0e2f",
             "title": "Canadian College",
             "type": "College",
             "location": "Vancouver",
             "url": "http://canadiancollege.com/",
             "dateOfEstablishment": "2008", 
-            "image": "643318286_rWCPoe2b_b73c26645a2423027ce454bad53c626ba551d40f.png",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            "features": "Cat ipsum dolor sit amet, what a cat-ass-trophy!. Meow in empty rooms touch water with paw then recoil in horror i like cats because they are fat and fluffy fall over dead (not really but gets sypathy) destroy house in 5 seconds yet terrorize the hundred-and-twenty-pound rottweiler and steal his bed, not sorry.",
-            "program": "Cat ipsum dolor sit amet, what a cat-ass-trophy!. Meow in empty rooms touch water with paw then recoil in horror i like cats because they are fat and fluffy fall over dead (not really but gets sypathy) destroy house in 5 seconds yet terrorize the hundred-and-twenty-pound rottweiler and steal his bed, not sorry.",
+            "image": "FIREBASE_STORAGE_DOWNLOAD_URL_WITH_ACCESS_TOKEN",
+            "description": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다. 불러 피어나는 이상 귀는 더운지라 보배를 뛰노는 때문이다. 품으며, 위하여서, 그들의 장식하는 풀밭에 위하여, 것이다. 이상은 끝에 가치를 우리의 주며, 쓸쓸한 목숨을 것이다. 이상이 방황하였으며, 이성은 낙원을 것이다. 인생의 소금이라 얼마나 소리다.이것은 우는 보는 작고 가슴이 산야에 운다. 불어 청춘 이는 봄바람이다. 싶이 작고 평화스러운 장식하는 없는 구하지 인생을 운다. 능히 그들은 영락과 풍부하게 대고, 석가는 교향악이다. 인생에 같이 물방아 그들의 뜨거운지라, 때문이다.",
+            "features": "",
+            "program": "",
             "expenses": "",
             "numberOfStudents": "150-200",
             "openingProcess": "비지니스, 호텔경영, IT, 코업 프로그램",
@@ -42,16 +44,17 @@
             "createdAt": 1579576698361,
             "updatedAt": 1579576698361
         },
-        { 
+        "e3595cb0": { 
+            "id": "e3595cb0",
             "title": "Canadian College of English Language: CCEL",
             "type": "ESL Institution",
             "location": "Vancouver",
             "url": "http://canada-english.com/kr/",
             "dateOfEstablishment": "1991", 
-            "image": "643318286_pnTMAq4w_54ae6ae567fab4ace2b71e9a84c87a004246b72c.jpg",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            "features": "Cat ipsum dolor sit amet, what a cat-ass-trophy!. Meow in empty rooms touch water with paw then recoil in horror i like cats because they are fat and fluffy fall over dead (not really but gets sypathy) destroy house in 5 seconds yet terrorize the hundred-and-twenty-pound rottweiler and steal his bed, not sorry.",
-            "program": "Cat ipsum dolor sit amet, what a cat-ass-trophy!. Meow in empty rooms touch water with paw then recoil in horror i like cats because they are fat and fluffy fall over dead (not really but gets sypathy) destroy house in 5 seconds yet terrorize the hundred-and-twenty-pound rottweiler and steal his bed, not sorry.",
+            "image": "FIREBASE_STORAGE_DOWNLOAD_URL_WITH_ACCESS_TOKEN",
+            "description": "싹이 뜨거운지라, 그러므로 풍부하게 그들에게 우리 얼마나 소담스러운 것이다. 불러 피어나는 이상 귀는 더운지라 보배를 뛰노는 때문이다. 품으며, 위하여서, 그들의 장식하는 풀밭에 위하여, 것이다. 이상은 끝에 가치를 우리의 주며, 쓸쓸한 목숨을 것이다. 이상이 방황하였으며, 이성은 낙원을 것이다. 인생의 소금이라 얼마나 소리다.이것은 우는 보는 작고 가슴이 산야에 운다. 불어 청춘 이는 봄바람이다. 싶이 작고 평화스러운 장식하는 없는 구하지 인생을 운다. 능히 그들은 영락과 풍부하게 대고, 석가는 교향악이다. 인생에 같이 물방아 그들의 뜨거운지라, 때문이다.",
+            "features": "",
+            "program": "",
             "expenses": "",
             "numberOfStudents": "350-400",
             "openingProcess": "일반영어, 대학진학프로그램, IELTS, 비지니스",
@@ -63,16 +66,17 @@
             "createdAt": 1579576698361,
             "updatedAt": 1579576698361
         },
-        { 
+        "8de9517d": { 
+            "id": "8de9517d",
             "title": "VGC International College",
             "type": "ESL Institution",
             "location": "Vancouver",
             "url": "https://vgc.ca/",
             "dateOfEstablishment": "2003", 
-            "image": "643318286_FJwZWadr_80c2bd93bca11f3851065b838fba3fa007edfdb8.png",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            "features": "Cat ipsum dolor sit amet, what a cat-ass-trophy!. Meow in empty rooms touch water with paw then recoil in horror i like cats because they are fat and fluffy fall over dead (not really but gets sypathy) destroy house in 5 seconds yet terrorize the hundred-and-twenty-pound rottweiler and steal his bed, not sorry.",
-            "program": "Cat ipsum dolor sit amet, what a cat-ass-trophy!. Meow in empty rooms touch water with paw then recoil in horror i like cats because they are fat and fluffy fall over dead (not really but gets sypathy) destroy house in 5 seconds yet terrorize the hundred-and-twenty-pound rottweiler and steal his bed, not sorry.",
+            "image": "FIREBASE_STORAGE_DOWNLOAD_URL_WITH_ACCESS_TOKEN",
+            "description": "Students from over 85 nations around the world choose VGC because of its high academic standards, the quality of our teachers, and a comfortable campus environment as well as our individual customer service. Choose VGC for a unique life experience and let us help you reach your English language and professional goals. Find out what thousands of international students already know: VGC International College is the best choice if you want to learn English in Canada.",
+            "features": "",
+            "program": "",
             "expenses": "",
             "numberOfStudents": "450-500",
             "openingProcess": "인턴쉽, 대학 진학, 시험 준비반 (IELTS, TOEFL), 일반영어",
@@ -84,16 +88,17 @@
             "createdAt": 1579576698361,
             "updatedAt": 1579576698361        
         },
-        { 
+        "ddf3da2f": { 
+            "id": "ddf3da2f",
             "title": "Language Across Borders: LAB",
             "type": "ESL Institution",
             "location": "Vancouver",
             "url": "https://www.languagesacrossborders.com/",
             "dateOfEstablishment": "1992", 
-            "image": "643318286_0VOmxsjf_9543fc13de864fcb50b1e2f608b8cb4e11cbd05d.png",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            "features": "Cat ipsum dolor sit amet, what a cat-ass-trophy!. Meow in empty rooms touch water with paw then recoil in horror i like cats because they are fat and fluffy fall over dead (not really but gets sypathy) destroy house in 5 seconds yet terrorize the hundred-and-twenty-pound rottweiler and steal his bed, not sorry.",
-            "program": "Cat ipsum dolor sit amet, what a cat-ass-trophy!. Meow in empty rooms touch water with paw then recoil in horror i like cats because they are fat and fluffy fall over dead (not really but gets sypathy) destroy house in 5 seconds yet terrorize the hundred-and-twenty-pound rottweiler and steal his bed, not sorry.",
+            "image": "FIREBASE_STORAGE_DOWNLOAD_URL_WITH_ACCESS_TOKEN",
+            "description": "Languages Across Borders (LAB) is a premium, boutique-style language school with dedicated and highly skilled teaching staff. Your experience goes beyond learning a second language in Melbourne, Montreal and Vancouver. It's about exploring a new culture in a relaxed and fun environment, meeting friends from around the globe, and having the chance to study and travel in the world's most livable countries. With campuses in three major cities, LAB ambassadors speak more than 10 languages and are here to ensure your comfort and success. At LAB, you'll Find Your New Voice while making connections and memories to last a lifetime.",
+            "features": "",
+            "program": "",
             "expenses": "",
             "numberOfStudents": "200-300",
             "openingProcess": "ESL (기초 영어) 레벨 1-10, 스피킹, 리스닝, 비즈니스 영어, IELTS, 대학 진학 준비 수업 등",
@@ -105,5 +110,5 @@
             "createdAt": 1579576698361,
             "updatedAt": 1579576698361        
         }
-    ]
+    }
 }

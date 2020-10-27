@@ -2,18 +2,21 @@ import { TAGS } from '../constants';
 import { convertToCamelCase } from './_features';
 
 export function fetchAllDocuments(collection, firebase, setState) {
-  const fetchAllRefs = configureFetchAll(collection, firebase);
-  const { query, stateRef } = fetchAllRefs;
-  query.then(snapshot => {
-      if (snapshot.empty) {
-          console.log(`No matching documents in ${collection} collection.`);
-          return;
-      }
-      
-      const formattedData = configureFetchAllSnapshot(collection, snapshot);
-      setState(prevState => ({ ...prevState, [stateRef]: formattedData }));
-  })
-  .catch(err => console.log("Error in fetching all documents: ", err));
+    try {
+        const fetchAllRefs = configureFetchAll(collection, firebase);
+        const { query, stateRef } = fetchAllRefs;
+        query.then(snapshot => {
+            if (snapshot.empty) {
+                console.log(`No matching documents in ${collection} collection.`);
+                return;
+            }
+            
+            const formattedData = configureFetchAllSnapshot(collection, snapshot);
+            setState(prevState => ({ ...prevState, [stateRef]: formattedData }));
+        });
+    } catch (error) {
+        console.error("Error in fetching all documents: ", error);
+    }
 }
 
 // C A L L B A C K  F U N C T I O N S

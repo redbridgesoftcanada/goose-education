@@ -122,7 +122,7 @@ export default function GooseTips(props) {
                                 <Box className={classes.tip} id={tip.id} onClick={openTipDialog}>
                                     <CardMedia
                                         className={classes.tipThumbnail}
-                                        image={(tip.image.includes('firebase')) ? tip.image : require(`../assets/img/${tip.image}`)}
+                                        image={tip.image}
                                         title='Goose tip thumbnail'
                                     />
                                     <CardContent>

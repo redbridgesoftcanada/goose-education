@@ -98,12 +98,18 @@ function generateContentTable(stateVars, setStates, props, context) {
       return <Messages {...customProps}/>
 
     case "Settings":
-      customProps.listOfGraphics = Object.values(context.state.adminGraphics).sort((a, b) => {
-        if (a.location < b.location) return -1;
-        if (a.location > b.location) return 1;
-        return 0;
+      const adminGraphics = Object.values(context.state.adminGraphics);
+
+      customProps.listOfGraphics = adminGraphics.sort((a ,b) => (a.location > b.location) ? 1 : ((b.location > a.location) ? -1 : 0));
+
+      customProps.listOfImages = adminGraphics.flatMap(graphic => {
+        if (graphic.id.includes('Feature')) {
+          const nestedGraphics = Object.values(graphic).flatMap(nGraphic => nGraphic.image ? [{id: nGraphic.id, url: nGraphic.image}] : []);
+          return nestedGraphics.sort((a ,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0));
+        } 
+        return graphic.image ? [{id: graphic.id, url: graphic.image}] : [];
       });
-      customProps.listOfImages = Object.values(context.state.adminGraphics).flatMap(graphic => graphic.image ? [{id: graphic.id, url: graphic.image}] : []);
+
       return <Settings {...customProps}/>
 
     default:

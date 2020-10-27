@@ -53,10 +53,11 @@ function withFetching(Component) {
     }
 
     const adminPageQuery = async page => {
+      const queryRef = (page === 'Goose Tips') ? 'gooseTips' : (page === 'Overview') ? 'adminAggregates' : `listOf${page}`;
       try {
         if (page === 'Settings') {
           fetchAllDocuments("graphics", firebase, setState);
-        } else if (ADMIN_PAGES.includes(page)) {
+        } else if (!state[queryRef].length) {
           await paginatedQuery(page);
         }
       } catch(err) {
@@ -143,6 +144,10 @@ function withFetching(Component) {
         case '/admin':
           fetchAllDocuments("aggregates", firebase, setState);
           fetchSelectDocuments("recent", "messages", firebase, setState, '');
+          break;
+        
+        case '/privacy':
+          fetchSelectDocuments("location", "graphics", firebase, setState, path);
           break;
 
         default:
