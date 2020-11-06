@@ -12,7 +12,7 @@
     "date-fns": "^2.15.0",
     "firebase": "^7.17.2",
     "firebase-admin": "^8.12.1",
-    "firestore-export-import": "^0.3.4",
+    "firestore-export-import": "^0.8.0",
     "html-react-parser": "^0.10.5",
     "material-ui-dropzone": "^2.5.0",
     "react": "^16.13.1",
