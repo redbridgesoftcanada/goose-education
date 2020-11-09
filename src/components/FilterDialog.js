@@ -12,7 +12,7 @@ const errorStyles = {
 
 export default function FilterDialog(props) {
     const classes = useStyles(props, 'buttons'); 
-    const { filterOpen, filterOption, filterConjunction, filterQuery, error, handleSearchQuery, handleSearchClick, onClose } = props;
+    const { filterOpen, filterOption, filterConjunction, filterQuery, error, handleSearchQuery, handleSearchText, handleSearchClick, onClose } = props;
 
     const generateDialogField = (name, value, label, children) => 
         <TextField className={classes.menu}
@@ -37,7 +37,7 @@ export default function FilterDialog(props) {
                 name="filterQuery"
                 value={filterQuery}
                 variant="outlined"
-                onChange={handleSearchQuery}
+                onChange={handleSearchText}
                 margin="dense"/>
         </div>
         {error && <Typography style={{...errorStyles}}>{error}</Typography>}

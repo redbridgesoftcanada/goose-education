@@ -1,9 +1,11 @@
-import React, { Fragment, useEffect, useState, useReducer, useRef } from 'react';
+import React, { Fragment, useEffect, useState, useRef, useContext, useCallback } from 'react';
 import parse, { domToReact } from 'html-react-parser';
 import { CardContent, CardMedia, Container, Grid, Link, Typography } from '@material-ui/core';
-import { Switch, Redirect, Route, Link as RouterLink, useRouteMatch, useHistory, useLocation } from "react-router-dom";
+import { Switch, Redirect, Route, Link as RouterLink, useRouteMatch, useHistory } from "react-router-dom";
 import { createPagination, singleFilterQuery, multipleFilterQuery, sortQuery } from '../constants/helpers/_features';
+import debounce from '../constants/helpers/_debounce';
 import { AuthUserContext } from '../components/session';
+import { StateContext, DispatchContext } from '../components/userActions';
 import Compose from '../components/ComposeButton';
 import ComposeDialog from '../components/ComposeDialog';
 import Filter from '../components/FilterButton';
@@ -15,140 +17,168 @@ import Pagination from '../components/Pagination';
 import Article from '../views/Article';
 import { useStyles } from '../styles/networking';
 
-const INITIAL_STATE = {
-    filteredArticles: [],
-    selectedArticle: null,
-    composeOpen: false,   
-    anchorOpen: null,     
-    selectedAnchor: '',
-    isFiltered: false,    
-    filterOpen: false,
-    filterOption: 'Title',
-    filterConjunction: 'And',
-    filterQuery: ''
-}
-
-export default function ArticleBoard({ listOfArticles }) {
-    const classes = useStyles();
-    const history = useHistory();
-    const match = useRouteMatch();
-    const location = useLocation();
-
-    const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+export default function ArticleBoard({ selectedTab, filterReset }) {
+    const authUser = useContext(AuthUserContext);
+    const dispatch = useContext(DispatchContext);
+    const state = useContext(StateContext);
+    
     const [ error, setError ] = useState(null);
+    const { 
+        currentPage, 
+        pageLimit,
+        articles,
+        articleSelect, 
+        composeOpen, 
+        anchorOpen, 
+        anchorSelect, 
+        isFiltered,
+        filterOption, 
+        filterConjunction, 
+        filterQuery 
+    } = state;
     
-    const { selectedArticle, composeOpen, anchorOpen, selectedAnchor, isFiltered, searchQuery } = state;
+    const paginateRef = useRef();
+    paginateRef.current = createPagination(articles[selectedTab], currentPage, pageLimit);
+
+    const setCurrentPage = (event, newValue) => dispatch({ type: 'setCurrentPage', payload: newValue });
+
+    const toggleComposeDialog = () => dispatch({ type:'composeToggle' });
+
+    const toggleFilter = () => {
+        (!state.filterOpen === false ) && setError(null);
+        dispatch({ type: 'filterToggle' });
+    }
+
+    const setFilterCategory = event => {
+        const category = event.target.name;
+        const input = event.target.value;
+        dispatch({ type:'filterCategory', payload: { category, input } });
+    }
     
-    // Pagination
-    const [ paginate, setPaginate ] = useState({ currentPage: 0, pageLimit: 5 });
-    const paginateRef = useRef(null);
-    paginateRef.current = createPagination(state.filteredArticles, paginate.currentPage, paginate.pageLimit);
+    const resetFilter = () => {
+        setError(null);
+        filterReset();
+    }
 
-    // Filter
-    const toggleFilterDialog = () => dispatch({ type:'TOGGLE_FILTER', payload: setError });
-    const handleFilterQuery = event => dispatch({ type:'FILTER_QUERY', payload: event.target});
-    const resetFilter = () => dispatch({ type: 'RESET_FILTER', payload: { listOfArticles, setError } });
+    const toggleSort = event => dispatch({ type: 'sortToggle', payload: event.currentTarget });
 
-    // Sort
-    const handleSelectedSort = event => dispatch({ type: 'SELECTED_SORT', payload: event.currentTarget});
-    const openSortPopover = event => dispatch({ type: 'OPEN_SORT', payload: event.currentTarget });
+    const setSort = event => {
+        const category = event.currentTarget.id;
+        const sortedArticles = sortQuery('articles', articles[selectedTab], category);
 
-    // Search
-    const handleSearchQuery = event => dispatch({ type: 'SEARCH_QUERY', payload: event.target});
-    const handleSearch = () => dispatch({ type:'SEARCH_ARTICLES', payload: { listOfArticles, setError } });
+        dispatch({ type: 'setSort', payload: { category, sortedArticles, selectedTab } });
+    }
+    
+    const inputDebounce = useCallback(
+        debounce(value => dispatch({ type: 'filterText', payload: value }), 500));
 
-    // Dialog
-    const handleSelectedArticle = event => dispatch({ type: 'SELECTED_ARTICLE', payload: { selected: event.currentTarget, listOfArticles }});
-    const toggleComposeDialog = () => dispatch({ type:'TOGGLE_COMPOSE' });
+    const setFilterText = event => inputDebounce(event.target.value);
 
-    useEffect(() => {
-        if (location.state && location.state.article) {
-            dispatch({ type: 'SELECTED_ARTICLE', payload: { selected: location.state.article, listOfArticles }});
-        } 
-        dispatch({ type:'LOAD_ARTICLES', payload: listOfArticles });
-    }, [location.state, listOfArticles])
+    const toggleSearch = () => {
+        let filteredContent = [];
+        if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
+            filteredContent = multipleFilterQuery(articles[selectedTab], filterOption, filterConjunction, filterQuery);
+
+        } else if (Boolean(filterQuery)) {
+            filteredContent = singleFilterQuery(articles[selectedTab], filterOption, filterQuery);
+
+        } else {
+            setError('Please enter one or more filter terms');
+        }
+
+        if (!filteredContent.length) {
+            setError('Sorry, no matches found!');
+        } else {
+            dispatch({ type:'setFilteredArticles', payload: { selectedTab, filteredContent } });
+        }
+    }
+
+    const setArticleSelect = event => {
+        const articleData = articles[selectedTab].find(article => article.id.toString() === event.currentTarget.id);
+        dispatch({ type: 'setArticle', payload: articleData });
+    }
 
     // Δ filteredArticles (sort, filter); 
     useEffect(() => {
-        paginateRef.current = createPagination(state.filteredArticles, paginate.currentPage, paginate.pageLimit);
-    }, [state.filteredArticles, paginate.currentPage, paginate.pageLimit]);
+        paginateRef.current = createPagination(articles[selectedTab], currentPage, pageLimit);
+    }, [articles[selectedTab], currentPage, pageLimit]);
+
+    const history = useHistory();
+    const match = useRouteMatch();
+    const classes = useStyles();
 
     return (
         <Container className={classes.root}>
             <Switch>
+                {articleSelect &&
+                    <>
+                        <Redirect to={{                   
+                            pathname: `${match.path}/${articleSelect.id}`, 
+                            state: { selected: 0 }
+                        }}/>
 
-                {selectedArticle &&
-                    <AuthUserContext.Consumer>
-                    {authUser => 
-                        <>
-                            <Redirect to={{                   
-                                pathname: `${match.path}/${selectedArticle.id}`, 
-                                state: {
-                                    title: 'Networking',
-                                    selected: 0
-                                }
-                            }}/>
-
-                            <Article 
-                                authUser={authUser}
-                                article={selectedArticle} 
-                            /> 
-                        </>
-                    }
-                    </AuthUserContext.Consumer>
+                        <Article 
+                            authUser={authUser}
+                            article={articleSelect} 
+                        /> 
+                    </>
                 }
 
                 <Route path={`${match.path}/:articleID`}>
-                    <AuthUserContext.Consumer>
-                        {authUser => 
-                            <Article 
-                                article={selectedArticle}
-                                authUser={authUser}/> 
-                        }
-                    </AuthUserContext.Consumer>
+                    <Article 
+                        article={articleSelect}
+                        authUser={authUser}/> 
                 </Route>
                 
                 <Route path={match.path}>
-                    <AuthUserContext.Consumer>
-                        {authUser => authUser &&
-                            <>
-                                <Compose handleComposeClick={toggleComposeDialog}/> 
-                                <ComposeDialog
-                                    isEdit={false}
-                                    authUser={authUser} 
-                                    composeType='article'
-                                    composeOpen={composeOpen} 
-                                    onClose={toggleComposeDialog} />
-                            </>
-                        }
-                    </AuthUserContext.Consumer>
+                    {authUser &&
+                        <>
+                            <Compose handleComposeClick={toggleComposeDialog}/> 
+                            <ComposeDialog
+                                isEdit={false}
+                                authUser={authUser} 
+                                composeType='article'
+                                composeOpen={composeOpen} 
+                                onClose={toggleComposeDialog} />
+                        </>
+                    }
                     
                     <Filter 
                         isFilter={isFiltered} 
-                        handleFilterClick={toggleFilterDialog} 
+                        handleFilterClick={toggleFilter} 
                         handleFilterReset={resetFilter}/>
 
                     <Sort 
-                        selectedAnchor={selectedAnchor}
-                        handleSortClick={openSortPopover}/>
+                        selectedAnchor={anchorSelect}
+                        handleSortClick={toggleSort}/>
 
                     <SearchField 
-                        handleSearch={handleSearchQuery}
-                        handleSearchClick={() => history.push({pathname:'/search', search:`?query=${searchQuery}`, state: {...state, category: 'Networking', resources: listOfArticles} })}/>
+                        handleSearch={setFilterText}
+                        handleSearchClick={() => history.push({
+                            pathname:'/search', 
+                            search:`?query=${filterQuery}`, 
+                            state: { 
+                                ...state, 
+                                category: 'Networking', 
+                                resources: articles[selectedTab] 
+                            } 
+                        })
+                    }/>
 
                     <FilterDialog
                         filterOpen={state.filterOpen}
                         filterOption={state.filterOption}
                         filterConjunction={state.filterConjunction}
                         error={error}
-                        handleSearchQuery={handleFilterQuery}
-                        handleSearchClick={handleSearch} 
-                        onClose={toggleFilterDialog} />
+                        handleSearchQuery={setFilterCategory}
+                        handleSearchText={setFilterText}
+                        handleSearchClick={toggleSearch}
+                        onClose={toggleFilter} />
 
                     <SortPopover 
                         anchorEl={anchorOpen} 
                         open={Boolean(anchorOpen)} 
-                        onClose={handleSelectedSort}/>
+                        onClose={setSort}/>
 
                     <Grid container className={classes.board} spacing={1}>
                         {paginateRef.current.map(article => {
@@ -158,7 +188,7 @@ export default function ArticleBoard({ listOfArticles }) {
                             }
                             return (
                                 <Grid item xs={12} sm={6} md={4} 
-                                    onClick={handleSelectedArticle}
+                                    onClick={setArticleSelect}
                                     key={article.id}
                                     id={article.id}>
                                     <Link className={classes.article}
@@ -185,106 +215,12 @@ export default function ArticleBoard({ listOfArticles }) {
                         })}
                     </Grid>
                     <Pagination 
-                        count={state.filteredArticles.length}
-                        currentPage={paginate.currentPage} 
-                        resourcesPerPage={paginate.pageLimit}
-                        handlePageChange={(event, newPage) => setPaginate(prevState => ({...prevState, currentPage: newPage}))}/>
+                        count={articles[selectedTab].length}
+                        currentPage={currentPage} 
+                        resourcesPerPage={pageLimit}
+                        handlePageChange={setCurrentPage}/>
                 </Route>
             </Switch>
         </Container>
     );
-}
-
-function toggleReducer(state, action) {
-    const { type, payload } = action;
-  
-    switch(type) {
-        case 'LOAD_ARTICLES': 
-            return { ...state, filteredArticles: payload }
-
-        case 'TOGGLE_COMPOSE':
-            return { ...state, composeOpen: !state.composeOpen }
-
-        case 'TOGGLE_FILTER': {
-            (!state.filterOpen === false) && payload(null);
-            return { ...state, filterOpen: !state.filterOpen }
-        }
-
-        case 'OPEN_SORT':
-            return { ...state, anchorOpen: payload }
-        
-        case 'SELECTED_SORT':
-            const selectedSort = payload.id;
-            const sortedArticles = sortQuery('articles', state.filteredArticles, selectedSort);
-            
-            return { 
-                ...state, 
-                anchorOpen: null,
-                selectedAnchor: (selectedSort !== 'reset' || selectedSort !== '') ? selectedSort : '',
-                filteredArticles: sortedArticles
-            }
-        
-        case 'RESET_FILTER': {
-            const { listOfArticles, setError } = payload;
-            setError(null);
-            return { 
-                ...state,
-                filteredArticles: listOfArticles,
-                isFiltered: false,
-                filterOpen: false,
-                filterOption: 'Title',
-                filterConjunction: 'And',
-                filterQuery: ''              
-            }
-        }
-
-        case 'FILTER_QUERY':
-            const filterType = payload.name;
-            const selectedType = payload.value;
-            return { ...state, [filterType]: selectedType }
-
-        case 'SEARCH_ARTICLES':
-            const { filterOption, filterConjunction, filterQuery } = state;
-            const { listOfArticles, setError } = payload;
-            
-            let filteredContent = [];
-            if (filterQuery.split(/[ ,]+/).filter(Boolean).length > 1) {
-                filteredContent = multipleFilterQuery(listOfArticles, filterOption, filterConjunction, filterQuery);
-
-            } else if (Boolean(filterQuery)) {
-                filteredContent = singleFilterQuery(listOfArticles, filterOption, filterQuery);
-
-            } else {
-                setError('Please enter one or more filter terms');
-                return { ...state }
-            }
-
-            if (filteredContent.length) {
-                return {
-                    ...state,
-                    filteredArticles: filteredContent,
-                    isFiltered: true,
-                    filterOpen: false
-                }
-            } else {
-                setError('Sorry, no matched found!');
-                return { ...state }
-            }
-
-        case 'SELECTED_ARTICLE':
-            const selectedArticle = payload.listOfArticles.find(article => article.id.toString() === payload.selected.id);
-            return { ...state, selectedArticle }
-        
-        case 'SEARCH_QUERY':
-            const searchQuery = payload.value;
-            return { ...state, searchQuery }
-
-        case 'CHANGE_PAGE':
-            const currentPage = payload;
-            return { ...state, currentPage }
-                    
-        default:
-            console.log('No matching dispatch type for ArticleBoard.')
-            return;
-    }
 }

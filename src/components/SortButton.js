@@ -1,13 +1,13 @@
 import React from 'react';
 import { Button } from '@material-ui/core';
-import { ScheduleOutlined, VisibilityOutlined, UnfoldMoreOutlined } from '@material-ui/icons';
+import { ScheduleOutlined, UnfoldMoreOutlined } from '@material-ui/icons';
 import { MuiThemeBreakpoints } from '../constants/constants';
 import useStyles from '../styles/constants/index';
 
 export default function SortButton(props) {
     const classes = useStyles(props, 'buttons');
     const xsBreakpoint = MuiThemeBreakpoints().xs;
-    const { selectedAnchor, handleSortClick} = props;
+    const { selectedAnchor, handleSortClick } = props;
 
     const buttonProps = {};
     const configButtonProps = () => {
@@ -16,11 +16,6 @@ export default function SortButton(props) {
                 buttonProps.startIcon = <ScheduleOutlined/>;
                 buttonProps.children = 'Date';
                 break;
-
-            // case 'views':
-            //     buttonProps.startIcon = <VisibilityOutlined/>;
-            //     buttonProps.children = 'Views';
-            //     break; 
 
             default:
                 buttonProps.startIcon = <UnfoldMoreOutlined/>;
