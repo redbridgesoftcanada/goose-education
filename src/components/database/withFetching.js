@@ -106,9 +106,8 @@ function withFetching(Component) {
           if (!state.networkingGraphics) {
             fetchSelectDocuments("location", "graphics", firebase, setState, path);
           }
-          if (!state.listOfArticles.length) {
-            fetchAllDocuments("articles", firebase, setState);
-          }
+
+          fetchAllDocuments("articles", firebase, setState);
           break;
         
         case '/schools':
@@ -151,7 +150,6 @@ function withFetching(Component) {
           break;
 
         default:
-          console.log('No path to fetch data!');
           return;
       }
     }, [path]);

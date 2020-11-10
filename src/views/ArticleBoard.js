@@ -101,7 +101,7 @@ export default function ArticleBoard({ selectedTab, filterReset }) {
     // Δ filteredArticles (sort, filter); 
     useEffect(() => {
         paginateRef.current = createPagination(articles[selectedTab], currentPage, pageLimit);
-    }, [articles[selectedTab], currentPage, pageLimit]);
+    }, [articles, selectedTab, currentPage, pageLimit]);
 
     const history = useHistory();
     const match = useRouteMatch();
