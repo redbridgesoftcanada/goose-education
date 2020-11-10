@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy, useEffect, useContext } from 'react';
 import { Backdrop, CircularProgress } from "@material-ui/core";
 import { Switch, Route } from "react-router-dom";
 import ScrollToTop from './components/ScrollToTop';
@@ -24,6 +24,8 @@ const Admin = lazy(() => import('./Admin'));
 const FallbackElement = <Backdrop open={true}><CircularProgress color="primary"/></Backdrop>;
 
 function App() {
+  const { state } = useContext(DatabaseContext);
+
   useEffect(() => {
     // custom validation to check if <ReactQuill> component is empty - or - is only HTML tags (accessible as 'isQuillEmpty' rule)
     ValidatorForm.addValidationRule('isQuillEmpty', value => {
@@ -46,60 +48,47 @@ function App() {
             <Route path="/register" render={() => <Register/>}/>
             <Route exact path="/" render={() => <Home /> }/>
 
-            <DatabaseContext.Consumer>
-              {({ state }) =>
-                <>
-                  {state.gooseGraphics && 
-                    <Route path="/goose" 
-                      render={props => 
-                        <Goose 
-                          {...props} 
-                          pageBanner={state.gooseGraphics.goosePageBanner}/>}
-                    />}
+            {state.gooseGraphics && 
+              <Route path="/goose" 
+                render={props => 
+                  <Goose 
+                    {...props} 
+                    pageBanner={state.gooseGraphics.goosePageBanner}/>}
+              />}
 
-                  {state.networkingGraphics && 
-                    <Route path="/networking" 
-                      render={props => 
-                        <Networking 
-                          {...props} 
-                          pageBanner={state.networkingGraphics.networkingPageBanner} 
-                          poster={state.networkingGraphics.networkingPoster}
-                          posterCards={state.networkingGraphics.networkingCards} 
-                          wrapper={state.networkingGraphics.networkingWrapper}/>}
-                    />}
-                  
-                  {state.schoolsGraphics && 
-                    <Route path="/schools" 
-                      render={props => 
-                        <Schools 
-                          {...props} 
-                          listOfSchools={state.listOfSchools} 
-                          posterTop={state.schoolsGraphics.schoolInfoPosterTop}
-                          posterBottom={state.schoolsGraphics.schoolInfoPosterBottom}/>}
-                    />}
+            {state.networkingGraphics && 
+              <Route path="/networking" render={() => <Networking/>}/>}
+            
+            {state.schoolsGraphics && 
+              <Route path="/schools" 
+                render={props => 
+                  <Schools 
+                    {...props} 
+                    listOfSchools={state.listOfSchools} 
+                    posterTop={state.schoolsGraphics.schoolInfoPosterTop}
+                    posterBottom={state.schoolsGraphics.schoolInfoPosterBottom}/>}
+              />}
 
-                  {state.studyabroadGraphics && 
-                    <Route path="/studyabroad" 
-                      render={props => 
-                        <StudyAbroad 
-                          {...props}
-                          pageBanner={state.studyabroadGraphics.studyAbroadPageBanner}/>}
-                  />}
-                  
-                  {state.servicesGraphics && 
-                    <Route path="/services" 
-                      render={props => 
-                        <ServiceCentre 
-                          {...props} 
-                          listOfMessages={state.listOfMessages} 
-                          listOfAnnouncements={state.listOfAnnouncements}
-                          pageBanner={state.servicesGraphics.serviceCentrePageBanner}/>}
-                    />}
+            {state.studyabroadGraphics && 
+              <Route path="/studyabroad" 
+                render={props => 
+                  <StudyAbroad 
+                    {...props}
+                    pageBanner={state.studyabroadGraphics.studyAbroadPageBanner}/>}
+            />}
+            
+            {state.servicesGraphics && 
+              <Route path="/services" 
+                render={props => 
+                  <ServiceCentre 
+                    {...props} 
+                    listOfMessages={state.listOfMessages} 
+                    listOfAnnouncements={state.listOfAnnouncements}
+                    pageBanner={state.servicesGraphics.serviceCentrePageBanner}/>}
+              />}
 
-                  {state.privacyGraphics && <Route path="/privacy" render={() => <Privacy {...state.privacyGraphics.privacyPolicy}/>}/>}
-                </>
-              }
-            </DatabaseContext.Consumer>
+            {state.privacyGraphics && <Route path="/privacy" render={() => <Privacy {...state.privacyGraphics.privacyPolicy}/>}/>}
+
           </Switch>
         </Suspense>
       </ScrollToTop>
