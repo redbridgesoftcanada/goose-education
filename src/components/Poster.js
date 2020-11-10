@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import clsx from 'clsx';
 import { Card, CardContent, Grid, Typography } from '@material-ui/core/';
 import { MuiThemeBreakpoints } from '../constants/constants';
@@ -6,7 +6,7 @@ import MarkedTypography from '../components/onePirate/Typography';
 import PageBannerLayout from '../views/PageBannerLayout';
 import useStyles from '../styles/constants';
 
-export default function Poster(props) {
+const Poster = memo(props => {
   const classes = useStyles(props, 'poster');
   const { backgroundImage, layoutType } = props;
   const xsBreakpoint = MuiThemeBreakpoints().xs;
@@ -20,7 +20,7 @@ export default function Poster(props) {
       </PageBannerLayout>
     </section>
   );
-}
+}); 
 
 function generatePosterContent(classes, props, breakpoint) {
   const { body, layoutType } = props;
@@ -89,3 +89,5 @@ function createPosterCards(classes, cards) {
     </Grid>
   )
 }
+
+export default Poster;
