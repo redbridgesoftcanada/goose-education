@@ -137,17 +137,14 @@ function Networking() {
     pageLimit: 5, 
     articles: taggedArticles,
     articleSelect: (location.state && location.state.article) ? location.state.article : null,
-    
     composeOpen: false,   
     anchorOpen: null,     
     anchorSelect: '',
-    
     isFiltered: false,    
     filterOpen: false,
     filterOption: 'Title',
     filterConjunction: 'And',
     filterQuery: '',
-
     commentCollapseOpen: true,
     editAnchor: null,
     editDialogOpen: false,
@@ -163,12 +160,14 @@ function Networking() {
 
   const filterReset = () => dispatch({ type: 'filterReset', payload: taggedArticles });
 
+  // reset articleSelect if user goes back to /networking (history);
   useEffect(() => {
     if (location.pathname === '/networking') {
       dispatch({ type: 'setArticle', payload: null });
     }
   }, [location.pathname]);
 
+  // reset articles to display any edit/delete changes;
   useEffect(() => {
     dispatch({ type: 'setArticles', payload: taggedArticles });
   }, [taggedArticles])

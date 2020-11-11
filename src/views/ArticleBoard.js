@@ -32,6 +32,7 @@ export default function ArticleBoard({ selectedTab, filterReset }) {
         anchorOpen, 
         anchorSelect, 
         isFiltered,
+        filterOpen,
         filterOption, 
         filterConjunction, 
         filterQuery 
@@ -39,7 +40,7 @@ export default function ArticleBoard({ selectedTab, filterReset }) {
     
     const paginateRef = useRef();
     paginateRef.current = createPagination(articles[selectedTab], currentPage, pageLimit);
-
+    
     const setCurrentPage = (event, newValue) => dispatch({ type: 'setCurrentPage', payload: newValue });
 
     const toggleComposeDialog = () => dispatch({ type:'composeToggle' });
@@ -117,17 +118,12 @@ export default function ArticleBoard({ selectedTab, filterReset }) {
                             state: { selected: 0 }
                         }}/>
 
-                        <Article 
-                            authUser={authUser}
-                            article={articleSelect} 
-                        /> 
+                        <Article/> 
                     </>
                 }
 
                 <Route path={`${match.path}/:articleID`}>
-                    <Article 
-                        article={articleSelect}
-                        authUser={authUser}/> 
+                    <Article/> 
                 </Route>
                 
                 <Route path={match.path}>
@@ -166,9 +162,9 @@ export default function ArticleBoard({ selectedTab, filterReset }) {
                     }/>
 
                     <FilterDialog
-                        filterOpen={state.filterOpen}
-                        filterOption={state.filterOption}
-                        filterConjunction={state.filterConjunction}
+                        filterOpen={filterOpen}
+                        filterOption={filterOption}
+                        filterConjunction={filterConjunction}
                         error={error}
                         handleSearchQuery={setFilterCategory}
                         handleSearchText={setFilterText}
@@ -182,10 +178,6 @@ export default function ArticleBoard({ selectedTab, filterReset }) {
 
                     <Grid container className={classes.board} spacing={1}>
                         {paginateRef.current.map(article => {
-                            const redirectPath = { 
-                                pathname: `${match.path}/${article.id}`, 
-                                state: { title: 'Networking' } 
-                            }
                             return (
                                 <Grid item xs={12} sm={6} md={4} 
                                     onClick={setArticleSelect}
@@ -193,7 +185,10 @@ export default function ArticleBoard({ selectedTab, filterReset }) {
                                     id={article.id}>
                                     <Link className={classes.article}
                                         component={RouterLink} 
-                                        to={redirectPath}>
+                                        to={{ 
+                                            pathname: `${match.path}/${article.id}`, 
+                                            state: { title: 'Networking' } 
+                                        }}>
                                         <CardMedia
                                             className={classes.articleThumbnail}
                                             image={article.image}
