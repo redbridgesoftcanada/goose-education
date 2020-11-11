@@ -53,14 +53,14 @@ function Article({ firebase }) {
     });
 
     const resetAllActions = () => {
-        dispatch({ type:'userActionsReset' });
         pageRedirect();
+        dispatch({ type:'userActionsReset' });
     }
     
     const handleArticleDelete = async () => {
         const docRef = { id: articleSelect.id, upload: articleSelect.image }
         await checkStorageDelete(firebase, 'articles', docRef);
-        pageRedirect();
+        resetAllActions();
     }
   
     const onCommentSubmit = event => {
