@@ -1,8 +1,10 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useReducer } from 'react';
 import { Avatar, Box, Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormHelperText, Grid, Input } from '@material-ui/core';
 import DescriptionIcon from '@material-ui/icons/Description';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { TAGS } from '../constants/constants';
+import { AuthUserContext } from '../components/session';
+import { DatabaseContext } from '../components/database';
 import StyledValidators from '../components/customMUI';
 import { withFirebase } from '../components/firebase';
 
@@ -19,10 +21,23 @@ const INITIAL_STATE = {
 }
 
 function ComposeDialogBase(props) {
-  const { authUser, firebase, composeOpen, onClose, composeType } = props;
+  const { firebase, composeOpen, onClose, composeType } = props;
+
+  const authUser = useContext(AuthUserContext);
+  const { refreshArticles } = useContext(DatabaseContext);
   
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
-  const { isEdit, isLoading, title, tag, description, instagramURL, link1, link2, uploads } = state;
+  const { 
+    isEdit, 
+    isLoading, 
+    title, 
+    tag, 
+    description, 
+    instagramURL, 
+    link1, 
+    link2, 
+    uploads 
+  } = state;
   
   const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'EDIT_FORM', payload: { composeType, isEdit, prevContent }});
   const handleFormFields = event => dispatch({ payload:event.target });
@@ -84,7 +99,8 @@ function ComposeDialogBase(props) {
           ...formContent,
           updatedAt: Date.now(),
           [uploadKey]: downloadURL
-        }, { merge: true }).then(async () => {
+        }, { merge: true })
+        .then(async () => {
           prevUpload && prevUpload.includes('firebase') && await firebase.refFromUrl(prevUpload).delete();
           onClose();
         });
@@ -105,7 +121,11 @@ function ComposeDialogBase(props) {
           ...defaultDocFields,
           ...formContent,
           [uploadKey]: downloadURL
-        }).then(() => onClose());
+        })
+        .then(() => {
+          refreshArticles();
+          onClose();
+        })
   
       // user does not upload a file with the form
       } else {
@@ -113,7 +133,11 @@ function ComposeDialogBase(props) {
           ...defaultDocFields,
           ...formContent,
           [uploadKey]: ''
-        }).then(() => onClose());
+        })
+        .then(() => {
+          refreshArticles();
+          onClose();
+        })
       }
     }
     event.preventDefault();
@@ -124,7 +148,6 @@ function ComposeDialogBase(props) {
     // (optional cleanup mechanism for effects) - remove rule when not needed;
     return () => ValidatorForm.removeValidationRule('isSelected');
   });
-
 
   useEffect(() => {
     ValidatorForm.addValidationRule("isRequiredUpload", value => {

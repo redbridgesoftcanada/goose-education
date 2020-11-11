@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation } from "react-router-dom";
 import DatabaseContext from './context';
-import { ADMIN_PAGES } from '../../constants/constants';
 import { fetchUserMedia } from '../../constants/helpers/_instagramAPI';
 import { fetchPaginatedQuery } from '../../constants/helpers/_pagination';
 import { fetchSelectDocuments } from '../../constants/helpers/_fetchSelect';
@@ -47,6 +46,10 @@ function withFetching(Component) {
       instagram: []
     }
     const [ state, setState ] = useState(INITIAL_STATE);
+
+    const refreshArticles = useCallback(() => {
+      return fetchAllDocuments("articles", firebase, setState);
+    }, [state.taggedArticles]);
 
     const paginatedQuery = type => {
       return fetchPaginatedQuery(state, firebase, setState, type);
@@ -107,7 +110,7 @@ function withFetching(Component) {
             fetchSelectDocuments("location", "graphics", firebase, setState, path);
           }
 
-          fetchAllDocuments("articles", firebase, setState);
+          refreshArticles();
           break;
         
         case '/schools':
@@ -155,7 +158,12 @@ function withFetching(Component) {
     }, [path]);
 
     return (
-    <DatabaseContext.Provider value={{state, paginatedQuery, adminPageQuery}}>
+    <DatabaseContext.Provider value={{
+      state, 
+      paginatedQuery, 
+      adminPageQuery,
+      refreshArticles
+      }}>
       <Component {...props} />
     </DatabaseContext.Provider>
     )
