@@ -15,16 +15,14 @@ import StyledValidators from '../components/customMUI';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
 import Comments from '../components/Comments';
-import ErrorSnackbar from '../components/ErrorSnackbar';
 import useStyles from '../styles/serviceCentre';
 
 function Article({ firebase }) {
     const authUser = useContext(AuthUserContext);
-    const dispatch = useContext(DispatchContext);
+    const { dispatch, setNotification } = useContext(DispatchContext);
     const state = useContext(StateContext);
     
     const [ comment, setComment ] = useState('');
-    const [ error, setError ] = useState(null);
     const { 
         articleSelect,
         commentCollapseOpen, 
@@ -47,36 +45,39 @@ function Article({ firebase }) {
     
     const handleEdit = event => dispatch({ type: 'editToggle', payload: event.currentTarget });
 
-    const pageRedirect = () => history.push({ 
-        pathname: '/networking', 
-        state: { selected: 0 } 
-    });
-
-    const resetAllActions = () => {
-        pageRedirect();
+    const resetAllActions = (action, message) => {
+        history.push({ pathname: '/networking', state: { selected: 0 } });
         dispatch({ type:'userActionsReset' });
+        setNotification({ action, message });
     }
     
     const handleArticleDelete = async () => {
         const docRef = { id: articleSelect.id, upload: articleSelect.image }
-        await checkStorageDelete(firebase, 'articles', docRef);
-        resetAllActions();
+        try {
+            await checkStorageDelete(firebase, 'articles', docRef);
+            resetAllActions('success', 'Article has been deleted.');
+        } catch (err) {
+            resetAllActions('error', 'Something went wrong trying to delete the article. Please try again later.');
+        }
     }
   
-    const onCommentSubmit = event => {
-      firebase.article(articleSelect.id).update({ 
-            "comments": firebase.updateArray().arrayUnion({
-                id: uuidv4(),
-                authorDisplayName: authUser.displayName,
-                authorID: authUser.uid,
-                description: comment,
-                createdAt: Date.now(),
-                updatedAt: Date.now()
-            }) 
-        }).then(() => { 
-            dispatch({ type:'userActionsReset' });
-            pageRedirect();
-        }).catch(error => setError(error));
+    const onCommentSubmit = async event => {
+        try {
+            await firebase.article(articleSelect.id)
+                .update({ "comments": 
+                    firebase.updateArray().arrayUnion({
+                        id: uuidv4(),
+                        authorDisplayName: authUser.displayName,
+                        authorID: authUser.uid,
+                        description: comment,
+                        createdAt: Date.now(),
+                        updatedAt: Date.now()
+                    })
+                }); 
+            resetAllActions('success', 'Comment has been saved and displayed.');
+        } catch (err) {
+            setNotification({ action: 'error', message: 'Something went wrong trying to save the comment. Please try again later.' });
+        }
       event.preventDefault();
     }
 
@@ -98,13 +99,6 @@ function Article({ firebase }) {
 
     return (
         <Container>
-            {error && 
-                <ErrorSnackbar 
-                isOpen={!!error}
-                onCloseHandler={() => setError(null)}
-                errorMessage={error}/>
-            }
-
             <Typography className={classes.title}>{articleSelect.title}</Typography>
             <Grid container className={classes.metaContainer}>
                 <Grid container item xs={7} sm={6} spacing={1} className={classes.metaLeft}>

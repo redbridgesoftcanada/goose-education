@@ -5,6 +5,7 @@ import withRoot from './withRoot';
 import { TAGS, MuiThemeBreakpoints } from './constants/constants';
 import { DatabaseContext } from './components/database';
 import { StateContext, DispatchContext } from './components/userActions';
+import { StatusSnackbar } from './components/customMUI';
 import MarkedTypography from './components/onePirate/Typography';
 import TabPanel from './components/TabPanel';
 import Poster from './components/Poster';
@@ -128,10 +129,13 @@ function Networking() {
       networkingWrapper } 
     } = useContext(DatabaseContext).state;
 
-  const location = useLocation();
-
   const [ selectedTab, setSelectedTab ] = useState(0);
+  const [ notification, setNotification ] = useState({
+    action: '', 
+    message: ''
+  });
 
+  const location = useLocation();
   const [ state, dispatch ] = useReducer(actionsReducer, {
     currentPage: 0, 
     pageLimit: 5, 
@@ -186,7 +190,7 @@ function Networking() {
       </Box>
 
       <Box>
-        <DispatchContext.Provider value={dispatch}>
+        <DispatchContext.Provider value={{dispatch, setNotification}}>
           <StateContext.Provider value={state}>
             {!xsBreakpoint ?
               createTabPanel(classes, selectedTab, setSelectedTab, state.articles[selectedTab], filterReset) : 
@@ -195,6 +199,13 @@ function Networking() {
           </StateContext.Provider>
         </DispatchContext.Provider>
       </Box>
+
+      {(notification.action && notification.message) &&
+        <StatusSnackbar 
+          {...notification}
+          onClose={() => setNotification({ action: '',  message: '' })}
+        />
+      }
 
       <Poster body={posterBody.current} backgroundImage={networkingPoster.image} posterCards={networkingCards} layoutType='vancouver_now'/>
       <ResponsiveFooters/>

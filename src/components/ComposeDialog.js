@@ -5,6 +5,7 @@ import { ValidatorForm } from 'react-material-ui-form-validator';
 import { TAGS } from '../constants/constants';
 import { AuthUserContext } from '../components/session';
 import { DatabaseContext } from '../components/database';
+import { DispatchContext } from '../components/userActions';
 import StyledValidators from '../components/customMUI';
 import { withFirebase } from '../components/firebase';
 
@@ -24,6 +25,7 @@ function ComposeDialogBase(props) {
   const { firebase, composeOpen, onClose, composeType } = props;
 
   const authUser = useContext(AuthUserContext);
+  const { setNotification } = useContext(DispatchContext);
   const { refreshArticles } = useContext(DatabaseContext);
   
   const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
@@ -92,7 +94,10 @@ function ComposeDialogBase(props) {
           ...formContent,
           updatedAt: Date.now()
         }, { merge: true })
-        .then(() => onClose());
+        .then(() => {
+          onClose();
+          setNotification({ action: 'success', message: 'Changes have been saved.' });
+        });
       } else if (isFileUploaded) {
         const downloadURL = await handleStorageUpload(uploads, composeType, metadata, firebase);
         newDoc.set({
@@ -103,6 +108,7 @@ function ComposeDialogBase(props) {
         .then(async () => {
           prevUpload && prevUpload.includes('firebase') && await firebase.refFromUrl(prevUpload).delete();
           onClose();
+          setNotification({ action: 'success', message: 'Changes have been saved.' });
         });
       }
 
@@ -125,6 +131,7 @@ function ComposeDialogBase(props) {
         .then(() => {
           refreshArticles();
           onClose();
+          setNotification({ action: 'success', message: `New ${composeType} has been created.` });
         })
   
       // user does not upload a file with the form
@@ -137,6 +144,7 @@ function ComposeDialogBase(props) {
         .then(() => {
           refreshArticles();
           onClose();
+          setNotification({ action: 'success', message: `New ${composeType} has been created.` });
         })
       }
     }

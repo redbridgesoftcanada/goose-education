@@ -19,9 +19,10 @@ import { useStyles } from '../styles/networking';
 
 export default function ArticleBoard({ selectedTab, filterReset }) {
     const authUser = useContext(AuthUserContext);
-    const dispatch = useContext(DispatchContext);
+    const { dispatch } = useContext(DispatchContext);
     const state = useContext(StateContext);
     
+    // display error warnings for invalid filter values;
     const [ error, setError ] = useState(null);
     const { 
         currentPage, 
@@ -40,7 +41,7 @@ export default function ArticleBoard({ selectedTab, filterReset }) {
     
     const paginateRef = useRef();
     paginateRef.current = createPagination(articles[selectedTab], currentPage, pageLimit);
-    
+
     const setCurrentPage = (event, newValue) => dispatch({ type: 'setCurrentPage', payload: newValue });
 
     const toggleComposeDialog = () => dispatch({ type:'composeToggle' });
