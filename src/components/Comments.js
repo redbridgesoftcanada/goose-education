@@ -1,21 +1,23 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useContext } from 'react';
 import { Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { MoreVertOutlined } from '@material-ui/icons';
 import { format, compareAsc } from 'date-fns';
 import parse from 'html-react-parser';
+import { AuthUserContext } from '../components/session';
+import { StateContext } from '../components/userActions';
 import { withFirebase } from '../components/firebase';
 import CommentDialog from '../components/CommentDialog';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import useStyles from '../styles/constants';
 
-function Comments(props) {
-  const classes = useStyles(props, 'comments');
-  const { authUser, firebase } = props;
+function Comments({ firebase, formType, resetAllActions }) {
+  const authUser = useContext(AuthUserContext);
+  const stateContext = useContext(StateContext);
 
   const [ state, setState ] = useState({
-    formType: props.formType,
-    selectedResource: props.selectedResource,
-    listOfComments: props.listOfComments,
+    formType: formType,
+    selectedResource: stateContext.articleSelect,
+    listOfComments: stateContext.articleSelect.comments,
     selectedComment: null,
     selectedCommentBody: '',
     commentAnchor: null,
@@ -23,34 +25,37 @@ function Comments(props) {
     commentDialogOpen: false,
   });
 
-  const handleMenuOpen = e => setState(state => ({ ...state, commentAnchor: e.currentTarget }));
-  const handleMenuClose = () => setState(state => ({ ...state, commentAnchor: null }));
+  const handleMenuOpen = e => setState(prevState => ({ ...prevState, commentAnchor: e.currentTarget }));
+
+  const handleMenuClose = () => setState(prevState => ({ ...prevState, commentAnchor: null }));
 
   const handleChange = e => {
     const userInput = e.currentTarget.value;
-    setState(state => ({ ...state, selectedCommentBody: userInput }));
+    setState(prevState => ({ ...prevState, selectedCommentBody: userInput }));
   }
   
-  const handleCancel = () => setState(state => ({ ...state, selectedComment: null, commentDialogOpen: !state.commentDialogOpen }));
+  const handleCancel = () => setState(prevState => ({ ...prevState, selectedComment: null, commentDialogOpen: !state.commentDialogOpen }));
 
-  const handleDeleteConfirmation = e => setState(state => ({ ...state, commentConfirmOpen: !state.commentConfirmOpen }));
+  const handleDeleteConfirmation = e => setState(prevState => ({ ...prevState, commentConfirmOpen: !state.commentConfirmOpen }));
 
   const handleEdit = () => {
     const commentMatch = state.listOfComments.find(comment => comment.id === state.commentAnchor.id);
-    setState(state => ({ 
-      ...state, 
+    setState(prevState => ({ 
+      ...prevState, 
       selectedComment: commentMatch, 
       selectedCommentBody: commentMatch.description, 
       commentAnchor: null, 
-      commentDialogOpen: !state.commentDialogOpen
+      commentDialogOpen: !prevState.commentDialogOpen
     }));
   }
-  
-  const onSubmit = e => {
-    const collectionRef = configFirebase(firebase, state.formType, state.selectedResource.id);
 
-    firebase.transaction(t => {
-      return t.get(collectionRef).then(doc => {
+  const onSubmit = async e => {
+    const docRef = configFirebaseRef(firebase, state.formType, state.selectedResource.id);
+
+    try {
+      await firebase.transaction(async t => {
+        const doc = await t.get(docRef);
+
         const commentsArr = doc.data().comments;
         const filteredCommentsArr = commentsArr.filter(comment => comment.id !== state.selectedComment.id);
         
@@ -59,35 +64,58 @@ function Comments(props) {
         selectedComment.updatedAt = Date.now();
 
         filteredCommentsArr.push(selectedComment);
-        t.update(collectionRef, { comments: filteredCommentsArr });
-    })})
-    .then(() => setState(state => ({ 
-        ...state, 
+        await t.update(docRef, { comments: filteredCommentsArr });
+        // return 'Completed update transaction of comments for content and date.';
+      });
+
+      setState(prevState => ({ 
+        ...prevState, 
         selectedComment: null,
         selectedCommentBody: '', 
-        commentDialogOpen: !state.commentDialogOpen 
-      })));
+        commentDialogOpen: !prevState.commentDialogOpen 
+      }));
+
+      // Translation: 'Comment has been saved.'
+      resetAllActions('success', '댓글이 저장되었습니다.');
+
+    } catch (err) {
+      // Translation: 'Comment could not be saved. We will try and fix this issue.'
+      resetAllActions('error', '댓글을 저장할 수 없습니다. 이 문제를 해결하려고 노력할 것입니다.');
+    }
+
     e.preventDefault();
   }
 
-  const onDelete = e => {
-    const collectionRef = configFirebase(firebase, state.formType, state.selectedResource.id);
+  const onDelete = async e => {
+    const docRef = configFirebaseRef(firebase, state.formType, state.selectedResource.id);
 
-    firebase.transaction(t => {
-      return t.get(collectionRef).then(doc => {
+    try {
+      await firebase.transaction(async t => {
+        const doc = await t.get(docRef)
         const commentsArr = doc.data().comments;
 
         const filteredCommentsArr = commentsArr.filter(comment => comment.id !== state.commentAnchor.id);
 
-        t.update(collectionRef, { comments: filteredCommentsArr });
-      })})
-      .then(() => setState(state => ({ 
-        ...state, 
+        await t.update(docRef, { comments: filteredCommentsArr });
+        // return 'Completed remove/delete transaction of comments.'
+      });
+
+      setState(prevState => ({ 
+        ...prevState, 
         commentAnchor: null,
-        commentConfirmOpen: !state.commentConfirmOpen 
-    })));
-    e.preventDefault();
+        commentConfirmOpen: !prevState.commentConfirmOpen 
+      }));
+
+      // Translation: 'Comment has been deleted.'
+      resetAllActions('success', '댓글이 삭제되었습니다.');
+
+    } catch (err) {
+      // Translation: 'Comment could not be deleted. We will try and fix this issue.'
+      resetAllActions('error', '댓글을 삭제할 수 없습니다. 이 문제를 해결하려고 노력할 것입니다.');
+    }
   }
+
+  const classes = useStyles({}, 'comments');
 
   return (
     state.listOfComments.map(comment => {
@@ -152,7 +180,7 @@ function Comments(props) {
   )
 }
 
-function configFirebase(firebase, formType, resourceId) {
+function configFirebaseRef(firebase, formType, resourceId) {
   switch(formType) {
     case 'announcement':
       return firebase.announcement(resourceId);
