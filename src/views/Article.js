@@ -1,35 +1,31 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, CardMedia, Collapse, Container, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { AccountCircleOutlined, ChatBubbleOutlineOutlined, ScheduleOutlined, MoreVertOutlined, Facebook, Instagram, RoomOutlined, LanguageOutlined, EditOutlined, DeleteOutline } from '@material-ui/icons';
-import { ValidatorForm } from 'react-material-ui-form-validator';
 import parse from 'html-react-parser';
 import { format, compareAsc } from 'date-fns';
-import { v4 as uuidv4 } from 'uuid';
 import { MuiThemeBreakpoints } from '../constants/constants';
 import { checkStorageDelete } from '../constants/helpers/_storage';
 import { AuthUserContext } from '../components/session';
 import { StateContext, DispatchContext } from '../components/userActions';
 import { withFirebase } from '../components/firebase';
-import StyledValidators from '../components/customMUI';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 import ComposeDialog from '../components/ComposeDialog';
-import Comments from '../components/Comments';
+import Comments, { CommentField } from '../components/Comments';
 import useStyles from '../styles/serviceCentre';
 
 function Article({ firebase }) {
     const authUser = useContext(AuthUserContext);
+    const stateContext = useContext(StateContext);
     const { dispatch, setNotification } = useContext(DispatchContext);
-    const state = useContext(StateContext);
     
-    const [ comment, setComment ] = useState('');
     const { 
         articleSelect,
         commentCollapseOpen, 
         editAnchor, 
         editDialogOpen, 
         deleteConfirmOpen
-    } = state;
+    } = stateContext;
 
     const isArticleOwner = !authUser ? false : authUser.uid === articleSelect.authorID;
 
@@ -55,47 +51,17 @@ function Article({ firebase }) {
         const docRef = { id: articleSelect.id, upload: articleSelect.image }
         try {
             await checkStorageDelete(firebase, 'articles', docRef);
-            resetAllActions('success', 'Article has been deleted.');
+            // Translation: 'Article has been deleted.';
+            resetAllActions('success', '기사가 삭제되었습니다.');
         } catch (err) {
-            resetAllActions('error', 'Something went wrong trying to delete the article. Please try again later.');
+            // Translation: 'Article could not be deleted. We will try and fix this issue.';
+            resetAllActions('error', '기사를 삭제할 수 없습니다. 이 문제를 해결하려고 노력할 것입니다.');
         }
-    }
-  
-    const onCommentSubmit = async event => {
-        try {
-            await firebase.article(articleSelect.id)
-                .update({ "comments": 
-                    firebase.updateArray().arrayUnion({
-                        id: uuidv4(),
-                        authorDisplayName: authUser.displayName,
-                        authorID: authUser.uid,
-                        description: comment,
-                        createdAt: Date.now(),
-                        updatedAt: Date.now()
-                    })
-                }); 
-            resetAllActions('success', 'Comment has been saved and displayed.');
-        } catch (err) {
-            setNotification({ action: 'error', message: 'Something went wrong trying to save the comment. Please try again later.' });
-        }
-      event.preventDefault();
     }
 
     const history = useHistory();
     const xsBreakpoint = MuiThemeBreakpoints().xs;
     const classes = useStyles();
-
-    const CommentFormField = 
-        <ValidatorForm onSubmit={onCommentSubmit}>
-            <StyledValidators.TextField
-                onChange={event => setComment(event.target.value)}
-                multiline
-                rows={5}
-                value={comment}
-                validators={['isQuillEmpty']}
-                errorMessages={['']}/>
-            <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
-        </ValidatorForm>
 
     return (
         <Container>
@@ -210,18 +176,16 @@ function Article({ firebase }) {
                 :
                 !xsBreakpoint && isArticleOwner ? 
                 <Collapse in={commentCollapseOpen} timeout="auto" unmountOnExit>
-                    {CommentFormField}
+                    <CommentField/>
                 </Collapse>
                 :
-                CommentFormField
+                <CommentField/>
             }
 
-            {!!articleSelect.comments.length &&
-                <Comments 
-                    formType='article' 
-                    authUser={authUser}
-                    selectedResource={articleSelect}
-                    listOfComments={articleSelect.comments}/> 
+            {articleSelect.comments.length ?
+                <Comments formType='article' resetAllActions={resetAllActions}/> 
+                : 
+                null
             }
         </Container>
     )

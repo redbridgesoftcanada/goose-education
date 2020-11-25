@@ -28,6 +28,10 @@ export const commentStyles = props => {
     commentText: {
       ...theme.typography.body2,
       textAlign: 'left'
+    },
+
+    commentButton: {
+      marginBottom: theme.spacing(1)
     }
 
   }))(props)

@@ -1,14 +1,65 @@
 import React, { Fragment, useState, useContext } from 'react';
-import { Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Button, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import { MoreVertOutlined } from '@material-ui/icons';
+import { ValidatorForm } from 'react-material-ui-form-validator';
+import { useHistory } from 'react-router-dom';
 import { format, compareAsc } from 'date-fns';
 import parse from 'html-react-parser';
+import { v4 as uuidv4 } from 'uuid';
 import { AuthUserContext } from '../components/session';
-import { StateContext } from '../components/userActions';
+import { StateContext, DispatchContext } from '../components/userActions';
 import { withFirebase } from '../components/firebase';
 import CommentDialog from '../components/CommentDialog';
 import DeleteConfirmation from '../components/DeleteConfirmation';
+import StyledValidators from '../components/customMUI';
 import useStyles from '../styles/constants';
+
+function CommentsFormField({ firebase }) {
+  const authUser = useContext(AuthUserContext);
+  const stateContext = useContext(StateContext);
+  const { dispatch, setNotification } = useContext(DispatchContext);
+  const history = useHistory();
+  const classes = useStyles({}, 'comments');
+  
+  const [ comment, setComment ] = useState('');
+  
+  const onSubmit = async event => {
+    try {
+      await firebase.article(stateContext.articleSelect.id).update({ 
+        "comments": 
+          firebase.updateArray().arrayUnion({
+            id: uuidv4(),
+            authorDisplayName: authUser.displayName,
+            authorID: authUser.uid,
+            description: comment,
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+          })
+        }); 
+        history.push({ pathname: '/networking', state: { selected: 0 } });
+        dispatch({ type:'userActionsReset' });
+        setNotification({ action: 'success', message: '댓글이 저장되었습니다.' });
+        // Translation: 'Comment has been saved.'
+    } catch (err) {
+      setNotification({ action: 'error', message: '댓글을 저장할 수 없습니다. 이 문제를 해결하려고 노력할 것입니다.' });
+      // Translation: 'Comment could not be saved. We will try and fix this issue.'
+    }
+    event.preventDefault();
+  }
+
+  return (
+    <ValidatorForm onSubmit={onSubmit}>
+      <StyledValidators.TextField
+        onChange={event => setComment(event.target.value)}
+        multiline
+        rows={5}
+        value={comment}
+        validators={['isQuillEmpty']}
+        errorMessages={['']}/>
+      <Button className={classes.commentButton} variant='contained' fullWidth color='secondary' type='submit'>Post</Button>
+    </ValidatorForm>
+  )
+}
 
 function Comments({ firebase, formType, resetAllActions }) {
   const authUser = useContext(AuthUserContext);
@@ -51,7 +102,6 @@ function Comments({ firebase, formType, resetAllActions }) {
 
   const onSubmit = async e => {
     const docRef = configFirebaseRef(firebase, state.formType, state.selectedResource.id);
-
     try {
       await firebase.transaction(async t => {
         const doc = await t.get(docRef);
@@ -65,7 +115,6 @@ function Comments({ firebase, formType, resetAllActions }) {
 
         filteredCommentsArr.push(selectedComment);
         await t.update(docRef, { comments: filteredCommentsArr });
-        // return 'Completed update transaction of comments for content and date.';
       });
 
       setState(prevState => ({ 
@@ -97,7 +146,6 @@ function Comments({ firebase, formType, resetAllActions }) {
         const filteredCommentsArr = commentsArr.filter(comment => comment.id !== state.commentAnchor.id);
 
         await t.update(docRef, { comments: filteredCommentsArr });
-        // return 'Completed remove/delete transaction of comments.'
       });
 
       setState(prevState => ({ 
@@ -197,4 +245,5 @@ function configFirebaseRef(firebase, formType, resourceId) {
   }
 }
 
+export const CommentField = withFirebase(CommentsFormField);
 export default withFirebase(Comments);
