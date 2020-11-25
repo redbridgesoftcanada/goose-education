@@ -51,11 +51,9 @@ function Article({ firebase }) {
         const docRef = { id: articleSelect.id, upload: articleSelect.image }
         try {
             await checkStorageDelete(firebase, 'articles', docRef);
-            // Translation: 'Article has been deleted.';
-            resetAllActions('success', '기사가 삭제되었습니다.');
+            resetAllActions('success', 'Article has been deleted.');
         } catch (err) {
-            // Translation: 'Article could not be deleted. We will try and fix this issue.';
-            resetAllActions('error', '기사를 삭제할 수 없습니다. 이 문제를 해결하려고 노력할 것입니다.');
+            resetAllActions('error', 'Article could not be deleted. We will try and fix this issue.');
         }
     }
 

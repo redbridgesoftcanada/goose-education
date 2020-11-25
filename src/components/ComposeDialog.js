@@ -108,7 +108,6 @@ function ComposeDialogBase(props) {
         .then(async () => {
           prevUpload && prevUpload.includes('firebase') && await firebase.refFromUrl(prevUpload).delete();
           onClose();
-          setNotification({ action: 'success', message: 'Changes have been saved.' });
         });
       }
 

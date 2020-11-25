@@ -38,11 +38,9 @@ function CommentsFormField({ firebase }) {
         }); 
         history.push({ pathname: '/networking', state: { selected: 0 } });
         dispatch({ type:'userActionsReset' });
-        setNotification({ action: 'success', message: '댓글이 저장되었습니다.' });
-        // Translation: 'Comment has been saved.'
+        setNotification({ action: 'success', message: 'Comment has been saved.' });
     } catch (err) {
-      setNotification({ action: 'error', message: '댓글을 저장할 수 없습니다. 이 문제를 해결하려고 노력할 것입니다.' });
-      // Translation: 'Comment could not be saved. We will try and fix this issue.'
+      setNotification({ action: 'error', message: 'Comment could not be saved. We will try and fix this issue.' });
     }
     event.preventDefault();
   }
@@ -124,12 +122,10 @@ function Comments({ firebase, formType, resetAllActions }) {
         commentDialogOpen: !prevState.commentDialogOpen 
       }));
 
-      // Translation: 'Comment has been saved.'
-      resetAllActions('success', '댓글이 저장되었습니다.');
+      resetAllActions('success', 'Comment has been saved.');
 
     } catch (err) {
-      // Translation: 'Comment could not be saved. We will try and fix this issue.'
-      resetAllActions('error', '댓글을 저장할 수 없습니다. 이 문제를 해결하려고 노력할 것입니다.');
+      resetAllActions('error', 'Comment could not be saved. We will try and fix this issue.');
     }
 
     e.preventDefault();
@@ -153,13 +149,10 @@ function Comments({ firebase, formType, resetAllActions }) {
         commentAnchor: null,
         commentConfirmOpen: !prevState.commentConfirmOpen 
       }));
-
-      // Translation: 'Comment has been deleted.'
-      resetAllActions('success', '댓글이 삭제되었습니다.');
+      resetAllActions('success', 'Comment has been deleted.');
 
     } catch (err) {
-      // Translation: 'Comment could not be deleted. We will try and fix this issue.'
-      resetAllActions('error', '댓글을 삭제할 수 없습니다. 이 문제를 해결하려고 노력할 것입니다.');
+      resetAllActions('error', 'Comment could not be deleted. We will try and fix this issue.');
     }
   }
 
