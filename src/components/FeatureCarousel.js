@@ -44,8 +44,14 @@ export default function FeatureCarousel(props) {
                     return (
                         <div key={school.id}> 
                             <CardMedia
+                                classes={{
+                                    media: classes.media,
+                                    img: classes.image
+                                }}
                                 className={classes.media}
-                                image={school.image}
+                                component='img'
+                                src={school.image}
+                                styles={{objectFit: 'contain'}}
                                 title={school.name}
                                 id={school.id}
                                 onClick={handleClick}

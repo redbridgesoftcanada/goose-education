@@ -20,6 +20,11 @@ export const featureCarouselStyles = props => {
         boxShadow: '0 0 0 2px white',
         border: '2px solid white'
       }
+    },
+    
+    image: {
+      objectFit: 'contain'
     }
+
   }))(props);
 }
