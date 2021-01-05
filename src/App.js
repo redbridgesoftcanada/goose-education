@@ -78,14 +78,8 @@ function App() {
             />}
             
             {state.servicesGraphics && 
-              <Route path="/services" 
-                render={props => 
-                  <ServiceCentre 
-                    {...props} 
-                    listOfMessages={state.listOfMessages} 
-                    listOfAnnouncements={state.listOfAnnouncements}
-                    pageBanner={state.servicesGraphics.serviceCentrePageBanner}/>}
-              />}
+              <Route path="/services" render={props => <ServiceCentre {...props}/>}/>
+            }
 
             {state.privacyGraphics && <Route path="/privacy" render={() => <Privacy {...state.privacyGraphics.privacyPolicy}/>}/>}
 

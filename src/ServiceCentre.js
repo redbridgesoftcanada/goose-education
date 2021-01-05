@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, useReducer } from 'react';
 import { Paper, Tabs, Tab } from '@material-ui/core';
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
-import { AuthUserContext } from './components/session';
+import { DatabaseContext } from './components/database';
+import { StateContext, DispatchContext } from './components/userActions';
 import TabPanel from './components/TabPanel';
+import { StatusSnackbar } from './components/customMUI';
 import PageBanner from './views/PageBanner';
 import AnnouncementBoard from './views/AnnouncementBoard';
 import Announcement from './views/Announcement';
@@ -11,68 +13,199 @@ import MessageBoard from './views/MessageBoard';
 import Message from './views/Message';
 import withRoot from './withRoot';
 
-function ServiceCentre(props) {
-  const match = useRouteMatch();
-  const { listOfAnnouncements, listOfMessages, pageBanner } = props;
+function actionsReducer(state, action) {
+  const { type, payload } = action;
+  
+  switch(type) {
+    case 'setAnnounces': {
+      return { ...state, announces: payload }
+    }
 
-  const [ selected, setSelected ] = useState({
-    tab: 0, 
-    announce: null, 
-    message: null 
+    case 'setAnnounce':
+      return { ...state, announceSelect: payload }
+
+    case 'setCurrentPage':
+      return { ...state, currentPage: payload }
+    
+    case 'filterToggle': 
+      return { ...state, filterOpen: !state.filterOpen }
+
+    case 'filterCategory': {
+      const { category, input } = payload;
+      return { ...state, [category]: input }
+    }
+
+    case 'filterText':
+      return { ...state, filterQuery: payload }
+
+    case 'setFilteredAnnounces': {      
+      return {
+        ...state,
+        announces: payload,
+        isFiltered: true,
+        filterOpen: false
+      }
+    }
+
+    case 'sortToggle':
+      return { ...state, anchorOpen: payload }
+
+    case 'setSort': {
+      const { category, sortedAnnounces } = payload;
+      return { 
+        ...state, 
+        articles: sortedAnnounces,
+        anchorOpen: null,
+        anchorSelect: (category !== 'reset' || category !== '') ? category : '',
+      }
+    }
+
+    case 'composeToggle':
+      return { ...state, composeOpen: !state.composeOpen }
+
+    case 'announceReset':
+      return { 
+        ...state,
+        announces: payload,
+        isFiltered: false,
+        filterOpen: false,
+        filterOption: 'Title',
+        filterConjunction: 'And',
+        filterQuery: ''              
+      }
+    
+    // announcement
+    case 'commentToggle':
+      return { ...state, commentCollapseOpen: !state.commentCollapseOpen }
+
+    case 'userActionsToggle':
+      return { ...state, editAnchor: payload }
+
+    case 'deleteConfirmToggle':
+      return { 
+        ...state, 
+        deleteConfirmOpen: !state.deleteConfirmOpen,
+        ...!state.deleteConfirmOpen && { editAnchor: null }   
+        // synchronize closing the EDIT/DELETE menu in the background
+      }
+    
+    case 'editToggle':
+      return { 
+        ...state, 
+        editDialogOpen: !state.editDialogOpen,
+        ...!state.editDialogOpen && { editAnchor: null }   
+        // synchronize closing the EDIT/DELETE menu in the background
+      }
+    
+    case 'userActionsReset': 
+      return { 
+        ...state,
+        commentCollapseOpen: true,
+        editAnchor: null,
+        editDialogOpen: false,
+        deleteConfirmOpen: false
+      }
+      
+    default:
+      console.log('Missing action type for Service Centre (/services).');
+      return;
+  }
+}
+
+function ServiceCentre(props) {
+  const { 
+    listOfAnnouncements,
+    listOfMessages, 
+    servicesGraphics: { serviceCentrePageBanner }
+  } = useContext(DatabaseContext).state;
+
+  const [ state, dispatch ] = useReducer(actionsReducer, {
+    currentPage: 0, 
+    pageLimit: 5, 
+
+    // announcementBoard
+    announces: listOfAnnouncements,
+    announceSelect: null,
+    composeOpen: false,
+    anchorOpen: null,
+    selectedAnchor: '',
+    isFiltered: false,
+    filterOpen: false,
+    filterOption: 'Title',
+    filterConjunction: 'And',
+    filterQuery: '',
+
+    // announce
+    commentCollapseOpen: true,
+    editAnchor: null,
+    editDialogOpen: false,
+    deleteConfirmOpen: false    
+    
+    // messageBoard
+
+    // message
   });
 
-  const handleTabChange = newTab => setSelected(prevState => ({ ...prevState, tab: newTab }));
-  
-  const setSelectedAnnounce = e => {
-    const selectedAnnounce = listOfAnnouncements.find(announce => announce.id.toString() === e.currentTarget.id);
-    setSelected(prevState => ({ ...prevState, announce: selectedAnnounce }));
-  }
+  const [ notification, setNotification ] = useState({
+    action: '', 
+    message: ''
+  });
 
-  const setSelectedMessage = e => {
-    const selectedMessage = listOfMessages.find(message => message.id.toString() === e.currentTarget.id);
-    setSelected(prevState => ({ ...prevState, message: selectedMessage }));
-  }
+  const [ selectedTab, setSelectedTab ] = useState(0);
+
+  const match = useRouteMatch();
+
+  const announceReset = () => dispatch({ type: 'announceReset', payload: listOfAnnouncements });
+
+  // const setSelectedMessage = e => {
+  //   const selectedMessage = listOfMessages.find(message => message.id.toString() === e.currentTarget.id);
+  //   setSelected(prevState => ({ ...prevState, message: selectedMessage }));
+  // }
 
   useEffect(() => {
-    if (props.location.state.tab) {
-      setSelected(prevState => ({...prevState, tab: props.location.state.tab}))
-    }
+    props.location.state.tab && setSelectedTab(props.location.state.tab);
   }, [props.location.state.tab])
+
+  // reset all announcements to display any edit/delete changes;
+  useEffect(() => {
+    dispatch({ type: 'setAnnounces', payload: listOfAnnouncements });
+  }, [listOfAnnouncements])
 
   return (
     <>
       <ResponsiveNavBars/>
-      <PageBanner title={pageBanner.title} backgroundImage={pageBanner.image} layoutType='headerBanner'/>
+      <PageBanner 
+        layoutType='headerBanner'
+        title={serviceCentrePageBanner.title} 
+        backgroundImage={serviceCentrePageBanner.image} 
+       />
       <Paper>
         <Tabs 
           centered
           textColor="secondary" 
           variant="fullWidth" 
-          value={selected.tab}
-          onChange={(event, newValue) => handleTabChange(newValue)}>
+          value={selectedTab}
+          onChange={(event, newValue) => setSelectedTab(newValue)}>
             <Tab label="Announcements"/>
             <Tab label="Message Board"/>
         </Tabs>
 
-        <TabPanel value={selected.tab} index={0}>
-          <Switch>
-            <Route path={`${match.path}/announcement/:announcementID`}>
-              <AuthUserContext.Consumer>
-                {authUser => 
-                  <Announcement 
-                    authUser={authUser} 
-                    selectedAnnounce={selected.announce} />}
-              </AuthUserContext.Consumer>
-            </Route>
-            <Route path={match.path}>
-              <AnnouncementBoard 
-                listOfAnnouncements={listOfAnnouncements} 
-                setAnnounce={setSelectedAnnounce}/>
-            </Route>
-          </Switch>
+        <TabPanel value={selectedTab} index={0}>
+          <DispatchContext.Provider value={{dispatch, setNotification}}>
+            <StateContext.Provider value={state}>
+              <Switch>
+                <Route path={`${match.path}/announcement/:announcementID`}>
+                  <Announcement/>
+                </Route>
+                <Route path={match.path}>
+                  <AnnouncementBoard filterReset={announceReset}/>
+                </Route>
+              </Switch>
+            </StateContext.Provider>
+          </DispatchContext.Provider>
         </TabPanel>
 
-        <TabPanel value={selected.tab} index={1}>
+        {/* <TabPanel value={selectedTab} index={1}>
           <Switch>
             <Route path={`${match.path}/message/:messageID`}>
               <AuthUserContext.Consumer>
@@ -88,8 +221,16 @@ function ServiceCentre(props) {
                 setMessage={setSelectedMessage}/>
             </Route>
           </Switch>
-        </TabPanel>
+        </TabPanel> */}
       </Paper>
+
+      {(notification.action && notification.message) &&
+        <StatusSnackbar 
+          {...notification}
+          onClose={() => setNotification({ action: '',  message: '' })}
+        />
+      }
+      
       <ResponsiveFooters/>
     </>
   )
