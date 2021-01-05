@@ -9,26 +9,58 @@ import { DispatchContext } from '../components/userActions';
 import StyledValidators from '../components/customMUI';
 import { withFirebase } from '../components/firebase';
 
-const INITIAL_STATE = {
-  isEdit: false,
-  isLoading: false,
-  title: '',
-  description: '',
-  tag: '',
-  instagramURL: '',
-  link1: '',
-  link2: '',
-  uploads: ''
+function toggleReducer(state, action) {
+  const { type, payload } = action;
+  
+  switch(type) {
+    case 'prepopulateForm':
+      const { composeType, isEdit, prevContent } = payload;
+      if (composeType === 'article') {
+        const { image, ...prepopulateForm } = prevContent;
+        return { ...prepopulateForm, uploads: image, isEdit, isLoading: false }
+      
+      } else if (composeType === 'message' || composeType === 'announce') {
+        const { attachments, ...prepopulateForm } = prevContent;
+        return { ...prepopulateForm, uploads: attachments, isEdit, isLoading: false }
+      }
+      break;
+
+    case 'isLoading':
+      return { ...state, isLoading: true }
+
+    case 'richText':
+      return { ...state, description: payload }
+
+    case 'fileUpload':
+      const uploadFile = payload;
+      return (!uploadFile) ? { ...state, uploads: '' } : { ...state, uploads: uploadFile };
+
+    // other form field types and values;
+    default:
+      const inputField = payload.name;
+      const inputValue = payload.value;
+      return { ...state, [inputField]: inputValue }
+  }
 }
 
-function ComposeDialogBase(props) {
-  const { firebase, composeOpen, onClose, composeType } = props;
-
+function ComposeDialog(props) {
   const authUser = useContext(AuthUserContext);
   const { setNotification } = useContext(DispatchContext);
   const { refreshArticles } = useContext(DatabaseContext);
+  const { firebase, composeOpen, onClose, composeType } = props;
   
-  const [ state, dispatch ] = useReducer(toggleReducer, INITIAL_STATE);
+  const [ state, dispatch ] = useReducer(toggleReducer, {
+    isEdit: false,
+    isLoading: false,
+    title: '',
+    description: '',
+    tag: '',
+    instagramURL: '',
+    link1: '',
+    link2: '',
+    uploads: ''
+  });
+
   const { 
     isEdit, 
     isLoading, 
@@ -41,13 +73,12 @@ function ComposeDialogBase(props) {
     uploads 
   } = state;
   
-  const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'EDIT_FORM', payload: { composeType, isEdit, prevContent }});
+  const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'prepopulateForm', payload: { composeType, isEdit, prevContent }});
+  const handleRichText = htmlString => dispatch({ type:'richText', payload: htmlString });
+  const handleFileUpload = event => dispatch({ type:'fileUpload', payload: event.target.files[0] });
   const handleFormFields = event => dispatch({ payload:event.target });
-  const handleRichText = htmlString => dispatch({ type:'RICH_TEXT', payload: htmlString });
-  const handleFileUpload = event => dispatch({ type:'FILE_UPLOAD', payload: event.target.files[0] });
-
   const onSubmit = async event => {
-    dispatch({ type: 'INITIALIZE_SAVE' });
+    dispatch({ type: 'isLoading' });
 
     // user uploads a file with the form (note. empty array overwrites to a File object)
     const isFileUploaded = uploads instanceof File;
@@ -89,6 +120,7 @@ function ComposeDialogBase(props) {
     }
 
     if (isEdit) {
+      // user does not change/upload a file with the form;
       if (uploads === prevUpload) {
         newDoc.set({
           ...formContent,
@@ -98,6 +130,7 @@ function ComposeDialogBase(props) {
           onClose();
           setNotification({ action: 'success', message: 'Changes have been saved.' });
         });
+        
       } else if (isFileUploaded) {
         const downloadURL = await handleStorageUpload(uploads, composeType, metadata, firebase);
         newDoc.set({
@@ -133,7 +166,7 @@ function ComposeDialogBase(props) {
           setNotification({ action: 'success', message: `New ${composeType} has been created.` });
         })
   
-      // user does not upload a file with the form
+      // user does not upload a file with the form;
       } else {
         newDoc.set({
           ...defaultDocFields,
@@ -150,10 +183,17 @@ function ComposeDialogBase(props) {
     event.preventDefault();
   }
 
+  // prepopulate form fields for editing;
+  useEffect(() => {
+    const { composeType, isEdit } = props;
+    const prevContent = props.article;
+    prevContent && configureEditForm(composeType, isEdit, prevContent);
+  }, [props]);
+
+  // custom validation rules for <ValidatorForm/> fields;
   useEffect(() => {
     ValidatorForm.addValidationRule('isSelected', value => !!value);
-    // (optional cleanup mechanism for effects) - remove rule when not needed;
-    return () => ValidatorForm.removeValidationRule('isSelected');
+    return () => ValidatorForm.removeValidationRule('isSelected');  // remove rule when not needed (optional cleanup mechanism for effects);
   });
 
   useEffect(() => {
@@ -163,12 +203,6 @@ function ComposeDialogBase(props) {
     });
     return () => ValidatorForm.removeValidationRule('isRequiredUpload');
   });
-
-  useEffect(() => {
-    const { composeType, isEdit } = props;
-    const prevContent = props.article;
-    prevContent && configureEditForm(composeType, isEdit, prevContent);
-  }, [props]);
   
   return (
     <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='md'>
@@ -206,7 +240,6 @@ function ComposeDialogBase(props) {
             />
           }
 
-          <br/>
           <StyledValidators.RichTextField
             name='description'
             value={description}
@@ -228,54 +261,46 @@ function ComposeDialogBase(props) {
             onChange={handleFormFields}
           />
 
-          <br/>
-
-          {composeType !== 'announce' &&
-
-            <Grid container justify='flex-start' alignItems='center'>
+          {composeType === 'announce' ? null 
+            :
+            <Grid container justify='flex-start' alignItems='center' style={{marginTop: 25}}>
               <Grid item xs={2}>
-                {uploads ?
+                {uploads ? 
                   composeType === "article" ?
-                  <Avatar
-                    style={{width: 130, height: 130}}
-                    imgProps={{style: { objectFit: 'contain' }}}
-                    alt='G'
-                    variant='rounded' 
-                    src={
-                      uploads instanceof File ? null : uploads}
-                    />
-                    :
-                    
+                    <Avatar
+                      style={{width: 130, height: 130}}
+                      imgProps={{style: { objectFit: 'contain' }}}
+                      alt='G'
+                      variant='rounded' 
+                      src={uploads instanceof File ? null : uploads}/>
+                  :
                     <Avatar style={{width: 130, height: 130}} variant='rounded'>
                       <DescriptionIcon style={{fontSize: 50}}/>
                     </Avatar>
-                :
-                composeType !== "announce" &&
-                  <Box height={130} width={130} border={1} borderColor='grey.500' borderRadius={8}/>
+                  :
+                    <Box height={130} width={130} border={1} borderColor='grey.500' borderRadius={8}/>
                 }
               </Grid>
 
               {composeType === 'article' ? 
-              <Grid item>
-                <StyledValidators.FileUpload 
-                  name='file'
-                  value={uploads}
-                  label='Image'
-                  onChange={handleFileUpload}
-                  validators={['isRequiredUpload']}
-                  errorMessages={['']}/>
-                {uploads && <FormHelperText>Select a new file to upload and replace current image.</FormHelperText>}
-              </Grid>
-              :
-              <Input type="file" disableUnderline onChange={handleFileUpload}/>
-            }
+                <Grid item>
+                  <StyledValidators.FileUpload 
+                    name='file'
+                    value={uploads}
+                    label='Image'
+                    onChange={handleFileUpload}
+                    validators={['isRequiredUpload']}
+                    errorMessages={['']}/>
+                  {uploads && <FormHelperText>Select a new file to upload and replace current image.</FormHelperText>}
+                </Grid>
+                :
+                <Input type="file" disableUnderline onChange={handleFileUpload}/>
+              }
             </Grid>
-
           }
 
-          <br/>
-
           <Button 
+            style={{marginTop: 25}}
             type="submit"
             variant="contained" 
             color="secondary" 
@@ -337,37 +362,4 @@ function retrieveDownloadUrl(uploadTask) {
   });
 }
 
-function toggleReducer(state, action) {
-  const { type, payload } = action;
-  
-  switch(type) {
-    case 'EDIT_FORM':
-      const { composeType, isEdit, prevContent } = payload;
-      if (composeType === 'article') {
-        const { image, ...prepopulateForm } = prevContent;
-        return { ...prepopulateForm, uploads: image, isEdit, isLoading: false }
-      
-      } else if (composeType === 'message' || composeType === 'announce') {
-        const { attachments, ...prepopulateForm } = prevContent;
-        return { ...prepopulateForm, uploads: attachments, isEdit, isLoading: false }
-      }
-      break;
-
-    case 'INITIALIZE_SAVE':
-      return { ...state, isLoading: true }
-
-    case 'RICH_TEXT':
-      return { ...state, description: payload }
-
-    case 'FILE_UPLOAD':
-      const uploadFile = payload;
-      return (!uploadFile) ? { ...state, uploads: '' } : { ...state, uploads: uploadFile };
-
-    default:
-      const inputField = payload.name;
-      const inputValue = payload.value;
-      return { ...state, [inputField]: inputValue }
-  }
-}
-
-export default withFirebase(ComposeDialogBase);
+export default withFirebase(ComposeDialog);

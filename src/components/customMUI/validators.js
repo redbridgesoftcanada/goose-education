@@ -60,6 +60,7 @@ class QuillValidator extends ValidatorComponent {
     return (
       <>
         <ReactQuill
+          style={{marginTop: 25}}
           {...rest}
           {...!this.state.isValid && { style: errorStyles }}
         />

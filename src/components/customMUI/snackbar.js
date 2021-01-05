@@ -16,7 +16,7 @@ export default function StatusSnackbar({ action, message, onClose }) {
       break;
 
     default:
-      console.log('Missing action type for snackbar.')
+      console.log('Missing action type (error/success) for snackbar.');
       break;
   }
 

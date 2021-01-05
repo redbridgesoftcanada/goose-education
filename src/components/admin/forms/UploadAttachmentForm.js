@@ -161,7 +161,6 @@ function UploadAttachmentForm(props) {
         label="Instagram"
         onChange={handleTextInput}/>
 
-      <br/>
       <StyledValidators.RichTextField
         name="description"
         value={state.description}

@@ -191,7 +191,6 @@ function UploadImageForm(props) {
         </>
       }
 
-      <br/>
       <StyledValidators.RichTextField
         name="description"
         value={state.description}
