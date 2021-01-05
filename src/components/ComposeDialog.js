@@ -230,40 +230,48 @@ function ComposeDialogBase(props) {
 
           <br/>
 
-          <Grid container justify='flex-start' alignItems='center'>
-            <Grid item xs={2}>
-              {uploads ?
-                composeType === "article" ?
-                <Avatar
-                  style={{width: 130, height: 130}}
-                  imgProps={{style: { objectFit: 'contain' }}}
-                  alt='G'
-                  variant='rounded' 
-                  src={
-                    uploads instanceof File ? null : uploads}
-                  />
-                  :
-                  <Avatar style={{width: 130, height: 130}} variant='rounded'><DescriptionIcon style={{fontSize: 50}}/></Avatar>
+          {composeType !== 'announce' &&
+
+            <Grid container justify='flex-start' alignItems='center'>
+              <Grid item xs={2}>
+                {uploads ?
+                  composeType === "article" ?
+                  <Avatar
+                    style={{width: 130, height: 130}}
+                    imgProps={{style: { objectFit: 'contain' }}}
+                    alt='G'
+                    variant='rounded' 
+                    src={
+                      uploads instanceof File ? null : uploads}
+                    />
+                    :
+                    
+                    <Avatar style={{width: 130, height: 130}} variant='rounded'>
+                      <DescriptionIcon style={{fontSize: 50}}/>
+                    </Avatar>
+                :
+                composeType !== "announce" &&
+                  <Box height={130} width={130} border={1} borderColor='grey.500' borderRadius={8}/>
+                }
+              </Grid>
+
+              {composeType === 'article' ? 
+              <Grid item>
+                <StyledValidators.FileUpload 
+                  name='file'
+                  value={uploads}
+                  label='Image'
+                  onChange={handleFileUpload}
+                  validators={['isRequiredUpload']}
+                  errorMessages={['']}/>
+                {uploads && <FormHelperText>Select a new file to upload and replace current image.</FormHelperText>}
+              </Grid>
               :
-                <Box height={130} width={130} border={1} borderColor='grey.500' borderRadius={8}/>
-              }
+              <Input type="file" disableUnderline onChange={handleFileUpload}/>
+            }
             </Grid>
 
-            {composeType === 'article' ? 
-            <Grid item>
-              <StyledValidators.FileUpload 
-                name='file'
-                value={uploads}
-                label='Image'
-                onChange={handleFileUpload}
-                validators={['isRequiredUpload']}
-                errorMessages={['']}/>
-              {uploads && <FormHelperText>Select a new file to upload and replace current image.</FormHelperText>}
-            </Grid>
-             :
-             <Input type="file" disableUnderline onChange={handleFileUpload}/>
-           }
-          </Grid>
+          }
 
           <br/>
 
