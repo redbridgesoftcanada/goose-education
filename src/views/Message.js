@@ -158,7 +158,6 @@ function Message(props) {
              <ComposeDialog
                 isEdit={true}
                 article={selectedMessage}
-                authUser={authUser} 
                 composeType='message'
                 composeOpen={editDialogOpen} 
                 onClose={resetAllActions}/>

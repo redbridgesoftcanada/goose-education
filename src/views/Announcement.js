@@ -145,7 +145,6 @@ function Announcement({ firebase }) {
             <ComposeDialog
                 isEdit={true}
                 article={announceSelect}
-                authUser={authUser} 
                 composeType='announce'
                 composeOpen={editDialogOpen} 
                 onClose={resetAllActions}/>

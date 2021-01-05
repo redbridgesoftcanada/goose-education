@@ -151,7 +151,6 @@ function Article({ firebase }) {
              <ComposeDialog
                 isEdit={true}
                 article={articleSelect}
-                authUser={authUser} 
                 composeType='article'
                 composeOpen={editDialogOpen} 
                 onClose={resetAllActions}/>

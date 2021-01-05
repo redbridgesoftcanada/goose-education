@@ -73,7 +73,6 @@ export default function MessageBoard(props) {
                         <Compose handleComposeClick={toggleComposeDialog}/> 
                         <ComposeDialog
                         isEdit={false}
-                        authUser={authUser} 
                         composeType='message'
                         composeOpen={composeOpen} 
                         onClose={toggleComposeDialog} />

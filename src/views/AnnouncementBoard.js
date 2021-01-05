@@ -116,7 +116,6 @@ export default function AnnouncementBoard({ filterReset }) {
                     <Compose handleComposeClick={toggleComposeDialog}/> 
                     <ComposeDialog
                         isEdit={false}
-                        authUser={authUser} 
                         composeType='announce'
                         composeOpen={composeOpen} 
                         onClose={toggleComposeDialog} />

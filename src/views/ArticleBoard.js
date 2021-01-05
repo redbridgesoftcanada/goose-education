@@ -133,7 +133,6 @@ export default function ArticleBoard({ selectedTab, filterReset }) {
                             <Compose handleComposeClick={toggleComposeDialog}/> 
                             <ComposeDialog
                                 isEdit={false}
-                                authUser={authUser} 
                                 composeType='article'
                                 composeOpen={composeOpen} 
                                 onClose={toggleComposeDialog} />
