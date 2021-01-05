@@ -181,7 +181,10 @@ function Article({ firebase }) {
             }
 
             {articleSelect.comments.length ?
-                <Comments formType='article' resetAllActions={resetAllActions}/> 
+                <Comments 
+                    formType='article' 
+                    formKey='articleSelect'
+                    resetAllActions={resetAllActions}/> 
                 : 
                 null
             }

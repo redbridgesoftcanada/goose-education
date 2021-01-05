@@ -59,14 +59,14 @@ function CommentsFormField({ firebase }) {
   )
 }
 
-function Comments({ firebase, formType, resetAllActions }) {
+function Comments({ firebase, formType, formKey, resetAllActions }) {
   const authUser = useContext(AuthUserContext);
   const stateContext = useContext(StateContext);
 
   const [ state, setState ] = useState({
     formType: formType,
-    selectedResource: stateContext.articleSelect,
-    listOfComments: stateContext.articleSelect.comments,
+    selectedResource: stateContext[formKey],
+    listOfComments: stateContext[formKey].comments,
     selectedComment: null,
     selectedCommentBody: '',
     commentAnchor: null,
