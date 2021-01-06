@@ -7,9 +7,8 @@ import { StateContext, DispatchContext } from './components/userActions';
 import TabPanel from './components/TabPanel';
 import { StatusSnackbar } from './components/customMUI';
 import PageBanner from './views/PageBanner';
-import AnnouncementBoard from './views/AnnouncementBoard';
+import ServiceBoard from './views/ServiceBoard';
 import Announcement from './views/Announcement';
-import MessageBoard from './views/MessageBoard';
 import Message from './views/Message';
 import withRoot from './withRoot';
 
@@ -17,12 +16,17 @@ function actionsReducer(state, action) {
   const { type, payload } = action;
   
   switch(type) {
-    case 'setAnnounces': {
+    case 'loadAllAnnounces':
       return { ...state, announces: payload }
-    }
+
+    case 'loadAllMessages': 
+      return { ...state, messages: payload }
 
     case 'setAnnounce':
       return { ...state, announceSelect: payload }
+
+    case 'setMessage':
+      return { ...state, messageSelect: payload }
 
     case 'setCurrentPage':
       return { ...state, currentPage: payload }
@@ -38,14 +42,13 @@ function actionsReducer(state, action) {
     case 'filterText':
       return { ...state, filterQuery: payload }
 
-    case 'setFilteredAnnounces': {      
+    case 'setFilteredAnnounces':
       return {
         ...state,
         announces: payload,
         isFiltered: true,
         filterOpen: false
       }
-    }
 
     case 'sortToggle':
       return { ...state, anchorOpen: payload }
@@ -73,8 +76,19 @@ function actionsReducer(state, action) {
         filterConjunction: 'And',
         filterQuery: ''              
       }
+
+      case 'messageReset':
+        return { 
+          ...state,
+          messages: payload,
+          isFiltered: false,
+          filterOpen: false,
+          filterOption: 'Title',
+          filterConjunction: 'And',
+          filterQuery: ''              
+        }
     
-    // announcement
+    // page (announcement/message)
     case 'commentToggle':
       return { ...state, commentCollapseOpen: !state.commentCollapseOpen }
 
@@ -86,7 +100,7 @@ function actionsReducer(state, action) {
         ...state, 
         deleteConfirmOpen: !state.deleteConfirmOpen,
         ...!state.deleteConfirmOpen && { editAnchor: null }   
-        // synchronize closing the EDIT/DELETE menu in the background
+        // synchronize closing the EDIT/DELETE menu in the background;
       }
     
     case 'editToggle':
@@ -94,7 +108,7 @@ function actionsReducer(state, action) {
         ...state, 
         editDialogOpen: !state.editDialogOpen,
         ...!state.editDialogOpen && { editAnchor: null }   
-        // synchronize closing the EDIT/DELETE menu in the background
+        // synchronize closing the EDIT/DELETE menu in the background;
       }
     
     case 'userActionsReset': 
@@ -107,7 +121,7 @@ function actionsReducer(state, action) {
       }
       
     default:
-      console.log('Missing action type for Service Centre (/services).');
+      console.log(`Missing action type (logged: ${action}) for Service Centre reducer function.`);
       return;
   }
 }
@@ -122,10 +136,10 @@ function ServiceCentre(props) {
   const [ state, dispatch ] = useReducer(actionsReducer, {
     currentPage: 0, 
     pageLimit: 5, 
-
-    // announcementBoard
     announces: listOfAnnouncements,
     announceSelect: null,
+    messages: listOfMessages,
+    messageSelect: null,
     composeOpen: false,
     anchorOpen: null,
     selectedAnchor: '',
@@ -134,42 +148,36 @@ function ServiceCentre(props) {
     filterOption: 'Title',
     filterConjunction: 'And',
     filterQuery: '',
-
-    // announce
     commentCollapseOpen: true,
     editAnchor: null,
     editDialogOpen: false,
-    deleteConfirmOpen: false    
-    
-    // messageBoard
-
-    // message
+    deleteConfirmOpen: false,    
   });
 
+  const [ selectedTab, setSelectedTab ] = useState(0);
   const [ notification, setNotification ] = useState({
     action: '', 
     message: ''
   });
 
-  const [ selectedTab, setSelectedTab ] = useState(0);
-
-  const match = useRouteMatch();
-
   const announceReset = () => dispatch({ type: 'announceReset', payload: listOfAnnouncements });
-
-  // const setSelectedMessage = e => {
-  //   const selectedMessage = listOfMessages.find(message => message.id.toString() === e.currentTarget.id);
-  //   setSelected(prevState => ({ ...prevState, message: selectedMessage }));
-  // }
+  const messageReset = () => dispatch({ type: 'messageReset', payload: listOfMessages });
 
   useEffect(() => {
     props.location.state.tab && setSelectedTab(props.location.state.tab);
-  }, [props.location.state.tab])
+  }, [props.location.state.tab]);
 
   // reset all announcements to display any edit/delete changes;
   useEffect(() => {
-    dispatch({ type: 'setAnnounces', payload: listOfAnnouncements });
-  }, [listOfAnnouncements])
+    dispatch({ type: 'loadAllAnnounces', payload: listOfAnnouncements });
+  }, [listOfAnnouncements]);
+
+    // reset all messages to display any edit/delete changes;
+    useEffect(() => {
+      dispatch({ type: 'loadAllMessages', payload: listOfMessages });
+    }, [listOfMessages]);
+
+  const match = useRouteMatch();
 
   return (
     <>
@@ -177,8 +185,7 @@ function ServiceCentre(props) {
       <PageBanner 
         layoutType='headerBanner'
         title={serviceCentrePageBanner.title} 
-        backgroundImage={serviceCentrePageBanner.image} 
-       />
+        backgroundImage={serviceCentrePageBanner.image}/>
       <Paper>
         <Tabs 
           centered
@@ -190,47 +197,44 @@ function ServiceCentre(props) {
             <Tab label="Message Board"/>
         </Tabs>
 
-        <TabPanel value={selectedTab} index={0}>
-          <DispatchContext.Provider value={{dispatch, setNotification}}>
-            <StateContext.Provider value={state}>
+        <DispatchContext.Provider value={{dispatch, setNotification}}>
+          <StateContext.Provider value={state}>
+            <TabPanel value={selectedTab} index={0}>
               <Switch>
                 <Route path={`${match.path}/announcement/:announcementID`}>
                   <Announcement/>
                 </Route>
                 <Route path={match.path}>
-                  <AnnouncementBoard filterReset={announceReset}/>
+                  <ServiceBoard serviceType='announces' filterReset={announceReset}/>
                 </Route>
               </Switch>
-            </StateContext.Provider>
-          </DispatchContext.Provider>
-        </TabPanel>
+            </TabPanel>
 
-        {/* <TabPanel value={selectedTab} index={1}>
-          <Switch>
-            <Route path={`${match.path}/message/:messageID`}>
-              <AuthUserContext.Consumer>
-                {authUser => 
-                  <Message 
-                    authUser={authUser} 
-                    selectedMessage={selected.message}/>}
-              </AuthUserContext.Consumer>
-            </Route>
-            <Route path={match.path}>
-              <MessageBoard 
-                listOfMessages={listOfMessages} 
-                setMessage={setSelectedMessage}/>
-            </Route>
-          </Switch>
-        </TabPanel> */}
+            <TabPanel value={selectedTab} index={1}>
+              <Switch>
+                <Route path={`${match.path}/message/:messageID`}>
+                  {/* <AuthUserContext.Consumer>
+                    {authUser => 
+                      <Message 
+                        authUser={authUser} 
+                        selectedMessage={selected.message}/>}
+                  </AuthUserContext.Consumer> */}
+                </Route>
+                <Route path={match.path}>
+                  <ServiceBoard serviceType='messages' filterReset={messageReset}/>
+                </Route>
+              </Switch>
+            </TabPanel>
+          </StateContext.Provider>
+        </DispatchContext.Provider>
       </Paper>
 
-      {(notification.action && notification.message) &&
+      {notification.action && notification.message &&
         <StatusSnackbar 
           {...notification}
-          onClose={() => setNotification({ action: '',  message: '' })}
-        />
+          onClose={() => setNotification({ action: '',  message: '' })}/>
       }
-      
+
       <ResponsiveFooters/>
     </>
   )
