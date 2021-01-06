@@ -36,7 +36,7 @@ export default function DeleteConfirmation(props) {
             content = 'Deleted tips cannot be recovered.';
             break;    
         
-        case 'admin_announce':
+        case 'announce':
             title = 'Delete this announcement?';
             content = 'Deleted announcements cannot be recovered.';
             break;    

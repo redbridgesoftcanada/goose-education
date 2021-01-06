@@ -223,10 +223,10 @@ function Comments({ firebase, formType, formKey, resetAllActions }) {
 
 function configFirebaseRef(firebase, formType, resourceId) {
   switch(formType) {
-    case 'announcement':
+    case 'announcements':
       return firebase.announcement(resourceId);
       
-    case 'message':
+    case 'messages':
       return firebase.message(resourceId);
 
     case 'article':

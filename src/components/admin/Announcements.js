@@ -35,7 +35,7 @@ function Announcements(props) {
         prevContent={selectedAnnounce}/>
 
       <DeleteConfirmation 
-        deleteType='admin_announce' 
+        deleteType='announce' 
         open={deleteConfirmOpen} 
         handleDelete={handleDelete} 
         onClose={deleteConfirmToggle}/>
