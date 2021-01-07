@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react';
 import { Paper, Tabs, Tab } from '@material-ui/core';
-import { Switch, Route, useRouteMatch } from "react-router-dom";
+import { Switch, Route, useRouteMatch, useLocation, useHistory } from "react-router-dom";
 import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import { DatabaseContext } from './components/database';
 import { StateContext, DispatchContext } from './components/userActions';
@@ -8,8 +8,7 @@ import TabPanel from './components/TabPanel';
 import { StatusSnackbar } from './components/customMUI';
 import PageBanner from './views/PageBanner';
 import ServiceBoard from './views/ServiceBoard';
-import Announcement from './views/Announcement';
-import Message from './views/Message';
+import Services from './views/Services';
 import withRoot from './withRoot';
 
 function actionsReducer(state, action) {
@@ -88,7 +87,6 @@ function actionsReducer(state, action) {
           filterQuery: ''              
         }
     
-    // page (announcement/message)
     case 'commentToggle':
       return { ...state, commentCollapseOpen: !state.commentCollapseOpen }
 
@@ -154,30 +152,46 @@ function ServiceCentre(props) {
     deleteConfirmOpen: false,    
   });
 
-  const [ selectedTab, setSelectedTab ] = useState(0);
   const [ notification, setNotification ] = useState({
     action: '', 
     message: ''
   });
 
+  const [ selectedTab, setSelectedTab ] = useState(0);
+
+  const setTabValue = (event, newValue) => {
+    if (location.pathname !== '/services') history.replace({ pathname: '/services', state: {} });
+    setSelectedTab(newValue);
+  }
+
   const announceReset = () => dispatch({ type: 'announceReset', payload: listOfAnnouncements });
   const messageReset = () => dispatch({ type: 'messageReset', payload: listOfMessages });
+  
+  const match = useRouteMatch();
+  const location = useLocation();
+  const history = useHistory();
 
+  // [NavLink] load selected tab value from 'tab' prop in history object;
   useEffect(() => {
-    props.location.state.tab && setSelectedTab(props.location.state.tab);
+    if (!selectedTab && props.location.state.tab) setSelectedTab(props.location.state.tab);
   }, [props.location.state.tab]);
 
-  // reset all announcements to display any edit/delete changes;
+  // [ReactRouter] reset selected content when path returns to '/services';
+  useEffect(() => {
+    if (location.pathname === '/services') {
+      dispatch({ type: 'setAnnounce', payload: null });
+      dispatch({ type: 'setMessage', payload: null });
+    }
+  }, [location.pathname]);
+
+  // [Edit/Delete] update all announcements/messages to dynamically display any changes;
   useEffect(() => {
     dispatch({ type: 'loadAllAnnounces', payload: listOfAnnouncements });
   }, [listOfAnnouncements]);
 
-    // reset all messages to display any edit/delete changes;
-    useEffect(() => {
-      dispatch({ type: 'loadAllMessages', payload: listOfMessages });
-    }, [listOfMessages]);
-
-  const match = useRouteMatch();
+  useEffect(() => {
+    dispatch({ type: 'loadAllMessages', payload: listOfMessages });
+  }, [listOfMessages]);
 
   return (
     <>
@@ -192,17 +206,18 @@ function ServiceCentre(props) {
           textColor="secondary" 
           variant="fullWidth" 
           value={selectedTab}
-          onChange={(event, newValue) => setSelectedTab(newValue)}>
+          onChange={setTabValue}>
             <Tab label="Announcements"/>
             <Tab label="Message Board"/>
         </Tabs>
 
         <DispatchContext.Provider value={{dispatch, setNotification}}>
           <StateContext.Provider value={state}>
+
             <TabPanel value={selectedTab} index={0}>
               <Switch>
                 <Route path={`${match.path}/announcement/:announcementID`}>
-                  <Announcement/>
+                  <Services serviceType='announceSelect'/>
                 </Route>
                 <Route path={match.path}>
                   <ServiceBoard serviceType='announces' filterReset={announceReset}/>
@@ -213,18 +228,14 @@ function ServiceCentre(props) {
             <TabPanel value={selectedTab} index={1}>
               <Switch>
                 <Route path={`${match.path}/message/:messageID`}>
-                  {/* <AuthUserContext.Consumer>
-                    {authUser => 
-                      <Message 
-                        authUser={authUser} 
-                        selectedMessage={selected.message}/>}
-                  </AuthUserContext.Consumer> */}
+                  <Services serviceType='messageSelect'/>
                 </Route>
                 <Route path={match.path}>
                   <ServiceBoard serviceType='messages' filterReset={messageReset}/>
                 </Route>
               </Switch>
             </TabPanel>
+            x
           </StateContext.Provider>
         </DispatchContext.Provider>
       </Paper>
