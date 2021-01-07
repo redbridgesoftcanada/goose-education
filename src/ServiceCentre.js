@@ -139,6 +139,8 @@ function ServiceCentre(props) {
     messages: listOfMessages,
     messageSelect: null,
     composeOpen: false,
+    composeAnnounce: false,
+    composeMessage: false,
     anchorOpen: null,
     selectedAnchor: '',
     isFiltered: false,
@@ -235,7 +237,7 @@ function ServiceCentre(props) {
                 </Route>
               </Switch>
             </TabPanel>
-            x
+
           </StateContext.Provider>
         </DispatchContext.Provider>
       </Paper>
