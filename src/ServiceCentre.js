@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react';
 import { Paper, Tabs, Tab } from '@material-ui/core';
-import { Switch, Route, useRouteMatch, useLocation, useHistory } from "react-router-dom";
+import { Link as RouterLink, Switch, Route, useRouteMatch, useLocation } from "react-router-dom";
 import { ResponsiveNavBars, ResponsiveFooters } from './views/appBars';
 import { DatabaseContext } from './components/database';
 import { StateContext, DispatchContext } from './components/userActions';
@@ -49,14 +49,22 @@ function actionsReducer(state, action) {
         filterOpen: false
       }
 
+    case 'setFilteredMessages':
+      return {
+        ...state,
+        messages: payload,
+        isFiltered: true,
+        filterOpen: false
+      }
+
     case 'sortToggle':
       return { ...state, anchorOpen: payload }
 
     case 'setSort': {
-      const { category, sortedAnnounces } = payload;
+      const { category, serviceType, sortedResources } = payload;
       return { 
         ...state, 
-        articles: sortedAnnounces,
+        [serviceType]: sortedResources,
         anchorOpen: null,
         anchorSelect: (category !== 'reset' || category !== '') ? category : '',
       }
@@ -76,16 +84,16 @@ function actionsReducer(state, action) {
         filterQuery: ''              
       }
 
-      case 'messageReset':
-        return { 
-          ...state,
-          messages: payload,
-          isFiltered: false,
-          filterOpen: false,
-          filterOption: 'Title',
-          filterConjunction: 'And',
-          filterQuery: ''              
-        }
+    case 'messageReset':
+      return { 
+        ...state,
+        messages: payload,
+        isFiltered: false,
+        filterOpen: false,
+        filterOption: 'Title',
+        filterConjunction: 'And',
+        filterQuery: ''              
+      }
     
     case 'commentToggle':
       return { ...state, commentCollapseOpen: !state.commentCollapseOpen }
@@ -139,10 +147,8 @@ function ServiceCentre(props) {
     messages: listOfMessages,
     messageSelect: null,
     composeOpen: false,
-    composeAnnounce: false,
-    composeMessage: false,
     anchorOpen: null,
-    selectedAnchor: '',
+    anchorSelect: '',
     isFiltered: false,
     filterOpen: false,
     filterOption: 'Title',
@@ -154,24 +160,17 @@ function ServiceCentre(props) {
     deleteConfirmOpen: false,    
   });
 
-  const [ notification, setNotification ] = useState({
-    action: '', 
-    message: ''
-  });
-
+  const [ notification, setNotification ] = useState({ action: '', message: '' });
   const [ selectedTab, setSelectedTab ] = useState(0);
 
-  const setTabValue = (event, newValue) => {
-    if (location.pathname !== '/services') history.replace({ pathname: '/services', state: {} });
-    setSelectedTab(newValue);
+  const filterReset = () => {
+    if (selectedTab === 0) dispatch({ type: 'announceReset', payload: listOfAnnouncements });
+    else if (selectedTab == 1) dispatch({ type: 'messageReset', payload: listOfMessages });
+    else console.log(`Missing condition (logged: ${selectedTab}) to set filter reset function for ServiceCentre.`);
   }
-
-  const announceReset = () => dispatch({ type: 'announceReset', payload: listOfAnnouncements });
-  const messageReset = () => dispatch({ type: 'messageReset', payload: listOfMessages });
   
   const match = useRouteMatch();
   const location = useLocation();
-  const history = useHistory();
 
   // [NavLink] load selected tab value from 'tab' prop in history object;
   useEffect(() => {
@@ -208,36 +207,32 @@ function ServiceCentre(props) {
           textColor="secondary" 
           variant="fullWidth" 
           value={selectedTab}
-          onChange={setTabValue}>
-            <Tab label="Announcements"/>
-            <Tab label="Message Board"/>
+          onChange={(ev, newValue) => setSelectedTab(newValue)}>
+            <Tab component={RouterLink} to={{ pathname: match.path, state: { tab: 0 }}} label="Announcements"/>
+            <Tab component={RouterLink} to={{ pathname: match.path, state: { tab: 1 }}} label="Messages"/>
         </Tabs>
 
         <DispatchContext.Provider value={{dispatch, setNotification}}>
           <StateContext.Provider value={state}>
+            <Switch>
+              <Route exact path={match.path}>
+                <TabPanel value={selectedTab} index={selectedTab}>
+                  <ServiceBoard active={selectedTab} filterReset={filterReset}/>
+                </TabPanel>
+              </Route>
 
-            <TabPanel value={selectedTab} index={0}>
-              <Switch>
-                <Route path={`${match.path}/announcement/:announcementID`}>
+              <Route path={`${match.path}/announcement/:announcementID`}>
+                <TabPanel value={selectedTab} index={0}>
                   <Services serviceType='announceSelect'/>
-                </Route>
-                <Route path={match.path}>
-                  <ServiceBoard serviceType='announces' filterReset={announceReset}/>
-                </Route>
-              </Switch>
-            </TabPanel>
+                </TabPanel>
+              </Route>
 
-            <TabPanel value={selectedTab} index={1}>
-              <Switch>
-                <Route path={`${match.path}/message/:messageID`}>
+              <Route path={`${match.path}/message/:messageID`}>
+                <TabPanel value={selectedTab} index={1}>
                   <Services serviceType='messageSelect'/>
-                </Route>
-                <Route path={match.path}>
-                  <ServiceBoard serviceType='messages' filterReset={messageReset}/>
-                </Route>
-              </Switch>
-            </TabPanel>
-
+                </TabPanel>
+              </Route>    
+            </Switch>
           </StateContext.Provider>
         </DispatchContext.Provider>
       </Paper>
