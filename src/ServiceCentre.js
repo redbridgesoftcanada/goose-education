@@ -163,6 +163,9 @@ function ServiceCentre(props) {
   const [ notification, setNotification ] = useState({ action: '', message: '' });
   const [ selectedTab, setSelectedTab ] = useState(0);
 
+  // [Snackbar] prevent display from default MUI classes/props (onBackdropClick);
+  const checkNotification = typeof notification.action === 'string' && notification.action && notification.message;
+
   const filterReset = () => {
     if (selectedTab === 0) dispatch({ type: 'announceReset', payload: listOfAnnouncements });
     else if (selectedTab == 1) dispatch({ type: 'messageReset', payload: listOfMessages });
@@ -237,7 +240,7 @@ function ServiceCentre(props) {
         </DispatchContext.Provider>
       </Paper>
 
-      {notification.action && notification.message &&
+      {checkNotification &&
         <StatusSnackbar 
           {...notification}
           onClose={() => setNotification({ action: '',  message: '' })}/>
