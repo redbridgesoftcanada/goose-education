@@ -9,20 +9,10 @@ import { fetchAllDocuments } from '../../constants/helpers/_fetchAll';
 function withFetching(Component) {
 
   function WithFetchingComponent(props) {  
-    const location = useLocation();
-    const path = location.pathname;
-    const firebase = props.firebase;
-
-    let userId;
-    if (firebase.auth.currentUser) {
-      userId = firebase.auth.currentUser.uid;
-    }
-
-    const INITIAL_STATE = {
-      // pagination ----------
+    const { firebase } = props;
+    const [ state, setState ] = useState({
       queryLimit: 1,
       isQueryEmpty: {},
-      // ---------------------
       featuredArticles: [],
       featuredSchools: [],
       featuredTips: [],
@@ -44,17 +34,26 @@ function withFetching(Component) {
       homestayApplicationHistory: [],
       airportRideApplicationHistory: [],
       instagram: []
-    }
-    const [ state, setState ] = useState(INITIAL_STATE);
+    });
 
-    const refreshArticles = useCallback(() => {
-      return fetchAllDocuments("articles", firebase, setState);
-    }, [state.taggedArticles]);
+    // [Compose Dialog] dynamically display any changes on submit;
+    const triggerFetch = useCallback(collection => {
+      switch (collection) {
+        case "article": return fetchAllDocuments("articles", firebase, setState);
+        case "announces": return fetchAllDocuments("announcements", firebase, setState);
+        case "messages": return fetchAllDocuments("messages", firebase, setState);
+        default: 
+          console.log(`Missing case (logged: ${collection}) to configure data fetch function from Firebase.`);
+          return;
+      }
+    }, [state.taggedArticles, state.listOfAnnouncements, state.listOfMessages]);
 
+    // [Client Pagination]
     const paginatedQuery = type => {
       return fetchPaginatedQuery(state, firebase, setState, type);
     }
 
+    // [Admin Pagination]
     const adminPageQuery = async page => {
       const queryRef = (page === 'Goose Tips') ? 'gooseTips' : (page === 'Overview') ? 'adminAggregates' : `listOf${page}`;
       try {
@@ -68,9 +67,14 @@ function withFetching(Component) {
       }
     }
 
+    // [Footer] load graphics (footerLeft, footerRight) into local storage;
     if (state.footerGraphics && localStorage.getItem('footer') === null) {
       localStorage.setItem('footer', JSON.stringify(state.footerGraphics));
     }
+
+    const location = useLocation();
+    const path = location.pathname;
+    const userId = (firebase.auth.currentUser) ? firebase.auth.currentUser.uid : null;
 
     useEffect(() => {
       if (!state.footerGraphics) {
@@ -109,8 +113,7 @@ function withFetching(Component) {
           if (!state.networkingGraphics) {
             fetchSelectDocuments("location", "graphics", firebase, setState, path);
           }
-
-          refreshArticles();
+          triggerFetch("articles");
           break;
         
         case '/schools':
@@ -160,9 +163,9 @@ function withFetching(Component) {
     return (
     <DatabaseContext.Provider value={{
       state, 
+      triggerFetch,
       paginatedQuery, 
-      adminPageQuery,
-      refreshArticles
+      adminPageQuery
       }}>
       <Component {...props} />
     </DatabaseContext.Provider>

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer } from 'react';
-import { Avatar, Box, Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormHelperText, Grid, Input } from '@material-ui/core';
+import { Avatar, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormHelperText, Grid, Input } from '@material-ui/core';
 import DescriptionIcon from '@material-ui/icons/Description';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { TAGS } from '../constants/constants';
@@ -19,7 +19,7 @@ function toggleReducer(state, action) {
         const { image, ...prepopulateForm } = prevContent;
         return { ...prepopulateForm, uploads: image, isEdit, isLoading: false }
       
-      } else if (composeType === 'message' || composeType === 'announce') {
+      } else if (composeType === 'messages' || composeType === 'announces') {
         const { attachments, ...prepopulateForm } = prevContent;
         return { ...prepopulateForm, uploads: attachments, isEdit, isLoading: false }
       }
@@ -46,9 +46,9 @@ function toggleReducer(state, action) {
 function ComposeDialog(props) {
   const authUser = useContext(AuthUserContext);
   const { setNotification } = useContext(DispatchContext);
-  const { refreshArticles } = useContext(DatabaseContext);
+  const { triggerFetch } = useContext(DatabaseContext);
   const { firebase, composeOpen, onClose, composeType } = props;
-  
+
   const [ state, dispatch ] = useReducer(toggleReducer, {
     isEdit: false,
     isLoading: false,
@@ -60,18 +60,7 @@ function ComposeDialog(props) {
     link2: '',
     uploads: ''
   });
-
-  const { 
-    isEdit, 
-    isLoading, 
-    title, 
-    tag, 
-    description, 
-    instagramURL, 
-    link1, 
-    link2, 
-    uploads 
-  } = state;
+  const { isEdit, isLoading, title, description, tag, instagramURL, link1, link2, uploads } = state;
   
   const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'prepopulateForm', payload: { composeType, isEdit, prevContent }});
   const handleRichText = htmlString => dispatch({ type:'richText', payload: htmlString });
@@ -96,7 +85,7 @@ function ComposeDialog(props) {
         break;
       }
 
-      case "announce": {
+      case "announces": {
         const { isEdit, isLoading, uploads, ...announceForm } = state;
         uploadKey = 'attachments';
         formContent = {...announceForm};
@@ -105,7 +94,7 @@ function ComposeDialog(props) {
         break;
       }
 
-      case "message": {
+      case "messages": {
         const { isEdit, isLoading, tag, instagramURL, uploads, ...messageForm } = state;
         uploadKey = 'attachments';
         formContent = {...messageForm}
@@ -161,9 +150,9 @@ function ComposeDialog(props) {
           [uploadKey]: downloadURL
         })
         .then(() => {
-          refreshArticles();
+          triggerFetch(composeType);
           onClose();
-          setNotification({ action: 'success', message: `New ${composeType} has been created.` });
+          setNotification({ action: 'success', message: `Successfully created!` });
         })
   
       // user does not upload a file with the form;
@@ -174,9 +163,9 @@ function ComposeDialog(props) {
           [uploadKey]: ''
         })
         .then(() => {
-          refreshArticles();
+          triggerFetch(composeType);
           onClose();
-          setNotification({ action: 'success', message: `New ${composeType} has been created.` });
+          setNotification({ action: 'success', message: `Successfully created!` });
         })
       }
     }
@@ -206,134 +195,129 @@ function ComposeDialog(props) {
   
   return (
     <Dialog onClose={onClose} open={composeOpen} fullWidth maxWidth='md'>
-      <DialogTitle>{generateDialogTitle(isEdit, composeType)}</DialogTitle>
-      <DialogContent>
-        <ValidatorForm onSubmit={onSubmit}>
-      
-          <StyledValidators.TextField
-            name='title'
-            value={title}
-            label='Title'
-            onChange={handleFormFields}
-            validators={['required', 'isQuillEmpty']}
-            errorMessages={['', '']}
-          />
-
-          {(composeType === 'article' || composeType === 'announce') &&
-            <StyledValidators.CustomSelect
-              name='tag'
-              value={tag}
-              options={TAGS.slice(1)}
-              label='Category'
-              onChange={handleFormFields}
-              validators={['isSelected']}
-              errorMessages={['']}
-            />
-          }
-
-          {composeType === 'article' &&
+      <ValidatorForm onSubmit={onSubmit}>
+        <DialogTitle>{generateDialogTitle(isEdit, composeType)}</DialogTitle>
+        <DialogContent>
+        
             <StyledValidators.TextField
-              name='instagramURL'
-              value={instagramURL}
-              label='Instagram'
+              name='title'
+              value={title}
+              label='Title'
+              onChange={handleFormFields}
+              validators={['required', 'isQuillEmpty']}
+              errorMessages={['', '']}
+            />
+
+            {(composeType === 'article' || composeType === 'announces') &&
+              <StyledValidators.CustomSelect
+                name='tag'
+                value={tag}
+                options={TAGS.slice(1)}
+                label='Category'
+                onChange={handleFormFields}
+                validators={['isSelected']}
+                errorMessages={['']}
+              />
+            }
+
+            {composeType === 'article' &&
+              <StyledValidators.TextField
+                name='instagramURL'
+                value={instagramURL}
+                label='Instagram'
+                onChange={handleFormFields}
+              />
+            }
+
+            <StyledValidators.RichTextField
+              name='description'
+              value={description}
+              defaultValue={description}
+              onChange={handleRichText}
+            />
+
+            <StyledValidators.TextField
+              name='link1'
+              value={link1}
+              label='Link #1'
               onChange={handleFormFields}
             />
-          }
 
-          <StyledValidators.RichTextField
-            name='description'
-            value={description}
-            defaultValue={description}
-            onChange={handleRichText}
-          />
+            <StyledValidators.TextField
+              name='link2'
+              value={link2}
+              label='Link #2'
+              onChange={handleFormFields}
+            />
 
-          <StyledValidators.TextField
-            name='link1'
-            value={link1}
-            label='Link #1'
-            onChange={handleFormFields}
-          />
+            {composeType === 'announces' ? null 
+              :
+              <Grid container justify='flex-start' alignItems='center' style={{marginTop: 25}}>
+                <Grid item xs={2}>
+                  {uploads ? 
+                    composeType === "article" ?
+                      <Avatar
+                        style={{width: 130, height: 130}}
+                        imgProps={{style: { objectFit: 'contain' }}}
+                        alt='G'
+                        variant='rounded' 
+                        src={uploads instanceof File ? null : uploads}/>
+                    :
+                      <Avatar style={{width: 130, height: 130}} variant='rounded'>
+                        <DescriptionIcon style={{fontSize: 50}}/>
+                      </Avatar>
+                    :
+                      <Box height={130} width={130} border={1} borderColor='grey.500' borderRadius={8}/>
+                  }
+                </Grid>
 
-          <StyledValidators.TextField
-            name='link2'
-            value={link2}
-            label='Link #2'
-            onChange={handleFormFields}
-          />
-
-          {composeType === 'announce' ? null 
-            :
-            <Grid container justify='flex-start' alignItems='center' style={{marginTop: 25}}>
-              <Grid item xs={2}>
-                {uploads ? 
-                  composeType === "article" ?
-                    <Avatar
-                      style={{width: 130, height: 130}}
-                      imgProps={{style: { objectFit: 'contain' }}}
-                      alt='G'
-                      variant='rounded' 
-                      src={uploads instanceof File ? null : uploads}/>
+                {composeType === 'article' ? 
+                  <Grid item>
+                    <StyledValidators.FileUpload 
+                      name='file'
+                      value={uploads}
+                      label='Image'
+                      onChange={handleFileUpload}
+                      validators={['isRequiredUpload']}
+                      errorMessages={['']}/>
+                    {uploads && <FormHelperText>Select a new file to upload and replace current image.</FormHelperText>}
+                  </Grid>
                   :
-                    <Avatar style={{width: 130, height: 130}} variant='rounded'>
-                      <DescriptionIcon style={{fontSize: 50}}/>
-                    </Avatar>
-                  :
-                    <Box height={130} width={130} border={1} borderColor='grey.500' borderRadius={8}/>
+                  <Input type="file" disableUnderline onChange={handleFileUpload}/>
                 }
               </Grid>
-
-              {composeType === 'article' ? 
-                <Grid item>
-                  <StyledValidators.FileUpload 
-                    name='file'
-                    value={uploads}
-                    label='Image'
-                    onChange={handleFileUpload}
-                    validators={['isRequiredUpload']}
-                    errorMessages={['']}/>
-                  {uploads && <FormHelperText>Select a new file to upload and replace current image.</FormHelperText>}
-                </Grid>
-                :
-                <Input type="file" disableUnderline onChange={handleFileUpload}/>
-              }
-            </Grid>
-          }
-
+            }
+        </DialogContent>
+        <DialogActions>
           <Button 
-            style={{marginTop: 25}}
             type="submit"
             variant="contained" 
             color="secondary" 
-            fullWidth>
+            fullWidth
+            >
             {isLoading ? <CircularProgress /> : 'Submit'}
           </Button>
-
-        </ValidatorForm>
-      </DialogContent>
+        </DialogActions>
+      </ValidatorForm>
     </Dialog>
   )
 }
 
 function generateDialogTitle(isEdit, composeType) {
-  switch(isEdit) {
-    case false:
-      switch (composeType) {
-        case "article": return "Create Post";
-        case "message": return "Create Counselling Request";
-        case "announce": return "Create Announcement";
-        default: return;
-      }
-    
-    case true:
-      switch (composeType) {
-        case "article": return "Edit Post";
-        case "message": return "Edit Counselling Request";
-        case "announce": return "Edit Announcement";
-        default: return;
+  if (isEdit) {
+    switch (composeType) {
+      case "article": return "Edit Post";
+      case "messages": return "Edit Counselling Request";
+      case "announces": return "Edit Announcement";
+      default: return;
     }
-
-    default:
-      return;
+  } else {
+    switch (composeType) {
+      case "article": return "Create Post";
+      case "messages": return "Create Counselling Request";
+      case "announces": return "Create Announcement";
+      default: return;
+    }
   }
 }
 
@@ -344,8 +328,8 @@ async function handleStorageUpload(uploads, composeType, metadata, firebase) {
       return await retrieveDownloadUrl(uploadTask);
     }
     
-    case "announce":
-    case "message": {
+    case "announces":
+    case "messages": {
       const uploadTask = await firebase.attachmentsRef(uploads).put(uploads, metadata);
       return await retrieveDownloadUrl(uploadTask);
     }
