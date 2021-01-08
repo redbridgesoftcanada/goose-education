@@ -22,6 +22,8 @@ function toggleReducer(state, action) {
       } else if (composeType === 'messages' || composeType === 'announces') {
         const { attachments, ...prepopulateForm } = prevContent;
         return { ...prepopulateForm, uploads: attachments, isEdit, isLoading: false }
+      } else {
+        return { ...state }
       }
       break;
 
@@ -62,7 +64,6 @@ function ComposeDialog(props) {
   });
   const { isEdit, isLoading, title, description, tag, instagramURL, link1, link2, uploads } = state;
   
-  const configureEditForm = (composeType, isEdit, prevContent) => dispatch({ type:'prepopulateForm', payload: { composeType, isEdit, prevContent }});
   const handleRichText = htmlString => dispatch({ type:'richText', payload: htmlString });
   const handleFileUpload = event => dispatch({ type:'fileUpload', payload: event.target.files[0] });
   const handleFormFields = event => dispatch({ payload:event.target });
@@ -174,10 +175,9 @@ function ComposeDialog(props) {
 
   // prepopulate form fields for editing;
   useEffect(() => {
-    const { composeType, isEdit } = props;
-    const prevContent = props.article;
-    prevContent && configureEditForm(composeType, isEdit, prevContent);
-  }, [props]);
+    const { article, composeType, isEdit } = props;
+    article && dispatch({ type:'prepopulateForm', payload: { composeType, isEdit, prevContent: article }});
+  }, []);
 
   // custom validation rules for <ValidatorForm/> fields;
   useEffect(() => {

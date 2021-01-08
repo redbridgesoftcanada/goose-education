@@ -184,13 +184,13 @@ function configurePermissions(serviceType, authUser, contentSelect) {
     permissions = {
       userRole: authUser && authUser.roles['admin'],
       collection: 'announcements',
-      ref: 'announce'
+      ref: 'announces'
     }
   } else if (serviceType === 'messageSelect') {
     permissions = {
       userRole: authUser.uid === contentSelect.authorID,
       collection: 'messages',
-      ref: 'message'
+      ref: 'messages'
     }
   } else {
     console.log(`Missing serviceType (logged: ${serviceType}) to configure permissions for selected content (/services).`);

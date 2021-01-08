@@ -11,7 +11,7 @@ export default function DeleteConfirmation(props) {
             content = 'Deleted posts cannot be recovered.';
             break;
 
-        case 'message':
+        case 'messages':
             title = 'Delete this message?';
             content = 'Deleted messages cannot be recovered.';
             break;
@@ -36,7 +36,7 @@ export default function DeleteConfirmation(props) {
             content = 'Deleted tips cannot be recovered.';
             break;    
         
-        case 'announce':
+        case 'announces':
             title = 'Delete this announcement?';
             content = 'Deleted announcements cannot be recovered.';
             break;    
