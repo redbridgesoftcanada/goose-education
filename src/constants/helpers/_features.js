@@ -35,7 +35,7 @@ function singleFilterQuery(resources, option, words) {
 
       case 'Author':
           filteredContent = resources.filter(resource => {
-              const resourceAuthor = resource.author.toLowerCase();
+              const resourceAuthor = resource.authorDisplayName.toLowerCase();
               return resourceAuthor.includes(filterWords);
           });
           break;
