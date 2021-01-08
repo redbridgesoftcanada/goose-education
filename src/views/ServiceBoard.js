@@ -15,10 +15,12 @@ import SortPopover from '../components/SortPopover';
 import SocialMediaButtons from '../components/SocialMediaButtons';
 import Pagination from '../components/Pagination';
 
-export default function ServiceBoard({ serviceType, filterReset }) {
+export default function ServiceBoard({ active, filterReset }) {
   const authUser = useContext(AuthUserContext);
   const { dispatch } = useContext(DispatchContext);
   const stateContext = useContext(StateContext);
+
+  const serviceType = (active === 0) ? 'announces' : 'messages';
 
   const serviceContent = stateContext[serviceType];   // listOfAnnouncements: 'announces', listOfMessages: 'messages';
   const { 
@@ -26,7 +28,7 @@ export default function ServiceBoard({ serviceType, filterReset }) {
     pageLimit,
     composeOpen, 
     anchorOpen, 
-    selectedAnchor, 
+    anchorSelect, 
     isFiltered,
     filterOpen,
     filterOption, 
@@ -47,14 +49,14 @@ export default function ServiceBoard({ serviceType, filterReset }) {
     dispatch({ type: dispatchType, payload: selectedData });
   }
 
-  const toggleComposeDialog = () => dispatch({ type:'composeToggle' });
+  const toggleComposeDialog = () => dispatch({ type: 'composeToggle' });
 
   const toggleSort = ev => dispatch({ type: 'sortToggle', payload: ev.currentTarget });
 
   const setSort = ev => {
     const category = ev.currentTarget.id;
     const sortedResources = sortQuery(serviceType, serviceContent, category);
-    dispatch({ type: 'setSort', payload: { category, sortedResources } });
+    dispatch({ type: 'setSort', payload: { category, serviceType, sortedResources } });
   }
 
   const toggleFilter = () => {
@@ -88,7 +90,7 @@ export default function ServiceBoard({ serviceType, filterReset }) {
     if (!filteredContent.length) {
       setFilterError('Sorry, no matches found!');
     } else {
-      const dispatchType = (serviceType === 'announces') ? 'setFilteredAnnounces' : 'setFilteredMessage';
+      const dispatchType = (serviceType === 'announces') ? 'setFilteredAnnounces' : 'setFilteredMessages';
       dispatch({ type: dispatchType, payload: filteredContent });
     }
   } 
@@ -98,10 +100,19 @@ export default function ServiceBoard({ serviceType, filterReset }) {
     filterReset();
   }
 
-  // update pagination (sort, filter); 
+  // [Filter/Sort] organize and load content into paginated groups; 
   useEffect(() => {
     paginateRef.current = createPagination(serviceContent, currentPage, pageLimit);
   }, [serviceContent, currentPage, pageLimit]);
+
+  // [Filter/Sort] reset values/results if valid when changing tabs;
+  useEffect(() => {
+    if (isFiltered) resetFilter();
+    if (anchorSelect) {
+      const sortedResources = sortQuery(serviceType, serviceContent, "reset");
+      dispatch({ type: 'setSort', payload: { category: "reset", serviceType, sortedResources } });
+    }
+  }, [active])
 
   const match = useRouteMatch();
   const pageHeader = configurePageHeader(serviceType);
@@ -137,7 +148,7 @@ export default function ServiceBoard({ serviceType, filterReset }) {
           onClose={toggleFilter}/>
 
         <Sort 
-          selectedAnchor={selectedAnchor}
+          selectedAnchor={anchorSelect}
           handleSortClick={toggleSort}/>
 
         <SortPopover

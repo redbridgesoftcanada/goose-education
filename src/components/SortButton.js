@@ -5,8 +5,6 @@ import { MuiThemeBreakpoints } from '../constants/constants';
 import useStyles from '../styles/constants/index';
 
 export default function SortButton(props) {
-    const classes = useStyles(props, 'buttons');
-    const xsBreakpoint = MuiThemeBreakpoints().xs;
     const { selectedAnchor, handleSortClick } = props;
 
     const buttonProps = {};
@@ -25,6 +23,9 @@ export default function SortButton(props) {
         if (xsBreakpoint) buttonProps.children = '';
         return buttonProps;
     }
+
+    const classes = useStyles(props, 'buttons');
+    const xsBreakpoint = MuiThemeBreakpoints().xs;
 
     return (
         <Button
