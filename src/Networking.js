@@ -18,9 +18,8 @@ function actionsReducer(state, action) {
   const { type, payload } = action;
   
   switch(type) {
-    case 'setArticles': {
+    case 'setArticles': 
       return { ...state, articles: payload }
-    }
 
     case 'setCurrentPage': 
       return { ...state, currentPage: payload }
@@ -136,6 +135,7 @@ function Networking() {
   });
 
   const location = useLocation();
+
   const [ state, dispatch ] = useReducer(actionsReducer, {
     currentPage: 0, 
     pageLimit: 5, 
@@ -164,21 +164,21 @@ function Networking() {
 
   const filterReset = () => dispatch({ type: 'filterReset', payload: taggedArticles });
 
-  // reset articleSelect if user goes back to /networking (history);
+  // [ReactRouter] reset selected content when path returns to '/networking';
   useEffect(() => {
     if (location.pathname === '/networking') {
       dispatch({ type: 'setArticle', payload: null });
     }
   }, [location.pathname]);
 
-  // reset articles to display any edit/delete changes;
+  // [Edit/Delete] update all articles to dynamically display any changes;
   useEffect(() => {
     dispatch({ type: 'setArticles', payload: taggedArticles });
   }, [taggedArticles])
 
   const xsBreakpoint = MuiThemeBreakpoints().xs;
   const classes = useStyles();
-
+  
   return (
     <>
       <ResponsiveNavBars/>
