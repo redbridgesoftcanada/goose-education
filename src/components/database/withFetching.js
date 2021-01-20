@@ -113,7 +113,7 @@ function withFetching(Component) {
           if (!state.networkingGraphics) {
             fetchSelectDocuments("location", "graphics", firebase, setState, path);
           }
-          triggerFetch("articles");
+          fetchAllDocuments("articles", firebase, setState);
           break;
         
         case '/schools':
